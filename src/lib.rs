@@ -1,3 +1,5 @@
+use std::{cmp::Ordering, collections::BinaryHeap};
+
 pub struct Vertex {
     pub x: f32,
     pub y: f32,
@@ -50,8 +52,63 @@ pub struct Mesh {
 
 impl Mesh {
     pub fn path_len(&self, from: [f32; 2], to: [f32; 2]) -> f32 {
-        ((to[0] - from[0]).powi(2) + (to[1] - from[1]).powi(2)).sqrt()
+        let starting_polygon = self.point_in_polygon(from);
+        let starting_polygon = self.polygons.get(starting_polygon).unwrap();
+
+        let mut to_add = vec![];
+        for edge in starting_polygon.edges_index() {
+            let start = self.vertices.get(edge[0]).unwrap();
+            let end = self.vertices.get(edge[1]).unwrap();
+            to_add.push(SearchNode {
+                path: vec![],
+                r: from,
+                i: [[start.x, start.y], [end.x, end.y]],
+                f: 0.0,
+                g: heuristic(from, to, [[start.x, start.y], [end.x, end.y]]),
+            })
+        }
+
+        let mut queue = BinaryHeap::new();
+        for node in to_add {
+            queue.push(node);
+        }
+
+        distance_between(from, to)
     }
+}
+
+fn on_left_side(point: [f32; 2], i: [[f32; 2]; 2]) -> bool {
+    ((point[1] - i[0][1]) * (i[1][0] - i[0][0]) - (point[0] - i[0][0]) * (i[1][1] - i[0][1]))
+        .is_sign_positive()
+}
+
+// i should be counterclockwise from r
+fn heuristic(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> f32 {
+    let to = if on_left_side(r, i) == on_left_side(to, i) {
+        mirror(to, i)
+    } else {
+        to
+    };
+    if !on_left_side(to, [r, i[0]]) {
+        distance_between(r, i[0]) + distance_between(i[0], to)
+    } else if on_left_side(to, [r, i[1]]) {
+        distance_between(r, i[1]) + distance_between(i[1], to)
+    } else {
+        distance_between(r, to)
+    }
+}
+
+fn mirror(p: [f32; 2], i: [[f32; 2]; 2]) -> [f32; 2] {
+    let dx = i[1][0] - i[0][0];
+    let dy = i[1][1] - i[0][1];
+
+    let a = (dx * dx - dy * dy) / (dx * dx + dy * dy);
+    let b = 2.0 * dx * dy / (dx * dx + dy * dy);
+
+    let x2 = a * (p[0] - i[0][0]) + b * (p[1] - i[0][1]) + i[0][0];
+    let y2 = b * (p[0] - i[0][0]) - a * (p[1] - i[0][1]) + i[0][1];
+
+    [x2, y2]
 }
 
 impl Mesh {
@@ -79,14 +136,36 @@ impl Mesh {
     }
 }
 
+#[derive(PartialEq)]
 pub struct SearchNode {
+    pub path: Vec<[f32; 2]>,
     pub r: [f32; 2],
     pub i: [[f32; 2]; 2],
+    pub f: f32,
+    pub g: f32,
+}
+
+fn distance_between(from: [f32; 2], to: [f32; 2]) -> f32 {
+    ((to[0] - from[0]).powi(2) + (to[1] - from[1]).powi(2)).sqrt()
+}
+
+impl PartialOrd for SearchNode {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Eq for SearchNode {}
+
+impl Ord for SearchNode {
+    fn cmp(&self, other: &Self) -> Ordering {
+        (self.f + self.g).total_cmp(&(other.f + other.g))
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{Mesh, Polygon, Vertex};
+    use crate::{heuristic, mirror, on_left_side, Mesh, Polygon, Vertex};
 
     #[test]
     fn point_in_polygon() {
@@ -107,5 +186,39 @@ mod tests {
         assert_eq!(mesh.point_in_polygon([0.5, 0.5]), 0);
         assert_eq!(mesh.point_in_polygon([1.5, 0.5]), 1);
         assert_eq!(mesh.point_in_polygon([0.5, 1.5]), usize::MAX);
+    }
+
+    #[test]
+    fn test_on_left_side() {
+        assert!(on_left_side([0.0, 0.5], [[0.0, 0.0], [1.0, 0.0]]));
+        assert!(!on_left_side([0.0, -0.5], [[0.0, 0.0], [1.0, 0.0]]));
+        assert!(!on_left_side([1.0, 0.0], [[0.0, 0.0], [1.0, 1.0]]));
+        assert!(on_left_side([0.0, 1.0], [[0.0, 0.0], [1.0, 1.0]]));
+    }
+
+    #[test]
+    fn test_mirror() {
+        assert_eq!(mirror([1.0, 0.0], [[0.0, 0.0], [0.0, 1.0]]), [-1.0, 0.0]);
+        assert_eq!(mirror([-1.0, 0.0], [[0.0, 0.0], [0.0, 1.0]]), [1.0, 0.0]);
+    }
+
+    #[test]
+    fn test_heuristic() {
+        assert_eq!(
+            heuristic([0.0, 0.0], [1.0, 1.0], [[1.0, 0.0], [0.0, 1.0]]),
+            2.0_f32.sqrt()
+        );
+        assert_eq!(
+            heuristic([0.0, 0.0], [2.0, -1.0], [[1.0, 0.0], [0.0, 1.0]]),
+            1.0 + 2.0_f32.sqrt()
+        );
+        assert_eq!(
+            heuristic([0.0, 0.0], [-1.0, 2.0], [[1.0, 0.0], [0.0, 1.0]]),
+            1.0 + 2.0_f32.sqrt()
+        );
+        assert_eq!(
+            heuristic([0.0, 0.0], [1.0, -1.0], [[1.0, 0.0], [0.0, 1.0]]),
+            2.0
+        );
     }
 }
