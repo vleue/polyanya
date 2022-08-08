@@ -52,17 +52,25 @@ pub struct Mesh {
 
 impl Mesh {
     pub fn path_len(&self, from: [f32; 2], to: [f32; 2]) -> f32 {
-        let starting_polygon = self.point_in_polygon(from);
-        let starting_polygon = self.polygons.get(starting_polygon).unwrap();
+        let starting_polygon_index = self.point_in_polygon(from);
+        let starting_polygon = self.polygons.get(starting_polygon_index).unwrap();
 
         let mut to_add = vec![];
         for edge in starting_polygon.edges_index() {
             let start = self.vertices.get(edge[0]).unwrap();
             let end = self.vertices.get(edge[1]).unwrap();
+            let mut other_side = isize::MAX;
+            for i in &start.polygons {
+                if *i != -1 && *i != starting_polygon_index as isize && end.polygons.contains(i) {
+                    other_side = *i;
+                }
+            }
             to_add.push(SearchNode {
                 path: vec![],
                 r: from,
                 i: [[start.x, start.y], [end.x, end.y]],
+                polygon_from: starting_polygon_index as isize,
+                polygon_to: other_side,
                 f: 0.0,
                 g: heuristic(from, to, [[start.x, start.y], [end.x, end.y]]),
             })
@@ -152,6 +160,8 @@ pub struct SearchNode {
     pub path: Vec<[f32; 2]>,
     pub r: [f32; 2],
     pub i: [[f32; 2]; 2],
+    pub polygon_from: isize,
+    pub polygon_to: isize,
     pub f: f32,
     pub g: f32,
 }
