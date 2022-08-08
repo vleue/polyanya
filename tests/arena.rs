@@ -223,7 +223,7 @@ fn first_test() {
 
     assert_eq!(arena.path_len([1.0, 11.0], [1.0, 12.0]), 1.0);
     assert_eq!(arena.path_len([1.0, 12.0], [1.0, 10.0]), 2.0);
-    assert_eq!(arena.path_len([1.0, 13.0], [4.0, 12.0]), 3.41421);
+    assert_eq!(arena.path_len([1.0, 13.0], [4.0, 12.0]), 3.1622777);
     assert_eq!(arena.path_len([1.0, 3.0], [3.0, 1.0]), 3.41421);
     assert_eq!(arena.path_len([1.0, 3.0], [4.0, 3.0]), 3.0);
     assert_eq!(arena.path_len([1.0, 4.0], [4.0, 2.0]), 3.82843);
