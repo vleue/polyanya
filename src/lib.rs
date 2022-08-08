@@ -77,21 +77,33 @@ impl Mesh {
     }
 }
 
-fn on_left_side(point: [f32; 2], i: [[f32; 2]; 2]) -> bool {
-    ((point[1] - i[0][1]) * (i[1][0] - i[0][0]) - (point[0] - i[0][0]) * (i[1][1] - i[0][1]))
-        .is_sign_positive()
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+enum EdgeSide {
+    Left,
+    Right,
+    Edge,
+}
+
+fn on_side(point: [f32; 2], i: [[f32; 2]; 2]) -> EdgeSide {
+    let side =
+        (point[1] - i[0][1]) * (i[1][0] - i[0][0]) - (point[0] - i[0][0]) * (i[1][1] - i[0][1]);
+    match side {
+        x if x == 0.0 => EdgeSide::Edge,
+        x if x < 0.0 => EdgeSide::Right,
+        _ => EdgeSide::Left,
+    }
 }
 
 // i should be counterclockwise from r
 fn heuristic(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> f32 {
-    let to = if on_left_side(r, i) == on_left_side(to, i) {
+    let to = if on_side(r, i) == on_side(to, i) {
         mirror(to, i)
     } else {
         to
     };
-    if !on_left_side(to, [r, i[0]]) {
+    if on_side(to, [r, i[0]]) == EdgeSide::Right {
         distance_between(r, i[0]) + distance_between(i[0], to)
-    } else if on_left_side(to, [r, i[1]]) {
+    } else if on_side(to, [r, i[1]]) == EdgeSide::Left {
         distance_between(r, i[1]) + distance_between(i[1], to)
     } else {
         distance_between(r, to)
@@ -118,15 +130,14 @@ impl Mesh {
             for edge in polygon.edges_index() {
                 let last = self.vertices.get(edge[0]).unwrap();
                 let next = self.vertices.get(edge[1]).unwrap();
-                let current_side = (point[1] - last.y) * (next.x - last.x)
-                    - (point[0] - last.x) * (next.y - last.y);
-                if current_side == 0.0 {
+                let current_side = on_side(point, [[last.x, last.y], [next.x, next.y]]);
+                if current_side == EdgeSide::Edge {
                     return i;
                 }
                 if side.is_none() {
-                    side = Some(current_side.is_sign_positive());
+                    side = Some(current_side);
                 }
-                if side.unwrap() != current_side.is_sign_positive() {
+                if side.unwrap() != current_side {
                     continue 'polygons;
                 }
             }
@@ -165,7 +176,7 @@ impl Ord for SearchNode {
 
 #[cfg(test)]
 mod tests {
-    use crate::{heuristic, mirror, on_left_side, Mesh, Polygon, Vertex};
+    use crate::{heuristic, mirror, on_side, EdgeSide, Mesh, Polygon, Vertex};
 
     #[test]
     fn point_in_polygon() {
@@ -189,11 +200,27 @@ mod tests {
     }
 
     #[test]
-    fn test_on_left_side() {
-        assert!(on_left_side([0.0, 0.5], [[0.0, 0.0], [1.0, 0.0]]));
-        assert!(!on_left_side([0.0, -0.5], [[0.0, 0.0], [1.0, 0.0]]));
-        assert!(!on_left_side([1.0, 0.0], [[0.0, 0.0], [1.0, 1.0]]));
-        assert!(on_left_side([0.0, 1.0], [[0.0, 0.0], [1.0, 1.0]]));
+    fn test_on_side() {
+        assert_eq!(
+            on_side([0.0, 0.5], [[0.0, 0.0], [1.0, 0.0]]),
+            EdgeSide::Left
+        );
+        assert_eq!(
+            on_side([0.0, -0.5], [[0.0, 0.0], [1.0, 0.0]]),
+            EdgeSide::Right
+        );
+        assert_eq!(
+            on_side([1.0, 0.0], [[0.0, 0.0], [1.0, 1.0]]),
+            EdgeSide::Right
+        );
+        assert_eq!(
+            on_side([0.0, 1.0], [[0.0, 0.0], [1.0, 1.0]]),
+            EdgeSide::Left
+        );
+        assert_eq!(
+            on_side([2.0, 2.0], [[0.0, 0.0], [1.0, 1.0]]),
+            EdgeSide::Edge
+        );
     }
 
     #[test]
