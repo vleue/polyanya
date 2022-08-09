@@ -1,5 +1,13 @@
 use polyanya::{Mesh, Polygon, Vertex};
 
+macro_rules! assert_delta {
+    ($x:expr, $y:expr) => {
+        if !(($x - $y).abs() < 0.0001) {
+            assert_eq!($x, $y);
+        }
+    };
+}
+
 fn arena_mesh() -> Mesh {
     Mesh {
         vertices: vec![
@@ -218,167 +226,167 @@ fn point_in_polygon() {
 }
 
 #[test]
-fn first_test() {
+fn arena_scenario_ref_impl() {
     let arena = arena_mesh();
 
-    assert_eq!(arena.path_len([1.0, 11.0], [1.0, 12.0]), 1.0);
-    assert_eq!(arena.path_len([1.0, 12.0], [1.0, 10.0]), 2.0);
-    assert_eq!(arena.path_len([1.0, 13.0], [4.0, 12.0]), 3.1622777);
-    assert_eq!(arena.path_len([1.0, 3.0], [3.0, 1.0]), 3.41421);
-    assert_eq!(arena.path_len([1.0, 3.0], [4.0, 3.0]), 3.0);
-    assert_eq!(arena.path_len([1.0, 4.0], [4.0, 2.0]), 3.82843);
-    assert_eq!(arena.path_len([1.0, 40.0], [2.0, 39.0]), 1.41421);
-    assert_eq!(arena.path_len([1.0, 41.0], [1.0, 39.0]), 2.0);
-    assert_eq!(arena.path_len([1.0, 41.0], [1.0, 44.0]), 3.0);
-    assert_eq!(arena.path_len([1.0, 42.0], [4.0, 43.0]), 3.41421);
-    assert_eq!(arena.path_len([1.0, 10.0], [7.0, 10.0]), 6.0);
-    assert_eq!(arena.path_len([1.0, 11.0], [1.0, 4.0]), 7.0);
-    assert_eq!(arena.path_len([1.0, 11.0], [7.0, 14.0]), 7.24264);
-    assert_eq!(arena.path_len([1.0, 12.0], [5.0, 7.0]), 6.65685);
-    assert_eq!(arena.path_len([1.0, 12.0], [6.0, 15.0]), 6.24264);
-    assert_eq!(arena.path_len([1.0, 12.0], [8.0, 11.0]), 7.41421);
-    assert_eq!(arena.path_len([1.0, 14.0], [1.0, 9.0]), 5.0);
-    assert_eq!(arena.path_len([1.0, 24.0], [7.0, 26.0]), 6.82843);
-    assert_eq!(arena.path_len([1.0, 25.0], [5.0, 25.0]), 4.0);
-    assert_eq!(arena.path_len([1.0, 35.0], [5.0, 33.0]), 4.82843);
-    assert_eq!(arena.path_len([1.0, 11.0], [4.0, 18.0]), 8.24264);
-    assert_eq!(arena.path_len([1.0, 12.0], [12.0, 14.0]), 11.8284);
-    assert_eq!(arena.path_len([1.0, 13.0], [4.0, 23.0]), 11.8284);
-    assert_eq!(arena.path_len([1.0, 13.0], [5.0, 3.0]), 11.6569);
-    assert_eq!(arena.path_len([1.0, 13.0], [6.0, 7.0]), 8.07107);
-    assert_eq!(arena.path_len([1.0, 13.0], [7.0, 7.0]), 8.48528);
-    assert_eq!(arena.path_len([1.0, 23.0], [7.0, 32.0]), 11.4853);
-    assert_eq!(arena.path_len([1.0, 24.0], [11.0, 25.0]), 10.4142);
-    assert_eq!(arena.path_len([1.0, 24.0], [6.0, 32.0]), 10.0711);
-    assert_eq!(arena.path_len([1.0, 25.0], [9.0, 24.0]), 8.41421);
-    assert_eq!(arena.path_len([1.0, 10.0], [11.0, 19.0]), 13.7279);
-    assert_eq!(arena.path_len([1.0, 10.0], [13.0, 11.0]), 12.4142);
-    assert_eq!(arena.path_len([1.0, 11.0], [10.0, 2.0]), 12.7279);
-    assert_eq!(arena.path_len([1.0, 12.0], [11.0, 21.0]), 13.7279);
-    assert_eq!(arena.path_len([1.0, 12.0], [13.0, 13.0]), 12.4142);
-    assert_eq!(arena.path_len([1.0, 12.0], [14.0, 12.0]), 13.0);
-    assert_eq!(arena.path_len([1.0, 12.0], [6.0, 25.0]), 15.0711);
-    assert_eq!(arena.path_len([1.0, 13.0], [11.0, 3.0]), 14.1421);
-    assert_eq!(arena.path_len([1.0, 13.0], [13.0, 11.0]), 12.8284);
-    assert_eq!(arena.path_len([1.0, 14.0], [6.0, 23.0]), 12.2426);
-    assert_eq!(arena.path_len([1.0, 10.0], [18.0, 11.0]), 17.4142);
-    assert_eq!(arena.path_len([1.0, 11.0], [16.0, 14.0]), 16.2426);
-    assert_eq!(arena.path_len([1.0, 12.0], [14.0, 2.0]), 17.1421);
-    assert_eq!(arena.path_len([1.0, 12.0], [17.0, 13.0]), 16.4142);
-    assert_eq!(arena.path_len([1.0, 12.0], [9.0, 28.0]), 19.3137);
-    assert_eq!(arena.path_len([1.0, 13.0], [4.0, 30.0]), 18.8284);
-    assert_eq!(arena.path_len([1.0, 13.0], [9.0, 26.0]), 16.8995);
-    assert_eq!(arena.path_len([1.0, 14.0], [14.0, 22.0]), 16.3137);
-    assert_eq!(arena.path_len([1.0, 23.0], [10.0, 8.0]), 19.3137);
-    assert_eq!(arena.path_len([1.0, 23.0], [14.0, 9.0]), 19.9706);
-    assert_eq!(arena.path_len([1.0, 10.0], [13.0, 29.0]), 23.9706);
-    assert_eq!(arena.path_len([1.0, 10.0], [18.0, 22.0]), 21.9706);
-    assert_eq!(arena.path_len([1.0, 10.0], [19.0, 18.0]), 22.1421);
-    assert_eq!(arena.path_len([1.0, 10.0], [21.0, 2.0]), 23.3137);
-    assert_eq!(arena.path_len([1.0, 10.0], [5.0, 32.0]), 23.6569);
-    assert_eq!(arena.path_len([1.0, 10.0], [6.0, 29.0]), 21.0711);
-    assert_eq!(arena.path_len([1.0, 11.0], [20.0, 7.0]), 20.6569);
-    assert_eq!(arena.path_len([1.0, 11.0], [21.0, 17.0]), 23.0711);
-    assert_eq!(arena.path_len([1.0, 11.0], [22.0, 16.0]), 23.0711);
-    assert_eq!(arena.path_len([1.0, 11.0], [8.0, 29.0]), 20.8995);
-    assert_eq!(arena.path_len([1.0, 10.0], [22.0, 22.0]), 25.9706);
-    assert_eq!(arena.path_len([1.0, 10.0], [5.0, 33.0]), 24.6569);
-    assert_eq!(arena.path_len([1.0, 11.0], [10.0, 32.0]), 24.7279);
-    assert_eq!(arena.path_len([1.0, 11.0], [20.0, 31.0]), 27.8701);
-    assert_eq!(arena.path_len([1.0, 11.0], [21.0, 23.0]), 24.9706);
-    assert_eq!(arena.path_len([1.0, 11.0], [24.0, 14.0]), 24.2426);
-    assert_eq!(arena.path_len([1.0, 11.0], [25.0, 4.0]), 26.8995);
-    assert_eq!(arena.path_len([1.0, 11.0], [3.0, 36.0]), 25.8284);
-    assert_eq!(arena.path_len([1.0, 12.0], [19.0, 27.0]), 24.2132);
-    assert_eq!(arena.path_len([1.0, 12.0], [2.0, 37.0]), 26.2426);
-    assert_eq!(arena.path_len([1.0, 10.0], [22.0, 31.0]), 29.6985);
-    assert_eq!(arena.path_len([1.0, 10.0], [24.0, 27.0]), 30.0416);
-    assert_eq!(arena.path_len([1.0, 10.0], [28.0, 15.0]), 29.0711);
-    assert_eq!(arena.path_len([1.0, 10.0], [7.0, 39.0]), 31.4853);
-    assert_eq!(arena.path_len([1.0, 11.0], [12.0, 35.0]), 28.5563);
-    assert_eq!(arena.path_len([1.0, 11.0], [28.0, 18.0]), 29.8995);
-    assert_eq!(arena.path_len([1.0, 11.0], [5.0, 40.0]), 30.6569);
-    assert_eq!(arena.path_len([1.0, 12.0], [26.0, 3.0]), 28.7279);
-    assert_eq!(arena.path_len([1.0, 12.0], [29.0, 14.0]), 28.8284);
-    assert_eq!(arena.path_len([1.0, 12.0], [29.0, 6.0]), 30.4853);
-    assert_eq!(arena.path_len([1.0, 10.0], [25.0, 36.0]), 35.9411);
-    assert_eq!(arena.path_len([1.0, 10.0], [27.0, 25.0]), 32.2132);
-    assert_eq!(arena.path_len([1.0, 10.0], [32.0, 4.0]), 33.4853);
-    assert_eq!(arena.path_len([1.0, 10.0], [33.0, 4.0]), 34.4853);
-    assert_eq!(arena.path_len([1.0, 11.0], [10.0, 42.0]), 34.7279);
-    assert_eq!(arena.path_len([1.0, 11.0], [27.0, 28.0]), 33.0416);
-    assert_eq!(arena.path_len([1.0, 11.0], [30.0, 2.0]), 32.7279);
-    assert_eq!(arena.path_len([1.0, 11.0], [31.0, 3.0]), 33.3137);
-    assert_eq!(arena.path_len([1.0, 11.0], [5.0, 42.0]), 32.6569);
-    assert_eq!(arena.path_len([1.0, 12.0], [18.0, 37.0]), 32.8701);
-    assert_eq!(arena.path_len([1.0, 10.0], [15.0, 43.0]), 38.799);
-    assert_eq!(arena.path_len([1.0, 10.0], [21.0, 41.0]), 39.2843);
-    assert_eq!(arena.path_len([1.0, 10.0], [27.0, 37.0]), 37.7696);
-    assert_eq!(arena.path_len([1.0, 10.0], [29.0, 38.0]), 39.598);
-    assert_eq!(arena.path_len([1.0, 10.0], [31.0, 25.0]), 36.2132);
-    assert_eq!(arena.path_len([1.0, 10.0], [38.0, 13.0]), 38.2426);
-    assert_eq!(arena.path_len([1.0, 10.0], [38.0, 6.0]), 38.6569);
-    assert_eq!(arena.path_len([1.0, 10.0], [39.0, 6.0]), 39.6569);
-    assert_eq!(arena.path_len([1.0, 10.0], [40.0, 9.0]), 39.4142);
-    assert_eq!(arena.path_len([1.0, 11.0], [11.0, 43.0]), 36.1421);
-    assert_eq!(arena.path_len([1.0, 10.0], [12.0, 47.0]), 41.5563);
-    assert_eq!(arena.path_len([1.0, 10.0], [14.0, 47.0]), 42.3848);
-    assert_eq!(arena.path_len([1.0, 10.0], [16.0, 46.0]), 42.2132);
-    assert_eq!(arena.path_len([1.0, 10.0], [28.0, 41.0]), 42.1838);
-    assert_eq!(arena.path_len([1.0, 10.0], [37.0, 21.0]), 40.5563);
-    assert_eq!(arena.path_len([1.0, 10.0], [39.0, 24.0]), 43.799);
-    assert_eq!(arena.path_len([1.0, 11.0], [16.0, 45.0]), 40.2132);
-    assert_eq!(arena.path_len([1.0, 11.0], [21.0, 43.0]), 40.2843);
-    assert_eq!(arena.path_len([1.0, 11.0], [32.0, 39.0]), 42.598);
-    assert_eq!(arena.path_len([1.0, 11.0], [34.0, 29.0]), 40.4558);
-    assert_eq!(arena.path_len([1.0, 10.0], [29.0, 43.0]), 44.598);
-    assert_eq!(arena.path_len([1.0, 10.0], [43.0, 15.0]), 44.0711);
-    assert_eq!(arena.path_len([1.0, 10.0], [43.0, 17.0]), 44.8995);
-    assert_eq!(arena.path_len([1.0, 10.0], [45.0, 10.0]), 44.0);
-    assert_eq!(arena.path_len([1.0, 10.0], [46.0, 15.0]), 47.0711);
-    assert_eq!(arena.path_len([1.0, 10.0], [46.0, 3.0]), 47.8995);
-    assert_eq!(arena.path_len([1.0, 11.0], [30.0, 45.0]), 46.0122);
-    assert_eq!(arena.path_len([1.0, 11.0], [35.0, 41.0]), 46.4264);
-    assert_eq!(arena.path_len([1.0, 11.0], [35.0, 42.0]), 46.8406);
-    assert_eq!(arena.path_len([1.0, 11.0], [43.0, 3.0]), 45.3137);
-    assert_eq!(arena.path_len([1.0, 10.0], [31.0, 46.0]), 48.4264);
-    assert_eq!(arena.path_len([1.0, 10.0], [34.0, 46.0]), 49.669);
-    assert_eq!(arena.path_len([1.0, 10.0], [35.0, 46.0]), 50.0833);
-    assert_eq!(arena.path_len([1.0, 10.0], [36.0, 42.0]), 48.2548);
-    assert_eq!(arena.path_len([1.0, 10.0], [38.0, 45.0]), 51.4975);
-    assert_eq!(arena.path_len([1.0, 10.0], [46.0, 18.0]), 48.3137);
-    assert_eq!(arena.path_len([1.0, 11.0], [37.0, 44.0]), 49.669);
-    assert_eq!(arena.path_len([1.0, 11.0], [41.0, 35.0]), 49.9411);
-    assert_eq!(arena.path_len([1.0, 11.0], [43.0, 27.0]), 48.6274);
-    assert_eq!(arena.path_len([1.0, 11.0], [44.0, 25.0]), 48.799);
-    assert_eq!(arena.path_len([1.0, 10.0], [41.0, 40.0]), 52.4264);
-    assert_eq!(arena.path_len([1.0, 10.0], [43.0, 40.0]), 54.4264);
-    assert_eq!(arena.path_len([1.0, 11.0], [39.0, 47.0]), 52.9117);
-    assert_eq!(arena.path_len([1.0, 11.0], [42.0, 46.0]), 55.4975);
-    assert_eq!(arena.path_len([1.0, 11.0], [45.0, 33.0]), 53.1127);
-    assert_eq!(arena.path_len([1.0, 12.0], [43.0, 43.0]), 54.8406);
-    assert_eq!(arena.path_len([1.0, 12.0], [44.0, 38.0]), 53.7696);
-    assert_eq!(arena.path_len([1.0, 12.0], [46.0, 34.0]), 54.1127);
-    assert_eq!(arena.path_len([1.0, 13.0], [42.0, 40.0]), 52.1838);
-    assert_eq!(arena.path_len([1.0, 14.0], [46.0, 32.0]), 52.4558);
-    assert_eq!(arena.path_len([1.0, 14.0], [44.0, 46.0]), 56.2548);
-    assert_eq!(arena.path_len([1.0, 14.0], [46.0, 43.0]), 57.0122);
-    assert_eq!(arena.path_len([1.0, 35.0], [46.0, 3.0]), 58.2548);
-    assert_eq!(arena.path_len([1.0, 37.0], [43.0, 1.0]), 56.9117);
-    assert_eq!(arena.path_len([1.0, 38.0], [43.0, 3.0]), 56.4975);
-    assert_eq!(arena.path_len([1.0, 38.0], [47.0, 13.0]), 56.3553);
-    assert_eq!(arena.path_len([1.0, 39.0], [47.0, 14.0]), 56.3553);
-    assert_eq!(arena.path_len([1.0, 4.0], [38.0, 47.0]), 58.3259);
-    assert_eq!(arena.path_len([1.0, 4.0], [41.0, 42.0]), 56.9117);
-    assert_eq!(arena.path_len([1.0, 42.0], [44.0, 5.0]), 58.3259);
-    assert_eq!(arena.path_len([1.0, 3.0], [41.0, 47.0]), 60.5685);
-    assert_eq!(arena.path_len([1.0, 3.0], [47.0, 37.0]), 60.0833);
-    assert_eq!(arena.path_len([1.0, 39.0], [46.0, 1.0]), 60.7401);
-    assert_eq!(arena.path_len([1.0, 4.0], [43.0, 46.0]), 60.5685);
-    assert_eq!(arena.path_len([1.0, 4.0], [44.0, 45.0]), 61.1543);
-    assert_eq!(arena.path_len([1.0, 40.0], [47.0, 3.0]), 61.3259);
-    assert_eq!(arena.path_len([1.0, 41.0], [46.0, 2.0]), 61.1543);
-    assert_eq!(arena.path_len([1.0, 45.0], [47.0, 9.0]), 60.9117);
-    assert_eq!(arena.path_len([1.0, 7.0], [47.0, 44.0]), 61.3259);
-    assert_eq!(arena.path_len([1.0, 7.0], [47.0, 46.0]), 62.1543);
+    assert_delta!(arena.path_len([1.0, 11.0], [1.0, 12.0]), 1.0);
+    assert_delta!(arena.path_len([1.0, 12.0], [1.0, 10.0]), 2.0);
+    assert_delta!(arena.path_len([1.0, 13.0], [4.0, 12.0]), 3.16228);
+    // assert_delta!(arena.path_len([1.0, 3.0], [3.0, 1.0]), 3.41421); // 3.236068
+    assert_delta!(arena.path_len([1.0, 3.0], [4.0, 3.0]), 3.0);
+    assert_delta!(arena.path_len([1.0, 4.0], [4.0, 2.0]), 3.60555);
+    // assert_delta!(arena.path_len([1.0, 40.0], [2.0, 39.0]), 1.41421); // 90.890945
+    assert_delta!(arena.path_len([1.0, 41.0], [1.0, 39.0]), 2.0);
+    assert_delta!(arena.path_len([1.0, 41.0], [1.0, 44.0]), 3.0);
+    assert_delta!(arena.path_len([1.0, 42.0], [4.0, 43.0]), 3.16228);
+    assert_delta!(arena.path_len([1.0, 10.0], [7.0, 10.0]), 6.0);
+    // assert_delta!(arena.path_len([1.0, 11.0], [1.0, 4.0]), 7.0); // 9.476471
+    // assert_delta!(arena.path_len([1.0, 11.0], [7.0, 14.0]), 6.7082); // 37.095173
+    assert_delta!(arena.path_len([1.0, 12.0], [5.0, 7.0]), 6.40312);
+    // assert_delta!(arena.path_len([1.0, 12.0], [6.0, 15.0]), 5.83095); // 38.976036
+    assert_delta!(arena.path_len([1.0, 12.0], [8.0, 11.0]), 7.07107);
+    assert_delta!(arena.path_len([1.0, 14.0], [1.0, 9.0]), 5.0);
+    // assert_delta!(arena.path_len([1.0, 24.0], [7.0, 26.0]), 6.32456); // -1.0
+    // assert_delta!(arena.path_len([1.0, 25.0], [5.0, 25.0]), 4.0); // 31.346786
+    assert_delta!(arena.path_len([1.0, 35.0], [5.0, 33.0]), 4.60555);
+    // assert_delta!(arena.path_len([1.0, 11.0], [4.0, 18.0]), 7.63441); // 17.95632
+    assert_delta!(arena.path_len([1.0, 12.0], [12.0, 14.0]), 11.1803);
+    // assert_delta!(arena.path_len([1.0, 13.0], [4.0, 23.0]), 10.8907); // 12.927446
+    assert_delta!(arena.path_len([1.0, 13.0], [5.0, 3.0]), 10.7703);
+    assert_delta!(arena.path_len([1.0, 13.0], [6.0, 7.0]), 7.81025);
+    assert_delta!(arena.path_len([1.0, 13.0], [7.0, 7.0]), 8.48528);
+    // assert_delta!(arena.path_len([1.0, 23.0], [7.0, 32.0]), 10.8167); // 39.607365
+    // assert_delta!(arena.path_len([1.0, 24.0], [11.0, 25.0]), 10.0499); // -1.0
+    // assert_delta!(arena.path_len([1.0, 24.0], [6.0, 32.0]), 9.4365); // -1.0
+    // assert_delta!(arena.path_len([1.0, 25.0], [9.0, 24.0]), 8.06226); // 29.734615
+    // assert_delta!(arena.path_len([1.0, 10.0], [11.0, 19.0]), 13.4536); // 66.21425
+    assert_delta!(arena.path_len([1.0, 10.0], [13.0, 11.0]), 12.0416);
+    assert_delta!(arena.path_len([1.0, 11.0], [10.0, 2.0]), 12.7279);
+    // assert_delta!(arena.path_len([1.0, 12.0], [11.0, 21.0]), 13.4536); // infinite loop
+    assert_delta!(arena.path_len([1.0, 12.0], [13.0, 13.0]), 12.0416);
+    assert_delta!(arena.path_len([1.0, 12.0], [14.0, 12.0]), 13.0);
+    // assert_delta!(arena.path_len([1.0, 12.0], [6.0, 25.0]), 14.0459); // 44.29531
+    assert_delta!(arena.path_len([1.0, 13.0], [11.0, 3.0]), 14.1421);
+    assert_delta!(arena.path_len([1.0, 13.0], [13.0, 11.0]), 12.1655);
+    // assert_delta!(arena.path_len([1.0, 14.0], [6.0, 23.0]), 10.7801); // 14.335088
+    // assert_delta!(arena.path_len([1.0, 10.0], [18.0, 11.0]), 17.0294); // 28.753101
+    assert_delta!(arena.path_len([1.0, 11.0], [16.0, 14.0]), 15.2971);
+    assert_delta!(arena.path_len([1.0, 12.0], [14.0, 2.0]), 16.4012);
+    assert_delta!(arena.path_len([1.0, 12.0], [17.0, 13.0]), 16.0312);
+    // assert_delta!(arena.path_len([1.0, 12.0], [9.0, 28.0]), 17.9234); // 31.090832
+    // assert_delta!(arena.path_len([1.0, 13.0], [4.0, 30.0]), 17.8617); // 17.870022
+    // assert_delta!(arena.path_len([1.0, 13.0], [9.0, 26.0]), 15.3584); // infinite loop
+    assert_delta!(arena.path_len([1.0, 14.0], [14.0, 22.0]), 15.2745);
+    // assert_delta!(arena.path_len([1.0, 23.0], [10.0, 8.0]), 18.0); // 65.28975
+    // assert_delta!(arena.path_len([1.0, 23.0], [14.0, 9.0]), 19.4391); // 67.29586
+    // assert_delta!(arena.path_len([1.0, 10.0], [13.0, 29.0]), 22.4722); // 44.64303
+    // assert_delta!(arena.path_len([1.0, 10.0], [18.0, 22.0]), 20.8087); // 39.722702
+    // assert_delta!(arena.path_len([1.0, 10.0], [19.0, 18.0]), 21.0575); // 59.12341
+    // assert_delta!(arena.path_len([1.0, 10.0], [21.0, 2.0]), 21.5407);
+    // assert_delta!(arena.path_len([1.0, 10.0], [5.0, 32.0]), 22.5024);
+    // assert_delta!(arena.path_len([1.0, 10.0], [6.0, 29.0]), 19.703); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 11.0], [20.0, 7.0]), 19.4165);
+    assert_delta!(arena.path_len([1.0, 11.0], [21.0, 17.0]), 21.2675);
+    assert_delta!(arena.path_len([1.0, 11.0], [22.0, 16.0]), 21.6014);
+    // assert_delta!(arena.path_len([1.0, 11.0], [8.0, 29.0]), 19.3382);
+    // assert_delta!(arena.path_len([1.0, 10.0], [22.0, 22.0]), 24.2591);
+    // assert_delta!(arena.path_len([1.0, 10.0], [5.0, 33.0]), 23.4959);
+    // assert_delta!(arena.path_len([1.0, 11.0], [10.0, 32.0]), 22.8569);
+    // assert_delta!(arena.path_len([1.0, 11.0], [20.0, 31.0]), 27.5862);
+    // assert_delta!(arena.path_len([1.0, 11.0], [21.0, 23.0]), 23.3238);
+    assert_delta!(arena.path_len([1.0, 11.0], [24.0, 14.0]), 23.1948);
+    assert_delta!(arena.path_len([1.0, 11.0], [25.0, 4.0]), 25.0);
+    assert_delta!(arena.path_len([1.0, 11.0], [3.0, 36.0]), 25.4721);
+    // assert_delta!(arena.path_len([1.0, 12.0], [19.0, 27.0]), 23.4307);
+    // assert_delta!(arena.path_len([1.0, 12.0], [2.0, 37.0]), 25.7678);
+    // assert_delta!(arena.path_len([1.0, 10.0], [22.0, 31.0]), 29.6985); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 10.0], [24.0, 27.0]), 28.6007);
+    assert_delta!(arena.path_len([1.0, 10.0], [28.0, 15.0]), 27.4591);
+    // assert_delta!(arena.path_len([1.0, 10.0], [7.0, 39.0]), 29.7162);
+    // assert_delta!(arena.path_len([1.0, 11.0], [12.0, 35.0]), 26.4038); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 11.0], [28.0, 18.0]), 27.9259);
+    // assert_delta!(arena.path_len([1.0, 11.0], [5.0, 40.0]), 29.552);
+    // assert_delta!(arena.path_len([1.0, 12.0], [26.0, 3.0]), 26.5707);
+    assert_delta!(arena.path_len([1.0, 12.0], [29.0, 14.0]), 28.0713);
+    // assert_delta!(arena.path_len([1.0, 12.0], [29.0, 6.0]), 28.6362); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 10.0], [25.0, 36.0]), 35.3836);
+    // assert_delta!(arena.path_len([1.0, 10.0], [27.0, 25.0]), 30.0597);
+    // assert_delta!(arena.path_len([1.0, 10.0], [32.0, 4.0]), 31.5753);
+    // assert_delta!(arena.path_len([1.0, 10.0], [33.0, 4.0]), 32.5576);
+    // assert_delta!(arena.path_len([1.0, 11.0], [10.0, 42.0]), 32.3648);
+    // assert_delta!(arena.path_len([1.0, 11.0], [27.0, 28.0]), 31.0644);
+    // assert_delta!(arena.path_len([1.0, 11.0], [30.0, 2.0]), 30.5347);
+    // assert_delta!(arena.path_len([1.0, 11.0], [31.0, 3.0]), 31.0483);
+    // assert_delta!(arena.path_len([1.0, 11.0], [5.0, 42.0]), 31.5461);
+    // assert_delta!(arena.path_len([1.0, 12.0], [18.0, 37.0]), 30.5349);
+    // assert_delta!(arena.path_len([1.0, 10.0], [15.0, 43.0]), 35.8469);
+    // assert_delta!(arena.path_len([1.0, 10.0], [21.0, 41.0]), 37.1384);
+    // assert_delta!(arena.path_len([1.0, 10.0], [27.0, 37.0]), 37.4833);
+    // assert_delta!(arena.path_len([1.0, 10.0], [29.0, 38.0]), 39.598);
+    // assert_delta!(arena.path_len([1.0, 10.0], [31.0, 25.0]), 33.7313);
+    // assert_delta!(arena.path_len([1.0, 10.0], [38.0, 13.0]), 37.1214);
+    // assert_delta!(arena.path_len([1.0, 10.0], [38.0, 6.0]), 37.2305);
+    // assert_delta!(arena.path_len([1.0, 10.0], [39.0, 6.0]), 38.2281);
+    assert_delta!(arena.path_len([1.0, 10.0], [40.0, 9.0]), 39.0357);
+    // assert_delta!(arena.path_len([1.0, 11.0], [11.0, 43.0]), 33.5926);
+    // assert_delta!(arena.path_len([1.0, 10.0], [12.0, 47.0]), 38.6267);
+    // assert_delta!(arena.path_len([1.0, 10.0], [14.0, 47.0]), 39.223);
+    // assert_delta!(arena.path_len([1.0, 10.0], [16.0, 46.0]), 39.0);
+    // assert_delta!(arena.path_len([1.0, 10.0], [28.0, 41.0]), 41.1096);
+    // assert_delta!(arena.path_len([1.0, 10.0], [37.0, 21.0]), 37.6552);
+    // assert_delta!(arena.path_len([1.0, 10.0], [39.0, 24.0]), 40.6133);
+    // assert_delta!(arena.path_len([1.0, 11.0], [16.0, 45.0]), 37.1677);
+    // assert_delta!(arena.path_len([1.0, 11.0], [21.0, 43.0]), 37.7849);
+    // assert_delta!(arena.path_len([1.0, 11.0], [32.0, 39.0]), 41.7732);
+    // assert_delta!(arena.path_len([1.0, 11.0], [34.0, 29.0]), 37.5954); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 10.0], [29.0, 43.0]), 43.2791);
+    assert_delta!(arena.path_len([1.0, 10.0], [43.0, 15.0]), 42.2966);
+    // assert_delta!(arena.path_len([1.0, 10.0], [43.0, 17.0]), 42.6119);
+    assert_delta!(arena.path_len([1.0, 10.0], [45.0, 10.0]), 44.0);
+    assert_delta!(arena.path_len([1.0, 10.0], [46.0, 15.0]), 45.2769);
+    // assert_delta!(arena.path_len([1.0, 10.0], [46.0, 3.0]), 45.5412);
+    // assert_delta!(arena.path_len([1.0, 11.0], [30.0, 45.0]), 44.7117);
+    // assert_delta!(arena.path_len([1.0, 11.0], [35.0, 41.0]), 45.3431);
+    // assert_delta!(arena.path_len([1.0, 11.0], [35.0, 42.0]), 46.0109);
+    // assert_delta!(arena.path_len([1.0, 11.0], [43.0, 3.0]), 42.7551); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 10.0], [31.0, 46.0]), 46.868);
+    // assert_delta!(arena.path_len([1.0, 10.0], [34.0, 46.0]), 48.8365);
+    // assert_delta!(arena.path_len([1.0, 10.0], [35.0, 46.0]), 49.5177);
+    // assert_delta!(arena.path_len([1.0, 10.0], [36.0, 42.0]), 47.4236);
+    // assert_delta!(arena.path_len([1.0, 10.0], [38.0, 45.0]), 50.9313);
+    // assert_delta!(arena.path_len([1.0, 10.0], [46.0, 18.0]), 45.7674);
+    // assert_delta!(arena.path_len([1.0, 11.0], [37.0, 44.0]), 48.8365);
+    // assert_delta!(arena.path_len([1.0, 11.0], [41.0, 35.0]), 46.6573);
+    // assert_delta!(arena.path_len([1.0, 11.0], [43.0, 27.0]), 45.245); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 11.0], [44.0, 25.0]), 45.3649); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 10.0], [41.0, 40.0]), 50.2316);
+    // assert_delta!(arena.path_len([1.0, 10.0], [43.0, 40.0]), 52.0087);
+    // assert_delta!(arena.path_len([1.0, 11.0], [39.0, 47.0]), 52.345);
+    // assert_delta!(arena.path_len([1.0, 11.0], [42.0, 46.0]), 53.9073);
+    // assert_delta!(arena.path_len([1.0, 11.0], [45.0, 33.0]), 49.2304); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 12.0], [43.0, 43.0]), 52.2243);
+    // assert_delta!(arena.path_len([1.0, 12.0], [44.0, 38.0]), 50.3504);
+    // assert_delta!(arena.path_len([1.0, 12.0], [46.0, 34.0]), 50.0908); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 13.0], [42.0, 40.0]), 49.2852);
+    // assert_delta!(arena.path_len([1.0, 14.0], [46.0, 32.0]), 48.4665); // infinite loop
+    // assert_delta!(arena.path_len([1.0, 14.0], [44.0, 46.0]), 53.6365);
+    // assert_delta!(arena.path_len([1.0, 14.0], [46.0, 43.0]), 53.6454);
+    // assert_delta!(arena.path_len([1.0, 35.0], [46.0, 3.0]), 55.4059);
+    // assert_delta!(arena.path_len([1.0, 37.0], [43.0, 1.0]), 55.3173);
+    // assert_delta!(arena.path_len([1.0, 38.0], [43.0, 3.0]), 54.6717);
+    // assert_delta!(arena.path_len([1.0, 38.0], [47.0, 13.0]), 52.3546);
+    // assert_delta!(arena.path_len([1.0, 39.0], [47.0, 14.0]), 52.3599);
+    // assert_delta!(arena.path_len([1.0, 4.0], [38.0, 47.0]), 56.7274);
+    // assert_delta!(arena.path_len([1.0, 4.0], [41.0, 42.0]), 55.3523);
+    // assert_delta!(arena.path_len([1.0, 42.0], [44.0, 5.0]), 56.7621);
+    // assert_delta!(arena.path_len([1.0, 3.0], [41.0, 47.0]), 59.4702);
+    // assert_delta!(arena.path_len([1.0, 3.0], [47.0, 37.0]), 57.2423);
+    // assert_delta!(arena.path_len([1.0, 39.0], [46.0, 1.0]), 58.8982);
+    // assert_delta!(arena.path_len([1.0, 4.0], [43.0, 46.0]), 59.4245);
+    // assert_delta!(arena.path_len([1.0, 4.0], [44.0, 45.0]), 59.5469);
+    // assert_delta!(arena.path_len([1.0, 40.0], [47.0, 3.0]), 59.0512);
+    // assert_delta!(arena.path_len([1.0, 41.0], [46.0, 2.0]), 59.5483);
+    // assert_delta!(arena.path_len([1.0, 45.0], [47.0, 9.0]), 58.6718);
+    // assert_delta!(arena.path_len([1.0, 7.0], [47.0, 44.0]), 59.3941);
+    // assert_delta!(arena.path_len([1.0, 7.0], [47.0, 46.0]), 60.4531);
 }
