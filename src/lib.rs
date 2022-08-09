@@ -159,7 +159,7 @@ impl Mesh {
                     [node.r, node.i[0]],
                     [[start.x, start.y], [end.x, end.y]],
                 ) {
-                    first_intersect = Some(dbg!(intersect));
+                    first_intersect = Some(intersect);
                 }
             }
 
@@ -168,7 +168,7 @@ impl Mesh {
                     [node.r, node.i[1]],
                     [[start.x, start.y], [end.x, end.y]],
                 ) {
-                    second_intersect = Some(dbg!(intersect));
+                    second_intersect = Some(intersect);
                 }
             }
             // prune edges that don't have a polygon on the other side: cul de sac pruning
