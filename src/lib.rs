@@ -269,7 +269,7 @@ impl Ord for SearchNode {
 mod tests {
     use crate::{helpers::distance_between, Mesh, Polygon, SearchNode, Vertex};
 
-    fn test_mesh() -> Mesh {
+    fn mesh_u_grid() -> Mesh {
         Mesh {
             vertices: vec![
                 Vertex::new(0, 0, vec![0, -1]),
@@ -297,7 +297,7 @@ mod tests {
 
     #[test]
     fn point_in_polygon() {
-        let mesh = test_mesh();
+        let mesh = mesh_u_grid();
         assert_eq!(mesh.point_in_polygon([0.5, 0.5]), 0);
         assert_eq!(mesh.point_in_polygon([1.5, 0.5]), 1);
         assert_eq!(mesh.point_in_polygon([0.5, 1.5]), 3);
@@ -307,7 +307,7 @@ mod tests {
 
     #[test]
     fn successors_straight_line() {
-        let mesh = test_mesh();
+        let mesh = mesh_u_grid();
 
         let from = [0.1, 0.1];
         let to = [2.9, 0.9];
@@ -332,7 +332,7 @@ mod tests {
 
     #[test]
     fn successors_straight_line_reversed() {
-        let mesh = test_mesh();
+        let mesh = mesh_u_grid();
 
         let to = [0.1, 0.1];
         let from = [2.9, 0.9];
@@ -357,7 +357,7 @@ mod tests {
 
     #[test]
     fn successors_corner_first_step() {
-        let mesh = test_mesh();
+        let mesh = mesh_u_grid();
 
         let from = [0.1, 1.9];
         let to = [2.1, 1.9];
@@ -384,8 +384,8 @@ mod tests {
     }
 
     #[test]
-    fn successors_corner_second_step() {
-        let mesh = test_mesh();
+    fn successors_corner_observable_second_step() {
+        let mesh = mesh_u_grid();
 
         let from = [0.1, 1.9];
         let to = [2.1, 1.9];
