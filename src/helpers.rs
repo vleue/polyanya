@@ -52,7 +52,7 @@ pub(crate) fn line_intersect_segment(
         / ((line[0][0] - line[1][0]) * (segment[0][1] - segment[1][1])
             - (line[0][1] - line[1][1]) * (segment[0][0] - segment[1][0]));
 
-    if u < 0.0 || u > 1.0 {
+    if u < 0.0 || u > 1.0 || u.is_nan() {
         None
     } else {
         Some([
@@ -130,6 +130,14 @@ mod tests {
         );
         assert_eq!(
             line_intersect_segment([[0.0, 0.8], [0.5, 0.0]], [[1.0, 0.0], [1.0, 0.2]]),
+            None
+        );
+    }
+
+    #[test]
+    fn test_line_intersect_colinear() {
+        assert_eq!(
+            line_intersect_segment([[0.0, 0.5], [0.5, 0.5]], [[-1.0, 0.5], [1.0, 0.5]]),
             None
         );
     }
