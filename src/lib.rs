@@ -257,7 +257,11 @@ impl Eq for SearchNode {}
 
 impl Ord for SearchNode {
     fn cmp(&self, other: &Self) -> Ordering {
-        (self.f + self.g).total_cmp(&(other.f + other.g))
+        match (self.f + self.g).total_cmp(&(other.f + other.g)) {
+            Ordering::Less => Ordering::Greater,
+            Ordering::Equal => Ordering::Equal,
+            Ordering::Greater => Ordering::Less,
+        }
     }
 }
 
