@@ -75,17 +75,21 @@ impl Mesh {
                     other_side = *i;
                 }
             }
-            if other_side != isize::MAX {
-                to_add.push(SearchNode {
-                    path: vec![],
-                    r: from,
-                    i: [[start.x, start.y], [end.x, end.y]],
-                    polygon_from: starting_polygon_index as isize,
-                    polygon_to: other_side,
-                    f: 0.0,
-                    g: heuristic(from, to, [[start.x, start.y], [end.x, end.y]]),
-                })
+
+            // prune edges that don't have a polygon on the other side: cul de sac pruning
+            if other_side == isize::MAX {
+                continue;
             }
+
+            to_add.push(SearchNode {
+                path: vec![],
+                r: from,
+                i: [[start.x, start.y], [end.x, end.y]],
+                polygon_from: starting_polygon_index as isize,
+                polygon_to: other_side,
+                f: 0.0,
+                g: heuristic(from, to, [[start.x, start.y], [end.x, end.y]]),
+            })
         }
 
         let mut queue = BinaryHeap::new();
