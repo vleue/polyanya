@@ -519,12 +519,14 @@ mod tests {
         assert_eq!(successors[0].i, [[11.0, 5.0], [10.0, 7.0]]);
         assert_eq!(successors[0].path, vec![from]);
 
-        assert_eq!(successors[1].r, [12.0, 0.0]);
+        assert_eq!(successors[1].r, from);
         assert_eq!(successors[1].f, 0.0);
         assert_eq!(successors[1].g, distance_between(from, to));
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(successors[1].i, [[10.0, 7.0], [7.0, 4.0]]);
         assert_eq!(successors[0].path, vec![from]);
+
+        assert_eq!(mesh.path_len(from, to), distance_between(from, to));
     }
 }
