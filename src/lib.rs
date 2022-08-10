@@ -30,7 +30,7 @@ impl Polygon {
     pub fn new(nb: usize, data: Vec<isize>) -> Self {
         assert!(data.len() == nb * 2);
         let (vertices, neighbours) = data.split_at(nb);
-        let vertices = vertices.to_vec().into_iter().map(|v| v as usize).collect();
+        let vertices = vertices.iter().copied().map(|v| v as usize).collect();
         let neighbours = neighbours.to_vec();
         Polygon {
             vertices,
@@ -107,7 +107,7 @@ impl Mesh {
                 queue.push(node);
             }
         }
-        return -1.0;
+        -1.0
     }
 
     fn successors(&self, node: SearchNode, to: [f32; 2]) -> Vec<SearchNode> {
@@ -264,7 +264,7 @@ impl Mesh {
             }
             return i;
         }
-        return usize::MAX;
+        usize::MAX
     }
 }
 
