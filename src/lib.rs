@@ -57,6 +57,7 @@ pub struct Mesh {
 
 impl Mesh {
     pub fn path_len(&self, from: [f32; 2], to: [f32; 2]) -> f32 {
+        eprintln!("======= begin!");
         let starting_polygon_index = self.point_in_polygon(from);
         let starting_polygon = self.polygons.get(starting_polygon_index).unwrap();
         let ending_polygon = self.point_in_polygon(to);
@@ -117,6 +118,7 @@ impl Mesh {
         let mut to_add = vec![];
         let mut first_intersect = None;
         let mut second_intersect = None;
+        println!("successors of {:#?}", node);
         for edge in into_polygon
             .edges_index()
             .iter()
@@ -126,15 +128,21 @@ impl Mesh {
             let start = self.vertices.get(edge[0]).unwrap();
             let end = self.vertices.get(edge[1]).unwrap();
 
+            println!(
+                "edge {:?} -> [({:?},{:?}), ({:?}, {:?})]",
+                edge, start.x, start.y, end.x, end.y
+            );
 
             // continue until we get to the interval end
             if !found_end
                 && on_side(node.i[0], [[start.x, start.y], [end.x, end.y]]) == EdgeSide::Edge
                 && node.i[0] != [end.x, end.y]
             {
+                println!("found end");
                 found_end = true;
             }
             if !found_end {
+                println!("ignoring");
                 continue;
             }
 
@@ -151,11 +159,14 @@ impl Mesh {
                 && on_side(node.i[1], [[start.x, start.y], [end.x, end.y]]) == EdgeSide::Edge
                 && node.i[1] != [end.x, end.y]
             {
+                println!("breaking: found end");
                 break;
             }
 
             if other_side == node.polygon_from {
                 panic!("where you come from");
+                // println!("where you come from");
+                // continue;
             }
 
             if node.i[0] != [start.x, start.y] {
@@ -175,8 +186,10 @@ impl Mesh {
                     second_intersect = Some(intersect);
                 }
             }
+
             // prune edges that don't have a polygon on the other side: cul de sac pruning
             if other_side == isize::MAX {
+                println!("cul de sac");
                 continue;
             }
 
@@ -187,6 +200,7 @@ impl Mesh {
             if first_intersect.is_none() && second_intersect.is_some() {
                 new_r = Some(node.i[1]);
             }
+
             to_add.push(SearchNode {
                 path: vec![],
                 r: new_r.unwrap_or(node.r),
@@ -271,7 +285,10 @@ impl Ord for SearchNode {
 
 #[cfg(test)]
 mod tests {
-    use crate::{helpers::distance_between, Mesh, Polygon, SearchNode, Vertex};
+    use crate::{
+        helpers::{distance_between, mirror},
+        Mesh, Polygon, SearchNode, Vertex,
+    };
 
     fn mesh_u_grid() -> Mesh {
         Mesh {

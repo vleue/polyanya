@@ -12,17 +12,21 @@ pub(crate) fn on_side(point: [f32; 2], i: [[f32; 2]; 2]) -> EdgeSide {
 
 // i should be counterclockwise from r
 pub(crate) fn heuristic(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> f32 {
+    eprintln!("{:?} to {:?} through {:?}", r, to, i);
     let to = if on_side(r, i) == on_side(to, i) {
+        eprintln!("- mirror");
         mirror(to, i)
     } else {
         to
     };
-    if on_side(to, [r, i[0]]) == EdgeSide::Right {
-        distance_between(r, i[0]) + distance_between(i[0], to)
+    if r == i[0] {
+        dbg!(distance_between(r, to))
+    } else if on_side(to, [r, i[0]]) == EdgeSide::Right {
+        dbg!(distance_between(r, i[0]) + distance_between(i[0], to))
     } else if on_side(to, [r, i[1]]) == EdgeSide::Left {
-        distance_between(r, i[1]) + distance_between(i[1], to)
+        dbg!(distance_between(r, i[1]) + distance_between(i[1], to))
     } else {
-        distance_between(r, to)
+        dbg!(distance_between(r, to))
     }
 }
 
