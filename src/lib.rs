@@ -5,6 +5,8 @@ use helpers::{distance_between, heuristic, on_side};
 use crate::helpers::line_intersect_segment;
 
 mod helpers;
+
+#[derive(Debug)]
 pub struct Vertex {
     pub x: f32,
     pub y: f32,
@@ -21,6 +23,7 @@ impl Vertex {
     }
 }
 
+#[derive(Debug)]
 pub struct Polygon {
     pub vertices: Vec<usize>,
     pub neighbours: Vec<isize>,
@@ -50,6 +53,7 @@ impl Polygon {
     }
 }
 
+#[derive(Debug)]
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
     pub polygons: Vec<Polygon>,
@@ -61,6 +65,11 @@ impl Mesh {
         let starting_polygon_index = self.point_in_polygon(from);
         let starting_polygon = self.polygons.get(starting_polygon_index).unwrap();
         let ending_polygon = self.point_in_polygon(to);
+
+        eprintln!(
+            "going from polygon {} to {}",
+            starting_polygon_index, ending_polygon
+        );
 
         if starting_polygon_index == ending_polygon {
             return distance_between(from, to);
@@ -100,8 +109,10 @@ impl Mesh {
 
         while let Some(next) = queue.pop() {
             if next.polygon_to == ending_polygon as isize {
+                eprintln!("found path: {:?}", next);
                 return next.f + next.g;
             }
+            eprintln!("looking for successors of {:?}", next);
             let to_add = self.successors(next, to);
             for node in to_add {
                 queue.push(node);
@@ -252,7 +263,10 @@ impl Mesh {
                 let last = self.vertices.get(edge[0]).unwrap();
                 let next = self.vertices.get(edge[1]).unwrap();
                 let current_side = on_side(point, [[last.x, last.y], [next.x, next.y]]);
-                if current_side == EdgeSide::Edge {
+                if current_side == EdgeSide::Edge
+                    && (last.x.min(next.x)..=last.x.max(next.x)).contains(&point[0])
+                    && (last.y.min(next.y)..=last.y.max(next.y)).contains(&point[1])
+                {
                     return i;
                 }
                 if side.is_none() {
@@ -299,6 +313,16 @@ impl Ord for SearchNode {
 
 #[cfg(test)]
 mod tests {
+    macro_rules! assert_delta {
+        ($x:expr, $y:expr) => {
+            let val = $x;
+            let expected = $y;
+            if !((val - expected).abs() < 0.0001) {
+                assert_eq!(val, expected);
+            }
+        };
+    }
+
     use crate::{
         helpers::{distance_between, mirror},
         Mesh, Polygon, SearchNode, Vertex,
@@ -453,7 +477,7 @@ mod tests {
     fn mesh_from_paper() -> Mesh {
         Mesh {
             vertices: vec![
-                Vertex::new(0, 5, vec![0, -1]),           // 0
+                Vertex::new(0, 6, vec![0, -1]),           // 0
                 Vertex::new(2, 5, vec![0, -1, 2]),        // 1
                 Vertex::new(5, 7, vec![0, 2, -1]),        // 2
                 Vertex::new(5, 8, vec![0, -1]),           // 3
@@ -525,8 +549,103 @@ mod tests {
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(successors[1].i, [[10.0, 7.0], [7.0, 4.0]]);
-        assert_eq!(successors[0].path, vec![from]);
+        assert_eq!(successors[1].path, Vec::<[f32; 2]>::new());
 
         assert_eq!(mesh.path_len(from, to), distance_between(from, to));
+    }
+
+    #[test]
+    fn paper_corner_right() {
+        let mesh = mesh_from_paper();
+
+        let from = [12.0, 0.0];
+        let to = [13.0, 6.0];
+        let search_node = SearchNode {
+            path: vec![],
+            r: from,
+            i: [[11.0, 3.0], [7.0, 0.0]],
+            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_to: 4,
+            f: 0.0,
+            g: distance_between(from, to),
+        };
+        let successors = dbg!(mesh.successors(search_node, to));
+        assert_eq!(successors.len(), 2);
+
+        assert_eq!(successors[0].r, [11.0, 3.0]);
+        assert_eq!(successors[0].f, distance_between(from, [11.0, 3.0]));
+        assert_eq!(
+            successors[0].g,
+            distance_between([11.0, 3.0], [11.0, 5.0]) + distance_between([11.0, 5.0], to)
+        );
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 6);
+        assert_eq!(successors[0].i, [[11.0, 5.0], [10.0, 7.0]]);
+        assert_eq!(successors[0].path, vec![from]);
+
+        assert_eq!(successors[1].r, from);
+        assert_eq!(successors[1].f, 0.0);
+        assert_eq!(
+            successors[1].g,
+            distance_between(from, mirror(to, [[10.0, 7.0], [7.0, 4.0]]))
+        );
+        assert_eq!(successors[1].polygon_from, 4);
+        assert_eq!(successors[1].polygon_to, 2);
+        assert_eq!(successors[1].i, [[10.0, 7.0], [7.0, 4.0]]);
+        assert_eq!(successors[1].path, Vec::<[f32; 2]>::new());
+
+        assert_delta!(
+            mesh.path_len(from, to),
+            distance_between(from, [11.0, 3.0])
+                + distance_between([11.0, 3.0], [11.0, 5.0])
+                + distance_between([11.0, 5.0], to)
+        );
+    }
+
+    #[test]
+    fn paper_corner_left() {
+        let mesh = mesh_from_paper();
+
+        let from = [12.0, 0.0];
+        let to = [5.0, 3.0];
+        let search_node = SearchNode {
+            path: vec![],
+            r: from,
+            i: [[11.0, 3.0], [7.0, 0.0]],
+            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_to: 4,
+            f: 0.0,
+            g: distance_between(from, to),
+        };
+        let successors = dbg!(mesh.successors(search_node, to));
+        assert_eq!(successors.len(), 2);
+
+        assert_eq!(successors[0].r, [11.0, 3.0]);
+        assert_eq!(successors[0].f, distance_between(from, [11.0, 3.0]));
+        assert_eq!(
+            successors[0].g,
+            distance_between([11.0, 3.0], [11.0, 5.0])
+                + distance_between([11.0, 5.0], mirror(to, [[11.0, 5.0], [10.0, 7.0]]))
+        );
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 6);
+        assert_eq!(successors[0].i, [[11.0, 5.0], [10.0, 7.0]]);
+        assert_eq!(successors[0].path, vec![from]);
+
+        assert_eq!(successors[1].r, from);
+        assert_eq!(successors[1].f, 0.0);
+        assert_eq!(
+            successors[1].g,
+            distance_between(from, [7.0, 4.0]) + distance_between([7.0, 4.0], to)
+        );
+        assert_eq!(successors[1].polygon_from, 4);
+        assert_eq!(successors[1].polygon_to, 2);
+        assert_eq!(successors[1].i, [[10.0, 7.0], [7.0, 4.0]]);
+        assert_eq!(successors[1].path, Vec::<[f32; 2]>::new());
+
+        assert_delta!(
+            mesh.path_len(from, to),
+            distance_between(from, [7.0, 4.0]) + distance_between([7.0, 4.0], to)
+        );
     }
 }
