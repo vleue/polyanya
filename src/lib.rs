@@ -327,7 +327,7 @@ mod tests {
     }
 
     #[test]
-    fn successors_straight_line() {
+    fn successors_straight_line_ahead() {
         let mesh = mesh_u_grid();
 
         let from = [0.1, 0.1];
@@ -430,5 +430,81 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[2.0, 0.0], [2.0, 1.0]]);
+    }
+
+    fn mesh_from_paper() -> Mesh {
+        Mesh {
+            vertices: vec![
+                Vertex::new(0, 5, vec![0, -1]),           // 0
+                Vertex::new(2, 5, vec![0, -1, 2]),        // 1
+                Vertex::new(5, 7, vec![0, 2, -1]),        // 2
+                Vertex::new(5, 8, vec![0, -1]),           // 3
+                Vertex::new(0, 8, vec![0, -1]),           // 4
+                Vertex::new(1, 4, vec![1, -1]),           // 5
+                Vertex::new(2, 1, vec![1, -1]),           // 6
+                Vertex::new(4, 1, vec![1, -1]),           // 7
+                Vertex::new(4, 2, vec![1, -1, 2]),        // 8
+                Vertex::new(2, 4, vec![1, 2, -1]),        // 9
+                Vertex::new(7, 4, vec![2, -1, 4]),        // 10
+                Vertex::new(10, 7, vec![2, 4, 6, -1, 3]), // 11
+                Vertex::new(7, 7, vec![2, 3, -1]),        // 12
+                Vertex::new(11, 8, vec![3, -1]),          // 13
+                Vertex::new(7, 8, vec![3, -1]),           // 14
+                Vertex::new(7, 0, vec![5, 4, -1]),        // 15
+                Vertex::new(11, 3, vec![4, 5, -1]),       // 16
+                Vertex::new(11, 5, vec![4, -1, 6]),       // 17
+                Vertex::new(12, 0, vec![5, -1]),          // 18
+                Vertex::new(12, 3, vec![5, -1]),          // 19
+                Vertex::new(13, 5, vec![6, -1]),          // 20
+                Vertex::new(13, 7, vec![6, -1]),          // 21
+                Vertex::new(1, 3, vec![1, -1]),           // 22
+            ],
+            polygons: vec![
+                Polygon::new(5, vec![0, 1, 2, 3, 4, -1, -1, 2, -1, -1]),
+                Polygon::new(6, vec![5, 22, 6, 7, 8, 9, -1, -1, -1, -1, 2, -1]),
+                Polygon::new(7, vec![1, 9, 8, 10, 11, 12, 2, -1, 1, -1, 4, 3, -1, 0]),
+                Polygon::new(4, vec![12, 11, 13, 14, 2, -1, -1, -1]),
+                Polygon::new(5, vec![10, 15, 16, 17, 11, -1, 5, -1, 6, 2]),
+                Polygon::new(4, vec![15, 18, 19, 16, -1, -1, -1, 4]),
+                Polygon::new(4, vec![11, 17, 20, 21, 4, -1, -1, -1]),
+            ],
+        }
+    }
+
+    #[test]
+    fn paper_straight() {
+        let mesh = mesh_from_paper();
+
+        let from = [12.0, 0.0];
+        let to = [7.0, 6.9];
+        let search_node = SearchNode {
+            path: vec![],
+            r: from,
+            i: [[11.0, 3.0], [7.0, 0.0]],
+            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_to: 4,
+            f: 0.0,
+            g: distance_between(from, to),
+        };
+        let successors = dbg!(mesh.successors(search_node, to));
+        assert_eq!(successors.len(), 2);
+
+        assert_eq!(successors[0].r, [11.0, 3.0]);
+        assert_eq!(successors[0].f, distance_between(from, [11.0, 3.0]));
+        assert_eq!(
+            successors[0].g,
+            distance_between([11.0, 3.0], [11.0, 5.0])
+                + distance_between([11.0, 5.0], mirror(to, [[11.0, 5.0], [10.0, 7.0]]))
+        );
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 6);
+        assert_eq!(successors[0].i, [[11.0, 5.0], [10.0, 7.0]]);
+
+        assert_eq!(successors[1].r, [12.0, 0.0]);
+        assert_eq!(successors[1].f, 0.0);
+        assert_eq!(successors[1].g, distance_between(from, to));
+        assert_eq!(successors[1].polygon_from, 4);
+        assert_eq!(successors[1].polygon_to, 2);
+        assert_eq!(successors[1].i, [[10.0, 7.0], [7.0, 4.0]]);
     }
 }
