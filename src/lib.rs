@@ -201,8 +201,12 @@ impl Mesh {
                 new_r = Some(node.i[1]);
             }
 
+            let mut path = node.path.clone();
+            if new_r.is_some() {
+                path.push(node.r);
+            }
             to_add.push(SearchNode {
-                path: vec![],
+                path,
                 r: new_r.unwrap_or(node.r),
                 i: [[start.x, start.y], [end.x, end.y]],
                 polygon_from: node.polygon_to as isize,
@@ -349,6 +353,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[2.0, 0.0], [2.0, 1.0]]);
+        assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
     }
 
     #[test]
@@ -374,6 +379,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 0);
         assert_eq!(successors[0].i, [[1.0, 1.0], [1.0, 0.0]]);
+        assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
     }
 
     #[test]
@@ -402,6 +408,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 0);
         assert_eq!(successors[0].polygon_to, 1);
         assert_eq!(successors[0].i, [[1.0, 0.0], [1.0, 1.0]]);
+        assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
     }
 
     #[test]
@@ -430,6 +437,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[2.0, 0.0], [2.0, 1.0]]);
+        assert_eq!(successors[0].path, vec![from]);
     }
 
     fn mesh_from_paper() -> Mesh {
@@ -499,6 +507,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 6);
         assert_eq!(successors[0].i, [[11.0, 5.0], [10.0, 7.0]]);
+        assert_eq!(successors[0].path, vec![from]);
 
         assert_eq!(successors[1].r, [12.0, 0.0]);
         assert_eq!(successors[1].f, 0.0);
@@ -506,5 +515,6 @@ mod tests {
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(successors[1].i, [[10.0, 7.0], [7.0, 4.0]]);
+        assert_eq!(successors[0].path, vec![from]);
     }
 }
