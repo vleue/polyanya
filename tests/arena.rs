@@ -2,8 +2,9 @@ use polyanya::{Mesh, Polygon, Vertex};
 
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
-        if !(($x - $y).abs() < 0.0001) {
-            assert_eq!($x, $y);
+        let val = $x;
+        if !((val - $y).abs() < 0.0001) {
+            assert_eq!(val, $y);
         }
     };
 }
