@@ -169,21 +169,31 @@ impl Mesh {
                 // continue;
             }
 
-            if node.i[0] != [start.x, start.y] {
+            if node.i[0] != [start.x, start.y]
+                || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left
+            {
                 if let Some(intersect) = line_intersect_segment(
                     [node.r, node.i[0]],
                     [[start.x, start.y], [end.x, end.y]],
                 ) {
-                    first_intersect = Some(intersect);
+                    if intersect != [end.x, end.y] {
+                        println!("found first intersection: {:?}", intersect);
+                        first_intersect = Some(intersect);
+                    }
                 }
             }
 
-            if node.i[1] != [end.x, end.y] {
+            if node.i[1] != [end.x, end.y]
+                || on_side([start.x, start.y], [node.r, node.i[0]]) == EdgeSide::Right
+            {
                 if let Some(intersect) = line_intersect_segment(
                     [node.r, node.i[1]],
                     [[start.x, start.y], [end.x, end.y]],
                 ) {
-                    second_intersect = Some(intersect);
+                    if intersect != [end.x, end.y] {
+                        println!("found second intersection: {:?}", intersect);
+                        second_intersect = Some(intersect);
+                    }
                 }
             }
 
@@ -193,11 +203,11 @@ impl Mesh {
                 continue;
             }
 
-            if first_intersect.is_some() && second_intersect.is_none() {
+            if first_intersect.is_none() && second_intersect.is_none() {
                 new_r = Some(node.i[0]);
             }
 
-            if first_intersect.is_none() && second_intersect.is_some() {
+            if first_intersect.is_some() && second_intersect.is_some() {
                 new_r = Some(node.i[1]);
             }
 
