@@ -1,4 +1,8 @@
-use std::{cmp::Ordering, collections::BinaryHeap};
+use std::{
+    cmp::Ordering,
+    collections::{hash_map::Entry, BinaryHeap, HashMap},
+    hash::Hash,
+};
 
 use helpers::{distance_between, heuristic, on_side};
 
@@ -59,6 +63,21 @@ pub struct Mesh {
     pub polygons: Vec<Polygon>,
 }
 
+struct Root([f32; 2]);
+impl PartialEq for Root {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+impl Eq for Root {}
+impl Hash for Root {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        ((self.0[0] * 10000.0) as i32).hash(state);
+        ((self.0[1] * 10000.0) as i32).hash(state);
+        state.finish();
+    }
+}
+
 impl Mesh {
     pub fn path_len(&self, from: [f32; 2], to: [f32; 2]) -> f32 {
         eprintln!("======= begin!");
@@ -74,6 +93,9 @@ impl Mesh {
         if starting_polygon_index == ending_polygon {
             return distance_between(from, to);
         }
+
+        let mut root_history = HashMap::new();
+        root_history.insert(Root(from), 0.0);
 
         let mut to_add = vec![];
         for edge in starting_polygon.edges_index() {
@@ -115,6 +137,19 @@ impl Mesh {
             eprintln!("looking for successors of {:?}", next);
             let to_add = self.successors(next, to);
             for node in to_add {
+                match root_history.entry(Root(node.r)) {
+                    Entry::Occupied(mut o) => {
+                        if o.get() < &node.f {
+                            eprintln!("skipping successor {:?} as too costly", node);
+                            continue;
+                        } else {
+                            o.insert(node.f);
+                        }
+                    }
+                    Entry::Vacant(v) => {
+                        v.insert(node.f);
+                    }
+                }
                 queue.push(node);
             }
         }
