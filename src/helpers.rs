@@ -10,6 +10,12 @@ pub(crate) fn on_side(point: [f32; 2], i: [[f32; 2]; 2]) -> EdgeSide {
     }
 }
 
+pub(crate) fn on_segment(point: [f32; 2], i: [[f32; 2]; 2]) -> bool {
+    (on_side(point, i) == EdgeSide::Edge)
+        && (i[0][0].min(i[1][0])..=i[0][0].max(i[1][0])).contains(&point[0])
+        && (i[0][1].min(i[1][1])..=i[0][1].max(i[1][1])).contains(&point[1])
+}
+
 // i should be counterclockwise from r
 pub(crate) fn heuristic(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> f32 {
     eprintln!("{:?} to {:?} through {:?}", r, to, i);

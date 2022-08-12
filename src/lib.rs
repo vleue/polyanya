@@ -6,7 +6,7 @@ use std::{
 
 use helpers::{distance_between, heuristic, on_side};
 
-use crate::helpers::line_intersect_segment;
+use crate::helpers::{line_intersect_segment, on_segment};
 
 mod helpers;
 
@@ -101,6 +101,12 @@ impl Mesh {
         for edge in starting_polygon.edges_index() {
             let start = self.vertices.get(edge[0]).unwrap();
             let end = self.vertices.get(edge[1]).unwrap();
+
+            println!(
+                "edge {:?} -> [({:?},{:?}), ({:?}, {:?})]",
+                edge, start.x, start.y, end.x, end.y
+            );
+
             let mut other_side = isize::MAX;
             for i in &start.polygons {
                 if *i != -1 && *i != starting_polygon_index as isize && end.polygons.contains(i) {
@@ -110,6 +116,7 @@ impl Mesh {
 
             // prune edges that don't have a polygon on the other side: cul de sac pruning
             if other_side == isize::MAX {
+                println!("cul de sac");
                 continue;
             }
 
@@ -127,6 +134,11 @@ impl Mesh {
         let mut queue = BinaryHeap::new();
         for node in to_add {
             queue.push(node);
+        }
+
+        println!("queue:");
+        for node in queue.iter() {
+            println!("  - {:?} ({})", node, node.f + node.g);
         }
 
         while let Some(next) = queue.pop() {
@@ -151,6 +163,10 @@ impl Mesh {
                     }
                 }
                 queue.push(node);
+            }
+            println!("queue:");
+            for node in queue.iter() {
+                println!("  - {:?} ({})", node, node.f + node.g);
             }
         }
         -1.0
@@ -206,7 +222,7 @@ impl Mesh {
 
             // continue until we get to the interval end
             if !found_end
-                && on_side(node.i[0], [[start.x, start.y], [end.x, end.y]]) == EdgeSide::Edge
+                && on_segment(node.i[0], [[start.x, start.y], [end.x, end.y]])
                 && node.i[0] != [end.x, end.y]
             {
                 println!("found end");
@@ -229,7 +245,7 @@ impl Mesh {
             // break once we reached the interval start
             if found_end
                 && !found_end_this_turn
-                && on_side(node.i[1], [[start.x, start.y], [end.x, end.y]]) == EdgeSide::Edge
+                && on_segment(node.i[1], [[start.x, start.y], [end.x, end.y]])
                 && node.i[1] != [end.x, end.y]
             {
                 println!("breaking: found end");
@@ -281,15 +297,17 @@ impl Mesh {
                         println!("found second intersection: {:?}", intersect);
                         second_intersect = Some(intersect);
                         add_node(node.r, other_side, [start.x, start.y], intersect);
-                        if let Some(extra_r) = to_polygon
-                            .vertices
-                            .iter()
-                            .flat_map(|v| self.vertices.get(*v))
-                            .filter(|v| [v.x, v.y] == node.i[1])
-                            .next()
-                            .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
-                        {
-                            add_node(extra_r, other_side, intersect, [end.x, end.y]);
+                        if intersect != [end.x, end.y] {
+                            if let Some(extra_r) = to_polygon
+                                .vertices
+                                .iter()
+                                .flat_map(|v| self.vertices.get(*v))
+                                .filter(|v| [v.x, v.y] == node.i[1])
+                                .next()
+                                .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                            {
+                                add_node(extra_r, other_side, intersect, [end.x, end.y]);
+                            }
                         }
                         continue;
                     }
@@ -447,7 +465,7 @@ mod tests {
             f: 0.0,
             g: distance_between(from, to),
         };
-        let successors = mesh.successors(search_node, to);
+        let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].r, from);
         assert_eq!(successors[0].f, 0.0);
