@@ -258,6 +258,51 @@ impl Mesh {
                 continue;
             }
 
+            if (node.i[0] != [start.x, start.y]
+                || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left)
+                && (node.i[1] != [end.x, end.y]
+                    || on_side([start.x, start.y], [node.r, node.i[0]]) == EdgeSide::Right)
+            {
+                if let Some(intersect1) = line_intersect_segment(
+                    [node.r, node.i[0]],
+                    [[start.x, start.y], [end.x, end.y]],
+                ) {
+                    if let Some(intersect2) = line_intersect_segment(
+                        [node.r, node.i[1]],
+                        [[start.x, start.y], [end.x, end.y]],
+                    ) {
+                        first_intersect = Some(intersect1);
+                        second_intersect = Some(intersect2);
+                        if intersect1 != [start.x, start.y] {
+                            if let Some(extra_r) = to_polygon
+                                .vertices
+                                .iter()
+                                .flat_map(|v| self.vertices.get(*v))
+                                .filter(|v| [v.x, v.y] == node.i[0])
+                                .next()
+                                .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                            {
+                                add_node(extra_r, other_side, [start.x, start.y], intersect1);
+                            }
+                        }
+                        add_node(node.r, other_side, intersect1, intersect2);
+                        if intersect2 != [start.x, start.y] {
+                            if let Some(extra_r) = to_polygon
+                                .vertices
+                                .iter()
+                                .flat_map(|v| self.vertices.get(*v))
+                                .filter(|v| [v.x, v.y] == node.i[1])
+                                .next()
+                                .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                            {
+                                add_node(extra_r, other_side, intersect2, [end.x, end.y]);
+                            }
+                        }
+                        continue;
+                    }
+                }
+            }
+
             if node.i[0] != [start.x, start.y]
                 || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left
             {
@@ -266,6 +311,7 @@ impl Mesh {
                     [[start.x, start.y], [end.x, end.y]],
                 ) {
                     if intersect != [end.x, end.y] {
+                        // if intersect != [end.x, end.y] && intersect != [start.x, start.y] {
                         println!("found first intersection: {:?}", intersect);
                         first_intersect = Some(intersect);
                         if intersect != [start.x, start.y] {
@@ -548,16 +594,16 @@ mod tests {
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].r, [0.1, 1.9]);
-        assert_eq!(successors[0].f, 0.0);
+        assert_eq!(successors[0].r, [1.0, 1.0]);
+        assert_eq!(successors[0].f, distance_between(from, [1.0, 1.0]));
         assert_eq!(
             successors[0].g,
-            distance_between(from, [2.0, 1.0]) + distance_between([2.0, 1.0], to)
+            distance_between([1.0, 1.0], [2.0, 1.0]) + distance_between([2.0, 1.0], to)
         );
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[2.0, 0.0], [2.0, 1.0]]);
-        assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
+        assert_eq!(successors[0].path, vec![from]);
     }
 
     fn mesh_from_paper() -> Mesh {

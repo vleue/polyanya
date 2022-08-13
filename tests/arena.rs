@@ -277,7 +277,7 @@ fn arena_scenario_ref_impl() {
     // assert_delta!(arena.path_len([1.0, 12.0], [9.0, 28.0]), 17.9234);
     // assert_delta!(arena.path_len([1.0, 13.0], [4.0, 30.0]), 17.8617);
     // assert_delta!(arena.path_len([1.0, 13.0], [9.0, 26.0]), 15.3584);
-    // assert_delta!(arena.path_len([1.0, 14.0], [14.0, 22.0]), 15.2745);
+    assert_delta!(arena.path_len([1.0, 14.0], [14.0, 22.0]), 15.2745);
     assert_delta!(arena.path_len([1.0, 23.0], [10.0, 8.0]), 18.0);
     assert_delta!(arena.path_len([1.0, 23.0], [14.0, 9.0]), 19.4391);
     // assert_delta!(arena.path_len([1.0, 10.0], [13.0, 29.0]), 22.4722);
@@ -309,7 +309,7 @@ fn arena_scenario_ref_impl() {
     // assert_delta!(arena.path_len([1.0, 11.0], [5.0, 40.0]), 29.552);
     assert_delta!(arena.path_len([1.0, 12.0], [26.0, 3.0]), 26.5707);
     assert_delta!(arena.path_len([1.0, 12.0], [29.0, 14.0]), 28.0713);
-    // assert_delta!(arena.path_len([1.0, 12.0], [29.0, 6.0]), 28.6362);
+    assert_delta!(arena.path_len([1.0, 12.0], [29.0, 6.0]), 28.6362);
     // assert_delta!(arena.path_len([1.0, 10.0], [25.0, 36.0]), 35.3836);
     // assert_delta!(arena.path_len([1.0, 10.0], [27.0, 25.0]), 30.0597);
     // assert_delta!(arena.path_len([1.0, 10.0], [32.0, 4.0]), 31.5753);
@@ -326,8 +326,8 @@ fn arena_scenario_ref_impl() {
     // assert_delta!(arena.path_len([1.0, 10.0], [29.0, 38.0]), 39.598);
     // assert_delta!(arena.path_len([1.0, 10.0], [31.0, 25.0]), 33.7313);
     assert_delta!(arena.path_len([1.0, 10.0], [38.0, 13.0]), 37.1214);
-    // assert_delta!(arena.path_len([1.0, 10.0], [38.0, 6.0]), 37.2305);
-    // assert_delta!(arena.path_len([1.0, 10.0], [39.0, 6.0]), 38.2281);
+    assert_delta!(arena.path_len([1.0, 10.0], [38.0, 6.0]), 37.2305);
+    assert_delta!(arena.path_len([1.0, 10.0], [39.0, 6.0]), 38.2281);
     assert_delta!(arena.path_len([1.0, 10.0], [40.0, 9.0]), 39.0357);
     // assert_delta!(arena.path_len([1.0, 11.0], [11.0, 43.0]), 33.5926);
     // assert_delta!(arena.path_len([1.0, 10.0], [12.0, 47.0]), 38.6267);
@@ -397,12 +397,5 @@ fn arena_scenario_ref_impl() {
 fn regression() {
     let arena = arena_mesh();
 
-    assert_delta!(arena.path_len([1.0, 14.0], [14.0, 22.0]), 15.2745);
-
-    assert_delta!(arena.path_len([1.0, 12.0], [29.0, 6.0]), 28.6362);
-    assert_delta!(arena.path_len([1.0, 10.0], [38.0, 6.0]), 37.2305);
-    assert_delta!(arena.path_len([1.0, 10.0], [39.0, 6.0]), 38.2281);
-
-    assert_delta!(arena.path_len([1.0, 14.0], [14.0, 22.0]), 15.2745);
     assert_delta!(arena.path_len([1.0, 11.0], [3.0, 36.0]), 25.4721);
 }
