@@ -20,9 +20,7 @@ pub(crate) fn on_segment(point: [f32; 2], i: [[f32; 2]; 2]) -> bool {
 
 // i should be counterclockwise from r
 pub(crate) fn heuristic(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> f32 {
-    // eprintln!("{:?} to {:?} through {:?}", r, to, i);
     let to = if on_side(r, i) == on_side(to, i) {
-        // eprintln!("- mirror");
         mirror(to, i)
     } else {
         to

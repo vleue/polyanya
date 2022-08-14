@@ -81,15 +81,9 @@ impl Hash for Root {
 
 impl Mesh {
     pub fn path_len(&self, from: [f32; 2], to: [f32; 2]) -> f32 {
-        // eprintln!("======= begin!");
         let starting_polygon_index = self.point_in_polygon(from);
         let starting_polygon = self.polygons.get(starting_polygon_index).unwrap();
         let ending_polygon = self.point_in_polygon(to);
-
-        eprintln!(
-            "going from polygon {} to {}",
-            starting_polygon_index, ending_polygon
-        );
 
         if starting_polygon_index == ending_polygon {
             return distance_between(from, to);
@@ -103,11 +97,6 @@ impl Mesh {
             let start = self.vertices.get(edge[0]).unwrap();
             let end = self.vertices.get(edge[1]).unwrap();
 
-            // println!(
-            //     "edge {:?} -> [({:?},{:?}), ({:?}, {:?})]",
-            //     edge, start.x, start.y, end.x, end.y
-            // );
-
             let mut other_side = isize::MAX;
             for i in &start.polygons {
                 if *i != -1 && *i != starting_polygon_index as isize && end.polygons.contains(i) {
@@ -117,7 +106,6 @@ impl Mesh {
 
             // prune edges that don't have a polygon on the other side: cul de sac pruning
             if other_side == isize::MAX {
-                // println!("cul de sac");
                 continue;
             }
 
@@ -137,24 +125,17 @@ impl Mesh {
             queue.push(node);
         }
 
-        // println!("queue:");
-        // for node in queue.iter() {
-        //     println!("  - {:?} ({})", node, node.f + node.g);
-        // }
-
         while let Some(next) = queue.pop() {
             println!("popped off: {}", next);
             if next.polygon_to == ending_polygon as isize {
                 eprintln!("found path: {:?}", next);
                 return next.f + next.g;
             }
-            // eprintln!("looking for successors of {:?}", next);
             let to_add = self.successors(next, to);
             for node in to_add {
                 match root_history.entry(Root(node.r)) {
                     Entry::Occupied(mut o) => {
                         if o.get() < &node.f {
-                            // eprintln!("skipping successor {:?} as too costly", node);
                             continue;
                         } else {
                             o.insert(node.f);
@@ -167,22 +148,12 @@ impl Mesh {
                 println!("   pushing: {}", node);
                 queue.push(node);
             }
-            // println!("queue:");
-            // for node in queue.iter() {
-            //     println!("  - {:?} ({})", node, node.f + node.g);
-            // }
         }
         -1.0
     }
 
     fn successors(&self, node: SearchNode, to: [f32; 2]) -> Vec<SearchNode> {
         let to_polygon = self.polygons.get(node.polygon_to as usize).unwrap();
-
-        let mut debug = false;
-        if node.r == [3.0, 15.0] && node.i[1] == [3.0, 34.0] {
-            println!("debugging!");
-            debug = true;
-        }
 
         let mut found_end = false;
 
@@ -193,9 +164,6 @@ impl Mesh {
         let mut add_node = |root: [f32; 2], other_side: isize, start: [f32; 2], end: [f32; 2]| {
             // prune edges that don't have a polygon on the other side: cul de sac pruning
             if other_side == isize::MAX {
-                if debug {
-                    println!("cul de sac");
-                }
                 return;
             }
 
@@ -217,9 +185,6 @@ impl Mesh {
             to_add.push(new_node);
         };
 
-        if debug {
-            println!("successors of {:#?}", node);
-        }
         for edge in to_polygon
             .edges_index()
             .iter()
@@ -230,35 +195,15 @@ impl Mesh {
             let end = self.vertices.get(edge[1]).unwrap();
             let mut found_end_this_turn = false;
 
-            if debug {
-                println!(
-                    "edge {:?} -> [({:?},{:?}), ({:?}, {:?})]",
-                    edge, start.x, start.y, end.x, end.y
-                );
-            }
-
             // continue until we get to the interval end
-            if debug && !found_end {
-                println!(
-                    "on it? {} ({:?})",
-                    on_segment(node.i[0], [[start.x, start.y], [end.x, end.y]]),
-                    on_side(node.i[0], [[start.x, start.y], [end.x, end.y]]),
-                );
-            }
             if !found_end
                 && on_segment(node.i[0], [[start.x, start.y], [end.x, end.y]])
                 && node.i[0] != [end.x, end.y]
             {
-                if debug {
-                    println!("found end");
-                }
                 found_end = true;
                 found_end_this_turn = true;
             }
             if !found_end {
-                if debug {
-                    println!("ignoring");
-                }
                 continue;
             }
 
@@ -276,17 +221,11 @@ impl Mesh {
                 && on_segment(node.i[1], [[start.x, start.y], [end.x, end.y]])
                 && node.i[1] != [end.x, end.y]
             {
-                if debug {
-                    println!("breaking: found end");
-                }
                 break;
             }
 
+            // this goes back to the current polygon, ignore
             if other_side == node.polygon_from {
-                // panic!("where you come from");
-                if debug {
-                    println!("where you come from");
-                }
                 continue;
             }
 
@@ -303,11 +242,6 @@ impl Mesh {
                         [node.r, node.i[1]],
                         [[start.x, start.y], [end.x, end.y]],
                     ) {
-                        if debug {
-                            println!("found two intersections on some edge");
-                            println!("  - {:?}", intersect1);
-                            println!("  - {:?}", intersect2);
-                        }
                         first_intersect = Some(intersect1);
                         second_intersect = Some(intersect2);
                         if intersect1 != [start.x, start.y] {
@@ -347,9 +281,6 @@ impl Mesh {
                 ) {
                     if intersect != [end.x, end.y] {
                         // if intersect != [end.x, end.y] && intersect != [start.x, start.y] {
-                        if debug {
-                            println!("found first intersection: {:?}", intersect);
-                        }
                         first_intersect = Some(intersect);
                         if intersect != [start.x, start.y] {
                             if let Some(extra_r) = to_polygon
@@ -376,9 +307,6 @@ impl Mesh {
                     [[start.x, start.y], [end.x, end.y]],
                 ) {
                     if intersect != [start.x, start.y] {
-                        if debug {
-                            println!("found second intersection: {:?}", intersect);
-                        }
                         second_intersect = Some(intersect);
                         add_node(node.r, other_side, [start.x, start.y], intersect);
                         if intersect != [end.x, end.y] {
