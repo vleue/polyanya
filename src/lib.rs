@@ -5,7 +5,7 @@ use std::{
     hash::Hash,
 };
 
-use helpers::{distance_between, heuristic, on_side};
+use helpers::{distance_between, heuristic, on_side, EPSILON};
 
 use crate::helpers::{line_intersect_segment, on_segment};
 
@@ -86,10 +86,10 @@ impl Mesh {
         let starting_polygon = self.polygons.get(starting_polygon_index).unwrap();
         let ending_polygon = self.point_in_polygon(to);
 
-        // eprintln!(
-        //     "going from polygon {} to {}",
-        //     starting_polygon_index, ending_polygon
-        // );
+        eprintln!(
+            "going from polygon {} to {}",
+            starting_polygon_index, ending_polygon
+        );
 
         if starting_polygon_index == ending_polygon {
             return distance_between(from, to);
@@ -179,7 +179,8 @@ impl Mesh {
         let to_polygon = self.polygons.get(node.polygon_to as usize).unwrap();
 
         let mut debug = false;
-        if node.r == [3.0, 15.0] {
+        if node.r == [3.0, 15.0] && node.i[1] == [3.0, 34.0] {
+            println!("debugging!");
             debug = true;
         }
 
@@ -425,17 +426,16 @@ enum EdgeSide {
 
 impl Mesh {
     pub fn point_in_polygon(&self, point: [f32; 2]) -> usize {
-        let move_by = f32::EPSILON * 100.0;
         [
             [0.0, 0.0],
-            [move_by, 0.0],
-            [move_by, move_by],
-            [0.0, move_by],
-            [-move_by, move_by],
-            [-move_by, 0.0],
-            [-move_by, -move_by],
-            [0.0, -move_by],
-            [move_by, -move_by],
+            [EPSILON, 0.0],
+            [EPSILON, EPSILON],
+            [0.0, EPSILON],
+            [-EPSILON, EPSILON],
+            [-EPSILON, 0.0],
+            [-EPSILON, -EPSILON],
+            [0.0, -EPSILON],
+            [EPSILON, -EPSILON],
         ]
         .iter()
         .map(|delta| self.point_in_polygon_unit([point[0] + delta[0], point[1] + delta[1]]))
