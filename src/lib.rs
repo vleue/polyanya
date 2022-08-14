@@ -8,6 +8,8 @@ use std::{
 };
 
 use helpers::{distance_between, heuristic, on_side, EPSILON};
+#[cfg(feature = "tracing")]
+use tracing::instrument;
 
 use crate::helpers::{line_intersect_segment, on_segment, turning_on};
 
@@ -140,6 +142,7 @@ impl Mesh {
 }
 
 impl Mesh {
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn path(&self, from: [f32; 2], to: [f32; 2]) -> Path {
         let starting_polygon_index = self.point_in_polygon(from);
         let starting_polygon = self.polygons.get(starting_polygon_index).unwrap();
@@ -189,9 +192,9 @@ impl Mesh {
         }
 
         while let Some(next) = queue.pop() {
-            println!("popped off: {}", next);
+            // println!("popped off: {}", next);
             if next.polygon_to == ending_polygon as isize {
-                eprintln!("found path: {:?}", next);
+                // eprintln!("found path: {:?}", next);
                 let mut path = next
                     .path
                     .split_first()
@@ -224,7 +227,7 @@ impl Mesh {
                         v.insert(node.f);
                     }
                 }
-                println!("   pushing: {}", node);
+                // println!("   pushing: {}", node);
                 queue.push(node);
             }
         }
@@ -234,6 +237,7 @@ impl Mesh {
         }
     }
 
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn successors(&self, node: SearchNode, to: [f32; 2]) -> Vec<SearchNode> {
         let to_polygon = self.polygons.get(node.polygon_to as usize).unwrap();
 
@@ -279,8 +283,8 @@ impl Mesh {
 
             // continue until we get to the interval end
             if !found_end
-                && on_segment(node.i[0], [[start.x, start.y], [end.x, end.y]])
                 && node.i[0] != [end.x, end.y]
+                && on_segment(node.i[0], [[start.x, start.y], [end.x, end.y]])
             {
                 found_end = true;
                 found_end_this_turn = true;
@@ -300,8 +304,8 @@ impl Mesh {
             // break once we reached the interval start
             if found_end
                 && !found_end_this_turn
-                && on_segment(node.i[1], [[start.x, start.y], [end.x, end.y]])
                 && node.i[1] != [end.x, end.y]
+                && on_segment(node.i[1], [[start.x, start.y], [end.x, end.y]])
             {
                 break;
             }
@@ -435,6 +439,7 @@ enum EdgeSide {
 }
 
 impl Mesh {
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn point_in_polygon(&self, point: [f32; 2]) -> usize {
         [
             [0.0, 0.0],
@@ -453,6 +458,7 @@ impl Mesh {
         .unwrap_or(usize::MAX)
     }
 
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn point_in_polygon_unit(&self, point: [f32; 2]) -> usize {
         'polygons: for (i, polygon) in self.polygons.iter().enumerate() {
             for edge in polygon.edges_index() {

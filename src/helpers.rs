@@ -1,24 +1,31 @@
+#[cfg(feature = "tracing")]
+use tracing::instrument;
+
 use crate::EdgeSide;
 
 pub(crate) const EPSILON: f32 = f32::EPSILON * 100000.0;
 
+#[cfg_attr(feature = "tracing", instrument(skip_all))]
+#[inline(always)]
 pub(crate) fn on_side(point: [f32; 2], i: [[f32; 2]; 2]) -> EdgeSide {
-    let side =
-        (point[1] - i[0][1]) * (i[1][0] - i[0][0]) - (point[0] - i[0][0]) * (i[1][1] - i[0][1]);
-    match side {
+    match (point[1] - i[0][1]) * (i[1][0] - i[0][0]) - (point[0] - i[0][0]) * (i[1][1] - i[0][1]) {
         x if x.abs() < EPSILON => EdgeSide::Edge,
         x if x < 0.0 => EdgeSide::Right,
         _ => EdgeSide::Left,
     }
 }
 
+#[cfg_attr(feature = "tracing", instrument(skip_all))]
+#[inline(always)]
 pub(crate) fn on_segment(point: [f32; 2], i: [[f32; 2]; 2]) -> bool {
-    (on_side(point, i) == EdgeSide::Edge)
-        && (i[0][0].min(i[1][0])..=i[0][0].max(i[1][0])).contains(&point[0])
+    (i[0][0].min(i[1][0])..=i[0][0].max(i[1][0])).contains(&point[0])
         && (i[0][1].min(i[1][1])..=i[0][1].max(i[1][1])).contains(&point[1])
+        && (on_side(point, i) == EdgeSide::Edge)
 }
 
 // i should be counterclockwise from r
+#[cfg_attr(feature = "tracing", instrument(skip_all))]
+#[inline(always)]
 pub(crate) fn heuristic(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> f32 {
     let to = if on_side(r, i) == on_side(to, i) {
         mirror(to, i)
@@ -36,6 +43,7 @@ pub(crate) fn heuristic(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> f32 {
     }
 }
 
+#[cfg_attr(feature = "tracing", instrument(skip_all))]
 pub(crate) fn turning_on(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> Option<[f32; 2]> {
     let to = if on_side(r, i) == on_side(to, i) {
         mirror(to, i)
@@ -53,6 +61,8 @@ pub(crate) fn turning_on(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> Option<
     }
 }
 
+#[cfg_attr(feature = "tracing", instrument(skip_all))]
+#[inline(always)]
 pub(crate) fn mirror(p: [f32; 2], i: [[f32; 2]; 2]) -> [f32; 2] {
     let dx = i[1][0] - i[0][0];
     let dy = i[1][1] - i[0][1];
@@ -66,10 +76,14 @@ pub(crate) fn mirror(p: [f32; 2], i: [[f32; 2]; 2]) -> [f32; 2] {
     [x2, y2]
 }
 
+#[cfg_attr(feature = "tracing", instrument(skip_all))]
+#[inline(always)]
 pub(crate) fn distance_between(from: [f32; 2], to: [f32; 2]) -> f32 {
     ((to[0] - from[0]).powi(2) + (to[1] - from[1]).powi(2)).sqrt()
 }
 
+#[cfg_attr(feature = "tracing", instrument(skip_all))]
+#[inline(always)]
 pub(crate) fn line_intersect_segment(
     line: [[f32; 2]; 2],
     segment: [[f32; 2]; 2],
