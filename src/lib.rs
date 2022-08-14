@@ -3,6 +3,8 @@ use std::{
     collections::{hash_map::Entry, BinaryHeap, HashMap},
     fmt::{self, Display},
     hash::Hash,
+    io,
+    io::BufRead,
 };
 
 use helpers::{distance_between, heuristic, on_side, EPSILON};
@@ -64,7 +66,7 @@ impl Polygon {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
     pub polygons: Vec<Polygon>,
@@ -82,6 +84,58 @@ impl Hash for Root {
         ((self.0[0] * 10000.0) as i32).hash(state);
         ((self.0[1] * 10000.0) as i32).hash(state);
         state.finish();
+    }
+}
+
+impl Mesh {
+    pub fn from_file(path: &str) -> Mesh {
+        let file = std::fs::File::open(path).unwrap();
+        let mut mesh = Mesh::default();
+        let mut nb_vertices = 0;
+        let mut nb_polygons = 0;
+        let mut phase = 0;
+        for line in io::BufReader::new(file).lines() {
+            let line: String = line.unwrap();
+            if phase == 0 {
+                if line == "mesh" {
+                    continue;
+                } else if line == "2" {
+                    continue;
+                } else {
+                    (nb_vertices, nb_polygons) = line
+                        .split_once(" ")
+                        .map(|(a, b)| (a.parse().unwrap(), b.parse().unwrap()))
+                        .unwrap();
+                    phase = 1;
+                    continue;
+                }
+            }
+            if phase == 1 {
+                if nb_vertices > 0 {
+                    nb_vertices -= 1;
+                    let mut values = line.split(" ");
+                    let x = values.next().unwrap().parse().unwrap();
+                    let y = values.next().unwrap().parse().unwrap();
+                    let _ = values.next();
+                    let vertex = Vertex::new(x, y, values.map(|v| v.parse().unwrap()).collect());
+                    mesh.vertices.push(vertex);
+                } else {
+                    phase = 2;
+                }
+            }
+            if phase == 2 {
+                if nb_polygons > 0 {
+                    nb_polygons -= 1;
+                    let mut values = line.split(" ");
+                    let n = values.next().unwrap().parse().unwrap();
+                    let polygon = Polygon::new(n, values.map(|v| v.parse().unwrap()).collect());
+                    mesh.polygons.push(polygon)
+                } else {
+                    panic!("unexpected line");
+                }
+            }
+        }
+        mesh
     }
 }
 
