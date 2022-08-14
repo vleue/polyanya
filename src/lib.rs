@@ -425,22 +425,35 @@ enum EdgeSide {
 
 impl Mesh {
     pub fn point_in_polygon(&self, point: [f32; 2]) -> usize {
+        let move_by = f32::EPSILON * 100.0;
+        [
+            [0.0, 0.0],
+            [move_by, 0.0],
+            [move_by, move_by],
+            [0.0, move_by],
+            [-move_by, move_by],
+            [-move_by, 0.0],
+            [-move_by, -move_by],
+            [0.0, -move_by],
+            [move_by, -move_by],
+        ]
+        .iter()
+        .map(|delta| self.point_in_polygon_unit([point[0] + delta[0], point[1] + delta[1]]))
+        .filter(|poly| *poly != usize::MAX)
+        .next()
+        .unwrap_or(usize::MAX)
+    }
+
+    pub fn point_in_polygon_unit(&self, point: [f32; 2]) -> usize {
         'polygons: for (i, polygon) in self.polygons.iter().enumerate() {
-            let mut side = None;
             for edge in polygon.edges_index() {
                 let last = self.vertices.get(edge[0]).unwrap();
                 let next = self.vertices.get(edge[1]).unwrap();
                 let current_side = on_side(point, [[last.x, last.y], [next.x, next.y]]);
-                if current_side == EdgeSide::Edge
-                    && (last.x.min(next.x)..=last.x.max(next.x)).contains(&point[0])
-                    && (last.y.min(next.y)..=last.y.max(next.y)).contains(&point[1])
-                {
+                if on_segment(point, [[last.x, last.y], [next.x, next.y]]) {
                     return i;
                 }
-                if side.is_none() {
-                    side = Some(current_side);
-                }
-                if side.unwrap() != current_side {
+                if current_side != EdgeSide::Left {
                     continue 'polygons;
                 }
             }

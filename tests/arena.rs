@@ -283,7 +283,7 @@ fn arena_scenario_ref_impl() {
     assert_delta!(arena.path_len([1.0, 10.0], [13.0, 29.0]), 22.4722);
     assert_delta!(arena.path_len([1.0, 10.0], [18.0, 22.0]), 20.8087);
     assert_delta!(arena.path_len([1.0, 10.0], [19.0, 18.0]), 21.0575);
-    // assert_delta!(arena.path_len([1.0, 10.0], [21.0, 2.0]), 21.5407);
+    assert_delta!(arena.path_len([1.0, 10.0], [21.0, 2.0]), 21.5407);
     assert_delta!(arena.path_len([1.0, 10.0], [5.0, 32.0]), 22.5024);
     assert_delta!(arena.path_len([1.0, 10.0], [6.0, 29.0]), 19.703);
     assert_delta!(arena.path_len([1.0, 11.0], [20.0, 7.0]), 19.4165);
