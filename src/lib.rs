@@ -1,12 +1,13 @@
 use std::{
     cmp::Ordering,
-    collections::{hash_map::Entry, BinaryHeap, HashMap},
+    collections::BinaryHeap,
     fmt::{self, Display},
     hash::Hash,
     io,
     io::BufRead,
 };
 
+use hashbrown::{hash_map::Entry, HashMap};
 use helpers::{distance_between, heuristic, on_side, EPSILON};
 #[cfg(feature = "tracing")]
 use tracing::instrument;

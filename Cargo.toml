@@ -8,6 +8,7 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 tracing = { version = "0.1", optional = true }
+hashbrown = { version = "0.12" }
 
 [dev-dependencies]
 criterion = "0.3"
