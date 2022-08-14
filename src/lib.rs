@@ -141,6 +141,12 @@ impl Mesh {
     }
 }
 
+struct SearchInstance {
+    queue: BinaryHeap<SearchNode>,
+    root_history: HashMap<Root, f32>,
+    to: [f32; 2],
+}
+
 impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn path(&self, from: [f32; 2], to: [f32; 2]) -> Path {
@@ -155,10 +161,13 @@ impl Mesh {
             };
         }
 
-        let mut root_history = HashMap::new();
-        root_history.insert(Root(from), 0.0);
+        let mut search_instance = SearchInstance {
+            queue: BinaryHeap::new(),
+            root_history: HashMap::new(),
+            to,
+        };
+        search_instance.root_history.insert(Root(from), 0.0);
 
-        let mut to_add = vec![];
         for edge in starting_polygon.edges_index() {
             let start = self.vertices.get(edge[0]).unwrap();
             let end = self.vertices.get(edge[1]).unwrap();
@@ -175,7 +184,7 @@ impl Mesh {
                 continue;
             }
 
-            to_add.push(SearchNode {
+            search_instance.queue.push(SearchNode {
                 path: vec![],
                 r: from,
                 i: [[start.x, start.y], [end.x, end.y]],
@@ -186,12 +195,7 @@ impl Mesh {
             })
         }
 
-        let mut queue = BinaryHeap::new();
-        for node in to_add {
-            queue.push(node);
-        }
-
-        while let Some(next) = queue.pop() {
+        while let Some(next) = search_instance.queue.pop() {
             // println!("popped off: {}", next);
             if next.polygon_to == ending_polygon as isize {
                 // eprintln!("found path: {:?}", next);
@@ -213,23 +217,7 @@ impl Mesh {
                     len: next.f + next.g,
                 };
             }
-            let to_add = self.successors(next, to);
-            for node in to_add {
-                match root_history.entry(Root(node.r)) {
-                    Entry::Occupied(mut o) => {
-                        if o.get() < &node.f {
-                            continue;
-                        } else {
-                            o.insert(node.f);
-                        }
-                    }
-                    Entry::Vacant(v) => {
-                        v.insert(node.f);
-                    }
-                }
-                // println!("   pushing: {}", node);
-                queue.push(node);
-            }
+            search_instance.successors(next, &self);
         }
         Path {
             path: vec![],
@@ -238,38 +226,73 @@ impl Mesh {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[cfg(test)]
     fn successors(&self, node: SearchNode, to: [f32; 2]) -> Vec<SearchNode> {
-        let to_polygon = self.polygons.get(node.polygon_to as usize).unwrap();
+        let mut search_instance = SearchInstance {
+            queue: BinaryHeap::new(),
+            root_history: HashMap::new(),
+            to,
+        };
+        search_instance.successors(node, self);
+        search_instance.queue.drain().collect()
+    }
+}
+
+impl SearchInstance {
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    fn add_node(
+        &mut self,
+        root: [f32; 2],
+        other_side: isize,
+        start: [f32; 2],
+        end: [f32; 2],
+        node: &SearchNode,
+    ) {
+        // prune edges that don't have a polygon on the other side: cul de sac pruning
+        if other_side == isize::MAX {
+            return;
+        }
+
+        let mut path = node.path.clone();
+        if root != node.r {
+            path.push(node.r);
+        }
+
+        let new_node = SearchNode {
+            path,
+            r: root,
+            i: [start, end],
+            polygon_from: node.polygon_to as isize,
+            polygon_to: other_side,
+            f: node.f + distance_between(node.r, root),
+            g: heuristic(root, self.to, [start, end]),
+        };
+        match self.root_history.entry(Root(root)) {
+            Entry::Occupied(mut o) => {
+                if o.get() < &new_node.f {
+                    ()
+                } else {
+                    o.insert(new_node.f);
+                    self.queue.push(new_node);
+                }
+            }
+            Entry::Vacant(v) => {
+                v.insert(new_node.f);
+                self.queue.push(new_node);
+            }
+        }
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    fn successors(&mut self, node: SearchNode, mesh: &Mesh) {
+        let to_polygon = mesh.polygons.get(node.polygon_to as usize).unwrap();
 
         let mut found_end = false;
 
-        let mut to_add = vec![];
         let mut first_intersect = None;
         let mut second_intersect = None;
 
-        let mut add_node = |root: [f32; 2], other_side: isize, start: [f32; 2], end: [f32; 2]| {
-            // prune edges that don't have a polygon on the other side: cul de sac pruning
-            if other_side == isize::MAX {
-                return;
-            }
-
-            let mut path = node.path.clone();
-            if root != node.r {
-                path.push(node.r);
-            }
-
-            let new_node = SearchNode {
-                path,
-                r: root,
-                i: [start, end],
-                polygon_from: node.polygon_to as isize,
-                polygon_to: other_side,
-                f: node.f + distance_between(node.r, root),
-                g: heuristic(root, to, [start, end]),
-            };
-
-            to_add.push(new_node);
-        };
+        // let mut add_node = |root: [f32; 2], other_side: isize, start: [f32; 2], end: [f32; 2]| {};
 
         for edge in to_polygon
             .edges_index()
@@ -277,8 +300,8 @@ impl Mesh {
             .chain(to_polygon.edges_index().iter())
         {
             let mut new_r = None;
-            let start = self.vertices.get(edge[0]).unwrap();
-            let end = self.vertices.get(edge[1]).unwrap();
+            let start = mesh.vertices.get(edge[0]).unwrap();
+            let end = mesh.vertices.get(edge[1]).unwrap();
             let mut found_end_this_turn = false;
 
             // continue until we get to the interval end
@@ -334,23 +357,35 @@ impl Mesh {
                             if let Some(extra_r) = to_polygon
                                 .vertices
                                 .iter()
-                                .flat_map(|v| self.vertices.get(*v))
+                                .flat_map(|v| mesh.vertices.get(*v))
                                 .find(|v| [v.x, v.y] == node.i[0])
                                 .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
                             {
-                                add_node(extra_r, other_side, [start.x, start.y], intersect1);
+                                self.add_node(
+                                    extra_r,
+                                    other_side,
+                                    [start.x, start.y],
+                                    intersect1,
+                                    &node,
+                                );
                             }
                         }
-                        add_node(node.r, other_side, intersect1, intersect2);
+                        self.add_node(node.r, other_side, intersect1, intersect2, &node);
                         if intersect2 != [start.x, start.y] {
                             if let Some(extra_r) = to_polygon
                                 .vertices
                                 .iter()
-                                .flat_map(|v| self.vertices.get(*v))
+                                .flat_map(|v| mesh.vertices.get(*v))
                                 .find(|v| [v.x, v.y] == node.i[1])
                                 .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
                             {
-                                add_node(extra_r, other_side, intersect2, [end.x, end.y]);
+                                self.add_node(
+                                    extra_r,
+                                    other_side,
+                                    intersect2,
+                                    [end.x, end.y],
+                                    &node,
+                                );
                             }
                         }
                         continue;
@@ -372,14 +407,20 @@ impl Mesh {
                             if let Some(extra_r) = to_polygon
                                 .vertices
                                 .iter()
-                                .flat_map(|v| self.vertices.get(*v))
+                                .flat_map(|v| mesh.vertices.get(*v))
                                 .find(|v| [v.x, v.y] == node.i[0])
                                 .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
                             {
-                                add_node(extra_r, other_side, [start.x, start.y], intersect);
+                                self.add_node(
+                                    extra_r,
+                                    other_side,
+                                    [start.x, start.y],
+                                    intersect,
+                                    &node,
+                                );
                             }
                         }
-                        add_node(node.r, other_side, intersect, [end.x, end.y]);
+                        self.add_node(node.r, other_side, intersect, [end.x, end.y], &node);
                         continue;
                     }
                 }
@@ -394,16 +435,22 @@ impl Mesh {
                 ) {
                     if intersect != [start.x, start.y] {
                         second_intersect = Some(intersect);
-                        add_node(node.r, other_side, [start.x, start.y], intersect);
+                        self.add_node(node.r, other_side, [start.x, start.y], intersect, &node);
                         if intersect != [end.x, end.y] {
                             if let Some(extra_r) = to_polygon
                                 .vertices
                                 .iter()
-                                .flat_map(|v| self.vertices.get(*v))
+                                .flat_map(|v| mesh.vertices.get(*v))
                                 .find(|v| [v.x, v.y] == node.i[1])
                                 .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
                             {
-                                add_node(extra_r, other_side, intersect, [end.x, end.y]);
+                                self.add_node(
+                                    extra_r,
+                                    other_side,
+                                    intersect,
+                                    [end.x, end.y],
+                                    &node,
+                                );
                             }
                         }
                         continue;
@@ -419,15 +466,14 @@ impl Mesh {
                 new_r = Some(node.i[1]);
             }
 
-            add_node(
+            self.add_node(
                 new_r.unwrap_or(node.r),
                 other_side,
                 [start.x, start.y],
                 [end.x, end.y],
+                &node,
             );
         }
-
-        to_add
     }
 }
 
@@ -773,17 +819,17 @@ mod tests {
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 3);
 
-        assert_eq!(successors[0].r, [11.0, 3.0]);
-        assert_eq!(successors[0].f, distance_between(from, [11.0, 3.0]));
+        assert_eq!(successors[2].r, [11.0, 3.0]);
+        assert_eq!(successors[2].f, distance_between(from, [11.0, 3.0]));
         assert_eq!(
-            successors[0].g,
+            successors[2].g,
             distance_between([11.0, 3.0], [11.0, 5.0])
                 + distance_between([11.0, 5.0], mirror(to, [[11.0, 5.0], [10.0, 7.0]]))
         );
-        assert_eq!(successors[0].polygon_from, 4);
-        assert_eq!(successors[0].polygon_to, 6);
-        assert_eq!(successors[0].i, [[11.0, 5.0], [10.0, 7.0]]);
-        assert_eq!(successors[0].path, vec![from]);
+        assert_eq!(successors[2].polygon_from, 4);
+        assert_eq!(successors[2].polygon_to, 6);
+        assert_eq!(successors[2].i, [[11.0, 5.0], [10.0, 7.0]]);
+        assert_eq!(successors[2].path, vec![from]);
 
         assert_eq!(successors[1].r, [11.0, 3.0]);
         assert_eq!(successors[1].f, distance_between(from, [11.0, 3.0]));
@@ -796,13 +842,13 @@ mod tests {
         assert_eq!(successors[1].i, [[10.0, 7.0], [9.75, 6.75]]);
         assert_eq!(successors[1].path, vec![from]);
 
-        assert_eq!(successors[2].r, from);
-        assert_eq!(successors[2].f, 0.0);
-        assert_eq!(successors[2].g, distance_between(from, to));
-        assert_eq!(successors[2].polygon_from, 4);
-        assert_eq!(successors[2].polygon_to, 2);
-        assert_eq!(successors[2].i, [[9.75, 6.75], [7.0, 4.0]]);
-        assert_eq!(successors[2].path, Vec::<[f32; 2]>::new());
+        assert_eq!(successors[0].r, from);
+        assert_eq!(successors[0].f, 0.0);
+        assert_eq!(successors[0].g, distance_between(from, to));
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 2);
+        assert_eq!(successors[0].i, [[9.75, 6.75], [7.0, 4.0]]);
+        assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
 
         assert_eq!(mesh.path(from, to).len, distance_between(from, to));
         assert_eq!(mesh.path(from, to).path, vec![to]);
@@ -887,17 +933,17 @@ mod tests {
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 3);
 
-        assert_eq!(successors[0].r, [11.0, 3.0]);
-        assert_eq!(successors[0].f, distance_between(from, [11.0, 3.0]));
+        assert_eq!(successors[2].r, [11.0, 3.0]);
+        assert_eq!(successors[2].f, distance_between(from, [11.0, 3.0]));
         assert_eq!(
-            successors[0].g,
+            successors[2].g,
             distance_between([11.0, 3.0], [11.0, 5.0])
                 + distance_between([11.0, 5.0], mirror(to, [[11.0, 5.0], [10.0, 7.0]]))
         );
-        assert_eq!(successors[0].polygon_from, 4);
-        assert_eq!(successors[0].polygon_to, 6);
-        assert_eq!(successors[0].i, [[11.0, 5.0], [10.0, 7.0]]);
-        assert_eq!(successors[0].path, vec![from]);
+        assert_eq!(successors[2].polygon_from, 4);
+        assert_eq!(successors[2].polygon_to, 6);
+        assert_eq!(successors[2].i, [[11.0, 5.0], [10.0, 7.0]]);
+        assert_eq!(successors[2].path, vec![from]);
 
         assert_eq!(successors[1].r, [11.0, 3.0]);
         assert_eq!(successors[1].f, distance_between(from, [11.0, 3.0]));
@@ -910,16 +956,16 @@ mod tests {
         assert_eq!(successors[1].i, [[10.0, 7.0], [9.75, 6.75]]);
         assert_eq!(successors[1].path, vec![from]);
 
-        assert_eq!(successors[2].r, from);
-        assert_eq!(successors[2].f, 0.0);
+        assert_eq!(successors[0].r, from);
+        assert_eq!(successors[0].f, 0.0);
         assert_eq!(
-            successors[2].g,
+            successors[0].g,
             distance_between(from, [7.0, 4.0]) + distance_between([7.0, 4.0], to)
         );
-        assert_eq!(successors[2].polygon_from, 4);
-        assert_eq!(successors[2].polygon_to, 2);
-        assert_eq!(successors[2].i, [[9.75, 6.75], [7.0, 4.0]]);
-        assert_eq!(successors[2].path, Vec::<[f32; 2]>::new());
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 2);
+        assert_eq!(successors[0].i, [[9.75, 6.75], [7.0, 4.0]]);
+        assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
 
         assert_delta!(
             mesh.path(from, to).len,
@@ -946,17 +992,17 @@ mod tests {
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 3);
 
-        assert_eq!(successors[0].r, [11.0, 3.0]);
-        assert_eq!(successors[0].f, distance_between(from, [11.0, 3.0]));
+        assert_eq!(successors[2].r, [11.0, 3.0]);
+        assert_eq!(successors[2].f, distance_between(from, [11.0, 3.0]));
         assert_eq!(
-            successors[0].g,
+            successors[2].g,
             distance_between([11.0, 3.0], [11.0, 5.0])
                 + distance_between([11.0, 5.0], mirror(to, [[11.0, 5.0], [10.0, 7.0]]))
         );
-        assert_eq!(successors[0].polygon_from, 4);
-        assert_eq!(successors[0].polygon_to, 6);
-        assert_eq!(successors[0].i, [[11.0, 5.0], [10.0, 7.0]]);
-        assert_eq!(successors[0].path, vec![from]);
+        assert_eq!(successors[2].polygon_from, 4);
+        assert_eq!(successors[2].polygon_to, 6);
+        assert_eq!(successors[2].i, [[11.0, 5.0], [10.0, 7.0]]);
+        assert_eq!(successors[2].path, vec![from]);
 
         assert_eq!(successors[1].r, [11.0, 3.0]);
         assert_eq!(successors[1].f, distance_between(from, [11.0, 3.0]));
@@ -969,18 +1015,18 @@ mod tests {
         assert_eq!(successors[1].i, [[10.0, 7.0], [9.75, 6.75]]);
         assert_eq!(successors[1].path, vec![from]);
 
-        assert_eq!(successors[2].r, from);
-        assert_eq!(successors[2].f, 0.0);
+        assert_eq!(successors[0].r, from);
+        assert_eq!(successors[0].f, 0.0);
         assert_eq!(
-            successors[2].g,
+            successors[0].g,
             distance_between(from, [7.0, 4.0]) + distance_between([7.0, 4.0], to)
         );
-        assert_eq!(successors[2].polygon_from, 4);
-        assert_eq!(successors[2].polygon_to, 2);
-        assert_eq!(successors[2].i, [[9.75, 6.75], [7.0, 4.0]]);
-        assert_eq!(successors[2].path, Vec::<[f32; 2]>::new());
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 2);
+        assert_eq!(successors[0].i, [[9.75, 6.75], [7.0, 4.0]]);
+        assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
 
-        let successor = successors.into_iter().nth(2).unwrap();
+        let successor = successors.into_iter().next().unwrap();
         let successors = dbg!(mesh.successors(successor, to));
         dbg!(&successors[2]);
         assert_eq!(successors.len(), 4);
