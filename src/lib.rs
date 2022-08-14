@@ -367,8 +367,7 @@ impl Mesh {
         ]
         .iter()
         .map(|delta| self.point_in_polygon_unit([point[0] + delta[0], point[1] + delta[1]]))
-        .filter(|poly| *poly != usize::MAX)
-        .next()
+        .find(|poly| *poly != usize::MAX)
         .unwrap_or(usize::MAX)
     }
 
