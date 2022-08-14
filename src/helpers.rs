@@ -1,6 +1,6 @@
 use crate::EdgeSide;
 
-pub(crate) const EPSILON: f32 = f32::EPSILON * 1000.0;
+pub(crate) const EPSILON: f32 = f32::EPSILON * 100000.0;
 
 pub(crate) fn on_side(point: [f32; 2], i: [[f32; 2]; 2]) -> EdgeSide {
     let side =
