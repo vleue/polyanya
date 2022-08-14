@@ -7,7 +7,7 @@ use std::{
 
 use helpers::{distance_between, heuristic, on_side, EPSILON};
 
-use crate::helpers::{line_intersect_segment, on_segment};
+use crate::helpers::{line_intersect_segment, on_segment, turning_on};
 
 mod helpers;
 
@@ -26,6 +26,12 @@ impl Vertex {
             polygons: poly,
         }
     }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Path {
+    pub len: f32,
+    pub path: Vec<[f32; 2]>,
 }
 
 #[derive(Debug)]
@@ -80,13 +86,16 @@ impl Hash for Root {
 }
 
 impl Mesh {
-    pub fn path_len(&self, from: [f32; 2], to: [f32; 2]) -> f32 {
+    pub fn path(&self, from: [f32; 2], to: [f32; 2]) -> Path {
         let starting_polygon_index = self.point_in_polygon(from);
         let starting_polygon = self.polygons.get(starting_polygon_index).unwrap();
         let ending_polygon = self.point_in_polygon(to);
 
         if starting_polygon_index == ending_polygon {
-            return distance_between(from, to);
+            return Path {
+                len: distance_between(from, to),
+                path: vec![to],
+            };
         }
 
         let mut root_history = HashMap::new();
@@ -129,7 +138,23 @@ impl Mesh {
             println!("popped off: {}", next);
             if next.polygon_to == ending_polygon as isize {
                 eprintln!("found path: {:?}", next);
-                return next.f + next.g;
+                let mut path = next
+                    .path
+                    .split_first()
+                    .map(|(_, p)| p)
+                    .unwrap_or(&[])
+                    .to_vec();
+                if next.r != from {
+                    path.push(next.r);
+                }
+                if let Some(turn) = turning_on(next.r, to, next.i) {
+                    path.push(turn);
+                }
+                path.push(to);
+                return Path {
+                    path,
+                    len: next.f + next.g,
+                };
             }
             let to_add = self.successors(next, to);
             for node in to_add {
@@ -149,7 +174,10 @@ impl Mesh {
                 queue.push(node);
             }
         }
-        -1.0
+        Path {
+            path: vec![],
+            len: -1.0,
+        }
     }
 
     fn successors(&self, node: SearchNode, to: [f32; 2]) -> Vec<SearchNode> {
@@ -443,7 +471,7 @@ mod tests {
 
     use crate::{
         helpers::{distance_between, mirror},
-        Mesh, Polygon, SearchNode, Vertex,
+        Mesh, Path, Polygon, SearchNode, Vertex,
     };
 
     fn mesh_u_grid() -> Mesh {
@@ -506,6 +534,14 @@ mod tests {
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[2.0, 0.0], [2.0, 1.0]]);
         assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
+
+        assert_eq!(
+            mesh.path(from, to),
+            Path {
+                path: vec![to],
+                len: distance_between(from, to)
+            }
+        );
     }
 
     #[test]
@@ -532,6 +568,14 @@ mod tests {
         assert_eq!(successors[0].polygon_to, 0);
         assert_eq!(successors[0].i, [[1.0, 1.0], [1.0, 0.0]]);
         assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
+
+        assert_eq!(
+            mesh.path(from, to),
+            Path {
+                path: vec![to],
+                len: distance_between(from, to)
+            }
+        );
     }
 
     #[test]
@@ -561,6 +605,16 @@ mod tests {
         assert_eq!(successors[0].polygon_to, 1);
         assert_eq!(successors[0].i, [[1.0, 0.0], [1.0, 1.0]]);
         assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
+
+        assert_eq!(
+            mesh.path(from, to),
+            Path {
+                path: vec![[1.0, 1.0], [2.0, 1.0], to],
+                len: distance_between(from, [1.0, 1.0])
+                    + distance_between([1.0, 1.0], [2.0, 1.0])
+                    + distance_between([2.0, 1.0], to)
+            }
+        );
     }
 
     #[test]
@@ -590,6 +644,16 @@ mod tests {
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[2.0, 0.0], [2.0, 1.0]]);
         assert_eq!(successors[0].path, vec![from]);
+
+        assert_eq!(
+            mesh.path(from, to),
+            Path {
+                path: vec![[1.0, 1.0], [2.0, 1.0], to],
+                len: distance_between(from, [1.0, 1.0])
+                    + distance_between([1.0, 1.0], [2.0, 1.0])
+                    + distance_between([2.0, 1.0], to)
+            }
+        );
     }
 
     fn mesh_from_paper() -> Mesh {
@@ -680,7 +744,8 @@ mod tests {
         assert_eq!(successors[2].i, [[9.75, 6.75], [7.0, 4.0]]);
         assert_eq!(successors[2].path, Vec::<[f32; 2]>::new());
 
-        assert_eq!(mesh.path_len(from, to), distance_between(from, to));
+        assert_eq!(mesh.path(from, to).len, distance_between(from, to));
+        assert_eq!(mesh.path(from, to).path, vec![to]);
     }
 
     #[test]
@@ -736,11 +801,12 @@ mod tests {
         assert_eq!(successors[2].path, Vec::<[f32; 2]>::new());
 
         assert_delta!(
-            mesh.path_len(from, to),
+            mesh.path(from, to).len,
             distance_between(from, [11.0, 3.0])
                 + distance_between([11.0, 3.0], [11.0, 5.0])
                 + distance_between([11.0, 5.0], to)
         );
+        assert_eq!(mesh.path(from, to).path, vec![[11.0, 3.0], [11.0, 5.0], to]);
     }
 
     #[test]
@@ -796,9 +862,10 @@ mod tests {
         assert_eq!(successors[2].path, Vec::<[f32; 2]>::new());
 
         assert_delta!(
-            mesh.path_len(from, to),
+            mesh.path(from, to).len,
             distance_between(from, [7.0, 4.0]) + distance_between([7.0, 4.0], to)
         );
+        assert_eq!(mesh.path(from, to).path, vec![[7.0, 4.0], to]);
     }
 
     #[test]
@@ -859,10 +926,12 @@ mod tests {
         assert_eq!(successors.len(), 4);
 
         assert_delta!(
-            mesh.path_len(from, to),
+            mesh.path(from, to).len,
             distance_between(from, [7.0, 4.0])
                 + distance_between([7.0, 4.0], [4.0, 2.0])
                 + distance_between([4.0, 2.0], to)
         );
+
+        assert_eq!(mesh.path(from, to).path, vec![[7.0, 4.0], [4.0, 2.0], to]);
     }
 }

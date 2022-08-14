@@ -36,6 +36,23 @@ pub(crate) fn heuristic(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> f32 {
     }
 }
 
+pub(crate) fn turning_on(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> Option<[f32; 2]> {
+    let to = if on_side(r, i) == on_side(to, i) {
+        mirror(to, i)
+    } else {
+        to
+    };
+    if r == i[0] {
+        None
+    } else if on_side(to, [r, i[0]]) == EdgeSide::Right {
+        Some(i[0])
+    } else if on_side(to, [r, i[1]]) == EdgeSide::Left {
+        Some(i[1])
+    } else {
+        None
+    }
+}
+
 pub(crate) fn mirror(p: [f32; 2], i: [[f32; 2]; 2]) -> [f32; 2] {
     let dx = i[1][0] - i[0][0];
     let dy = i[1][1] - i[0][1];
