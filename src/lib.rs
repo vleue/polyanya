@@ -278,8 +278,7 @@ impl Mesh {
                                 .vertices
                                 .iter()
                                 .flat_map(|v| self.vertices.get(*v))
-                                .filter(|v| [v.x, v.y] == node.i[0])
-                                .next()
+                                .find(|v| [v.x, v.y] == node.i[0])
                                 .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
                             {
                                 add_node(extra_r, other_side, [start.x, start.y], intersect1);
@@ -291,8 +290,7 @@ impl Mesh {
                                 .vertices
                                 .iter()
                                 .flat_map(|v| self.vertices.get(*v))
-                                .filter(|v| [v.x, v.y] == node.i[1])
-                                .next()
+                                .find(|v| [v.x, v.y] == node.i[1])
                                 .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
                             {
                                 add_node(extra_r, other_side, intersect2, [end.x, end.y]);
@@ -319,8 +317,7 @@ impl Mesh {
                                 .vertices
                                 .iter()
                                 .flat_map(|v| self.vertices.get(*v))
-                                .filter(|v| [v.x, v.y] == node.i[0])
-                                .next()
+                                .find(|v| [v.x, v.y] == node.i[0])
                                 .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
                             {
                                 add_node(extra_r, other_side, [start.x, start.y], intersect);
@@ -348,8 +345,7 @@ impl Mesh {
                                 .vertices
                                 .iter()
                                 .flat_map(|v| self.vertices.get(*v))
-                                .filter(|v| [v.x, v.y] == node.i[1])
-                                .next()
+                                .find(|v| [v.x, v.y] == node.i[1])
                                 .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
                             {
                                 add_node(extra_r, other_side, intersect, [end.x, end.y]);

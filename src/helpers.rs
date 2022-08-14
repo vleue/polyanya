@@ -62,7 +62,7 @@ pub(crate) fn line_intersect_segment(
         / ((line[0][0] - line[1][0]) * (segment[0][1] - segment[1][1])
             - (line[0][1] - line[1][1]) * (segment[0][0] - segment[1][0]));
 
-    if u < 0.0 || u > 1.0 || u.is_nan() {
+    if !(0.0..=1.0).contains(&u) || u.is_nan() {
         None
     } else {
         Some([
