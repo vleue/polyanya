@@ -391,11 +391,3 @@ fn arena_scenario_ref_impl() {
     assert_delta!(arena.path_len([1.0, 7.0], [47.0, 44.0]), 59.3941);
     assert_delta!(arena.path_len([1.0, 7.0], [47.0, 46.0]), 60.4531);
 }
-
-#[test]
-#[ignore]
-fn regression() {
-    let arena = arena_mesh();
-
-    assert_delta!(arena.path_len([1.0, 11.0], [3.0, 36.0]), 25.4721);
-}
