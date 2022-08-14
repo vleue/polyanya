@@ -4,7 +4,7 @@ pub(crate) fn on_side(point: [f32; 2], i: [[f32; 2]; 2]) -> EdgeSide {
     let side =
         (point[1] - i[0][1]) * (i[1][0] - i[0][0]) - (point[0] - i[0][0]) * (i[1][1] - i[0][1]);
     match side {
-        x if x == 0.0 => EdgeSide::Edge,
+        x if x.abs() < f32::EPSILON * 100.0 => EdgeSide::Edge,
         x if x < 0.0 => EdgeSide::Right,
         _ => EdgeSide::Left,
     }
