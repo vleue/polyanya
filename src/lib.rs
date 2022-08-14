@@ -57,6 +57,7 @@ impl Polygon {
         }
     }
 
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn edges_index(&self) -> Vec<[usize; 2]> {
         let mut edges = vec![];
         let mut last = self.vertices[0];
@@ -293,18 +294,22 @@ impl SearchInstance {
         let mut first_intersect = None;
         let mut second_intersect = None;
 
-        // let mut add_node = |root: [f32; 2], other_side: isize, start: [f32; 2], end: [f32; 2]| {};
-
         for edge in to_polygon
             .edges_index()
             .iter()
             .chain(to_polygon.edges_index().iter())
         {
             let mut new_r = None;
+            let mut found_end_this_turn = false;
+            #[cfg(feature = "tracing")]
+            let span = tracing::info_span!("successors - getting edges").entered();
             let start = mesh.vertices.get(edge[0]).unwrap();
             let end = mesh.vertices.get(edge[1]).unwrap();
-            let mut found_end_this_turn = false;
+            #[cfg(feature = "tracing")]
+            std::mem::drop(span);
 
+            #[cfg(feature = "tracing")]
+            let span = tracing::info_span!("successors - checking for start of interval").entered();
             // continue until we get to the interval end
             if !found_end
                 && node.i[0] != [end.x, end.y]
@@ -313,10 +318,16 @@ impl SearchInstance {
                 found_end = true;
                 found_end_this_turn = true;
             }
+            #[cfg(feature = "tracing")]
+            std::mem::drop(span);
+
             if !found_end {
                 continue;
             }
 
+            #[cfg(feature = "tracing")]
+            let span =
+                tracing::info_span!("successors - checking polygon on the other side").entered();
             let mut other_side = isize::MAX;
             // find the polygon at the other side of this edge
             for i in &start.polygons {
@@ -324,7 +335,11 @@ impl SearchInstance {
                     other_side = *i;
                 }
             }
+            #[cfg(feature = "tracing")]
+            std::mem::drop(span);
 
+            #[cfg(feature = "tracing")]
+            let span = tracing::info_span!("successors - checking for end of interval").entered();
             // break once we reached the interval start
             if found_end
                 && !found_end_this_turn
@@ -333,12 +348,17 @@ impl SearchInstance {
             {
                 break;
             }
+            #[cfg(feature = "tracing")]
+            std::mem::drop(span);
 
             // this goes back to the current polygon, ignore
             if other_side == node.polygon_from {
                 continue;
             }
 
+            #[cfg(feature = "tracing")]
+            let span =
+                tracing::info_span!("successors - checking for double intersection").entered();
             if (node.i[0] != [start.x, start.y]
                 || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left)
                 && (node.i[1] != [end.x, end.y]
@@ -393,7 +413,12 @@ impl SearchInstance {
                     }
                 }
             }
+            #[cfg(feature = "tracing")]
+            std::mem::drop(span);
 
+            #[cfg(feature = "tracing")]
+            let span = tracing::info_span!("successors - checking for single intersection - end")
+                .entered();
             if node.i[0] != [start.x, start.y]
                 || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left
             {
@@ -426,7 +451,12 @@ impl SearchInstance {
                     }
                 }
             }
+            #[cfg(feature = "tracing")]
+            std::mem::drop(span);
 
+            #[cfg(feature = "tracing")]
+            let span = tracing::info_span!("successors - checking for single intersection - start")
+                .entered();
             if node.i[1] != [end.x, end.y]
                 || on_side([start.x, start.y], [node.r, node.i[0]]) == EdgeSide::Right
             {
@@ -458,6 +488,8 @@ impl SearchInstance {
                     }
                 }
             }
+            #[cfg(feature = "tracing")]
+            std::mem::drop(span);
 
             if first_intersect.is_none() && second_intersect.is_none() {
                 new_r = Some(node.i[0]);
