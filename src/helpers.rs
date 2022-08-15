@@ -32,14 +32,20 @@ pub(crate) fn heuristic(r: [f32; 2], to: [f32; 2], i: [[f32; 2]; 2]) -> f32 {
     } else {
         to
     };
-    if r == i[0] {
+    if r == i[0] || r == i[1] {
         distance_between(r, to)
-    } else if on_side(to, [r, i[0]]) == EdgeSide::Right {
-        distance_between(r, i[0]) + distance_between(i[0], to)
-    } else if on_side(to, [r, i[1]]) == EdgeSide::Left {
-        distance_between(r, i[1]) + distance_between(i[1], to)
     } else {
-        distance_between(r, to)
+        let lroot = [r[0] - i[0][0], r[1] - i[0][1]];
+        let lgoal = [to[0] - i[0][0], to[1] - i[0][1]];
+        let rootgoal = [to[0] - r[0], to[1] - r[1]];
+        let lr = [i[1][0] - i[0][0], i[1][1] - i[0][1]];
+        let lr_num = lgoal[0] * lroot[1] - lgoal[1] * lroot[0];
+        let denom = rootgoal[0] * lr[1] - rootgoal[1] * lr[0];
+        match lr_num / denom {
+            x if x < 0.0 => distance_between(r, i[0]) + distance_between(i[0], to),
+            x if x > 1.0 => distance_between(r, i[1]) + distance_between(i[1], to),
+            _ => distance_between(r, to),
+        }
     }
 }
 
