@@ -59,7 +59,25 @@ impl Polygon {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn edges_index(&self) -> Vec<[usize; 2]> {
-        let mut edges = vec![];
+        let mut edges = Vec::with_capacity(self.vertices.len() / 2);
+        let mut last = self.vertices[0];
+        for vertex in self.vertices.iter().skip(1) {
+            edges.push([last, *vertex]);
+            last = *vertex;
+        }
+        edges.push([last, self.vertices[0]]);
+        edges
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn double_edges_index(&self) -> Vec<[usize; 2]> {
+        let mut edges = Vec::with_capacity(self.vertices.len());
+        let mut last = self.vertices[0];
+        for vertex in self.vertices.iter().skip(1) {
+            edges.push([last, *vertex]);
+            last = *vertex;
+        }
+        edges.push([last, self.vertices[0]]);
         let mut last = self.vertices[0];
         for vertex in self.vertices.iter().skip(1) {
             edges.push([last, *vertex]);
@@ -164,8 +182,8 @@ impl Mesh {
         }
 
         let mut search_instance = SearchInstance {
-            queue: BinaryHeap::new(),
-            root_history: HashMap::new(),
+            queue: BinaryHeap::with_capacity(15),
+            root_history: HashMap::with_capacity(10),
             to,
         };
         search_instance.root_history.insert(Root(from), 0.0);
@@ -294,11 +312,7 @@ impl SearchInstance {
         let mut first_intersect = None;
         let mut second_intersect = None;
 
-        for edge in to_polygon
-            .edges_index()
-            .iter()
-            .chain(to_polygon.edges_index().iter())
-        {
+        for edge in to_polygon.double_edges_index() {
             let mut new_r = None;
             let mut found_end_this_turn = false;
             #[cfg(feature = "tracing")]
