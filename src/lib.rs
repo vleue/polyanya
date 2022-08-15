@@ -165,6 +165,14 @@ struct SearchInstance {
     queue: BinaryHeap<SearchNode>,
     root_history: HashMap<Root, f32>,
     to: [f32; 2],
+    #[cfg(feature = "stats")]
+    pushed: usize,
+    #[cfg(feature = "stats")]
+    popped: usize,
+    #[cfg(feature = "stats")]
+    successors_called: usize,
+    #[cfg(feature = "stats")]
+    nodes_generated: usize,
 }
 
 impl Mesh {
@@ -185,6 +193,14 @@ impl Mesh {
             queue: BinaryHeap::with_capacity(15),
             root_history: HashMap::with_capacity(10),
             to,
+            #[cfg(feature = "stats")]
+            pushed: 0,
+            #[cfg(feature = "stats")]
+            popped: 0,
+            #[cfg(feature = "stats")]
+            successors_called: 0,
+            #[cfg(feature = "stats")]
+            nodes_generated: 0,
         };
         search_instance.root_history.insert(Root(from), 0.0);
 
@@ -204,7 +220,7 @@ impl Mesh {
                 continue;
             }
 
-            search_instance.queue.push(SearchNode {
+            let new_node = SearchNode {
                 path: vec![],
                 r: from,
                 i: [[start.x, start.y], [end.x, end.y]],
@@ -212,13 +228,28 @@ impl Mesh {
                 polygon_to: other_side,
                 f: 0.0,
                 g: heuristic(from, to, [[start.x, start.y], [end.x, end.y]]),
-            })
+            };
+            #[cfg(feature = "verbose")]
+            println!("generating init node: {}", new_node);
+            search_instance.queue.push(new_node)
         }
 
         while let Some(next) = search_instance.queue.pop() {
-            // println!("popped off: {}", next);
+            #[cfg(feature = "verbose")]
+            println!("popped off: {}", next);
+            #[cfg(feature = "stats")]
+            {
+                search_instance.popped += 1;
+            }
             if next.polygon_to == ending_polygon as isize {
-                // eprintln!("found path: {:?}", next);
+                #[cfg(feature = "stats")]
+                eprintln!(
+                    "{:?} / {:?} / {:?} / {:?}",
+                    search_instance.successors_called,
+                    search_instance.nodes_generated,
+                    search_instance.pushed,
+                    search_instance.popped
+                );
                 let mut path = next
                     .path
                     .split_first()
@@ -252,6 +283,14 @@ impl Mesh {
             queue: BinaryHeap::new(),
             root_history: HashMap::new(),
             to,
+            #[cfg(feature = "stats")]
+            pushed: 0,
+            #[cfg(feature = "stats")]
+            popped: 0,
+            #[cfg(feature = "stats")]
+            successors_called: 0,
+            #[cfg(feature = "stats")]
+            nodes_generated: 0,
         };
         search_instance.successors(node, self);
         search_instance.queue.drain().collect()
@@ -268,6 +307,10 @@ impl SearchInstance {
         end: [f32; 2],
         node: &SearchNode,
     ) {
+        #[cfg(feature = "stats")]
+        {
+            self.nodes_generated += 1;
+        }
         // prune edges that don't have a polygon on the other side: cul de sac pruning
         if other_side == isize::MAX {
             return;
@@ -292,11 +335,23 @@ impl SearchInstance {
                 if o.get() < &new_node.f {
                     ()
                 } else {
+                    #[cfg(feature = "stats")]
+                    {
+                        self.pushed += 1;
+                    }
+                    #[cfg(feature = "verbose")]
+                    println!("   pushing: {}", new_node);
                     o.insert(new_node.f);
                     self.queue.push(new_node);
                 }
             }
             Entry::Vacant(v) => {
+                #[cfg(feature = "stats")]
+                {
+                    self.pushed += 1;
+                }
+                #[cfg(feature = "verbose")]
+                println!("   pushing: {}", new_node);
                 v.insert(new_node.f);
                 self.queue.push(new_node);
             }
@@ -305,6 +360,10 @@ impl SearchInstance {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn successors(&mut self, node: SearchNode, mesh: &Mesh) {
+        #[cfg(feature = "stats")]
+        {
+            self.successors_called += 1;
+        }
         let to_polygon = mesh.polygons.get(node.polygon_to as usize).unwrap();
 
         let mut found_end = false;
