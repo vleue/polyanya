@@ -313,6 +313,9 @@ impl SearchInstance {
         let mut second_intersect = None;
 
         for edge in to_polygon.double_edges_index() {
+            #[cfg(feature = "tracing")]
+            let edge_span = tracing::info_span!("successors - edge").entered();
+
             let mut new_r = None;
             let mut found_end_this_turn = false;
             #[cfg(feature = "tracing")]
@@ -520,6 +523,9 @@ impl SearchInstance {
                 [end.x, end.y],
                 &node,
             );
+
+            #[cfg(feature = "tracing")]
+            std::mem::drop(edge_span);
         }
     }
 }
