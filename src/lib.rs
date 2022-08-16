@@ -177,6 +177,7 @@ impl Mesh {
 
 struct SearchInstance<'m> {
     queue: BinaryHeap<SearchNode>,
+    node_buffer: Vec<SearchNode>,
     root_history: HashMap<Root, f32>,
     to: [f32; 2],
     polygon_to: isize,
@@ -207,6 +208,7 @@ impl Mesh {
 
         let mut search_instance = SearchInstance {
             queue: BinaryHeap::with_capacity(15),
+            node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
             to,
             polygon_to: ending_polygon as isize,
@@ -251,6 +253,7 @@ impl Mesh {
                 &empty_node,
             );
         }
+        search_instance.flush_nodes();
 
         while let Some(next) = search_instance.queue.pop() {
             #[cfg(feature = "verbose")]
@@ -299,6 +302,7 @@ impl Mesh {
     fn successors(&self, node: SearchNode, to: [f32; 2]) -> Vec<SearchNode> {
         let mut search_instance = SearchInstance {
             queue: BinaryHeap::new(),
+            node_buffer: Vec::new(),
             root_history: HashMap::new(),
             to,
             polygon_to: self.point_in_polygon(to) as isize,
@@ -319,6 +323,7 @@ impl Mesh {
 
 impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline]
     fn add_node(
         &mut self,
         root: [f32; 2],
@@ -353,6 +358,7 @@ impl<'m> SearchInstance<'m> {
             path.push(node.r);
         }
 
+        let heuristic = heuristic(root, self.to, [start, end]);
         let new_node = SearchNode {
             path,
             r: root,
@@ -360,265 +366,284 @@ impl<'m> SearchInstance<'m> {
             polygon_from: node.polygon_to as isize,
             polygon_to: other_side,
             f: node.f + distance_between(node.r, root),
-            g: heuristic(root, self.to, [start, end]),
+            g: heuristic,
         };
+        if new_node.f.is_nan() || new_node.g.is_nan() {
+            return;
+        }
 
         match self.root_history.entry(Root(root)) {
             Entry::Occupied(mut o) => {
                 if o.get() < &new_node.f {
                     ()
                 } else {
-                    #[cfg(feature = "stats")]
-                    {
-                        self.pushed += 1;
-                    }
-                    #[cfg(feature = "verbose")]
-                    println!("   pushing: {}", new_node);
                     o.insert(new_node.f);
-                    self.queue.push(new_node);
+                    self.node_buffer.push(new_node);
                 }
             }
             Entry::Vacant(v) => {
-                #[cfg(feature = "stats")]
-                {
-                    self.pushed += 1;
-                }
-                #[cfg(feature = "verbose")]
-                println!("   pushing: {}", new_node);
                 v.insert(new_node.f);
-                self.queue.push(new_node);
+                self.node_buffer.push(new_node);
             }
         }
     }
 
+    fn flush_nodes(&mut self) {
+        #[cfg(feature = "stats")]
+        {
+            self.pushed += self.node_buffer.len();
+        }
+        #[cfg(feature = "verbose")]
+        for new_node in &self.node_buffer {
+            println!("        pushing: {}", new_node);
+        }
+        self.queue.extend(self.node_buffer.drain(..));
+    }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn successors(&mut self, node: SearchNode) {
+    fn successors(&mut self, mut node: SearchNode) {
         #[cfg(feature = "stats")]
         {
             self.successors_called += 1;
         }
-        let to_polygon = self.mesh.polygons.get(node.polygon_to as usize).unwrap();
+        loop {
+            let to_polygon = self.mesh.polygons.get(node.polygon_to as usize).unwrap();
 
-        let mut found_end = false;
+            let mut found_end = false;
 
-        let mut first_intersect = None;
-        let mut second_intersect = None;
+            let mut first_intersect = None;
+            let mut second_intersect = None;
 
-        for edge in to_polygon.double_edges_index() {
-            #[cfg(feature = "tracing")]
-            let edge_span = tracing::info_span!("successors - edge").entered();
+            for edge in to_polygon.double_edges_index() {
+                #[cfg(feature = "tracing")]
+                let edge_span = tracing::info_span!("successors - edge").entered();
 
-            let mut new_r = None;
-            let mut found_end_this_turn = false;
-            #[cfg(feature = "tracing")]
-            let span = tracing::info_span!("successors - getting edges").entered();
-            let start = self.mesh.vertices.get(edge[0]).unwrap();
-            let end = self.mesh.vertices.get(edge[1]).unwrap();
-            #[cfg(feature = "tracing")]
-            std::mem::drop(span);
+                let mut new_r = None;
+                let mut found_end_this_turn = false;
+                #[cfg(feature = "tracing")]
+                let span = tracing::info_span!("successors - getting edges").entered();
+                let start = self.mesh.vertices.get(edge[0]).unwrap();
+                let end = self.mesh.vertices.get(edge[1]).unwrap();
+                #[cfg(feature = "tracing")]
+                std::mem::drop(span);
 
-            #[cfg(feature = "tracing")]
-            let span = tracing::info_span!("successors - checking for start of interval").entered();
-            // continue until we get to the interval end
-            if !found_end
-                && node.i[0] != [end.x, end.y]
-                && on_segment(node.i[0], [[start.x, start.y], [end.x, end.y]])
-            {
-                found_end = true;
-                found_end_this_turn = true;
-            }
-            #[cfg(feature = "tracing")]
-            std::mem::drop(span);
-
-            if !found_end {
-                continue;
-            }
-
-            #[cfg(feature = "tracing")]
-            let span =
-                tracing::info_span!("successors - checking polygon on the other side").entered();
-            let mut other_side = isize::MAX;
-            // find the polygon at the other side of this edge
-            for i in &start.polygons {
-                if *i != -1 && *i != node.polygon_to as isize && end.polygons.contains(i) {
-                    other_side = *i;
+                #[cfg(feature = "tracing")]
+                let span =
+                    tracing::info_span!("successors - checking for start of interval").entered();
+                // continue until we get to the interval end
+                if !found_end
+                    && node.i[0] != [end.x, end.y]
+                    && on_segment(node.i[0], [[start.x, start.y], [end.x, end.y]])
+                {
+                    found_end = true;
+                    found_end_this_turn = true;
                 }
-            }
-            #[cfg(feature = "tracing")]
-            std::mem::drop(span);
+                #[cfg(feature = "tracing")]
+                std::mem::drop(span);
 
-            #[cfg(feature = "tracing")]
-            let span = tracing::info_span!("successors - checking for end of interval").entered();
-            // break once we reached the interval start
-            if found_end
-                && !found_end_this_turn
-                && node.i[1] != [end.x, end.y]
-                && on_segment(node.i[1], [[start.x, start.y], [end.x, end.y]])
-            {
-                break;
-            }
-            #[cfg(feature = "tracing")]
-            std::mem::drop(span);
+                if !found_end {
+                    continue;
+                }
 
-            // this goes back to the current polygon, ignore
-            if other_side == node.polygon_from {
-                continue;
-            }
+                #[cfg(feature = "tracing")]
+                let span = tracing::info_span!("successors - checking polygon on the other side")
+                    .entered();
+                let mut other_side = isize::MAX;
+                // find the polygon at the other side of this edge
+                for i in &start.polygons {
+                    if *i != -1 && *i != node.polygon_to as isize && end.polygons.contains(i) {
+                        other_side = *i;
+                    }
+                }
+                #[cfg(feature = "tracing")]
+                std::mem::drop(span);
 
-            #[cfg(feature = "tracing")]
-            let span =
-                tracing::info_span!("successors - checking for double intersection").entered();
-            if (node.i[0] != [start.x, start.y]
-                || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left)
-                && (node.i[1] != [end.x, end.y]
-                    || on_side([start.x, start.y], [node.r, node.i[0]]) == EdgeSide::Right)
-            {
-                if let Some(intersect1) = line_intersect_segment(
-                    [node.r, node.i[0]],
-                    [[start.x, start.y], [end.x, end.y]],
-                ) {
-                    if let Some(intersect2) = line_intersect_segment(
+                #[cfg(feature = "tracing")]
+                let span =
+                    tracing::info_span!("successors - checking for end of interval").entered();
+                // break once we reached the interval start
+                if found_end
+                    && !found_end_this_turn
+                    && node.i[1] != [end.x, end.y]
+                    && on_segment(node.i[1], [[start.x, start.y], [end.x, end.y]])
+                {
+                    break;
+                }
+                #[cfg(feature = "tracing")]
+                std::mem::drop(span);
+
+                // this goes back to the current polygon, ignore
+                if other_side == node.polygon_from {
+                    continue;
+                }
+
+                #[cfg(feature = "tracing")]
+                let span =
+                    tracing::info_span!("successors - checking for double intersection").entered();
+                if (node.i[0] != [start.x, start.y]
+                    || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left)
+                    && (node.i[1] != [end.x, end.y]
+                        || on_side([start.x, start.y], [node.r, node.i[0]]) == EdgeSide::Right)
+                {
+                    if let Some(intersect1) = line_intersect_segment(
+                        [node.r, node.i[0]],
+                        [[start.x, start.y], [end.x, end.y]],
+                    ) {
+                        if let Some(intersect2) = line_intersect_segment(
+                            [node.r, node.i[1]],
+                            [[start.x, start.y], [end.x, end.y]],
+                        ) {
+                            first_intersect = Some(intersect1);
+                            second_intersect = Some(intersect2);
+                            if intersect1 != [start.x, start.y] {
+                                if let Some(extra_r) = to_polygon
+                                    .vertices
+                                    .iter()
+                                    .flat_map(|v| self.mesh.vertices.get(*v))
+                                    .find(|v| [v.x, v.y] == node.i[0])
+                                    .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                                {
+                                    self.add_node(
+                                        extra_r,
+                                        other_side,
+                                        [start.x, start.y],
+                                        intersect1,
+                                        &node,
+                                    );
+                                }
+                            }
+                            self.add_node(node.r, other_side, intersect1, intersect2, &node);
+                            if intersect2 != [start.x, start.y] {
+                                if let Some(extra_r) = to_polygon
+                                    .vertices
+                                    .iter()
+                                    .flat_map(|v| self.mesh.vertices.get(*v))
+                                    .find(|v| [v.x, v.y] == node.i[1])
+                                    .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                                {
+                                    self.add_node(
+                                        extra_r,
+                                        other_side,
+                                        intersect2,
+                                        [end.x, end.y],
+                                        &node,
+                                    );
+                                }
+                            }
+                            continue;
+                        }
+                    }
+                }
+                #[cfg(feature = "tracing")]
+                std::mem::drop(span);
+
+                #[cfg(feature = "tracing")]
+                let span =
+                    tracing::info_span!("successors - checking for single intersection - end")
+                        .entered();
+                if node.i[0] != [start.x, start.y]
+                    || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left
+                {
+                    if let Some(intersect) = line_intersect_segment(
+                        [node.r, node.i[0]],
+                        [[start.x, start.y], [end.x, end.y]],
+                    ) {
+                        if intersect != [end.x, end.y] {
+                            // if intersect != [end.x, end.y] && intersect != [start.x, start.y] {
+                            first_intersect = Some(intersect);
+                            if intersect != [start.x, start.y] {
+                                if let Some(extra_r) = to_polygon
+                                    .vertices
+                                    .iter()
+                                    .flat_map(|v| self.mesh.vertices.get(*v))
+                                    .find(|v| [v.x, v.y] == node.i[0])
+                                    .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                                {
+                                    self.add_node(
+                                        extra_r,
+                                        other_side,
+                                        [start.x, start.y],
+                                        intersect,
+                                        &node,
+                                    );
+                                }
+                            }
+                            self.add_node(node.r, other_side, intersect, [end.x, end.y], &node);
+                            continue;
+                        }
+                    }
+                }
+                #[cfg(feature = "tracing")]
+                std::mem::drop(span);
+
+                #[cfg(feature = "tracing")]
+                let span =
+                    tracing::info_span!("successors - checking for single intersection - start")
+                        .entered();
+                if node.i[1] != [end.x, end.y]
+                    || on_side([start.x, start.y], [node.r, node.i[0]]) == EdgeSide::Right
+                {
+                    if let Some(intersect) = line_intersect_segment(
                         [node.r, node.i[1]],
                         [[start.x, start.y], [end.x, end.y]],
                     ) {
-                        first_intersect = Some(intersect1);
-                        second_intersect = Some(intersect2);
-                        if intersect1 != [start.x, start.y] {
-                            if let Some(extra_r) = to_polygon
-                                .vertices
-                                .iter()
-                                .flat_map(|v| self.mesh.vertices.get(*v))
-                                .find(|v| [v.x, v.y] == node.i[0])
-                                .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
-                            {
-                                self.add_node(
-                                    extra_r,
-                                    other_side,
-                                    [start.x, start.y],
-                                    intersect1,
-                                    &node,
-                                );
-                            }
-                        }
-                        self.add_node(node.r, other_side, intersect1, intersect2, &node);
-                        if intersect2 != [start.x, start.y] {
-                            if let Some(extra_r) = to_polygon
-                                .vertices
-                                .iter()
-                                .flat_map(|v| self.mesh.vertices.get(*v))
-                                .find(|v| [v.x, v.y] == node.i[1])
-                                .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
-                            {
-                                self.add_node(
-                                    extra_r,
-                                    other_side,
-                                    intersect2,
-                                    [end.x, end.y],
-                                    &node,
-                                );
-                            }
-                        }
-                        continue;
-                    }
-                }
-            }
-            #[cfg(feature = "tracing")]
-            std::mem::drop(span);
-
-            #[cfg(feature = "tracing")]
-            let span = tracing::info_span!("successors - checking for single intersection - end")
-                .entered();
-            if node.i[0] != [start.x, start.y]
-                || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left
-            {
-                if let Some(intersect) = line_intersect_segment(
-                    [node.r, node.i[0]],
-                    [[start.x, start.y], [end.x, end.y]],
-                ) {
-                    if intersect != [end.x, end.y] {
-                        // if intersect != [end.x, end.y] && intersect != [start.x, start.y] {
-                        first_intersect = Some(intersect);
                         if intersect != [start.x, start.y] {
-                            if let Some(extra_r) = to_polygon
-                                .vertices
-                                .iter()
-                                .flat_map(|v| self.mesh.vertices.get(*v))
-                                .find(|v| [v.x, v.y] == node.i[0])
-                                .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
-                            {
-                                self.add_node(
-                                    extra_r,
-                                    other_side,
-                                    [start.x, start.y],
-                                    intersect,
-                                    &node,
-                                );
+                            second_intersect = Some(intersect);
+                            self.add_node(node.r, other_side, [start.x, start.y], intersect, &node);
+                            if intersect != [end.x, end.y] {
+                                if let Some(extra_r) = to_polygon
+                                    .vertices
+                                    .iter()
+                                    .flat_map(|v| self.mesh.vertices.get(*v))
+                                    .find(|v| [v.x, v.y] == node.i[1])
+                                    .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                                {
+                                    self.add_node(
+                                        extra_r,
+                                        other_side,
+                                        intersect,
+                                        [end.x, end.y],
+                                        &node,
+                                    );
+                                }
                             }
+                            continue;
                         }
-                        self.add_node(node.r, other_side, intersect, [end.x, end.y], &node);
-                        continue;
                     }
                 }
-            }
-            #[cfg(feature = "tracing")]
-            std::mem::drop(span);
+                #[cfg(feature = "tracing")]
+                std::mem::drop(span);
 
-            #[cfg(feature = "tracing")]
-            let span = tracing::info_span!("successors - checking for single intersection - start")
-                .entered();
-            if node.i[1] != [end.x, end.y]
-                || on_side([start.x, start.y], [node.r, node.i[0]]) == EdgeSide::Right
-            {
-                if let Some(intersect) = line_intersect_segment(
-                    [node.r, node.i[1]],
-                    [[start.x, start.y], [end.x, end.y]],
-                ) {
-                    if intersect != [start.x, start.y] {
-                        second_intersect = Some(intersect);
-                        self.add_node(node.r, other_side, [start.x, start.y], intersect, &node);
-                        if intersect != [end.x, end.y] {
-                            if let Some(extra_r) = to_polygon
-                                .vertices
-                                .iter()
-                                .flat_map(|v| self.mesh.vertices.get(*v))
-                                .find(|v| [v.x, v.y] == node.i[1])
-                                .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
-                            {
-                                self.add_node(
-                                    extra_r,
-                                    other_side,
-                                    intersect,
-                                    [end.x, end.y],
-                                    &node,
-                                );
-                            }
-                        }
-                        continue;
-                    }
+                if first_intersect.is_none() && second_intersect.is_none() {
+                    new_r = Some(node.i[0]);
                 }
+
+                if first_intersect.is_some() && second_intersect.is_some() {
+                    new_r = Some(node.i[1]);
+                }
+
+                self.add_node(
+                    new_r.unwrap_or(node.r),
+                    other_side,
+                    [start.x, start.y],
+                    [end.x, end.y],
+                    &node,
+                );
+
+                #[cfg(feature = "tracing")]
+                std::mem::drop(edge_span);
             }
-            #[cfg(feature = "tracing")]
-            std::mem::drop(span);
-
-            if first_intersect.is_none() && second_intersect.is_none() {
-                new_r = Some(node.i[0]);
+            if self.node_buffer.len() == 1 && self.node_buffer[0].polygon_to != self.polygon_to {
+                #[cfg(feature = "verbose")]
+                for new_node in &self.node_buffer {
+                    println!("        intermediate: {}", new_node);
+                }
+                node = self.node_buffer.drain(..).next().unwrap();
+            } else {
+                break;
             }
-
-            if first_intersect.is_some() && second_intersect.is_some() {
-                new_r = Some(node.i[1]);
-            }
-
-            self.add_node(
-                new_r.unwrap_or(node.r),
-                other_side,
-                [start.x, start.y],
-                [end.x, end.y],
-                &node,
-            );
-
-            #[cfg(feature = "tracing")]
-            std::mem::drop(edge_span);
         }
+        self.flush_nodes();
     }
 }
 
@@ -845,18 +870,18 @@ mod tests {
             f: 0.0,
             g: distance_between(from, to),
         };
-        let successors = mesh.successors(search_node, to);
+        let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].r, from);
-        assert_eq!(successors[0].f, 0.0);
+        assert_eq!(successors[0].r, [2.0, 1.0]);
         assert_eq!(
-            successors[0].g,
-            distance_between(from, [1.0, 1.0]) + distance_between([1.0, 1.0], to)
+            successors[0].f,
+            distance_between(from, [1.0, 1.0]) + distance_between([1.0, 1.0], [2.0, 1.0])
         );
-        assert_eq!(successors[0].polygon_from, 0);
-        assert_eq!(successors[0].polygon_to, 1);
-        assert_eq!(successors[0].i, [[1.0, 0.0], [1.0, 1.0]]);
-        assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
+        assert_eq!(successors[0].g, distance_between([2.0, 1.0], to));
+        assert_eq!(successors[0].polygon_from, 2);
+        assert_eq!(successors[0].polygon_to, 4);
+        assert_eq!(successors[0].i, [[3.0, 1.0], [2.0, 1.0]]);
+        assert_eq!(successors[0].path, vec![from, [1.0, 1.0]]);
 
         assert_eq!(
             mesh.path(from, to),
@@ -886,16 +911,16 @@ mod tests {
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].r, [1.0, 1.0]);
-        assert_eq!(successors[0].f, distance_between(from, [1.0, 1.0]));
+        assert_eq!(successors[0].r, [2.0, 1.0]);
         assert_eq!(
-            successors[0].g,
-            distance_between([1.0, 1.0], [2.0, 1.0]) + distance_between([2.0, 1.0], to)
+            successors[0].f,
+            distance_between(from, [1.0, 1.0]) + distance_between([1.0, 1.0], [2.0, 1.0])
         );
-        assert_eq!(successors[0].polygon_from, 1);
-        assert_eq!(successors[0].polygon_to, 2);
-        assert_eq!(successors[0].i, [[2.0, 0.0], [2.0, 1.0]]);
-        assert_eq!(successors[0].path, vec![from]);
+        assert_eq!(successors[0].g, distance_between([2.0, 1.0], to));
+        assert_eq!(successors[0].polygon_from, 2);
+        assert_eq!(successors[0].polygon_to, 4);
+        assert_eq!(successors[0].i, [[3.0, 1.0], [2.0, 1.0]]);
+        assert_eq!(successors[0].path, vec![from, [1.0, 1.0]]);
 
         assert_eq!(
             mesh.path(from, to),
