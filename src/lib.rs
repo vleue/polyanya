@@ -21,6 +21,7 @@ pub struct Vertex {
     pub x: f32,
     pub y: f32,
     pub polygons: Vec<isize>,
+    is_corner: bool,
 }
 
 impl Vertex {
@@ -28,6 +29,7 @@ impl Vertex {
         Vertex {
             x: x as f32,
             y: y as f32,
+            is_corner: poly.contains(&-1),
             polygons: poly,
         }
     }
@@ -501,7 +503,7 @@ impl<'m> SearchInstance<'m> {
                                     .iter()
                                     .flat_map(|v| self.mesh.vertices.get(*v))
                                     .find(|v| [v.x, v.y] == node.i[0])
-                                    .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                                    .and_then(|v| v.is_corner.then(|| [v.x, v.y]))
                                 {
                                     self.add_node(
                                         extra_r,
@@ -513,13 +515,13 @@ impl<'m> SearchInstance<'m> {
                                 }
                             }
                             self.add_node(node.r, other_side, intersect1, intersect2, &node);
-                            if intersect2 != [start.x, start.y] {
+                            if intersect2 != [end.x, end.y] {
                                 if let Some(extra_r) = to_polygon
                                     .vertices
                                     .iter()
                                     .flat_map(|v| self.mesh.vertices.get(*v))
                                     .find(|v| [v.x, v.y] == node.i[1])
-                                    .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                                    .and_then(|v| v.is_corner.then(|| [v.x, v.y]))
                                 {
                                     self.add_node(
                                         extra_r,
@@ -549,7 +551,6 @@ impl<'m> SearchInstance<'m> {
                         [[start.x, start.y], [end.x, end.y]],
                     ) {
                         if intersect != [end.x, end.y] {
-                            // if intersect != [end.x, end.y] && intersect != [start.x, start.y] {
                             first_intersect = Some(intersect);
                             if intersect != [start.x, start.y] {
                                 if let Some(extra_r) = to_polygon
@@ -557,7 +558,7 @@ impl<'m> SearchInstance<'m> {
                                     .iter()
                                     .flat_map(|v| self.mesh.vertices.get(*v))
                                     .find(|v| [v.x, v.y] == node.i[0])
-                                    .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                                    .and_then(|v| v.is_corner.then(|| [v.x, v.y]))
                                 {
                                     self.add_node(
                                         extra_r,
@@ -596,7 +597,7 @@ impl<'m> SearchInstance<'m> {
                                     .iter()
                                     .flat_map(|v| self.mesh.vertices.get(*v))
                                     .find(|v| [v.x, v.y] == node.i[1])
-                                    .and_then(|v| v.polygons.contains(&-1).then(|| [v.x, v.y]))
+                                    .and_then(|v| v.is_corner.then(|| [v.x, v.y]))
                                 {
                                     self.add_node(
                                         extra_r,
