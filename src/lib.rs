@@ -615,11 +615,11 @@ impl<'m> SearchInstance<'m> {
                 #[cfg(feature = "tracing")]
                 std::mem::drop(span);
 
-                if first_intersect.is_none() && second_intersect.is_none() {
+                if first_intersect.is_none() {
                     new_r = Some(node.i[0]);
                 }
 
-                if first_intersect.is_some() && second_intersect.is_some() {
+                if second_intersect.is_some() {
                     new_r = Some(node.i[1]);
                 }
 
