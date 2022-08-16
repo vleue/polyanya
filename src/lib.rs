@@ -8,7 +8,7 @@ use std::{
 };
 
 use hashbrown::{hash_map::Entry, HashMap};
-use helpers::{distance_between, heuristic, on_side, EPSILON};
+use helpers::{distance_between, heuristic, on_side};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -632,16 +632,17 @@ enum EdgeSide {
 impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn point_in_polygon(&self, point: [f32; 2]) -> usize {
+        let delta = 0.1;
         [
             [0.0, 0.0],
-            [EPSILON, 0.0],
-            [EPSILON, EPSILON],
-            [0.0, EPSILON],
-            [-EPSILON, EPSILON],
-            [-EPSILON, 0.0],
-            [-EPSILON, -EPSILON],
-            [0.0, -EPSILON],
-            [EPSILON, -EPSILON],
+            [delta, 0.0],
+            [delta, delta],
+            [0.0, delta],
+            [-delta, delta],
+            [-delta, 0.0],
+            [-delta, -delta],
+            [0.0, -delta],
+            [delta, -delta],
         ]
         .iter()
         .map(|delta| self.point_in_polygon_unit([point[0] + delta[0], point[1] + delta[1]]))

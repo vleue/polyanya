@@ -3,13 +3,11 @@ use tracing::instrument;
 
 use crate::EdgeSide;
 
-pub(crate) const EPSILON: f32 = f32::EPSILON * 100000.0;
-
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
 #[inline(always)]
 pub(crate) fn on_side(point: [f32; 2], i: [[f32; 2]; 2]) -> EdgeSide {
     match (point[1] - i[0][1]) * (i[1][0] - i[0][0]) - (point[0] - i[0][0]) * (i[1][1] - i[0][1]) {
-        x if x.abs() < EPSILON => EdgeSide::Edge,
+        x if x.abs() < 1e-2 => EdgeSide::Edge,
         x if x < 0.0 => EdgeSide::Right,
         _ => EdgeSide::Left,
     }
