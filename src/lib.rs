@@ -33,6 +33,24 @@ impl Vertex {
             polygons: poly,
         }
     }
+
+    fn p(&self) -> [f32; 2] {
+        [self.x, self.y]
+    }
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+enum SuccessorType {
+    LeftNonObservable,
+    Observable,
+    RightNonObservable,
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+struct Successor {
+    interval: [[f32; 2]; 2],
+    edge: [usize; 2],
+    ty: SuccessorType,
 }
 
 #[derive(Debug, PartialEq)]
@@ -230,6 +248,7 @@ impl Mesh {
             path: vec![],
             r: from,
             i: [[0.0, 0.0], [0.0, 0.0]],
+            i_index: [0, 0],
             polygon_from: -1,
             polygon_to: starting_polygon_index as isize,
             f: 0.0,
@@ -250,8 +269,8 @@ impl Mesh {
             search_instance.add_node(
                 from,
                 other_side,
-                [start.x, start.y],
-                [end.x, end.y],
+                ([start.x, start.y], edge[0]),
+                ([end.x, end.y], edge[1]),
                 &empty_node,
             );
         }
@@ -321,6 +340,96 @@ impl Mesh {
         search_instance.successors(node);
         search_instance.queue.drain().collect()
     }
+
+    fn edges_between(&self, node: &SearchNode) -> Vec<Successor> {
+        let mut successors = vec![];
+
+        let polygon = self.polygons.get(node.polygon_to as usize).unwrap();
+
+        if distance_between(node.i[0], node.r) < 1.0e-5
+            || distance_between(node.i[1], node.r) < 1.0e-5
+            || on_side(node.r, node.i) == EdgeSide::Edge
+        {
+            // println!("collinear");
+            // TODO: possible optimisation
+        }
+        if polygon.vertices.len() == 3 {
+            // println!("triangle");
+            // TODO: possible optimisation
+        }
+
+        let right_index = (|| {
+            let mut temp = 0;
+            while polygon.vertices[temp] != node.i_index[1] {
+                temp += 1;
+            }
+            temp + 1
+        })();
+        let left_index = polygon.vertices.len() + right_index - 1 - 1;
+
+        let mut ty = SuccessorType::RightNonObservable;
+        for edge in &polygon.double_edges_index()[right_index..=left_index] {
+            let start = self.vertices.get(edge[0]).unwrap();
+            let end = self.vertices.get(edge[1]).unwrap();
+            let mut start_p = [start.x, start.y];
+            let mut end_p = [end.x, end.y];
+            match on_side([start.x, start.y], [node.r, node.i[0]]) {
+                EdgeSide::Right => {
+                    if let Some(intersect) = line_intersect_segment(
+                        [node.r, node.i[0]],
+                        [[start.x, start.y], [end.x, end.y]],
+                    ) {
+                        successors.push(Successor {
+                            interval: [start_p, intersect],
+                            edge: *edge,
+                            ty,
+                        });
+                        start_p = intersect;
+                        ty = SuccessorType::Observable;
+                    }
+                }
+                EdgeSide::Left => {
+                    if ty == SuccessorType::RightNonObservable {
+                        ty = SuccessorType::Observable;
+                    }
+                }
+                EdgeSide::Edge => match on_side([end.x, end.y], [node.r, node.i[0]]) {
+                    EdgeSide::Edge | EdgeSide::Left => {
+                        ty = SuccessorType::Observable;
+                    }
+                    _ => (),
+                },
+            }
+            if on_side([end.x, end.y], [node.r, node.i[1]]) == EdgeSide::Left {
+                if let Some(intersect) = line_intersect_segment(
+                    [node.r, node.i[1]],
+                    [[start.x, start.y], [end.x, end.y]],
+                ) {
+                    end_p = intersect;
+                }
+            }
+            successors.push(Successor {
+                interval: [start_p, end_p],
+                edge: *edge,
+                ty,
+            });
+            if on_side([end.x, end.y], [node.r, node.i[1]]) == EdgeSide::Left {
+                if let Some(intersect) = line_intersect_segment(
+                    [node.r, node.i[1]],
+                    [[start.x, start.y], [end.x, end.y]],
+                ) {
+                    ty = SuccessorType::LeftNonObservable;
+                    successors.push(Successor {
+                        interval: [intersect, [end.x, end.y]],
+                        edge: *edge,
+                        ty,
+                    });
+                }
+            }
+        }
+
+        successors
+    }
 }
 
 impl<'m> SearchInstance<'m> {
@@ -330,8 +439,8 @@ impl<'m> SearchInstance<'m> {
         &mut self,
         root: [f32; 2],
         other_side: isize,
-        start: [f32; 2],
-        end: [f32; 2],
+        start: ([f32; 2], usize),
+        end: ([f32; 2], usize),
         node: &SearchNode,
     ) {
         #[cfg(feature = "stats")]
@@ -360,11 +469,12 @@ impl<'m> SearchInstance<'m> {
             path.push(node.r);
         }
 
-        let heuristic = heuristic(root, self.to, [start, end]);
+        let heuristic = heuristic(root, self.to, [start.0, end.0]);
         let new_node = SearchNode {
             path,
             r: root,
-            i: [start, end],
+            i: [start.0, end.0],
+            i_index: [start.1, end.1],
             polygon_from: node.polygon_to as isize,
             polygon_to: other_side,
             f: node.f + distance_between(node.r, root),
@@ -409,47 +519,10 @@ impl<'m> SearchInstance<'m> {
             self.successors_called += 1;
         }
         loop {
-            let to_polygon = self.mesh.polygons.get(node.polygon_to as usize).unwrap();
+            for successor in self.mesh.edges_between(&node) {
+                let start = self.mesh.vertices.get(successor.edge[0]).unwrap();
+                let end = self.mesh.vertices.get(successor.edge[1]).unwrap();
 
-            let mut found_end = false;
-
-            let mut first_intersect = None;
-            let mut second_intersect = None;
-
-            for edge in to_polygon.double_edges_index() {
-                #[cfg(feature = "tracing")]
-                let edge_span = tracing::info_span!("successors - edge").entered();
-
-                let mut new_r = None;
-                let mut found_end_this_turn = false;
-                #[cfg(feature = "tracing")]
-                let span = tracing::info_span!("successors - getting edges").entered();
-                let start = self.mesh.vertices.get(edge[0]).unwrap();
-                let end = self.mesh.vertices.get(edge[1]).unwrap();
-                #[cfg(feature = "tracing")]
-                std::mem::drop(span);
-
-                #[cfg(feature = "tracing")]
-                let span =
-                    tracing::info_span!("successors - checking for start of interval").entered();
-                // continue until we get to the interval end
-                if !found_end
-                    && node.i[0] != [end.x, end.y]
-                    && on_segment(node.i[0], [[start.x, start.y], [end.x, end.y]])
-                {
-                    found_end = true;
-                    found_end_this_turn = true;
-                }
-                #[cfg(feature = "tracing")]
-                std::mem::drop(span);
-
-                if !found_end {
-                    continue;
-                }
-
-                #[cfg(feature = "tracing")]
-                let span = tracing::info_span!("successors - checking polygon on the other side")
-                    .entered();
                 let mut other_side = isize::MAX;
                 // find the polygon at the other side of this edge
                 for i in &start.polygons {
@@ -457,183 +530,42 @@ impl<'m> SearchInstance<'m> {
                         other_side = *i;
                     }
                 }
-                #[cfg(feature = "tracing")]
-                std::mem::drop(span);
 
-                #[cfg(feature = "tracing")]
-                let span =
-                    tracing::info_span!("successors - checking for end of interval").entered();
-                // break once we reached the interval start
-                if found_end
-                    && !found_end_this_turn
-                    && node.i[1] != [end.x, end.y]
-                    && on_segment(node.i[1], [[start.x, start.y], [end.x, end.y]])
-                {
-                    break;
-                }
-                #[cfg(feature = "tracing")]
-                std::mem::drop(span);
-
-                // this goes back to the current polygon, ignore
-                if other_side == node.polygon_from {
-                    continue;
-                }
-
-                #[cfg(feature = "tracing")]
-                let span =
-                    tracing::info_span!("successors - checking for double intersection").entered();
-                if (node.i[0] != [start.x, start.y]
-                    || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left)
-                    && (node.i[1] != [end.x, end.y]
-                        || on_side([start.x, start.y], [node.r, node.i[0]]) == EdgeSide::Right)
-                {
-                    if let Some(intersect1) = line_intersect_segment(
-                        [node.r, node.i[0]],
-                        [[start.x, start.y], [end.x, end.y]],
-                    ) {
-                        if let Some(intersect2) = line_intersect_segment(
-                            [node.r, node.i[1]],
-                            [[start.x, start.y], [end.x, end.y]],
-                        ) {
-                            first_intersect = Some(intersect1);
-                            second_intersect = Some(intersect2);
-                            if intersect1 != [start.x, start.y] {
-                                if let Some(extra_r) = to_polygon
-                                    .vertices
-                                    .iter()
-                                    .flat_map(|v| self.mesh.vertices.get(*v))
-                                    .find(|v| [v.x, v.y] == node.i[0])
-                                    .and_then(|v| v.is_corner.then(|| [v.x, v.y]))
-                                {
-                                    self.add_node(
-                                        extra_r,
-                                        other_side,
-                                        [start.x, start.y],
-                                        intersect1,
-                                        &node,
-                                    );
-                                }
-                            }
-                            self.add_node(node.r, other_side, intersect1, intersect2, &node);
-                            if intersect2 != [end.x, end.y] {
-                                if let Some(extra_r) = to_polygon
-                                    .vertices
-                                    .iter()
-                                    .flat_map(|v| self.mesh.vertices.get(*v))
-                                    .find(|v| [v.x, v.y] == node.i[1])
-                                    .and_then(|v| v.is_corner.then(|| [v.x, v.y]))
-                                {
-                                    self.add_node(
-                                        extra_r,
-                                        other_side,
-                                        intersect2,
-                                        [end.x, end.y],
-                                        &node,
-                                    );
-                                }
-                            }
+                let root = match successor.ty {
+                    SuccessorType::RightNonObservable => {
+                        if distance_between(successor.interval[0], start.p()) > 1.0e-5 {
+                            continue;
+                        }
+                        let vertex = self.mesh.vertices.get(node.i_index[0]).unwrap();
+                        if vertex.is_corner && distance_between(vertex.p(), node.i[0]) < 1.0e-5 {
+                            node.i[0]
+                        } else {
                             continue;
                         }
                     }
-                }
-                #[cfg(feature = "tracing")]
-                std::mem::drop(span);
-
-                #[cfg(feature = "tracing")]
-                let span =
-                    tracing::info_span!("successors - checking for single intersection - end")
-                        .entered();
-                if node.i[0] != [start.x, start.y]
-                    || on_side([end.x, end.y], [node.r, node.i[0]]) == EdgeSide::Left
-                {
-                    if let Some(intersect) = line_intersect_segment(
-                        [node.r, node.i[0]],
-                        [[start.x, start.y], [end.x, end.y]],
-                    ) {
-                        if intersect != [end.x, end.y] {
-                            first_intersect = Some(intersect);
-                            if intersect != [start.x, start.y] {
-                                if let Some(extra_r) = to_polygon
-                                    .vertices
-                                    .iter()
-                                    .flat_map(|v| self.mesh.vertices.get(*v))
-                                    .find(|v| [v.x, v.y] == node.i[0])
-                                    .and_then(|v| v.is_corner.then(|| [v.x, v.y]))
-                                {
-                                    self.add_node(
-                                        extra_r,
-                                        other_side,
-                                        [start.x, start.y],
-                                        intersect,
-                                        &node,
-                                    );
-                                }
-                            }
-                            self.add_node(node.r, other_side, intersect, [end.x, end.y], &node);
+                    SuccessorType::Observable => node.r,
+                    SuccessorType::LeftNonObservable => {
+                        if distance_between(successor.interval[1], end.p()) > 1.0e-5 {
+                            continue;
+                        }
+                        let vertex = self.mesh.vertices.get(node.i_index[1]).unwrap();
+                        if vertex.is_corner && distance_between(vertex.p(), node.i[1]) < 1.0e-5 {
+                            node.i[1]
+                        } else {
                             continue;
                         }
                     }
-                }
-                #[cfg(feature = "tracing")]
-                std::mem::drop(span);
-
-                #[cfg(feature = "tracing")]
-                let span =
-                    tracing::info_span!("successors - checking for single intersection - start")
-                        .entered();
-                if node.i[1] != [end.x, end.y]
-                    || on_side([start.x, start.y], [node.r, node.i[0]]) == EdgeSide::Right
-                {
-                    if let Some(intersect) = line_intersect_segment(
-                        [node.r, node.i[1]],
-                        [[start.x, start.y], [end.x, end.y]],
-                    ) {
-                        if intersect != [start.x, start.y] {
-                            second_intersect = Some(intersect);
-                            self.add_node(node.r, other_side, [start.x, start.y], intersect, &node);
-                            if intersect != [end.x, end.y] {
-                                if let Some(extra_r) = to_polygon
-                                    .vertices
-                                    .iter()
-                                    .flat_map(|v| self.mesh.vertices.get(*v))
-                                    .find(|v| [v.x, v.y] == node.i[1])
-                                    .and_then(|v| v.is_corner.then(|| [v.x, v.y]))
-                                {
-                                    self.add_node(
-                                        extra_r,
-                                        other_side,
-                                        intersect,
-                                        [end.x, end.y],
-                                        &node,
-                                    );
-                                }
-                            }
-                            continue;
-                        }
-                    }
-                }
-                #[cfg(feature = "tracing")]
-                std::mem::drop(span);
-
-                if first_intersect.is_none() {
-                    new_r = Some(node.i[0]);
-                }
-
-                if second_intersect.is_some() {
-                    new_r = Some(node.i[1]);
-                }
+                };
 
                 self.add_node(
-                    new_r.unwrap_or(node.r),
+                    root,
                     other_side,
-                    [start.x, start.y],
-                    [end.x, end.y],
+                    (successor.interval[0], successor.edge[0]),
+                    (successor.interval[1], successor.edge[1]),
                     &node,
-                );
-
-                #[cfg(feature = "tracing")]
-                std::mem::drop(edge_span);
+                )
             }
+
             if self.node_buffer.len() == 1 && self.node_buffer[0].polygon_to != self.polygon_to {
                 #[cfg(feature = "verbose")]
                 for new_node in &self.node_buffer {
@@ -701,6 +633,7 @@ pub struct SearchNode {
     pub path: Vec<[f32; 2]>,
     pub r: [f32; 2],
     pub i: [[f32; 2]; 2],
+    pub i_index: [usize; 2],
     pub polygon_from: isize,
     pub polygon_to: isize,
     pub f: f32,
@@ -798,6 +731,7 @@ mod tests {
             path: vec![],
             r: from,
             i: [[1.0, 0.0], [1.0, 1.0]],
+            i_index: [1, 5],
             polygon_from: mesh.point_in_polygon(from) as isize,
             polygon_to: 1,
             f: 0.0,
@@ -811,6 +745,8 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[2.0, 0.0], [2.0, 1.0]]);
+        assert_eq!(successors[0].i_index, [2, 6]);
+
         assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
 
         assert_eq!(
@@ -832,6 +768,7 @@ mod tests {
             path: vec![],
             r: from,
             i: [[2.0, 1.0], [2.0, 0.0]],
+            i_index: [6, 2],
             polygon_from: mesh.point_in_polygon(from) as isize,
             polygon_to: 1,
             f: 0.0,
@@ -845,6 +782,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 0);
         assert_eq!(successors[0].i, [[1.0, 1.0], [1.0, 0.0]]);
+        assert_eq!(successors[0].i_index, [5, 1]);
         assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
 
         assert_eq!(
@@ -866,6 +804,7 @@ mod tests {
             path: vec![],
             r: from,
             i: [[0.0, 1.0], [1.0, 1.0]],
+            i_index: [4, 5],
             polygon_from: mesh.point_in_polygon(from) as isize,
             polygon_to: 0,
             f: 0.0,
@@ -873,16 +812,17 @@ mod tests {
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].r, [2.0, 1.0]);
+        assert_eq!(successors[0].r, [1.0, 1.0]);
+        assert_eq!(successors[0].f, distance_between(from, [1.0, 1.0]));
         assert_eq!(
-            successors[0].f,
-            distance_between(from, [1.0, 1.0]) + distance_between([1.0, 1.0], [2.0, 1.0])
+            successors[0].g,
+            distance_between([1.0, 1.0], [2.0, 1.0]) + distance_between([2.0, 1.0], to)
         );
-        assert_eq!(successors[0].g, distance_between([2.0, 1.0], to));
         assert_eq!(successors[0].polygon_from, 2);
         assert_eq!(successors[0].polygon_to, 4);
         assert_eq!(successors[0].i, [[3.0, 1.0], [2.0, 1.0]]);
-        assert_eq!(successors[0].path, vec![from, [1.0, 1.0]]);
+        assert_eq!(successors[0].i_index, [7, 6]);
+        assert_eq!(successors[0].path, vec![from]);
 
         assert_eq!(
             mesh.path(from, to),
@@ -905,6 +845,8 @@ mod tests {
             path: vec![],
             r: from,
             i: [[1.0, 0.0], [1.0, 1.0]],
+            i_index: [1, 5],
+
             polygon_from: 0,
             polygon_to: 1,
             f: 0.0,
@@ -912,16 +854,17 @@ mod tests {
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].r, [2.0, 1.0]);
+        assert_eq!(successors[0].r, [1.0, 1.0]);
+        assert_eq!(successors[0].f, distance_between(from, [1.0, 1.0]));
         assert_eq!(
-            successors[0].f,
-            distance_between(from, [1.0, 1.0]) + distance_between([1.0, 1.0], [2.0, 1.0])
+            successors[0].g,
+            distance_between([1.0, 1.0], [2.0, 1.0]) + distance_between([2.0, 1.0], to)
         );
-        assert_eq!(successors[0].g, distance_between([2.0, 1.0], to));
         assert_eq!(successors[0].polygon_from, 2);
         assert_eq!(successors[0].polygon_to, 4);
         assert_eq!(successors[0].i, [[3.0, 1.0], [2.0, 1.0]]);
-        assert_eq!(successors[0].path, vec![from, [1.0, 1.0]]);
+        assert_eq!(successors[0].i_index, [7, 6]);
+        assert_eq!(successors[0].path, vec![from]);
 
         assert_eq!(
             mesh.path(from, to),
@@ -983,6 +926,7 @@ mod tests {
             path: vec![],
             r: from,
             i: [[11.0, 3.0], [7.0, 0.0]],
+            i_index: [16, 15],
             polygon_from: mesh.point_in_polygon(from) as isize,
             polygon_to: 4,
             f: 0.0,
@@ -1000,6 +944,7 @@ mod tests {
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(successors[1].i, [[10.0, 7.0], [9.75, 6.75]]);
+        assert_eq!(successors[1].i_index, [11, 10]);
         assert_eq!(successors[1].path, vec![from]);
 
         assert_eq!(successors[0].r, from);
@@ -1008,6 +953,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[9.75, 6.75], [7.0, 4.0]]);
+        assert_eq!(successors[0].i_index, [11, 10]);
         assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
 
         assert_eq!(mesh.path(from, to).len, distance_between(from, to));
@@ -1024,6 +970,7 @@ mod tests {
             path: vec![],
             r: from,
             i: [[11.0, 3.0], [7.0, 0.0]],
+            i_index: [16, 15],
             polygon_from: mesh.point_in_polygon(from) as isize,
             polygon_to: 4,
             f: 0.0,
@@ -1041,6 +988,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 6);
         assert_eq!(successors[0].i, [[11.0, 5.0], [10.0, 7.0]]);
+        assert_eq!(successors[0].i_index, [17, 11]);
         assert_eq!(successors[0].path, vec![from]);
 
         assert_eq!(successors[1].r, [11.0, 3.0]);
@@ -1052,6 +1000,7 @@ mod tests {
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(successors[1].i, [[10.0, 7.0], [9.75, 6.75]]);
+        assert_eq!(successors[1].i_index, [11, 10]);
         assert_eq!(successors[1].path, vec![from]);
 
         assert_eq!(successors[2].r, from);
@@ -1064,6 +1013,7 @@ mod tests {
         assert_eq!(successors[2].polygon_from, 4);
         assert_eq!(successors[2].polygon_to, 2);
         assert_eq!(successors[2].i, [[9.75, 6.75], [7.0, 4.0]]);
+        assert_eq!(successors[2].i_index, [11, 10]);
         assert_eq!(successors[2].path, Vec::<[f32; 2]>::new());
 
         assert_delta!(
@@ -1085,6 +1035,7 @@ mod tests {
             path: vec![],
             r: from,
             i: [[11.0, 3.0], [7.0, 0.0]],
+            i_index: [16, 15],
             polygon_from: mesh.point_in_polygon(from) as isize,
             polygon_to: 4,
             f: 0.0,
@@ -1102,6 +1053,7 @@ mod tests {
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(successors[1].i, [[10.0, 7.0], [9.75, 6.75]]);
+        assert_eq!(successors[1].i_index, [11, 10]);
         assert_eq!(successors[1].path, vec![from]);
 
         assert_eq!(successors[0].r, from);
@@ -1113,6 +1065,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[9.75, 6.75], [7.0, 4.0]]);
+        assert_eq!(successors[0].i_index, [11, 10]);
         assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
 
         assert_delta!(
@@ -1132,6 +1085,7 @@ mod tests {
             path: vec![],
             r: from,
             i: [[11.0, 3.0], [7.0, 0.0]],
+            i_index: [16, 15],
             polygon_from: mesh.point_in_polygon(from) as isize,
             polygon_to: 4,
             f: 0.0,
@@ -1149,6 +1103,7 @@ mod tests {
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(successors[1].i, [[10.0, 7.0], [9.75, 6.75]]);
+        assert_eq!(successors[1].i_index, [11, 10]);
         assert_eq!(successors[1].path, vec![from]);
 
         assert_eq!(successors[0].r, from);
@@ -1160,6 +1115,7 @@ mod tests {
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].i, [[9.75, 6.75], [7.0, 4.0]]);
+        assert_eq!(successors[0].i_index, [11, 10]);
         assert_eq!(successors[0].path, Vec::<[f32; 2]>::new());
 
         let successor = successors.into_iter().next().unwrap();
