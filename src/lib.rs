@@ -1145,4 +1145,91 @@ mod tests {
 
         assert_eq!(mesh.path(from, to).path, vec![[7.0, 4.0], [4.0, 2.0], to]);
     }
+
+    #[test]
+    fn edges_between_simple() {
+        let mesh = mesh_from_paper();
+
+        let from = [12.0, 0.0];
+        let to = [3.0, 1.0];
+        let search_node = SearchNode {
+            path: vec![],
+            r: from,
+            i: [[11.0, 3.0], [7.0, 0.0]],
+            i_index: [16, 15],
+            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_to: 4,
+            f: 0.0,
+            g: distance_between(from, to),
+        };
+
+        let successors = mesh.edges_between(&search_node);
+
+        for successor in &successors {
+            println!("{:?}", successor);
+        }
+
+        println!("=========================");
+
+        let search_node = SearchNode {
+            path: vec![],
+            r: from,
+            i: [[9.75, 6.75], [7.0, 4.0]],
+            i_index: [11, 10],
+            polygon_from: 4,
+            polygon_to: 2,
+            f: 0.0,
+            g: distance_between(from, to),
+        };
+
+        let successors = mesh.edges_between(&search_node);
+
+        for successor in &successors {
+            println!("{:?}", successor);
+        }
+
+        println!("=========================");
+
+        let search_node = SearchNode {
+            path: vec![],
+            r: [11.0, 3.0],
+            i: [[10.0, 7.0], [7.0, 4.0]],
+            i_index: [11, 10],
+            polygon_from: 4,
+            polygon_to: 2,
+            f: 0.0,
+            g: distance_between(from, to),
+        };
+
+        let successors = mesh.edges_between(&search_node);
+
+        for successor in &successors {
+            println!("{:?}", successor);
+        }
+
+        // assert!(false);
+    }
+
+    #[test]
+    fn edges_between_simple_u() {
+        let mesh = mesh_u_grid();
+
+        let search_node = SearchNode {
+            path: vec![],
+            r: [0.0, 0.0],
+            i: [[1.0, 0.0], [1.0, 1.0]],
+            i_index: [1, 5],
+            polygon_from: 0,
+            polygon_to: 1,
+            f: 0.0,
+            g: 1.0,
+        };
+
+        let successors = mesh.edges_between(&search_node);
+
+        for successor in &successors {
+            println!("{:?}", successor);
+        }
+        // assert!(false);
+    }
 }
