@@ -629,7 +629,8 @@ impl<'m> SearchInstance<'m> {
         }
         loop {
             #[cfg(debug_assertions)]
-            if node.r == [823.0, 460.0] && node.i[1] == [715.0, 386.0] {
+            // select a search node to enable debug more
+            if false {
                 self.debug = true;
                 self.fail_fast = 3;
             }
