@@ -213,6 +213,10 @@ struct SearchInstance<'m> {
     successors_called: usize,
     #[cfg(feature = "stats")]
     nodes_generated: usize,
+    #[cfg(debug_assertions)]
+    debug: bool,
+    #[cfg(debug_assertions)]
+    fail_fast: i32,
 }
 
 impl Mesh {
@@ -244,6 +248,10 @@ impl Mesh {
             successors_called: 0,
             #[cfg(feature = "stats")]
             nodes_generated: 0,
+            #[cfg(debug_assertions)]
+            debug: false,
+            #[cfg(debug_assertions)]
+            fail_fast: -1,
         };
         search_instance.root_history.insert(Root(from), 0.0);
 
@@ -339,17 +347,48 @@ impl Mesh {
             successors_called: 0,
             #[cfg(feature = "stats")]
             nodes_generated: 0,
+            #[cfg(debug_assertions)]
+            debug: false,
+            #[cfg(debug_assertions)]
+            fail_fast: -1,
         };
         search_instance.successors(node);
         search_instance.queue.drain().collect()
     }
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[cfg(test)]
+    fn edges_between(&self, node: &SearchNode) -> Vec<Successor> {
+        let search_instance = SearchInstance {
+            queue: BinaryHeap::new(),
+            node_buffer: Vec::new(),
+            root_history: HashMap::new(),
+            to: [0.0, 0.0],
+            polygon_to: self.point_in_polygon([0.0, 0.0]) as isize,
+            mesh: self,
+            #[cfg(feature = "stats")]
+            pushed: 0,
+            #[cfg(feature = "stats")]
+            popped: 0,
+            #[cfg(feature = "stats")]
+            successors_called: 0,
+            #[cfg(feature = "stats")]
+            nodes_generated: 0,
+            #[cfg(debug_assertions)]
+            debug: false,
+            #[cfg(debug_assertions)]
+            fail_fast: -1,
+        };
+        search_instance.edges_between(node)
+    }
+}
 
+impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     fn edges_between(&self, node: &SearchNode) -> Vec<Successor> {
         let mut successors = vec![];
 
-        let polygon = self.polygons.get(node.polygon_to as usize).unwrap();
+        let polygon = self.mesh.polygons.get(node.polygon_to as usize).unwrap();
 
         if distance_between(node.i[0], node.r) < 1.0e-5
             || distance_between(node.i[1], node.r) < 1.0e-5
@@ -374,10 +413,25 @@ impl Mesh {
 
         let mut ty = SuccessorType::RightNonObservable;
         for edge in &polygon.double_edges_index()[right_index..=left_index] {
-            let start = self.vertices.get(edge[0]).unwrap();
-            let end = self.vertices.get(edge[1]).unwrap();
+            let start = self.mesh.vertices.get(edge[0]).unwrap();
+            let end = self.mesh.vertices.get(edge[1]).unwrap();
             let mut start_p = [start.x, start.y];
             let mut end_p = [end.x, end.y];
+            #[cfg(debug_assertions)]
+            if self.debug {
+                println!("| {:?} : {:?} / {:?}", edge, start_p, end_p);
+                println!(
+                    "|   {:?} - {:?}",
+                    on_side([start.x, start.y], [node.r, node.i[0]]),
+                    on_side([start.x, start.y], [node.r, node.i[1]])
+                );
+                println!(
+                    "|   {:?} - {:?}",
+                    on_side([end.x, end.y], [node.r, node.i[0]]),
+                    on_side([end.x, end.y], [node.r, node.i[1]])
+                );
+            }
+
             match on_side([start.x, start.y], [node.r, node.i[0]]) {
                 EdgeSide::Right => {
                     if let Some(intersect) = line_intersect_segment(
@@ -444,9 +498,7 @@ impl Mesh {
 
         successors
     }
-}
 
-impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     fn add_node(
@@ -463,10 +515,15 @@ impl<'m> SearchInstance<'m> {
         }
         // prune edges that don't have a polygon on the other side: cul de sac pruning
         if other_side == isize::MAX {
+            #[cfg(debug_assertions)]
+            if self.debug {
+                println!("x cul de sac");
+            }
+
             return;
         }
 
-        // prude edges that only lead to one other polygon, and not the target: dead end pruning
+        // prune edges that only lead to one other polygon, and not the target: dead end pruning
         if self.polygon_to != other_side
             && self
                 .mesh
@@ -475,6 +532,11 @@ impl<'m> SearchInstance<'m> {
                 .unwrap()
                 .is_one_way
         {
+            #[cfg(debug_assertions)]
+            if self.debug {
+                println!("x dead end");
+            }
+
             return;
         }
 
@@ -495,18 +557,35 @@ impl<'m> SearchInstance<'m> {
             g: heuristic,
         };
         if new_node.f.is_nan() || new_node.g.is_nan() {
+            #[cfg(debug_assertions)]
+            if self.debug {
+                println!("x one of the distance is NaN");
+            }
+
             return;
         }
 
         match self.root_history.entry(Root(root)) {
             Entry::Occupied(mut o) => {
                 if o.get() < &new_node.f {
+                    #[cfg(debug_assertions)]
+                    if self.debug {
+                        println!("x already got a better path");
+                    }
                 } else {
+                    #[cfg(debug_assertions)]
+                    if self.debug {
+                        println!("o added!");
+                    }
                     o.insert(new_node.f);
                     self.node_buffer.push(new_node);
                 }
             }
             Entry::Vacant(v) => {
+                #[cfg(debug_assertions)]
+                if self.debug {
+                    println!("o added!");
+                }
                 v.insert(new_node.f);
                 self.node_buffer.push(new_node);
             }
@@ -534,9 +613,19 @@ impl<'m> SearchInstance<'m> {
             self.successors_called += 1;
         }
         loop {
-            for successor in self.mesh.edges_between(&node) {
+            #[cfg(debug_assertions)]
+            if node.r == [823.0, 460.0] && node.i[1] == [715.0, 386.0] {
+                self.debug = true;
+                self.fail_fast = 3;
+            }
+            for successor in self.edges_between(&node) {
                 let start = self.mesh.vertices.get(successor.edge[0]).unwrap();
                 let end = self.mesh.vertices.get(successor.edge[1]).unwrap();
+
+                #[cfg(debug_assertions)]
+                if self.debug {
+                    println!("v {:?}", successor);
+                }
 
                 let mut other_side = isize::MAX;
                 // find the polygon at the other side of this edge
@@ -546,31 +635,57 @@ impl<'m> SearchInstance<'m> {
                     }
                 }
 
+                #[cfg(debug_assertions)]
+                if self.debug {
+                    println!("| going to {:?}", other_side);
+                }
+
                 let root = match successor.ty {
                     SuccessorType::RightNonObservable => {
                         if distance_between(successor.interval[0], start.p()) > 1.0e-5 {
+                            #[cfg(debug_assertions)]
+                            if self.debug {
+                                println!("x non observable on an intersection");
+                            }
                             continue;
                         }
                         let vertex = self.mesh.vertices.get(node.i_index[0]).unwrap();
                         if vertex.is_corner && distance_between(vertex.p(), node.i[0]) < 1.0e-5 {
                             node.i[0]
                         } else {
+                            #[cfg(debug_assertions)]
+                            if self.debug {
+                                println!("x non observable on an non corner");
+                            }
                             continue;
                         }
                     }
                     SuccessorType::Observable => node.r,
                     SuccessorType::LeftNonObservable => {
                         if distance_between(successor.interval[1], end.p()) > 1.0e-5 {
+                            #[cfg(debug_assertions)]
+                            if self.debug {
+                                println!("x non observable on an intersection");
+                            }
                             continue;
                         }
                         let vertex = self.mesh.vertices.get(node.i_index[1]).unwrap();
                         if vertex.is_corner && distance_between(vertex.p(), node.i[1]) < 1.0e-5 {
                             node.i[1]
                         } else {
+                            #[cfg(debug_assertions)]
+                            if self.debug {
+                                println!("x non observable on an non corner");
+                            }
                             continue;
                         }
                     }
                 };
+
+                #[cfg(debug_assertions)]
+                if self.debug {
+                    println!("| through root {:?}", root);
+                }
 
                 self.add_node(
                     root,
@@ -587,7 +702,21 @@ impl<'m> SearchInstance<'m> {
                     println!("        intermediate: {}", new_node);
                 }
                 node = self.node_buffer.drain(..).next().unwrap();
+                #[cfg(debug_assertions)]
+                {
+                    self.fail_fast -= 1;
+                    if self.fail_fast == 0 {
+                        panic!()
+                    }
+                }
             } else {
+                #[cfg(debug_assertions)]
+                {
+                    self.fail_fast -= 1;
+                    if self.fail_fast == 0 {
+                        panic!()
+                    }
+                }
                 break;
             }
         }
@@ -664,7 +793,7 @@ impl Display for SearchNode {
         f.write_str(&format!("root=({}, {}); ", self.r[0], self.r[1]))?;
         f.write_str(&format!("left=({}, {}); ", self.i[1][0], self.i[1][1]))?;
         f.write_str(&format!("right=({}, {}); ", self.i[0][0], self.i[0][1]))?;
-        f.write_str(&format!("f={}, g={} ", self.g, self.f))?;
+        f.write_str(&format!("f={:.2}, g={:.2} ", self.f + self.g, self.f))?;
         Ok(())
     }
 }
