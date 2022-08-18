@@ -1,27 +1,10 @@
 use polyanya::Mesh;
 
-const IGNORE_KNOWN_FAILURE: bool = true;
-
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
         let val = $x;
         if !((val - $y).abs() < 0.001) {
             assert_eq!(val, $y);
-        }
-    };
-}
-
-macro_rules! known_failure {
-    ($x:expr, $y:expr) => {
-        let val = $x;
-        if !IGNORE_KNOWN_FAILURE {
-            if !((val - $y).abs() < 0.001) {
-                assert_eq!(val, $y);
-            }
-        } else {
-            if !((val - $y).abs() > 0.001) {
-                assert_eq!(val, $y);
-            }
         }
     };
 }
@@ -3508,7 +3491,7 @@ fn aurora_jmertrzipd() {
 #[test]
 fn aurora_tibndfqzwz() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([843.0, 478.0], [609.0, 375.0]).len, 262.484);
+    assert_delta!(aurora.path([843.0, 478.0], [609.0, 375.0]).len, 262.484);
 }
 #[test]
 fn aurora_wpmqlpdgib() {
@@ -4568,7 +4551,7 @@ fn aurora_yompdwykvz() {
 #[test]
 fn aurora_ptofqarmvg() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([752.0, 511.0], [639.0, 359.0]).len, 339.859);
+    assert_delta!(aurora.path([752.0, 511.0], [639.0, 359.0]).len, 339.859);
 }
 #[test]
 fn aurora_yesmsnslag() {
@@ -6338,7 +6321,7 @@ fn aurora_urjvvbzwix() {
 #[test]
 fn aurora_ziughywstv() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([960.0, 650.0], [623.0, 410.0]).len, 482.714);
+    assert_delta!(aurora.path([960.0, 650.0], [623.0, 410.0]).len, 482.714);
 }
 #[test]
 fn aurora_lozazicsuj() {
@@ -6748,7 +6731,7 @@ fn aurora_ufhiposogv() {
 #[test]
 fn aurora_zsybcpihge() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([764.0, 507.0], [462.0, 296.0]).len, 504.778);
+    assert_delta!(aurora.path([764.0, 507.0], [462.0, 296.0]).len, 504.778);
 }
 #[test]
 fn aurora_dvsgonyhvn() {
@@ -7128,7 +7111,7 @@ fn aurora_binoxyfhjq() {
 #[test]
 fn aurora_rlqbjkjuaf() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([834.0, 630.0], [550.0, 283.0]).len, 530.87);
+    assert_delta!(aurora.path([834.0, 630.0], [550.0, 283.0]).len, 530.87);
 }
 #[test]
 fn aurora_ywyeulyguv() {
@@ -7213,7 +7196,7 @@ fn aurora_zepxhmnmdn() {
 #[test]
 fn aurora_sgsuphvpae() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([916.0, 624.0], [589.0, 269.0]).len, 541.102);
+    assert_delta!(aurora.path([916.0, 624.0], [589.0, 269.0]).len, 541.102);
 }
 #[test]
 fn aurora_hvwpzrpqep() {
@@ -7308,7 +7291,7 @@ fn aurora_sornxmxxec() {
 #[test]
 fn aurora_pmkwdgleyl() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([933.0, 616.0], [643.0, 254.0]).len, 556.515);
+    assert_delta!(aurora.path([933.0, 616.0], [643.0, 254.0]).len, 556.515);
 }
 #[test]
 fn aurora_ruaguvjkdq() {
@@ -7603,7 +7586,7 @@ fn aurora_fzksqqhuvc() {
 #[test]
 fn aurora_cjltqvmeqf() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([944.0, 573.0], [508.0, 279.0]).len, 566.158);
+    assert_delta!(aurora.path([944.0, 573.0], [508.0, 279.0]).len, 566.158);
 }
 #[test]
 fn aurora_hxhrkvrjke() {
@@ -8008,7 +7991,7 @@ fn aurora_vgafnpehzn() {
 #[test]
 fn aurora_hpqsbnzozi() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([827.0, 678.0], [460.0, 383.0]).len, 605.301);
+    assert_delta!(aurora.path([827.0, 678.0], [460.0, 383.0]).len, 605.301);
 }
 #[test]
 fn aurora_qyukdwiysm() {
@@ -8413,7 +8396,7 @@ fn aurora_mqvvmnfiss() {
 #[test]
 fn aurora_isaspxyouw() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([903.0, 594.0], [537.0, 196.0]).len, 632.631);
+    assert_delta!(aurora.path([903.0, 594.0], [537.0, 196.0]).len, 632.631);
 }
 #[test]
 fn aurora_mqdmpykewl() {
@@ -8673,7 +8656,7 @@ fn aurora_mnmcxqlbpv() {
 #[test]
 fn aurora_kluejvkxtf() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([815.0, 693.0], [473.0, 340.0]).len, 651.111);
+    assert_delta!(aurora.path([815.0, 693.0], [473.0, 340.0]).len, 651.111);
 }
 #[test]
 fn aurora_plobhsusxn() {
@@ -8943,7 +8926,7 @@ fn aurora_sqlfkzgtmm() {
 #[test]
 fn aurora_kjhoonfjpb() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([27.0, 581.0], [266.0, 193.0]).len, 671.221);
+    assert_delta!(aurora.path([27.0, 581.0], [266.0, 193.0]).len, 671.221);
 }
 #[test]
 fn aurora_tojhmxjlnz() {
@@ -8953,7 +8936,7 @@ fn aurora_tojhmxjlnz() {
 #[test]
 fn aurora_lsmvffbaop() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([776.0, 671.0], [470.0, 303.0]).len, 670.519);
+    assert_delta!(aurora.path([776.0, 671.0], [470.0, 303.0]).len, 670.519);
 }
 #[test]
 fn aurora_vfxjfrphgm() {
@@ -9033,7 +9016,7 @@ fn aurora_qovvugyxia() {
 #[test]
 fn aurora_kjpllgpkub() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([806.0, 501.0], [618.0, 102.0]).len, 676.816);
+    assert_delta!(aurora.path([806.0, 501.0], [618.0, 102.0]).len, 676.816);
 }
 #[test]
 fn aurora_nndxgqgack() {
@@ -9168,7 +9151,7 @@ fn aurora_gskmistyph() {
 #[test]
 fn aurora_cjwrtaolml() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([803.0, 686.0], [232.0, 424.0]).len, 683.383);
+    assert_delta!(aurora.path([803.0, 686.0], [232.0, 424.0]).len, 683.383);
 }
 #[test]
 fn aurora_osequihhnn() {
@@ -9408,7 +9391,7 @@ fn aurora_ciyetpjeer() {
 #[test]
 fn aurora_rfcfkraimm() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([752.0, 609.0], [486.0, 146.0]).len, 706.424);
+    assert_delta!(aurora.path([752.0, 609.0], [486.0, 146.0]).len, 706.424);
 }
 #[test]
 fn aurora_xpfunzhuyi() {
@@ -9548,7 +9531,7 @@ fn aurora_jcctgtytge() {
 #[test]
 fn aurora_vxxlhvclww() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([748.0, 604.0], [504.0, 212.0]).len, 712.14);
+    assert_delta!(aurora.path([748.0, 604.0], [504.0, 212.0]).len, 712.14);
 }
 #[test]
 fn aurora_rpdrjsmmev() {
@@ -9763,7 +9746,7 @@ fn aurora_iwypkzaspb() {
 #[test]
 fn aurora_iubpvownbh() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([783.0, 537.0], [359.0, 212.0]).len, 734.291);
+    assert_delta!(aurora.path([783.0, 537.0], [359.0, 212.0]).len, 734.291);
 }
 #[test]
 fn aurora_ulmmckvedy() {
@@ -9873,7 +9856,7 @@ fn aurora_rxdtyojshp() {
 #[test]
 fn aurora_rixrmmnyfd() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([878.0, 525.0], [434.0, 74.0]).len, 737.183);
+    assert_delta!(aurora.path([878.0, 525.0], [434.0, 74.0]).len, 737.183);
 }
 #[test]
 fn aurora_lisecnqwli() {
@@ -10188,7 +10171,7 @@ fn aurora_xvdvvwyjvn() {
 #[test]
 fn aurora_evbiboargw() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([882.0, 532.0], [366.0, 262.0]).len, 763.192);
+    assert_delta!(aurora.path([882.0, 532.0], [366.0, 262.0]).len, 763.192);
 }
 #[test]
 fn aurora_xqyvlznfar() {
@@ -10233,7 +10216,7 @@ fn aurora_qcksecmgat() {
 #[test]
 fn aurora_enhabpvyve() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([773.0, 655.0], [522.0, 155.0]).len, 768.509);
+    assert_delta!(aurora.path([773.0, 655.0], [522.0, 155.0]).len, 768.509);
 }
 #[test]
 fn aurora_pimwmldpuc() {
@@ -10248,7 +10231,7 @@ fn aurora_zaszdiimqo() {
 #[test]
 fn aurora_zgnhbxiihn() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([779.0, 624.0], [585.0, 207.0]).len, 768.016);
+    assert_delta!(aurora.path([779.0, 624.0], [585.0, 207.0]).len, 768.016);
 }
 #[test]
 fn aurora_xfudkrktfu() {
@@ -10443,7 +10426,7 @@ fn aurora_ngrvvqsvyx() {
 #[test]
 fn aurora_wivxxxdegg() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([732.0, 607.0], [394.0, 197.0]).len, 785.399);
+    assert_delta!(aurora.path([732.0, 607.0], [394.0, 197.0]).len, 785.399);
 }
 #[test]
 fn aurora_umerqjgpaz() {
@@ -10698,7 +10681,7 @@ fn aurora_qwyugqxcdp() {
 #[test]
 fn aurora_hbyxxnxdwv() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([732.0, 521.0], [488.0, 51.0]).len, 801.101);
+    assert_delta!(aurora.path([732.0, 521.0], [488.0, 51.0]).len, 801.101);
 }
 #[test]
 fn aurora_wufuugkfzr() {
@@ -10818,7 +10801,7 @@ fn aurora_hpwyjzyyas() {
 #[test]
 fn aurora_punvxcyoov() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([853.0, 511.0], [293.0, 84.0]).len, 807.84);
+    assert_delta!(aurora.path([853.0, 511.0], [293.0, 84.0]).len, 807.84);
 }
 #[test]
 fn aurora_ftmtcdeyar() {
@@ -10833,7 +10816,7 @@ fn aurora_dxdxmjikfv() {
 #[test]
 fn aurora_drpcodubkj() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([899.0, 555.0], [479.0, 52.0]).len, 817.004);
+    assert_delta!(aurora.path([899.0, 555.0], [479.0, 52.0]).len, 817.004);
 }
 #[test]
 fn aurora_uodhamzyow() {
@@ -11243,7 +11226,7 @@ fn aurora_ukzqlwtarq() {
 #[test]
 fn aurora_bzpudnrbyc() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([831.0, 688.0], [610.0, 118.0]).len, 846.725);
+    assert_delta!(aurora.path([831.0, 688.0], [610.0, 118.0]).len, 846.725);
 }
 #[test]
 fn aurora_ndxmeyzykl() {
@@ -11328,7 +11311,7 @@ fn aurora_ackfxixlbs() {
 #[test]
 fn aurora_skmkgdvisf() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([926.0, 591.0], [376.0, 241.0]).len, 847.603);
+    assert_delta!(aurora.path([926.0, 591.0], [376.0, 241.0]).len, 847.603);
 }
 #[test]
 fn aurora_pfvvloslpv() {
@@ -11343,7 +11326,7 @@ fn aurora_yuaqojsbag() {
 #[test]
 fn aurora_fvfdsgcpwv() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([982.0, 564.0], [213.0, 345.0]).len, 848.372);
+    assert_delta!(aurora.path([982.0, 564.0], [213.0, 345.0]).len, 848.372);
 }
 #[test]
 fn aurora_afldheqmfc() {
@@ -11768,7 +11751,7 @@ fn aurora_xvjxqclumu() {
 #[test]
 fn aurora_milprbplao() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([754.0, 697.0], [609.0, 160.0]).len, 884.499);
+    assert_delta!(aurora.path([754.0, 697.0], [609.0, 160.0]).len, 884.499);
 }
 #[test]
 fn aurora_glzilivxrn() {
@@ -11993,7 +11976,7 @@ fn aurora_jddlkansue() {
 #[test]
 fn aurora_tvcdndsnzs() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([871.0, 686.0], [376.0, 91.0]).len, 899.012);
+    assert_delta!(aurora.path([871.0, 686.0], [376.0, 91.0]).len, 899.012);
 }
 #[test]
 fn aurora_arfbnfqluz() {
@@ -12028,7 +12011,7 @@ fn aurora_ypzfeinwxr() {
 #[test]
 fn aurora_ibmacvxkny() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([930.0, 588.0], [336.0, 56.0]).len, 899.331);
+    assert_delta!(aurora.path([930.0, 588.0], [336.0, 56.0]).len, 899.331);
 }
 #[test]
 fn aurora_kikvouhegs() {
@@ -12038,7 +12021,7 @@ fn aurora_kikvouhegs() {
 #[test]
 fn aurora_ecbwjynlgg() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([815.0, 472.0], [108.0, 195.0]).len, 906.041);
+    assert_delta!(aurora.path([815.0, 472.0], [108.0, 195.0]).len, 906.041);
 }
 #[test]
 fn aurora_wwoxesqgta() {
@@ -12063,7 +12046,7 @@ fn aurora_mkevvuezhh() {
 #[test]
 fn aurora_avanelxoly() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([859.0, 484.0], [8.0, 359.0]).len, 906.059);
+    assert_delta!(aurora.path([859.0, 484.0], [8.0, 359.0]).len, 906.059);
 }
 #[test]
 fn aurora_jewbzssibd() {
@@ -12108,7 +12091,7 @@ fn aurora_bobzulagyy() {
 #[test]
 fn aurora_ytlhjivrzp() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([792.0, 598.0], [282.0, 43.0]).len, 905.102);
+    assert_delta!(aurora.path([792.0, 598.0], [282.0, 43.0]).len, 905.102);
 }
 #[test]
 fn aurora_fcudmsukay() {
@@ -12188,7 +12171,7 @@ fn aurora_pesmnngifx() {
 #[test]
 fn aurora_goubljtquu() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([829.0, 664.0], [508.0, 34.0]).len, 921.456);
+    assert_delta!(aurora.path([829.0, 664.0], [508.0, 34.0]).len, 921.456);
 }
 #[test]
 fn aurora_enelnvfjaa() {
@@ -12358,7 +12341,7 @@ fn aurora_fkflkojkgw() {
 #[test]
 fn aurora_vgoityctru() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([867.0, 479.0], [125.0, 185.0]).len, 931.005);
+    assert_delta!(aurora.path([867.0, 479.0], [125.0, 185.0]).len, 931.005);
 }
 #[test]
 fn aurora_dvzuizkfjf() {
@@ -12423,7 +12406,7 @@ fn aurora_clmgiimatj() {
 #[test]
 fn aurora_sxozuvtdsf() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([896.0, 534.0], [189.0, 248.0]).len, 930.747);
+    assert_delta!(aurora.path([896.0, 534.0], [189.0, 248.0]).len, 930.747);
 }
 #[test]
 fn aurora_gliinkprvy() {
@@ -12493,7 +12476,7 @@ fn aurora_bkozntwvax() {
 #[test]
 fn aurora_gggdgckrwq() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([736.0, 628.0], [597.0, 31.0]).len, 940.314);
+    assert_delta!(aurora.path([736.0, 628.0], [597.0, 31.0]).len, 940.314);
 }
 #[test]
 fn aurora_rpapckdeab() {
@@ -12653,7 +12636,7 @@ fn aurora_gokssskaox() {
 #[test]
 fn aurora_bqlzmbgaws() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([958.0, 616.0], [305.0, 92.0]).len, 948.846);
+    assert_delta!(aurora.path([958.0, 616.0], [305.0, 92.0]).len, 948.846);
 }
 #[test]
 fn aurora_mwjbsodaau() {
@@ -12723,7 +12706,7 @@ fn aurora_uypulgkyon() {
 #[test]
 fn aurora_dpnjfbqcke() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([931.0, 568.0], [199.0, 208.0]).len, 963.295);
+    assert_delta!(aurora.path([931.0, 568.0], [199.0, 208.0]).len, 963.295);
 }
 #[test]
 fn aurora_dhzaqvhzto() {
@@ -12733,7 +12716,7 @@ fn aurora_dhzaqvhzto() {
 #[test]
 fn aurora_rrtxftvsme() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([756.0, 671.0], [349.0, 66.0]).len, 961.606);
+    assert_delta!(aurora.path([756.0, 671.0], [349.0, 66.0]).len, 961.606);
 }
 #[test]
 fn aurora_mtcoakaykv() {
@@ -13008,7 +12991,7 @@ fn aurora_ppguccegeu() {
 #[test]
 fn aurora_xtismmsdii() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([979.0, 589.0], [269.0, 100.0]).len, 968.371);
+    assert_delta!(aurora.path([979.0, 589.0], [269.0, 100.0]).len, 968.371);
 }
 #[test]
 fn aurora_nulmetxbxy() {
@@ -13168,12 +13151,12 @@ fn aurora_zmisxsbyht() {
 #[test]
 fn aurora_ppcifuddbn() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([959.0, 641.0], [245.0, 234.0]).len, 995.78);
+    assert_delta!(aurora.path([959.0, 641.0], [245.0, 234.0]).len, 995.78);
 }
 #[test]
 fn aurora_wuzgxgoiac() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([924.0, 640.0], [238.0, 134.0]).len, 986.483);
+    assert_delta!(aurora.path([924.0, 640.0], [238.0, 134.0]).len, 986.483);
 }
 #[test]
 fn aurora_sbymirbruq() {
@@ -13188,17 +13171,17 @@ fn aurora_linugahtrw() {
 #[test]
 fn aurora_ypnvqodpgr() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([1016.0, 581.0], [121.0, 327.0]).len, 983.865);
+    assert_delta!(aurora.path([1016.0, 581.0], [121.0, 327.0]).len, 983.865);
 }
 #[test]
 fn aurora_sloarfedam() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([945.0, 569.0], [245.0, 26.0]).len, 984.542);
+    assert_delta!(aurora.path([945.0, 569.0], [245.0, 26.0]).len, 984.542);
 }
 #[test]
 fn aurora_zahcctcson() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([744.0, 175.0], [58.0, 628.0]).len, 1000.59);
+    assert_delta!(aurora.path([744.0, 175.0], [58.0, 628.0]).len, 1000.5947);
 }
 #[test]
 fn aurora_utzbaerofi() {
@@ -13213,7 +13196,7 @@ fn aurora_ajxgpdryhx() {
 #[test]
 fn aurora_qrfjvyrgsj() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([277.0, 728.0], [713.0, 176.0]).len, 1000.7);
+    assert_delta!(aurora.path([277.0, 728.0], [713.0, 176.0]).len, 1000.6979);
 }
 #[test]
 fn aurora_mplapdhkyx() {
@@ -13558,7 +13541,7 @@ fn aurora_snpilvedpa() {
 #[test]
 fn aurora_ghqnjszyst() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([981.0, 575.0], [237.0, 65.0]).len, 1012.0565);
+    assert_delta!(aurora.path([981.0, 575.0], [237.0, 65.0]).len, 1012.0565);
 }
 #[test]
 fn aurora_tdydurltqb() {
@@ -13628,7 +13611,7 @@ fn aurora_edwaypebuh() {
 #[test]
 fn aurora_tjlbsswhgd() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([932.0, 606.0], [188.0, 122.0]).len, 1021.7925);
+    assert_delta!(aurora.path([932.0, 606.0], [188.0, 122.0]).len, 1021.7925);
 }
 #[test]
 fn aurora_mrzkdcmjza() {
@@ -13673,7 +13656,7 @@ fn aurora_vryjdnrbta() {
 #[test]
 fn aurora_gnrlstmcfg() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([874.0, 687.0], [254.0, 63.0]).len, 1024.2445);
+    assert_delta!(aurora.path([874.0, 687.0], [254.0, 63.0]).len, 1024.2445);
 }
 #[test]
 fn aurora_pokablutef() {
@@ -13713,12 +13696,12 @@ fn aurora_vhrewswebe() {
 #[test]
 fn aurora_rgyqkjhejb() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([946.0, 635.0], [222.0, 123.0]).len, 1028.4326);
+    assert_delta!(aurora.path([946.0, 635.0], [222.0, 123.0]).len, 1028.4326);
 }
 #[test]
 fn aurora_pctnscvrvq() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([942.0, 564.0], [147.0, 144.0]).len, 1029.0294);
+    assert_delta!(aurora.path([942.0, 564.0], [147.0, 144.0]).len, 1029.0294);
 }
 #[test]
 fn aurora_dthbuxghgy() {
@@ -13853,7 +13836,7 @@ fn aurora_cayrtuyytr() {
 #[test]
 fn aurora_jjbahtawfg() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([916.0, 561.0], [142.0, 97.0]).len, 1033.6165);
+    assert_delta!(aurora.path([916.0, 561.0], [142.0, 97.0]).len, 1033.6165);
 }
 #[test]
 fn aurora_fyqpzillnc() {
@@ -14193,7 +14176,7 @@ fn aurora_yrbsueafgo() {
 #[test]
 fn aurora_jnaqruekbr() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([939.0, 571.0], [103.0, 174.0]).len, 1070.1654);
+    assert_delta!(aurora.path([939.0, 571.0], [103.0, 174.0]).len, 1070.1654);
 }
 #[test]
 fn aurora_rvkcepsviv() {
@@ -14218,7 +14201,7 @@ fn aurora_tpdfudsefj() {
 #[test]
 fn aurora_itnnzbnary() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([980.0, 588.0], [155.0, 165.0]).len, 1064.7545);
+    assert_delta!(aurora.path([980.0, 588.0], [155.0, 165.0]).len, 1064.7545);
 }
 #[test]
 fn aurora_wdvychvmfz() {
@@ -14263,7 +14246,7 @@ fn aurora_etmfeuxvdb() {
 #[test]
 fn aurora_jgreumqxlo() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([987.0, 623.0], [204.0, 100.0]).len, 1067.4429);
+    assert_delta!(aurora.path([987.0, 623.0], [204.0, 100.0]).len, 1067.4429);
 }
 #[test]
 fn aurora_yfggbrbces() {
@@ -14388,7 +14371,7 @@ fn aurora_yzoilvnaze() {
 #[test]
 fn aurora_gkgpooltxv() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([989.0, 598.0], [152.0, 168.0]).len, 1079.792);
+    assert_delta!(aurora.path([989.0, 598.0], [152.0, 168.0]).len, 1079.792);
 }
 #[test]
 fn aurora_gtxutwnuie() {
@@ -14833,7 +14816,7 @@ fn aurora_zuvfleazek() {
 #[test]
 fn aurora_znplmpusuo() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([854.0, 679.0], [144.0, 107.0]).len, 1108.788);
+    assert_delta!(aurora.path([854.0, 679.0], [144.0, 107.0]).len, 1108.788);
 }
 #[test]
 fn aurora_qirlykrube() {
@@ -14893,7 +14876,7 @@ fn aurora_zqtajdupdn() {
 #[test]
 fn aurora_spbyjrgbdq() {
     let aurora = aurora_mesh();
-    known_failure!(aurora.path([979.0, 590.0], [98.0, 191.0]).len, 1120.2311);
+    assert_delta!(aurora.path([979.0, 590.0], [98.0, 191.0]).len, 1120.2311);
 }
 #[test]
 fn aurora_ztyphjfxsp() {

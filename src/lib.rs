@@ -415,8 +415,8 @@ impl<'m> SearchInstance<'m> {
         for edge in &polygon.double_edges_index()[right_index..=left_index] {
             let start = self.mesh.vertices.get(edge[0]).unwrap();
             let end = self.mesh.vertices.get(edge[1]).unwrap();
-            let mut start_p = [start.x, start.y];
-            let mut end_p = [end.x, end.y];
+            let mut start_p = start.p();
+            let mut end_p = end.p();
             #[cfg(debug_assertions)]
             if self.debug {
                 println!("| {:?} : {:?} / {:?}", edge, start_p, end_p);
@@ -438,12 +438,23 @@ impl<'m> SearchInstance<'m> {
                         [node.r, node.i[0]],
                         [[start.x, start.y], [end.x, end.y]],
                     ) {
-                        successors.push(Successor {
-                            interval: [start_p, intersect],
-                            edge: *edge,
-                            ty,
-                        });
-                        start_p = intersect;
+                        #[cfg(debug_assertions)]
+                        if self.debug {
+                            println!("|   intersection 0 {:?}", intersect);
+                        }
+                        if distance_between(intersect, start_p) > 1.0e-3 {
+                            successors.push(Successor {
+                                interval: [start_p, intersect],
+                                edge: *edge,
+                                ty,
+                            });
+                            start_p = intersect;
+                        } else {
+                            #[cfg(debug_assertions)]
+                            if self.debug {
+                                println!("|     ignoring intersection");
+                            }
+                        }
                         ty = SuccessorType::Observable;
                     }
                 }
@@ -478,6 +489,10 @@ impl<'m> SearchInstance<'m> {
                         [node.r, node.i[1]],
                         [[start.x, start.y], [end.x, end.y]],
                     ) {
+                        #[cfg(debug_assertions)]
+                        if self.debug {
+                            println!("|   intersection 1 {:?}", intersect);
+                        }
                         ty = SuccessorType::LeftNonObservable;
                         successors.push(Successor {
                             interval: [intersect, [end.x, end.y]],
