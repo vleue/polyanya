@@ -215,18 +215,6 @@ fn arena_mesh() -> Mesh {
 }
 
 #[test]
-fn point_in_polygon() {
-    let arena = arena_mesh();
-
-    assert_eq!(arena.point_in_polygon([1.0, 11.0]), 6);
-    assert_eq!(arena.point_in_polygon([1.0, 12.0]), 6);
-    assert_eq!(arena.point_in_polygon([1.0, 13.0]), 6);
-    assert_eq!(arena.point_in_polygon([4.0, 12.0]), 5);
-    assert_eq!(arena.point_in_polygon([1.0, 3.0]), 6);
-    assert_eq!(arena.point_in_polygon([3.0, 1.0]), 2);
-}
-
-#[test]
 fn arena_scenario_ref_impl() {
     let arena = arena_mesh();
 

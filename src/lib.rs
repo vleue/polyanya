@@ -18,9 +18,9 @@ mod helpers;
 
 #[derive(Debug)]
 pub struct Vertex {
-    pub x: f32,
-    pub y: f32,
-    pub polygons: Vec<isize>,
+    x: f32,
+    y: f32,
+    polygons: Vec<isize>,
     is_corner: bool,
 }
 
@@ -34,6 +34,7 @@ impl Vertex {
         }
     }
 
+    #[inline(always)]
     fn p(&self) -> [f32; 2] {
         [self.x, self.y]
     }
@@ -61,9 +62,9 @@ pub struct Path {
 
 #[derive(Debug)]
 pub struct Polygon {
-    pub vertices: Vec<usize>,
-    pub neighbours: Vec<isize>,
-    pub is_one_way: bool,
+    vertices: Vec<usize>,
+    // neighbours: Vec<isize>,
+    is_one_way: bool,
 }
 
 impl Polygon {
@@ -86,13 +87,14 @@ impl Polygon {
         }
         Polygon {
             vertices,
-            neighbours,
+            // neighbours,
             is_one_way,
         }
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn edges_index(&self) -> Vec<[usize; 2]> {
+    #[inline(always)]
+    fn edges_index(&self) -> Vec<[usize; 2]> {
         let mut edges = Vec::with_capacity(self.vertices.len() / 2);
         let mut last = self.vertices[0];
         for vertex in self.vertices.iter().skip(1) {
@@ -104,7 +106,8 @@ impl Polygon {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn double_edges_index(&self) -> Vec<[usize; 2]> {
+    #[inline(always)]
+    fn double_edges_index(&self) -> Vec<[usize; 2]> {
         let mut edges = Vec::with_capacity(self.vertices.len());
         let mut last = self.vertices[0];
         for vertex in self.vertices.iter().skip(1) {
@@ -130,12 +133,14 @@ pub struct Mesh {
 
 struct Root([f32; 2]);
 impl PartialEq for Root {
+    #[inline(always)]
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
     }
 }
 impl Eq for Root {}
 impl Hash for Root {
+    #[inline(always)]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         ((self.0[0] * 10000.0) as i32).hash(state);
         ((self.0[1] * 10000.0) as i32).hash(state);
@@ -341,6 +346,8 @@ impl Mesh {
         search_instance.queue.drain().collect()
     }
 
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
     fn edges_between(&self, node: &SearchNode) -> Vec<Successor> {
         let mut successors = vec![];
 
@@ -434,7 +441,7 @@ impl Mesh {
 
 impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    #[inline]
+    #[inline(always)]
     fn add_node(
         &mut self,
         root: [f32; 2],
@@ -500,6 +507,7 @@ impl<'m> SearchInstance<'m> {
         }
     }
 
+    #[inline(always)]
     fn flush_nodes(&mut self) {
         #[cfg(feature = "stats")]
         {
@@ -513,6 +521,7 @@ impl<'m> SearchInstance<'m> {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
     fn successors(&mut self, mut node: SearchNode) {
         #[cfg(feature = "stats")]
         {
@@ -588,8 +597,12 @@ enum EdgeSide {
 }
 
 impl Mesh {
+    pub fn point_in_mesh(&self, point: [f32; 2]) -> bool {
+        self.point_in_polygon(point) != usize::MAX
+    }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn point_in_polygon(&self, point: [f32; 2]) -> usize {
+    fn point_in_polygon(&self, point: [f32; 2]) -> usize {
         let delta = 0.1;
         [
             [0.0, 0.0],
@@ -609,7 +622,7 @@ impl Mesh {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn point_in_polygon_unit(&self, point: [f32; 2]) -> usize {
+    fn point_in_polygon_unit(&self, point: [f32; 2]) -> usize {
         'polygons: for (i, polygon) in self.polygons.iter().enumerate() {
             for edge in polygon.edges_index() {
                 let last = self.vertices.get(edge[0]).unwrap();
@@ -629,15 +642,15 @@ impl Mesh {
 }
 
 #[derive(PartialEq, Debug)]
-pub struct SearchNode {
-    pub path: Vec<[f32; 2]>,
-    pub r: [f32; 2],
-    pub i: [[f32; 2]; 2],
-    pub i_index: [usize; 2],
-    pub polygon_from: isize,
-    pub polygon_to: isize,
-    pub f: f32,
-    pub g: f32,
+struct SearchNode {
+    path: Vec<[f32; 2]>,
+    r: [f32; 2],
+    i: [[f32; 2]; 2],
+    i_index: [usize; 2],
+    polygon_from: isize,
+    polygon_to: isize,
+    f: f32,
+    g: f32,
 }
 
 impl Display for SearchNode {
