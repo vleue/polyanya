@@ -158,13 +158,11 @@ impl Mesh {
         for line in io::BufReader::new(file).lines() {
             let line: String = line.unwrap();
             if phase == 0 {
-                if line == "mesh" {
-                    continue;
-                } else if line == "2" {
+                if line == "mesh" || line == "2" {
                     continue;
                 } else {
                     (nb_vertices, nb_polygons) = line
-                        .split_once(" ")
+                        .split_once(' ')
                         .map(|(a, b)| (a.parse().unwrap(), b.parse().unwrap()))
                         .unwrap();
                     phase = 1;
@@ -174,7 +172,7 @@ impl Mesh {
             if phase == 1 {
                 if nb_vertices > 0 {
                     nb_vertices -= 1;
-                    let mut values = line.split(" ");
+                    let mut values = line.split(' ');
                     let x = values.next().unwrap().parse().unwrap();
                     let y = values.next().unwrap().parse().unwrap();
                     let _ = values.next();
@@ -187,7 +185,7 @@ impl Mesh {
             if phase == 2 {
                 if nb_polygons > 0 {
                     nb_polygons -= 1;
-                    let mut values = line.split(" ");
+                    let mut values = line.split(' ');
                     let n = values.next().unwrap().parse().unwrap();
                     let polygon = Polygon::new(n, values.map(|v| v.parse().unwrap()).collect());
                     mesh.polygons.push(polygon)
@@ -365,13 +363,13 @@ impl Mesh {
             // TODO: possible optimisation
         }
 
-        let right_index = (|| {
+        let right_index = {
             let mut temp = 0;
             while polygon.vertices[temp] != node.i_index[1] {
                 temp += 1;
             }
             temp + 1
-        })();
+        };
         let left_index = polygon.vertices.len() + right_index - 1 - 1;
 
         let mut ty = SuccessorType::RightNonObservable;
@@ -494,7 +492,6 @@ impl<'m> SearchInstance<'m> {
         match self.root_history.entry(Root(root)) {
             Entry::Occupied(mut o) => {
                 if o.get() < &new_node.f {
-                    ()
                 } else {
                     o.insert(new_node.f);
                     self.node_buffer.push(new_node);
