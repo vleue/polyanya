@@ -418,18 +418,27 @@ impl Mesh {
                 edge: *edge,
                 ty,
             });
-            if on_side([end.x, end.y], [node.r, node.i[1]]) == EdgeSide::Left {
-                if let Some(intersect) = line_intersect_segment(
-                    [node.r, node.i[1]],
-                    [[start.x, start.y], [end.x, end.y]],
-                ) {
-                    ty = SuccessorType::LeftNonObservable;
-                    successors.push(Successor {
-                        interval: [intersect, [end.x, end.y]],
-                        edge: *edge,
-                        ty,
-                    });
+            match on_side([end.x, end.y], [node.r, node.i[1]]) {
+                EdgeSide::Left => {
+                    if let Some(intersect) = line_intersect_segment(
+                        [node.r, node.i[1]],
+                        [[start.x, start.y], [end.x, end.y]],
+                    ) {
+                        ty = SuccessorType::LeftNonObservable;
+                        successors.push(Successor {
+                            interval: [intersect, [end.x, end.y]],
+                            edge: *edge,
+                            ty,
+                        });
+                    }
                 }
+                EdgeSide::Edge => match on_side([end.x, end.y], [node.r, node.i[0]]) {
+                    EdgeSide::Edge | EdgeSide::Left => {
+                        ty = SuccessorType::LeftNonObservable;
+                    }
+                    _ => (),
+                },
+                _ => (),
             }
         }
 
@@ -822,17 +831,17 @@ mod tests {
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].r, [1.0, 1.0]);
-        assert_eq!(successors[0].f, distance_between(from, [1.0, 1.0]));
+        assert_eq!(successors[0].r, [2.0, 1.0]);
         assert_eq!(
-            successors[0].g,
-            distance_between([1.0, 1.0], [2.0, 1.0]) + distance_between([2.0, 1.0], to)
+            successors[0].f,
+            distance_between(from, [1.0, 1.0]) + distance_between([1.0, 1.0], [2.0, 1.0])
         );
+        assert_eq!(successors[0].g, distance_between([2.0, 1.0], to));
         assert_eq!(successors[0].polygon_from, 2);
         assert_eq!(successors[0].polygon_to, 4);
         assert_eq!(successors[0].i, [[3.0, 1.0], [2.0, 1.0]]);
         assert_eq!(successors[0].i_index, [7, 6]);
-        assert_eq!(successors[0].path, vec![from]);
+        assert_eq!(successors[0].path, vec![from, [1.0, 1.0]]);
 
         assert_eq!(
             mesh.path(from, to),
@@ -864,17 +873,17 @@ mod tests {
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].r, [1.0, 1.0]);
-        assert_eq!(successors[0].f, distance_between(from, [1.0, 1.0]));
+        assert_eq!(successors[0].r, [2.0, 1.0]);
         assert_eq!(
-            successors[0].g,
-            distance_between([1.0, 1.0], [2.0, 1.0]) + distance_between([2.0, 1.0], to)
+            successors[0].f,
+            distance_between(from, [1.0, 1.0]) + distance_between([1.0, 1.0], [2.0, 1.0])
         );
+        assert_eq!(successors[0].g, distance_between([2.0, 1.0], to));
         assert_eq!(successors[0].polygon_from, 2);
         assert_eq!(successors[0].polygon_to, 4);
         assert_eq!(successors[0].i, [[3.0, 1.0], [2.0, 1.0]]);
         assert_eq!(successors[0].i_index, [7, 6]);
-        assert_eq!(successors[0].path, vec![from]);
+        assert_eq!(successors[0].path, vec![from, [1.0, 1.0]]);
 
         assert_eq!(
             mesh.path(from, to),
