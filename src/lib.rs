@@ -441,8 +441,15 @@ impl<'m> SearchInstance<'m> {
                         #[cfg(debug_assertions)]
                         if self.debug {
                             println!("|   intersection 0 {:?}", intersect);
+                            println!(
+                                "|     {:?} / {:?}",
+                                distance_between(intersect, start_p),
+                                distance_between(intersect, end.p())
+                            );
                         }
-                        if distance_between(intersect, start_p) > 1.0e-3 {
+                        if distance_between(intersect, start_p) > 1.0e-3
+                            && distance_between(intersect, end.p()) > 1.0e-3
+                        {
                             successors.push(Successor {
                                 interval: [start_p, intersect],
                                 edge: *edge,
@@ -455,7 +462,9 @@ impl<'m> SearchInstance<'m> {
                                 println!("|     ignoring intersection");
                             }
                         }
-                        ty = SuccessorType::Observable;
+                        if distance_between(intersect, end.p()) > 1.0e-3 {
+                            ty = SuccessorType::Observable;
+                        }
                     }
                 }
                 EdgeSide::Left => {
@@ -480,6 +489,11 @@ impl<'m> SearchInstance<'m> {
                     #[cfg(debug_assertions)]
                     if self.debug {
                         println!("|   intersection 1 {:?}", intersect);
+                        println!(
+                            "|     {:?} / {:?}",
+                            distance_between(intersect, start_p),
+                            distance_between(intersect, end.p())
+                        );
                     }
 
                     if distance_between(intersect, end.p()) > 1.0e-3 {
@@ -494,7 +508,7 @@ impl<'m> SearchInstance<'m> {
                 }
             }
             successors.push(Successor {
-                interval: [start_p, end_intersection_p.unwrap_or(end.p())],
+                interval: [start_p, end_intersection_p.unwrap_or_else(|| end.p())],
                 edge: *edge,
                 ty,
             });
