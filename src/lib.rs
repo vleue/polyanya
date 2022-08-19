@@ -416,10 +416,10 @@ impl<'m> SearchInstance<'m> {
             let start = self.mesh.vertices.get(edge[0]).unwrap();
             let end = self.mesh.vertices.get(edge[1]).unwrap();
             let mut start_p = start.p();
-            let mut end_p = end.p();
+
             #[cfg(debug_assertions)]
             if self.debug {
-                println!("| {:?} : {:?} / {:?}", edge, start_p, end_p);
+                println!("| {:?} : {:?} / {:?}", edge, start_p, end.p());
                 println!(
                     "|   {:?} - {:?}",
                     on_side([start.x, start.y], [node.r, node.i[0]]),
@@ -470,32 +470,42 @@ impl<'m> SearchInstance<'m> {
                     _ => (),
                 },
             }
+            let mut end_intersection_p = None;
+            let mut found_intersection = false;
             if on_side([end.x, end.y], [node.r, node.i[1]]) == EdgeSide::Left {
                 if let Some(intersect) = line_intersect_segment(
                     [node.r, node.i[1]],
                     [[start.x, start.y], [end.x, end.y]],
                 ) {
-                    end_p = intersect;
+                    #[cfg(debug_assertions)]
+                    if self.debug {
+                        println!("|   intersection 1 {:?}", intersect);
+                    }
+
+                    if distance_between(intersect, end.p()) > 1.0e-3 {
+                        end_intersection_p = Some(intersect);
+                    } else {
+                        #[cfg(debug_assertions)]
+                        if self.debug {
+                            println!("|     ignoring intersection");
+                        }
+                    }
+                    found_intersection = true;
                 }
             }
             successors.push(Successor {
-                interval: [start_p, end_p],
+                interval: [start_p, end_intersection_p.unwrap_or(end.p())],
                 edge: *edge,
                 ty,
             });
             match on_side([end.x, end.y], [node.r, node.i[1]]) {
                 EdgeSide::Left => {
-                    if let Some(intersect) = line_intersect_segment(
-                        [node.r, node.i[1]],
-                        [[start.x, start.y], [end.x, end.y]],
-                    ) {
-                        #[cfg(debug_assertions)]
-                        if self.debug {
-                            println!("|   intersection 1 {:?}", intersect);
-                        }
+                    if found_intersection {
                         ty = SuccessorType::LeftNonObservable;
+                    }
+                    if let Some(intersect) = end_intersection_p {
                         successors.push(Successor {
-                            interval: [intersect, [end.x, end.y]],
+                            interval: [intersect, end.p()],
                             edge: *edge,
                             ty,
                         });
@@ -607,6 +617,7 @@ impl<'m> SearchInstance<'m> {
         }
     }
 
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     fn flush_nodes(&mut self) {
         #[cfg(feature = "stats")]
