@@ -83,6 +83,7 @@ pub(crate) fn heuristic(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> f32 {
 
 /// Returns the point at which the path between the given root and goal should turn, if any.
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
+#[inline(always)]
 pub(crate) fn turning_point(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> Option<Vec2> {
     let goal = if root.side(interval) == goal.side(interval) {
         goal.mirror(interval)
