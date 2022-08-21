@@ -321,7 +321,7 @@ impl Mesh {
                 if next.root != from {
                     path.push(next.root);
                 }
-                if let Some(turn) = turning_on(next.root, to, next.interval) {
+                if let Some(turn) = turning_point(next.root, to, next.interval) {
                     path.push(turn);
                 }
                 path.push(to);
@@ -806,7 +806,7 @@ impl Mesh {
                 let last = self.vertices.get(edge.0).unwrap().coords;
                 let next = self.vertices.get(edge.1).unwrap().coords;
                 let current_side = point.side((last, next));
-                if on_segment(point, (last, next)) {
+                if point.on_segment((last, next)) {
                     return i;
                 }
                 if current_side != EdgeSide::Left {

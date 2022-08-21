@@ -10,6 +10,7 @@ const EPSILON: f32 = 1e-2;
 pub(crate) trait Vec2Helper {
     fn side(self, edge: (Vec2, Vec2)) -> EdgeSide;
     fn mirror(self, edge: (Vec2, Vec2)) -> Vec2;
+    fn on_segment(self, segment: (Vec2, Vec2)) -> bool;
 }
 
 impl Vec2Helper for Vec2 {
@@ -37,39 +38,42 @@ impl Vec2Helper for Vec2 {
         let local_line = line.1 - line.0;
 
         let local_reflect_point = 2.0 * local_point.project_onto(local_line) - local_point;
+
         line.0 + local_reflect_point
+    }
+
+    /// Determines if a point lies on a line segment.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
+    fn on_segment(self, segment: (Vec2, Vec2)) -> bool {
+        // Check if the point is in the segment's bounding box and then check if it is on the line.
+        // Just checking if the point is on the line is not sufficient because the point can be
+        // outside the segment but still be on the line.
+        (segment.0.x.min(segment.1.x)..=segment.0.x.max(segment.1.x)).contains(&self.x)
+            && (segment.0.y.min(segment.1.y)..=segment.0.y.max(segment.1.y)).contains(&self.y)
+            && (self.side(segment) == EdgeSide::Edge)
     }
 }
 
-#[cfg_attr(feature = "tracing", instrument(skip_all))]
-#[inline(always)]
-pub(crate) fn on_segment(point: Vec2, segment: (Vec2, Vec2)) -> bool {
-    (segment.0.x.min(segment.1.x)..=segment.0.x.max(segment.1.x)).contains(&point.x)
-        && (segment.0.y.min(segment.1.y)..=segment.0.y.max(segment.1.y)).contains(&point.y)
-        && (point.side(segment) == EdgeSide::Edge)
-}
-
-// i should be counterclockwise from r
+/// Computes heuristic distance from a ['SeacrhNode'] represented by the given root and interval to the goal.
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
 #[inline(always)]
 pub(crate) fn heuristic(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> f32 {
+    // If the goal is on the same side of the interval with the root, then we mirror it.
     let goal = if root.side(interval) == goal.side(interval) {
         goal.mirror(interval)
     } else {
         goal
     };
 
+    // Filter out the trivial cases.
     if root == interval.0 || root == interval.1 {
         root.distance(goal)
     } else {
-        let local_root = root - interval.0;
-        let local_goal = goal - interval.0;
-        let goal_distance = goal - root;
-        let local_interval_end = interval.1 - interval.0;
-        // TODO sort out readability in heuristic function
-        let lr_num = local_goal.perp_dot(local_root);
-        let denom = goal_distance.perp_dot(local_interval_end);
-        match lr_num / denom {
+        // If the point is not in the estimated "line of sight", then the heuristic will
+        // be an approximated taut path length, otherwise it will be the exact distance
+        // between the root and the goal.
+        match intersection_time((root, goal), interval) {
             x if x < 0.0 => root.distance(interval.0) + interval.0.distance(goal),
             x if x > 1.0 => root.distance(interval.1) + interval.1.distance(goal),
             _ => root.distance(goal),
@@ -77,13 +81,15 @@ pub(crate) fn heuristic(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> f32 {
     }
 }
 
+/// Returns the point at which the path between the given root and goal should turn, if any.
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
-pub(crate) fn turning_on(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> Option<Vec2> {
+pub(crate) fn turning_point(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> Option<Vec2> {
     let goal = if root.side(interval) == goal.side(interval) {
         goal.mirror(interval)
     } else {
         goal
     };
+
     if root == interval.0 {
         None
     } else if goal.side((root, interval.0)) == EdgeSide::Right {
@@ -95,16 +101,27 @@ pub(crate) fn turning_on(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> Opti
     }
 }
 
+/// Returns intersection time (which is the ratio of the supposed
+/// intersection-defined segment "part" to the total segment length)
+/// at which the given segment will be intersected by the given line.
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
 #[inline(always)]
-pub(crate) fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) -> Option<Vec2> {
+pub(crate) fn intersection_time(line: (Vec2, Vec2), segment: (Vec2, Vec2)) -> f32 {
     // What's happening here is that we're effectively finding a "partial" area (wedge product) defined by supposed
     // intersection (line end to segment end x full line), and then divide it by "total" area (full line x full segment).
     // Apparently this is equal to the so called intersection time, which is the ratio of the supposed segment
     // "part" defined by intersection to the total segment length. If the "part" is biggger than 1, then the line
     // does not intersect the segment but intersects the line on which the segment lies.
-    let intersection_time = (line.0 - segment.0).perp_dot(line.0 - line.1)
-        / (line.0 - line.1).perp_dot(segment.0 - segment.1);
+    let local_line = line.0 - line.1;
+
+    (line.0 - segment.0).perp_dot(local_line) / (local_line).perp_dot(segment.0 - segment.1)
+}
+
+/// Returns the intersection point of the given line and segment, if it exists.
+#[cfg_attr(feature = "tracing", instrument(skip_all))]
+#[inline(always)]
+pub(crate) fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) -> Option<Vec2> {
+    let intersection_time = intersection_time(line, segment);
 
     if !(0.0..=1.0).contains(&intersection_time) || intersection_time.is_nan() {
         None
