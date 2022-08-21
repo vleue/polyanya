@@ -21,11 +21,11 @@ impl Vec2Helper for Vec2 {
         let local_point = self - line.0;
         let local_line = line.1 - line.0;
 
-        return match local_line.perp_dot(local_point) {
+        match local_line.perp_dot(local_point) {
             x if x.abs() < EPSILON => EdgeSide::Edge,
             x if x > 0.0 => EdgeSide::Left,
             _ => EdgeSide::Right,
-        };
+        }
     }
 
     /// Mirrors a point across a line defined by two points.
@@ -37,7 +37,7 @@ impl Vec2Helper for Vec2 {
         let local_line = line.1 - line.0;
 
         let local_reflect_point = 2.0 * local_point.project_onto(local_line) - local_point;
-        return line.0 + local_reflect_point;
+        line.0 + local_reflect_point
     }
 }
 
@@ -97,10 +97,7 @@ pub(crate) fn turning_on(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> Opti
 
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
 #[inline(always)]
-pub(crate) fn line_intersect_segment(
-    line: (Vec2, Vec2),
-    segment: (Vec2, Vec2),
-) -> Option<Vec2> {
+pub(crate) fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) -> Option<Vec2> {
     // What's happening here is that we're effectively finding a "partial" area (wedge product) defined by supposed
     // intersection (line end to segment end x full line), and then divide it by "total" area (full line x full segment).
     // Apparently this is equal to the so called intersection time, which is the ratio of the supposed segment
@@ -120,30 +117,45 @@ pub(crate) fn line_intersect_segment(
 mod tests {
     use glam::Vec2;
 
-    use crate::{EdgeSide, helpers::Vec2Helper};
+    use crate::{helpers::Vec2Helper, EdgeSide};
 
     use super::{heuristic, line_intersect_segment};
 
     #[test]
     fn test_on_side() {
         assert_eq!(
-            Vec2Helper::side(Vec2::new(0.0, 0.5), (Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0))),
+            Vec2Helper::side(
+                Vec2::new(0.0, 0.5),
+                (Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0))
+            ),
             EdgeSide::Left
         );
         assert_eq!(
-            Vec2Helper::side(Vec2::new(0.0, -0.5), (Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0))),
+            Vec2Helper::side(
+                Vec2::new(0.0, -0.5),
+                (Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0))
+            ),
             EdgeSide::Right
         );
         assert_eq!(
-            Vec2Helper::side(Vec2::new(1.0, 0.0), (Vec2::new(0.0, 0.0), Vec2::new(1.0, 1.0))),
+            Vec2Helper::side(
+                Vec2::new(1.0, 0.0),
+                (Vec2::new(0.0, 0.0), Vec2::new(1.0, 1.0))
+            ),
             EdgeSide::Right
         );
         assert_eq!(
-            Vec2Helper::side(Vec2::new(0.0, 1.0), (Vec2::new(0.0, 0.0), Vec2::new(1.0, 1.0))),
+            Vec2Helper::side(
+                Vec2::new(0.0, 1.0),
+                (Vec2::new(0.0, 0.0), Vec2::new(1.0, 1.0))
+            ),
             EdgeSide::Left
         );
         assert_eq!(
-            Vec2Helper::side(Vec2::new(2.0, 2.0), (Vec2::new(0.0, 0.0), Vec2::new(1.0, 1.0))),
+            Vec2Helper::side(
+                Vec2::new(2.0, 2.0),
+                (Vec2::new(0.0, 0.0), Vec2::new(1.0, 1.0))
+            ),
             EdgeSide::Edge
         );
     }
@@ -151,11 +163,17 @@ mod tests {
     #[test]
     fn test_mirror() {
         assert_eq!(
-            Vec2Helper::mirror(Vec2::new(1.0, 0.0), (Vec2::new(0.0, 0.0), Vec2::new(0.0, 1.0))),
+            Vec2Helper::mirror(
+                Vec2::new(1.0, 0.0),
+                (Vec2::new(0.0, 0.0), Vec2::new(0.0, 1.0))
+            ),
             Vec2::new(-1.0, 0.0)
         );
         assert_eq!(
-            Vec2Helper::mirror(Vec2::new(-1.0, 0.0), (Vec2::new(0.0, 0.0), Vec2::new(0.0, 1.0))),
+            Vec2Helper::mirror(
+                Vec2::new(-1.0, 0.0),
+                (Vec2::new(0.0, 0.0), Vec2::new(0.0, 1.0))
+            ),
             Vec2::new(1.0, 0.0)
         );
     }
@@ -163,19 +181,35 @@ mod tests {
     #[test]
     fn test_heuristic() {
         assert_eq!(
-            heuristic(Vec2::new(0.0, 0.0), Vec2::new(1.0, 1.0), (Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0))),
+            heuristic(
+                Vec2::new(0.0, 0.0),
+                Vec2::new(1.0, 1.0),
+                (Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0))
+            ),
             2.0_f32.sqrt()
         );
         assert_eq!(
-            heuristic(Vec2::new(0.0, 0.0), Vec2::new(2.0, -1.0), (Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0))),
+            heuristic(
+                Vec2::new(0.0, 0.0),
+                Vec2::new(2.0, -1.0),
+                (Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0))
+            ),
             1.0 + 2.0_f32.sqrt()
         );
         assert_eq!(
-            heuristic(Vec2::new(0.0, 0.0), Vec2::new(-1.0, 2.0), (Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0))),
+            heuristic(
+                Vec2::new(0.0, 0.0),
+                Vec2::new(-1.0, 2.0),
+                (Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0))
+            ),
             1.0 + 2.0_f32.sqrt()
         );
         assert_eq!(
-            heuristic(Vec2::new(0.0, 0.0), Vec2::new(1.0, -1.0), (Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0))),
+            heuristic(
+                Vec2::new(0.0, 0.0),
+                Vec2::new(1.0, -1.0),
+                (Vec2::new(1.0, 0.0), Vec2::new(0.0, 1.0))
+            ),
             2.0
         );
     }
@@ -183,15 +217,24 @@ mod tests {
     #[test]
     fn test_line_intersect() {
         assert_eq!(
-            line_intersect_segment((Vec2::new(0.0, 0.5), Vec2::new(0.5, 0.5)), (Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0))),
+            line_intersect_segment(
+                (Vec2::new(0.0, 0.5), Vec2::new(0.5, 0.5)),
+                (Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0))
+            ),
             Some(Vec2::new(1.0, 0.5))
         );
         assert_eq!(
-            line_intersect_segment((Vec2::new(0.0, 0.0), Vec2::new(0.5, 0.8)), (Vec2::new(1.0, 0.0), Vec2::new(1.0, 0.2))),
+            line_intersect_segment(
+                (Vec2::new(0.0, 0.0), Vec2::new(0.5, 0.8)),
+                (Vec2::new(1.0, 0.0), Vec2::new(1.0, 0.2))
+            ),
             None
         );
         assert_eq!(
-            line_intersect_segment((Vec2::new(0.0, 0.8), Vec2::new(0.5, 0.0)), (Vec2::new(1.0, 0.0), Vec2::new(1.0, 0.2))),
+            line_intersect_segment(
+                (Vec2::new(0.0, 0.8), Vec2::new(0.5, 0.0)),
+                (Vec2::new(1.0, 0.0), Vec2::new(1.0, 0.2))
+            ),
             None
         );
     }
@@ -199,7 +242,10 @@ mod tests {
     #[test]
     fn test_line_intersect_colinear() {
         assert_eq!(
-            line_intersect_segment((Vec2::new(0.0, 0.5), Vec2::new(0.5, 0.5)), (Vec2::new(-1.0, 0.5), Vec2::new(1.0, 0.5))),
+            line_intersect_segment(
+                (Vec2::new(0.0, 0.5), Vec2::new(0.5, 0.5)),
+                (Vec2::new(-1.0, 0.5), Vec2::new(1.0, 0.5))
+            ),
             None
         );
     }
