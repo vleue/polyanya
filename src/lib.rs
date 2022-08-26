@@ -104,6 +104,9 @@ impl Polygon {
     #[inline(always)]
     fn edges_index(&self) -> Vec<(usize, usize)> {
         let mut edges = Vec::with_capacity(self.vertices.len() / 2);
+        if self.vertices.is_empty() {
+            return vec![];
+        }
         let mut last = self.vertices[0];
         for vertex in self.vertices.iter().skip(1) {
             edges.push((last, *vertex));
@@ -802,9 +805,16 @@ impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn point_in_polygon_unit(&self, point: Vec2) -> usize {
         'polygons: for (i, polygon) in self.polygons.iter().enumerate() {
+            let mut edged = false;
             for edge in polygon.edges_index() {
-                let last = self.vertices.get(edge.0).unwrap().coords;
+                edged = true;
+                let last = if let Some(v) = self.vertices.get(edge.0) {
+                    v.coords
+                } else {
+                    continue 'polygons;
+                };
                 let next = self.vertices.get(edge.1).unwrap().coords;
+
                 let current_side = point.side((last, next));
                 if point.on_segment((last, next)) {
                     return i;
@@ -813,7 +823,9 @@ impl Mesh {
                     continue 'polygons;
                 }
             }
-            return i;
+            if edged {
+                return i;
+            }
         }
         usize::MAX
     }
