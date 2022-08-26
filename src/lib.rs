@@ -23,19 +23,19 @@ enum EdgeSide {
     Edge,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Vertex {
-    coords: Vec2,
-    polygons: Vec<isize>,
-    is_corner: bool,
+    pub coords: Vec2,
+    pub polygons: Vec<isize>,
+    pub is_corner: bool,
 }
 
 impl Vertex {
-    pub fn new(coords: Vec2, polygons: Vec<isize>, is_corner: bool) -> Self {
+    pub fn new(coords: Vec2, polygons: Vec<isize>) -> Self {
         Self {
             coords,
+            is_corner: polygons.contains(&-1),
             polygons,
-            is_corner,
         }
     }
 
@@ -68,11 +68,11 @@ pub struct Path {
     pub path: Vec<Vec2>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Polygon {
-    vertices: Vec<usize>,
+    pub vertices: Vec<usize>,
     // neighbours: Vec<isize>,
-    is_one_way: bool,
+    pub is_one_way: bool,
 }
 
 impl Polygon {
