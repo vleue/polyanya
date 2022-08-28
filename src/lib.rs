@@ -23,7 +23,7 @@ enum EdgeSide {
     Edge,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Vertex {
     pub coords: Vec2,
     pub polygons: Vec<isize>,
@@ -66,16 +66,21 @@ struct Successor {
 pub struct Path {
     pub len: f32,
     pub path: Vec<Vec2>,
+    pub complete: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Polygon {
     pub vertices: Vec<usize>,
-    // neighbours: Vec<isize>,
     pub is_one_way: bool,
 }
 
 impl Polygon {
+    pub const EMPTY: Polygon = Polygon {
+        vertices: vec![],
+        is_one_way: false,
+    };
+
     pub fn new(nb: usize, data: Vec<isize>) -> Self {
         assert!(data.len() == nb * 2);
         let (vertices, neighbours) = data.split_at(nb);
@@ -95,7 +100,6 @@ impl Polygon {
         }
         Polygon {
             vertices,
-            // neighbours,
             is_one_way,
         }
     }
@@ -136,7 +140,7 @@ impl Polygon {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
     pub polygons: Vec<Polygon>,
@@ -233,15 +237,30 @@ struct SearchInstance<'m> {
 
 impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
     pub fn path(&self, from: Vec2, to: Vec2) -> Path {
+        self.path_with_limit(from, to, 0)
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn path_with_limit(&self, from: Vec2, to: Vec2, limit: usize) -> Path {
         let starting_polygon_index = self.point_in_polygon(from);
-        let starting_polygon = self.polygons.get(starting_polygon_index).unwrap();
+        let starting_polygon = if let Some(polygon) = self.polygons.get(starting_polygon_index) {
+            polygon
+        } else {
+            return Path {
+                len: -1.0,
+                path: vec![],
+                complete: false,
+            };
+        };
         let ending_polygon = self.point_in_polygon(to);
 
         if starting_polygon_index == ending_polygon {
             return Path {
                 len: from.distance(to),
                 path: vec![to],
+                complete: true,
             };
         }
 
@@ -279,8 +298,16 @@ impl Mesh {
         };
 
         for edge in starting_polygon.edges_index() {
-            let start = self.vertices.get(edge.0).unwrap();
-            let end = self.vertices.get(edge.1).unwrap();
+            let start = if let Some(v) = self.vertices.get(edge.0) {
+                v
+            } else {
+                continue;
+            };
+            let end = if let Some(v) = self.vertices.get(edge.1) {
+                v
+            } else {
+                continue;
+            };
 
             let mut other_side = isize::MAX;
             for i in &start.polygons {
@@ -328,16 +355,27 @@ impl Mesh {
                     path.push(turn);
                 }
                 path.push(to);
+                let complete = next.polygon_to == ending_polygon as isize;
                 return Path {
                     path,
                     len: next.f + next.g,
+                    complete: complete,
                 };
             }
             search_instance.successors(next);
         }
+        #[cfg(feature = "stats")]
+        eprintln!(
+            "{:?} / {:?} / {:?} / {:?}",
+            search_instance.successors_called,
+            search_instance.nodes_generated,
+            search_instance.pushed,
+            search_instance.popped
+        );
         Path {
             path: vec![],
             len: -1.0,
+            complete: false,
         }
     }
 
@@ -425,8 +463,16 @@ impl<'m> SearchInstance<'m> {
 
         let mut ty = SuccessorType::RightNonObservable;
         for edge in &polygon.double_edges_index()[right_index..=left_index] {
-            let start = self.mesh.vertices.get(edge.0).unwrap();
-            let end = self.mesh.vertices.get(edge.1).unwrap();
+            let start = if let Some(vertex) = self.mesh.vertices.get(edge.0) {
+                vertex
+            } else {
+                continue;
+            };
+            let end = if let Some(vertex) = self.mesh.vertices.get(edge.1) {
+                vertex
+            } else {
+                continue;
+            };
             let mut start_point = start.coords;
             let end_point = end.coords;
 
@@ -813,7 +859,11 @@ impl Mesh {
                 } else {
                     continue 'polygons;
                 };
-                let next = self.vertices.get(edge.1).unwrap().coords;
+                let next = if let Some(v) = self.vertices.get(edge.1) {
+                    v.coords
+                } else {
+                    continue 'polygons;
+                };
 
                 let current_side = point.side((last, next));
                 if point.on_segment((last, next)) {
