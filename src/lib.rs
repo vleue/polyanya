@@ -788,9 +788,10 @@ impl<'m> SearchInstance<'m> {
                     continue;
                 }
 
+                const EPSILON: f32 = 1.0e-5;
                 let root = match successor.ty {
                     SuccessorType::RightNonObservable => {
-                        if successor.interval.0.distance(start.coords) > 1.0e-5 {
+                        if successor.interval.0.distance(start.coords) > EPSILON {
                             #[cfg(debug_assertions)]
                             if self.debug {
                                 println!("x non observable on an intersection");
@@ -798,7 +799,7 @@ impl<'m> SearchInstance<'m> {
                             continue;
                         }
                         let vertex = self.mesh.vertices.get(node.edge.0).unwrap();
-                        if vertex.is_corner && vertex.coords.distance(node.interval.0) < 1.0e-5 {
+                        if vertex.is_corner && vertex.coords.distance(node.interval.0) < EPSILON {
                             node.interval.0
                         } else {
                             #[cfg(debug_assertions)]
@@ -810,7 +811,7 @@ impl<'m> SearchInstance<'m> {
                     }
                     SuccessorType::Observable => node.root,
                     SuccessorType::LeftNonObservable => {
-                        if successor.interval.1.distance(end.coords) > 1.0e-5 {
+                        if successor.interval.1.distance(end.coords) > EPSILON {
                             #[cfg(debug_assertions)]
                             if self.debug {
                                 println!("x non observable on an intersection");
@@ -818,7 +819,7 @@ impl<'m> SearchInstance<'m> {
                             continue;
                         }
                         let vertex = self.mesh.vertices.get(node.edge.1).unwrap();
-                        if vertex.is_corner && vertex.coords.distance(node.interval.1) < 1.0e-5 {
+                        if vertex.is_corner && vertex.coords.distance(node.interval.1) < EPSILON {
                             node.interval.1
                         } else {
                             #[cfg(debug_assertions)]
