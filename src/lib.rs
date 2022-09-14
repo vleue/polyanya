@@ -970,7 +970,7 @@ impl Ord for SearchNode {
     fn cmp(&self, other: &Self) -> Ordering {
         match (self.f + self.g).total_cmp(&(other.f + other.g)) {
             Ordering::Less => Ordering::Greater,
-            Ordering::Equal => Ordering::Equal,
+            Ordering::Equal => self.f.total_cmp(&other.f),
             Ordering::Greater => Ordering::Less,
         }
     }
