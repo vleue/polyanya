@@ -1,3 +1,5 @@
+#[cfg(feature = "stats")]
+use std::time::Instant;
 use std::{
     cmp::Ordering,
     collections::BinaryHeap,
@@ -69,7 +71,7 @@ pub struct Path {
     pub complete: bool,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Polygon {
     pub vertices: Vec<usize>,
     pub is_one_way: bool,
@@ -222,6 +224,8 @@ struct SearchInstance<'m> {
     polygon_to: isize,
     mesh: &'m Mesh,
     #[cfg(feature = "stats")]
+    start: Instant,
+    #[cfg(feature = "stats")]
     pushed: usize,
     #[cfg(feature = "stats")]
     popped: usize,
@@ -229,6 +233,8 @@ struct SearchInstance<'m> {
     successors_called: usize,
     #[cfg(feature = "stats")]
     nodes_generated: usize,
+    #[cfg(feature = "stats")]
+    nodes_pruned_post_pop: usize,
     #[cfg(debug_assertions)]
     debug: bool,
     #[cfg(debug_assertions)]
@@ -239,11 +245,9 @@ impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     pub fn path(&self, from: Vec2, to: Vec2) -> Path {
-        self.path_with_limit(from, to, 0)
-    }
+        #[cfg(feature = "stats")]
+        let start = Instant::now();
 
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn path_with_limit(&self, from: Vec2, to: Vec2, limit: usize) -> Path {
         let starting_polygon_index = self.point_in_polygon(from);
         let starting_polygon = if let Some(polygon) = self.polygons.get(starting_polygon_index) {
             polygon
@@ -272,6 +276,8 @@ impl Mesh {
             polygon_to: ending_polygon as isize,
             mesh: self,
             #[cfg(feature = "stats")]
+            start,
+            #[cfg(feature = "stats")]
             pushed: 0,
             #[cfg(feature = "stats")]
             popped: 0,
@@ -279,6 +285,8 @@ impl Mesh {
             successors_called: 0,
             #[cfg(feature = "stats")]
             nodes_generated: 0,
+            #[cfg(feature = "stats")]
+            nodes_pruned_post_pop: 0,
             #[cfg(debug_assertions)]
             debug: false,
             #[cfg(debug_assertions)]
@@ -316,13 +324,22 @@ impl Mesh {
                 }
             }
 
-            search_instance.add_node(
-                from,
-                other_side,
-                (start.coords, edge.0),
-                (end.coords, edge.1),
-                &empty_node,
-            );
+            if other_side != isize::MAX
+                && !search_instance
+                    .mesh
+                    .polygons
+                    .get(other_side as usize)
+                    .unwrap()
+                    .is_one_way
+            {
+                search_instance.add_node(
+                    from,
+                    other_side,
+                    (start.coords, edge.0),
+                    (end.coords, edge.1),
+                    &empty_node,
+                );
+            }
         }
         search_instance.flush_nodes();
 
@@ -333,15 +350,38 @@ impl Mesh {
             {
                 search_instance.popped += 1;
             }
+
+            if let Some(o) = search_instance.root_history.get(&Root(next.root)) {
+                if o < &next.f {
+                    #[cfg(feature = "verbose")]
+                    println!("node is dominated!");
+                    #[cfg(feature = "stats")]
+                    {
+                        search_instance.nodes_pruned_post_pop += 1;
+                    }
+                    continue;
+                }
+            }
+            //     _ => (),
+            // }
+
             if next.polygon_to == ending_polygon as isize {
                 #[cfg(feature = "stats")]
-                eprintln!(
-                    "{:?} / {:?} / {:?} / {:?}",
-                    search_instance.successors_called,
-                    search_instance.nodes_generated,
-                    search_instance.pushed,
-                    search_instance.popped
-                );
+                {
+                    eprintln!(
+                        "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
+                    );
+                    eprintln!(
+                        "0;{};{};{};{};{};{};{}",
+                        search_instance.start.elapsed().as_secs_f32() * 1_000_000.0,
+                        search_instance.successors_called,
+                        search_instance.nodes_generated,
+                        search_instance.pushed,
+                        search_instance.popped,
+                        search_instance.nodes_pruned_post_pop,
+                        next.f + next.g,
+                    );
+                }
                 let mut path = next
                     .path
                     .split_first()
@@ -354,12 +394,14 @@ impl Mesh {
                 if let Some(turn) = turning_point(next.root, to, next.interval) {
                     path.push(turn);
                 }
-                path.push(to);
                 let complete = next.polygon_to == ending_polygon as isize;
+                if complete {
+                    path.push(to);
+                }
                 return Path {
                     path,
                     len: next.f + next.g,
-                    complete: complete,
+                    complete,
                 };
             }
             search_instance.successors(next);
@@ -397,6 +439,8 @@ impl Mesh {
             successors_called: 0,
             #[cfg(feature = "stats")]
             nodes_generated: 0,
+            #[cfg(feature = "stats")]
+            nodes_pruned_post_pop: 0,
             #[cfg(debug_assertions)]
             debug: false,
             #[cfg(debug_assertions)]
@@ -423,6 +467,8 @@ impl Mesh {
             successors_called: 0,
             #[cfg(feature = "stats")]
             nodes_generated: 0,
+            #[cfg(feature = "stats")]
+            nodes_pruned_post_pop: 0,
             #[cfg(debug_assertions)]
             debug: false,
             #[cfg(debug_assertions)]
@@ -610,32 +656,6 @@ impl<'m> SearchInstance<'m> {
         {
             self.nodes_generated += 1;
         }
-        // prune edges that don't have a polygon on the other side: cul de sac pruning
-        if other_side == isize::MAX {
-            #[cfg(debug_assertions)]
-            if self.debug {
-                println!("x cul de sac");
-            }
-
-            return;
-        }
-
-        // prune edges that only lead to one other polygon, and not the target: dead end pruning
-        if self.polygon_to != other_side
-            && self
-                .mesh
-                .polygons
-                .get(other_side as usize)
-                .unwrap()
-                .is_one_way
-        {
-            #[cfg(debug_assertions)]
-            if self.debug {
-                println!("x dead end");
-            }
-
-            return;
-        }
 
         let mut path = node.path.clone();
         if root != node.root {
@@ -643,17 +663,8 @@ impl<'m> SearchInstance<'m> {
         }
 
         let heuristic = heuristic(root, self.to, (start.0, end.0));
-        let new_node = SearchNode {
-            path,
-            root,
-            interval: (start.0, end.0),
-            edge: (start.1, end.1),
-            polygon_from: node.polygon_to as isize,
-            polygon_to: other_side,
-            f: node.f + node.root.distance(root),
-            g: heuristic,
-        };
-        if new_node.f.is_nan() || new_node.g.is_nan() {
+        let new_f = node.f + node.root.distance(root);
+        if new_f.is_nan() || heuristic.is_nan() {
             #[cfg(debug_assertions)]
             if self.debug {
                 println!("x one of the distance is NaN");
@@ -661,6 +672,17 @@ impl<'m> SearchInstance<'m> {
 
             return;
         }
+
+        let new_node = SearchNode {
+            path,
+            root,
+            interval: (start.0, end.0),
+            edge: (start.1, end.1),
+            polygon_from: node.polygon_to as isize,
+            polygon_to: other_side,
+            f: new_f,
+            g: heuristic,
+        };
 
         match self.root_history.entry(Root(root)) {
             Entry::Occupied(mut o) => {
@@ -706,11 +728,11 @@ impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     fn successors(&mut self, mut node: SearchNode) {
-        #[cfg(feature = "stats")]
-        {
-            self.successors_called += 1;
-        }
         loop {
+            #[cfg(feature = "stats")]
+            {
+                self.successors_called += 1;
+            }
             #[cfg(debug_assertions)]
             // select a search node to enable debug more
             if false {
@@ -737,6 +759,33 @@ impl<'m> SearchInstance<'m> {
                 #[cfg(debug_assertions)]
                 if self.debug {
                     println!("| going to {:?}", other_side);
+                }
+
+                // prune edges that don't have a polygon on the other side: cul de sac pruning
+                if other_side == isize::MAX {
+                    #[cfg(debug_assertions)]
+                    if self.debug {
+                        println!("x cul de sac");
+                    }
+
+                    continue;
+                }
+
+                // prune edges that only lead to one other polygon, and not the target: dead end pruning
+                if self.polygon_to != other_side
+                    && self
+                        .mesh
+                        .polygons
+                        .get(other_side as usize)
+                        .unwrap()
+                        .is_one_way
+                {
+                    #[cfg(debug_assertions)]
+                    if self.debug {
+                        println!("x dead end");
+                    }
+
+                    continue;
                 }
 
                 let root = match successor.ty {
@@ -992,13 +1041,13 @@ mod tests {
             edge: (1, 5),
             polygon_from: mesh.point_in_polygon(from) as isize,
             polygon_to: 1,
-            f: 0.0,
-            g: from.distance(to),
+            f: from.distance(to),
+            g: 0.0,
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].root, from);
-        assert_eq!(successors[0].f, 0.0);
+        assert_eq!(successors[0].f, from.distance(to));
         assert_eq!(successors[0].g, from.distance(to));
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 2);
@@ -1014,7 +1063,8 @@ mod tests {
             mesh.path(from, to),
             Path {
                 path: vec![to],
-                len: from.distance(to)
+                len: from.distance(to),
+                complete: true,
             }
         );
     }
@@ -1053,7 +1103,8 @@ mod tests {
             mesh.path(from, to),
             Path {
                 path: vec![to],
-                len: from.distance(to)
+                len: from.distance(to),
+                complete: true,
             }
         );
     }
@@ -1097,7 +1148,8 @@ mod tests {
                 path: vec![Vec2::new(1.0, 1.0), Vec2::new(2.0, 1.0), to],
                 len: from.distance(Vec2::new(1.0, 1.0))
                     + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
-                    + Vec2::new(2.0, 1.0).distance(to)
+                    + Vec2::new(2.0, 1.0).distance(to),
+                complete: true,
             }
         );
     }
@@ -1142,7 +1194,8 @@ mod tests {
                 path: vec![Vec2::new(1.0, 1.0), Vec2::new(2.0, 1.0), to],
                 len: from.distance(Vec2::new(1.0, 1.0))
                     + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
-                    + Vec2::new(2.0, 1.0).distance(to)
+                    + Vec2::new(2.0, 1.0).distance(to),
+                complete: true,
             }
         );
     }

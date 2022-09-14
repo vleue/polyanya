@@ -1,5 +1,3 @@
-use std::time::Instant;
-
 use glam::Vec2;
 use polyanya::Mesh;
 
@@ -22,12 +20,8 @@ fn main() {
 
     let mesh = Mesh::from_file("meshes/aurora-merged.mesh".into());
 
-    let now = Instant::now();
-
     assert_delta!(
         mesh.path(Vec2::new(993.0, 290.0), Vec2::new(34.0, 622.0)),
         1123.2226
     );
-
-    println!("{}", now.elapsed().as_secs_f32() * 1000.0);
 }
