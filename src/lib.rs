@@ -88,7 +88,15 @@ impl Polygon {
         aabb: (Vec2::ZERO, Vec2::ZERO),
     };
 
-    pub fn new(nb: usize, data: Vec<isize>) -> Self {
+    pub fn new(vertices: Vec<usize>, is_one_way: bool) -> Polygon {
+        Polygon {
+            vertices,
+            is_one_way,
+            aabb: (Vec2::ZERO, Vec2::ZERO),
+        }
+    }
+
+    pub fn using(nb: usize, data: Vec<isize>) -> Self {
         assert!(data.len() == nb * 2);
         let (vertices, neighbours) = data.split_at(nb);
         let vertices = vertices.iter().copied().map(|v| v as usize).collect();
@@ -266,7 +274,7 @@ impl Mesh {
                     nb_polygons -= 1;
                     let mut values = line.split(' ');
                     let n = values.next().unwrap().parse().unwrap();
-                    let polygon = Polygon::new(n, values.map(|v| v.parse().unwrap()).collect());
+                    let polygon = Polygon::using(n, values.map(|v| v.parse().unwrap()).collect());
                     mesh.polygons.push(polygon)
                 } else {
                     panic!("unexpected line");
@@ -1106,11 +1114,11 @@ mod tests {
                 Vertex::from_coords(3, 2, vec![4, -1]),
             ],
             polygons: vec![
-                Polygon::new(4, vec![0, 1, 5, 4, -1, 1, 3, -1]),
-                Polygon::new(4, vec![1, 2, 6, 5, -1, 2, -1, 0]),
-                Polygon::new(4, vec![2, 3, 7, 6, -1, -1, 4, 1]),
-                Polygon::new(4, vec![4, 5, 9, 8, 0, -1, -1, -1]),
-                Polygon::new(4, vec![6, 7, 11, 10, 2, -1, -1, -1]),
+                Polygon::using(4, vec![0, 1, 5, 4, -1, 1, 3, -1]),
+                Polygon::using(4, vec![1, 2, 6, 5, -1, 2, -1, 0]),
+                Polygon::using(4, vec![2, 3, 7, 6, -1, -1, 4, 1]),
+                Polygon::using(4, vec![4, 5, 9, 8, 0, -1, -1, -1]),
+                Polygon::using(4, vec![6, 7, 11, 10, 2, -1, -1, -1]),
             ],
             baked_polygons: IndexMap::default(),
         }
@@ -1326,13 +1334,13 @@ mod tests {
                 Vertex::from_coords(1, 3, vec![1, -1]),           // 22
             ],
             polygons: vec![
-                Polygon::new(5, vec![0, 1, 2, 3, 4, -1, -1, 2, -1, -1]),
-                Polygon::new(6, vec![5, 22, 6, 7, 8, 9, -1, -1, -1, -1, 2, -1]),
-                Polygon::new(7, vec![1, 9, 8, 10, 11, 12, 2, -1, 1, -1, 4, 3, -1, 0]),
-                Polygon::new(4, vec![12, 11, 13, 14, 2, -1, -1, -1]),
-                Polygon::new(5, vec![10, 15, 16, 17, 11, -1, 5, -1, 6, 2]),
-                Polygon::new(4, vec![15, 18, 19, 16, -1, -1, -1, 4]),
-                Polygon::new(4, vec![11, 17, 20, 21, 4, -1, -1, -1]),
+                Polygon::using(5, vec![0, 1, 2, 3, 4, -1, -1, 2, -1, -1]),
+                Polygon::using(6, vec![5, 22, 6, 7, 8, 9, -1, -1, -1, -1, 2, -1]),
+                Polygon::using(7, vec![1, 9, 8, 10, 11, 12, 2, -1, 1, -1, 4, 3, -1, 0]),
+                Polygon::using(4, vec![12, 11, 13, 14, 2, -1, -1, -1]),
+                Polygon::using(5, vec![10, 15, 16, 17, 11, -1, 5, -1, 6, 2]),
+                Polygon::using(4, vec![15, 18, 19, 16, -1, -1, -1, 4]),
+                Polygon::using(4, vec![11, 17, 20, 21, 4, -1, -1, -1]),
             ],
             baked_polygons: IndexMap::default(),
         }
