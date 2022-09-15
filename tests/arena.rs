@@ -11,8 +11,8 @@ macro_rules! assert_delta {
 }
 
 fn arena_mesh() -> Mesh {
-    Mesh {
-        vertices: vec![
+    Mesh::new(
+        vec![
             Vertex::from_coords(2, 2, vec![-1, 4]),
             Vertex::from_coords(1, 3, vec![15, -1]),
             Vertex::from_coords(2, 3, vec![1, 15, -1, 4, 0, 14]),
@@ -126,7 +126,7 @@ fn arena_mesh() -> Mesh {
             Vertex::from_coords(47, 3, vec![73, 80, 68, 69, -1, 72, 57]),
             Vertex::from_coords(47, 1, vec![70, -1, 69]),
         ],
-        polygons: vec![
+        vec![
             Polygon::new(3, vec![6, 2, 3, 2, 14, 4]),
             Polygon::new(3, vec![26, 2, 25, -1, 15, 14]),
             Polygon::new(3, vec![6, 3, 5, -1, 0, 5]),
@@ -248,7 +248,7 @@ fn arena_mesh() -> Mesh {
             Polygon::new(3, vec![61, 62, 63, 119, 116, -1]),
             Polygon::new(3, vec![61, 63, 76, 82, 118, 84]),
         ],
-    }
+    )
 }
 
 #[test]

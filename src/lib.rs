@@ -1,3 +1,5 @@
+pub const PRECISION: f32 = 1000.0;
+
 #[cfg(feature = "stats")]
 use std::time::Instant;
 use std::{
@@ -10,9 +12,10 @@ use std::{
 };
 
 use glam::Vec2;
-use hashbrown::{hash_map::Entry, HashMap};
+use hashbrown::{hash_map::Entry, HashMap, HashSet};
 use helpers::*;
 
+use indexmap::IndexMap;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -71,16 +74,18 @@ pub struct Path {
     pub complete: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Polygon {
     pub vertices: Vec<usize>,
     pub is_one_way: bool,
+    aabb: (Vec2, Vec2),
 }
 
 impl Polygon {
     pub const EMPTY: Polygon = Polygon {
         vertices: vec![],
         is_one_way: false,
+        aabb: (Vec2::ZERO, Vec2::ZERO),
     };
 
     pub fn new(nb: usize, data: Vec<isize>) -> Self {
@@ -103,6 +108,7 @@ impl Polygon {
         Polygon {
             vertices,
             is_one_way,
+            aabb: (Vec2::ZERO, Vec2::ZERO),
         }
     }
 
@@ -146,6 +152,7 @@ impl Polygon {
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
     pub polygons: Vec<Polygon>,
+    baked_polygons: IndexMap<i32, Vec<usize>>,
 }
 
 struct Root(Vec2);
@@ -159,13 +166,67 @@ impl Eq for Root {}
 impl Hash for Root {
     #[inline(always)]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        ((self.0.x * 10000.0) as i32).hash(state);
-        ((self.0.y * 10000.0) as i32).hash(state);
+        ((self.0.x * PRECISION) as i32).hash(state);
+        ((self.0.y * PRECISION) as i32).hash(state);
         state.finish();
     }
 }
 
 impl Mesh {
+    pub fn bake(&mut self) {
+        for polygon in &mut self.polygons {
+            polygon.aabb = polygon.vertices.iter().fold(
+                (Vec2::new(f32::MAX, f32::MAX), Vec2::ZERO),
+                |mut aabb, v| {
+                    if let Some(v) = self.vertices.get(*v) {
+                        if v.coords.x < aabb.0.x {
+                            aabb.0.x = v.coords.x;
+                        }
+                        if v.coords.y < aabb.0.y {
+                            aabb.0.y = v.coords.y;
+                        }
+                        if v.coords.x > aabb.1.x {
+                            aabb.1.x = v.coords.x;
+                        }
+                        if v.coords.y > aabb.1.y {
+                            aabb.1.y = v.coords.y;
+                        }
+                    }
+                    aabb
+                },
+            );
+        }
+
+        self.baked_polygons = self
+            .vertices
+            .iter()
+            .map(|v| ((v.coords.x * PRECISION) as i32, vec![]))
+            .collect();
+        self.baked_polygons.sort_keys();
+
+        for (i, polygon) in self.polygons.iter().enumerate() {
+            for (k, polys) in &mut self.baked_polygons {
+                if *k < (polygon.aabb.0.x * PRECISION) as i32 {
+                    continue;
+                }
+                polys.push(i);
+                if *k > (polygon.aabb.1.x * PRECISION) as i32 {
+                    break;
+                }
+            }
+        }
+    }
+
+    pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Mesh {
+        let mut mesh = Mesh {
+            vertices,
+            polygons,
+            baked_polygons: IndexMap::default(),
+        };
+        mesh.bake();
+        mesh
+    }
+
     pub fn from_file(path: &str) -> Mesh {
         let file = std::fs::File::open(path).unwrap();
         let mut mesh = Mesh::default();
@@ -212,6 +273,7 @@ impl Mesh {
                 }
             }
         }
+        mesh.bake();
         mesh
     }
 }
@@ -248,7 +310,8 @@ impl Mesh {
         #[cfg(feature = "stats")]
         let start = Instant::now();
 
-        let starting_polygon_index = self.point_in_polygon(from);
+        let starting_polygon_index = self.get_point_location(from);
+        // let starting_polygon_index = 12654;
         let starting_polygon = if let Some(polygon) = self.polygons.get(starting_polygon_index) {
             polygon
         } else {
@@ -258,7 +321,8 @@ impl Mesh {
                 complete: false,
             };
         };
-        let ending_polygon = self.point_in_polygon(to);
+        let ending_polygon = self.get_point_location(to);
+        // let ending_polygon = 11397;
 
         if starting_polygon_index == ending_polygon {
             return Path {
@@ -429,7 +493,7 @@ impl Mesh {
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
             to,
-            polygon_to: self.point_in_polygon(to) as isize,
+            polygon_to: self.get_point_location(to) as isize,
             mesh: self,
             #[cfg(feature = "stats")]
             pushed: 0,
@@ -457,7 +521,7 @@ impl Mesh {
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
             to: Vec2::new(0.0, 0.0),
-            polygon_to: self.point_in_polygon(Vec2::new(0.0, 0.0)) as isize,
+            polygon_to: self.get_point_location(Vec2::new(0.0, 0.0)) as isize,
             mesh: self,
             #[cfg(feature = "stats")]
             pushed: 0,
@@ -875,11 +939,11 @@ impl<'m> SearchInstance<'m> {
 
 impl Mesh {
     pub fn point_in_mesh(&self, point: Vec2) -> bool {
-        self.point_in_polygon(point) != usize::MAX
+        self.get_point_location(point) != usize::MAX
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn point_in_polygon(&self, point: Vec2) -> usize {
+    fn get_point_location(&self, point: Vec2) -> usize {
         let delta = 0.1;
         [
             Vec2::new(0.0, 0.0),
@@ -893,41 +957,72 @@ impl Mesh {
             Vec2::new(delta, -delta),
         ]
         .iter()
-        .map(|delta| self.point_in_polygon_unit(point + *delta))
+        .map(|delta| {
+            if self.baked_polygons.is_empty() {
+                self.get_point_location_unit(point + *delta)
+            } else {
+                self.get_point_location_unit_baked(point + *delta)
+            }
+        })
         .find(|poly| *poly != usize::MAX)
         .unwrap_or(usize::MAX)
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn point_in_polygon_unit(&self, point: Vec2) -> usize {
-        'polygons: for (i, polygon) in self.polygons.iter().enumerate() {
-            let mut edged = false;
-            for edge in polygon.edges_index() {
-                edged = true;
-                let last = if let Some(v) = self.vertices.get(edge.0) {
-                    v.coords
-                } else {
-                    continue 'polygons;
-                };
-                let next = if let Some(v) = self.vertices.get(edge.1) {
-                    v.coords
-                } else {
-                    continue 'polygons;
-                };
-
-                let current_side = point.side((last, next));
-                if point.on_segment((last, next)) {
-                    return i;
-                }
-                if current_side != EdgeSide::Left {
-                    continue 'polygons;
-                }
-            }
-            if edged {
+    fn get_point_location_unit(&self, point: Vec2) -> usize {
+        for (i, polygon) in self.polygons.iter().enumerate() {
+            if self.point_in_polygon(point, polygon) {
                 return i;
             }
         }
         usize::MAX
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    fn get_point_location_unit_baked(&self, point: Vec2) -> usize {
+        let mut visited = HashSet::new();
+        let mut peekable = self.baked_polygons.iter().peekable();
+        while let Some(baked) = peekable.next() {
+            if let Some((next, _)) = peekable.peek() {
+                if **next > (point.x * PRECISION) as i32 {
+                    for i in baked.1.iter() {
+                        if visited.insert(i) && self.point_in_polygon(point, &self.polygons[*i]) {
+                            return *i;
+                        }
+                    }
+                }
+            }
+            if *baked.0 > (point.x * PRECISION) as i32 {
+                break;
+            }
+        }
+        usize::MAX
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
+    fn point_in_polygon(&self, point: Vec2, polygon: &Polygon) -> bool {
+        let mut edged = false;
+        for edge in polygon.edges_index() {
+            if edge.0.min(edge.1) > self.vertices.len() {
+                return false;
+            }
+            edged = true;
+            let last = self.vertices[edge.0].coords;
+            let next = self.vertices[edge.1].coords;
+
+            let current_side = point.side((last, next));
+            if current_side == EdgeSide::Edge && point.on_segment((last, next)) {
+                return true;
+            }
+            if current_side != EdgeSide::Left {
+                return false;
+            }
+        }
+        if edged {
+            return true;
+        }
+        false
     }
 }
 
@@ -990,6 +1085,7 @@ mod tests {
     }
 
     use glam::Vec2;
+    use indexmap::IndexMap;
 
     use crate::{helpers::*, Mesh, Path, Polygon, SearchNode, Vertex};
 
@@ -1016,17 +1112,18 @@ mod tests {
                 Polygon::new(4, vec![4, 5, 9, 8, 0, -1, -1, -1]),
                 Polygon::new(4, vec![6, 7, 11, 10, 2, -1, -1, -1]),
             ],
+            baked_polygons: IndexMap::default(),
         }
     }
 
     #[test]
     fn point_in_polygon() {
         let mesh = mesh_u_grid();
-        assert_eq!(mesh.point_in_polygon(Vec2::new(0.5, 0.5)), 0);
-        assert_eq!(mesh.point_in_polygon(Vec2::new(1.5, 0.5)), 1);
-        assert_eq!(mesh.point_in_polygon(Vec2::new(0.5, 1.5)), 3);
-        assert_eq!(mesh.point_in_polygon(Vec2::new(1.5, 1.5)), usize::MAX);
-        assert_eq!(mesh.point_in_polygon(Vec2::new(2.5, 1.5)), 4);
+        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), 0);
+        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)), 1);
+        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 1.5)), 3);
+        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 1.5)), usize::MAX);
+        assert_eq!(mesh.get_point_location(Vec2::new(2.5, 1.5)), 4);
     }
 
     #[test]
@@ -1040,7 +1137,7 @@ mod tests {
             root: from,
             interval: (Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0)),
             edge: (1, 5),
-            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_from: mesh.get_point_location(from) as isize,
             polygon_to: 1,
             f: from.distance(to),
             g: 0.0,
@@ -1081,7 +1178,7 @@ mod tests {
             root: from,
             interval: (Vec2::new(2.0, 1.0), Vec2::new(2.0, 0.0)),
             edge: (6, 2),
-            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_from: mesh.get_point_location(from) as isize,
             polygon_to: 1,
             f: 0.0,
             g: from.distance(to),
@@ -1121,7 +1218,7 @@ mod tests {
             root: from,
             interval: (Vec2::new(0.0, 1.0), Vec2::new(1.0, 1.0)),
             edge: (4, 5),
-            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_from: mesh.get_point_location(from) as isize,
             polygon_to: 0,
             f: 0.0,
             g: from.distance(to),
@@ -1237,6 +1334,7 @@ mod tests {
                 Polygon::new(4, vec![15, 18, 19, 16, -1, -1, -1, 4]),
                 Polygon::new(4, vec![11, 17, 20, 21, 4, -1, -1, -1]),
             ],
+            baked_polygons: IndexMap::default(),
         }
     }
 
@@ -1251,7 +1349,7 @@ mod tests {
             root: from,
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_from: mesh.get_point_location(from) as isize,
             polygon_to: 4,
             f: 0.0,
             g: from.distance(to),
@@ -1302,7 +1400,7 @@ mod tests {
             root: from,
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_from: mesh.get_point_location(from) as isize,
             polygon_to: 4,
             f: 0.0,
             g: from.distance(to),
@@ -1380,7 +1478,7 @@ mod tests {
             root: from,
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_from: mesh.get_point_location(from) as isize,
             polygon_to: 4,
             f: 0.0,
             g: from.distance(to),
@@ -1437,7 +1535,7 @@ mod tests {
             root: from,
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_from: mesh.get_point_location(from) as isize,
             polygon_to: 4,
             f: 0.0,
             g: from.distance(to),
@@ -1505,7 +1603,7 @@ mod tests {
             root: from,
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.point_in_polygon(from) as isize,
+            polygon_from: mesh.get_point_location(from) as isize,
             polygon_to: 4,
             f: 0.0,
             g: from.distance(to),

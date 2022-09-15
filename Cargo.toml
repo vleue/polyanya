@@ -12,6 +12,7 @@ verbose = []
 tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.12" }
 glam = { version = "0.21.3", features = ["approx"] }
+indexmap = "1.9"
 
 [dev-dependencies]
 criterion = "0.3"
