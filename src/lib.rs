@@ -1012,7 +1012,7 @@ impl Mesh {
     fn point_in_polygon(&self, point: Vec2, polygon: &Polygon) -> bool {
         let mut edged = false;
         for edge in polygon.edges_index() {
-            if edge.0.min(edge.1) > self.vertices.len() {
+            if edge.0.min(edge.1) >= self.vertices.len() {
                 return false;
             }
             edged = true;
