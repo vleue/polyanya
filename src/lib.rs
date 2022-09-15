@@ -1,7 +1,7 @@
 pub const PRECISION: f32 = 1000.0;
 
 #[cfg(feature = "stats")]
-use std::time::Instant;
+use std::{cell::Cell, time::Instant};
 use std::{
     cmp::Ordering,
     collections::BinaryHeap,
@@ -161,6 +161,8 @@ pub struct Mesh {
     pub vertices: Vec<Vertex>,
     pub polygons: Vec<Polygon>,
     baked_polygons: IndexMap<i32, Vec<usize>>,
+    #[cfg(feature = "stats")]
+    pub scenarios: Cell<u32>,
 }
 
 struct Root(Vec2);
@@ -181,6 +183,10 @@ impl Hash for Root {
 }
 
 impl Mesh {
+    pub fn unbake(&mut self) {
+        self.baked_polygons.clear();
+    }
+
     pub fn bake(&mut self) {
         for polygon in &mut self.polygons {
             polygon.aabb = polygon.vertices.iter().fold(
@@ -230,6 +236,8 @@ impl Mesh {
             vertices,
             polygons,
             baked_polygons: IndexMap::default(),
+            #[cfg(feature = "stats")]
+            scenarios: Cell::new(0),
         };
         mesh.bake();
         mesh
@@ -319,7 +327,6 @@ impl Mesh {
         let start = Instant::now();
 
         let starting_polygon_index = self.get_point_location(from);
-        // let starting_polygon_index = 12654;
         let starting_polygon = if let Some(polygon) = self.polygons.get(starting_polygon_index) {
             polygon
         } else {
@@ -330,9 +337,22 @@ impl Mesh {
             };
         };
         let ending_polygon = self.get_point_location(to);
-        // let ending_polygon = 11397;
 
         if starting_polygon_index == ending_polygon {
+            #[cfg(feature = "stats")]
+            {
+                if self.scenarios.get() == 0 {
+                    eprintln!(
+                    "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
+                );
+                }
+                eprintln!(
+                    "{};0.0;0;0;0;0;0;{}",
+                    self.scenarios.get(),
+                    from.distance(to),
+                );
+                self.scenarios.set(self.scenarios.get() + 1);
+            }
             return Path {
                 len: from.distance(to),
                 path: vec![to],
@@ -440,11 +460,14 @@ impl Mesh {
             if next.polygon_to == ending_polygon as isize {
                 #[cfg(feature = "stats")]
                 {
-                    eprintln!(
+                    if self.scenarios.get() == 0 {
+                        eprintln!(
                         "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
                     );
+                    }
                     eprintln!(
-                        "0;{};{};{};{};{};{};{}",
+                        "{};{};{};{};{};{};{};{}",
+                        self.scenarios.get(),
                         search_instance.start.elapsed().as_secs_f32() * 1_000_000.0,
                         search_instance.successors_called,
                         search_instance.nodes_generated,
@@ -453,6 +476,7 @@ impl Mesh {
                         search_instance.nodes_pruned_post_pop,
                         next.f + next.g,
                     );
+                    self.scenarios.set(self.scenarios.get() + 1);
                 }
                 let mut path = next
                     .path
