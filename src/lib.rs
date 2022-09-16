@@ -146,7 +146,9 @@ impl Mesh {
         mesh
     }
 
-    /// Create a `Mesh` from a file in the format described in the CPP reference implementation.
+    /// Create a `Mesh` from a file in the format `mesh 2`
+    ///
+    /// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
     pub fn from_file(path: &str) -> Mesh {
         let file = std::fs::File::open(path).unwrap();
         let mut mesh = Mesh::default();
