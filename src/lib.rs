@@ -37,7 +37,7 @@ mod helpers;
 mod instance;
 mod primitives;
 
-use primitives::{Polygon, Vertex};
+pub use primitives::{Polygon, Vertex};
 
 use crate::{helpers::turning_point, instance::SearchInstance};
 
@@ -198,9 +198,7 @@ impl Mesh {
         mesh.bake();
         mesh
     }
-}
 
-impl Mesh {
     /// Compute a path between two points.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
@@ -439,9 +437,7 @@ impl Mesh {
         };
         search_instance.edges_between(node)
     }
-}
 
-impl Mesh {
     /// Check if a given point is in a `Mesh`
     pub fn point_in_mesh(&self, point: Vec2) -> bool {
         self.get_point_location(point) != usize::MAX
