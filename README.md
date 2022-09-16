@@ -67,7 +67,7 @@ fn main() {
 }
 ```
 
-The code above will build the folowwing mesh, with polygons marked in green:
+The code above will build the following mesh, with polygons marked in green:
 
 ![example mesh](https://raw.githubusercontent.com/vleue/polyanya/main/example-mesh.png)
 
