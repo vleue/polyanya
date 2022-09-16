@@ -75,4 +75,41 @@ The code above will build the following mesh, with polygons marked in green:
 
 Check the [cpp implementation](https://bitbucket.org/dharabor/pathfinding/src/master/anyangle/polyanya/).
 
+Compiling this crate with feature `stats` will output almost the same level of information as the default cpp implementation output.
+
+```
+index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length
+0;4568.5;6983;7748;4314;3828;21;1123.2228
+```
+
+The `verbose` feature will give the same output as [setting `verbose` to `1`](https://bitbucket.org/dharabor/pathfinding/src/ce5b02e9d051d5f17addb359429104c0293decaf/anyangle/polyanya/scenariorunner.cpp#lines-20).
+
+```
+        pushing: root=(993, 290); left=(989, 303); right=(1001, 288); f=1020.21, g=0.00
+        pushing: root=(993, 290); left=(984, 301); right=(988, 303); f=1016.98, g=0.00
+        pushing: root=(993, 290); left=(982, 300); right=(984, 301); f=1016.06, g=0.00
+        pushing: root=(993, 290); left=(994, 285); right=(981, 299); f=1014.84, g=0.00
+popped off: root=(993, 290); left=(994, 285); right=(981, 299); f=1014.84, g=0.00
+        intermediate: root=(993, 290); left=(988, 282); right=(981, 299); f=1014.84, g=0.00
+        pushing: root=(993, 290); left=(977, 299); right=(980, 299); f=1015.14, g=0.00
+        pushing: root=(993, 290); left=(984, 280); right=(976, 297); f=1014.84, g=0.00
+popped off: root=(993, 290); left=(984, 280); right=(976, 297); f=1014.84, g=0.00
+        pushing: root=(993, 290); left=(973, 296); right=(976, 297); f=1014.84, g=0.00
+        pushing: root=(993, 290); left=(970, 295); right=(973, 296); f=1014.86, g=0.00
+        pushing: root=(993, 290); left=(967, 294); right=(970, 295); f=1015.01, g=0.00
+        pushing: root=(993, 290); left=(965, 293); right=(967, 294); f=1015.28, g=0.00
+        pushing: root=(993, 290); left=(977, 276); right=(965, 293); f=1015.58, g=0.00
+        pushing: root=(993, 290); left=(983, 279); right=(979, 277); f=1023.95, g=0.00
+popped off: root=(993, 290); left=(973, 296); right=(976, 297); f=1014.84, g=0.00
+popped off: root=(993, 290); left=(970, 295); right=(973, 296); f=1014.86, g=0.00
+popped off: root=(993, 290); left=(967, 294); right=(970, 295); f=1015.01, g=0.00
+popped off: root=(993, 290); left=(977, 299); right=(980, 299); f=1015.14, g=0.00
+popped off: root=(993, 290); left=(965, 293); right=(967, 294); f=1015.28, g=0.00
+popped off: root=(993, 290); left=(977, 276); right=(965, 293); f=1015.58, g=0.00
+        pushing: root=(993, 290); left=(963, 292); right=(965, 293); f=1015.58, g=0.00
+        pushing: root=(993, 290); left=(961, 291); right=(963, 292); f=1015.94, g=0.00
+        pushing: root=(993, 290); left=(971, 273); right=(959, 289); f=1017.13, g=0.00
+...
+```
+
 The mesh files used in tests are coming from the cpp implementation and are available under MIT license.
