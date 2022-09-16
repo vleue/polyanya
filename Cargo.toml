@@ -3,6 +3,13 @@ name = "polyanya"
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
+keywords = ["pathfinding"]
+readme = "README.md"
+description = "Polygon Any Angle Pathfinding"
+repository = "https://github.com/vleue/polyanya"
+homepage = "https://github.com/vleue/polyanya"
+documentation = "https://docs.rs/polyanya"
+categories = ["game-development"]
 
 [features]
 stats = []
