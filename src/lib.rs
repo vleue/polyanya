@@ -8,8 +8,7 @@
     unstable_features,
     unused_import_braces,
     unused_qualifications,
-    missing_docs,
-    clippy::pedantic
+    missing_docs
 )]
 
 const PRECISION: f32 = 1000.0;
@@ -27,8 +26,8 @@ use std::{
 
 use glam::Vec2;
 use hashbrown::{HashMap, HashSet};
-use helpers::*;
 
+use helpers::Vec2Helper;
 use indexmap::IndexMap;
 use instance::EdgeSide;
 #[cfg(feature = "tracing")]
@@ -40,7 +39,7 @@ mod primitives;
 
 use primitives::{Polygon, Vertex};
 
-use crate::instance::SearchInstance;
+use crate::{helpers::turning_point, instance::SearchInstance};
 
 /// A path between two points.
 #[derive(Debug, PartialEq)]
@@ -210,11 +209,7 @@ impl Mesh {
         let start = Instant::now();
 
         let starting_polygon_index = self.get_point_location(from);
-        let starting_polygon = if let Some(polygon) = self.polygons.get(starting_polygon_index) {
-            polygon
-        } else {
-            return None;
-        };
+        let starting_polygon = self.polygons.get(starting_polygon_index)?;
         let ending_polygon = self.get_point_location(to);
 
         if starting_polygon_index == ending_polygon {

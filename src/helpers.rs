@@ -55,7 +55,7 @@ impl Vec2Helper for Vec2 {
     }
 }
 
-/// Computes heuristic distance from a ['SeacrhNode'] represented by the given root and interval to the goal.
+/// Computes heuristic distance from a [`super::SearchNode`] represented by the given root and interval to the goal.
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
 #[inline(always)]
 pub(crate) fn heuristic(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> f32 {
