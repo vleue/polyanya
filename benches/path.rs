@@ -5,8 +5,8 @@ use polyanya::Mesh;
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
         let val = $x;
-        if !((val.len - $y).abs() < 0.001) {
-            assert_eq!(val.len, $y);
+        if !((val.length - $y).abs() < 0.001) {
+            assert_eq!(val.length, $y);
         }
         black_box(val);
     };
@@ -28,7 +28,7 @@ fn get_path(c: &mut Criterion) {
     .for_each(|(from, to, len)| {
         c.bench_function(&format!("get path {:?}", from), |b| {
             b.iter(|| {
-                assert_delta!(mesh.path(*from, *to), *len);
+                assert_delta!(mesh.path(*from, *to).unwrap(), *len);
             })
         });
     });

@@ -1,4 +1,18 @@
-pub const PRECISION: f32 = 1000.0;
+#![doc = include_str!("../README.md")]
+#![warn(
+    missing_debug_implementations,
+    missing_copy_implementations,
+    trivial_casts,
+    trivial_numeric_casts,
+    unsafe_code,
+    unstable_features,
+    unused_import_braces,
+    unused_qualifications,
+    missing_docs,
+    clippy::pedantic
+)]
+
+const PRECISION: f32 = 1000.0;
 
 #[cfg(feature = "stats")]
 use std::{cell::Cell, time::Instant};
@@ -12,167 +26,54 @@ use std::{
 };
 
 use glam::Vec2;
-use hashbrown::{hash_map::Entry, HashMap, HashSet};
+use hashbrown::{HashMap, HashSet};
 use helpers::*;
 
 use indexmap::IndexMap;
+use instance::EdgeSide;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
 mod helpers;
+mod instance;
+mod primitives;
 
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
-enum EdgeSide {
-    Left,
-    Right,
-    Edge,
-}
+use primitives::{Polygon, Vertex};
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct Vertex {
-    pub coords: Vec2,
-    pub polygons: Vec<isize>,
-    pub is_corner: bool,
-}
+use crate::instance::SearchInstance;
 
-impl Vertex {
-    pub fn new(coords: Vec2, polygons: Vec<isize>) -> Self {
-        Self {
-            coords,
-            is_corner: polygons.contains(&-1),
-            polygons,
-        }
-    }
-
-    pub fn from_coords(x: u32, y: u32, poly: Vec<isize>) -> Self {
-        Vertex {
-            coords: Vec2::new(x as f32, y as f32),
-            is_corner: poly.contains(&-1),
-            polygons: poly,
-        }
-    }
-}
-
-#[derive(Debug, PartialEq, Clone, Copy)]
-enum SuccessorType {
-    LeftNonObservable,
-    Observable,
-    RightNonObservable,
-}
-
-#[derive(Debug, PartialEq, Clone, Copy)]
-struct Successor {
-    interval: (Vec2, Vec2),
-    edge: (usize, usize),
-    ty: SuccessorType,
-}
-
+/// A path between two points.
 #[derive(Debug, PartialEq)]
 pub struct Path {
-    pub len: f32,
+    /// Length of the path.
+    pub length: f32,
+    /// Coordinates for each step of the path. The destination is the last step.
     pub path: Vec<Vec2>,
-    pub complete: bool,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct Polygon {
-    pub vertices: Vec<usize>,
-    pub is_one_way: bool,
-    aabb: (Vec2, Vec2),
-}
-
-impl Polygon {
-    pub const EMPTY: Polygon = Polygon {
-        vertices: vec![],
-        is_one_way: false,
-        aabb: (Vec2::ZERO, Vec2::ZERO),
-    };
-
-    pub fn new(vertices: Vec<usize>, is_one_way: bool) -> Polygon {
-        Polygon {
-            vertices,
-            is_one_way,
-            aabb: (Vec2::ZERO, Vec2::ZERO),
-        }
-    }
-
-    pub fn using(nb: usize, data: Vec<isize>) -> Self {
-        assert!(data.len() == nb * 2);
-        let (vertices, neighbours) = data.split_at(nb);
-        let vertices = vertices.iter().copied().map(|v| v as usize).collect();
-        let neighbours = neighbours.to_vec();
-        let mut found_trav = false;
-        let mut is_one_way = true;
-        for neighbour in &neighbours {
-            if *neighbour != -1 {
-                if found_trav {
-                    is_one_way = false;
-                    break;
-                } else {
-                    found_trav = true;
-                }
-            }
-        }
-        Polygon {
-            vertices,
-            is_one_way,
-            aabb: (Vec2::ZERO, Vec2::ZERO),
-        }
-    }
-
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    #[inline(always)]
-    fn edges_index(&self) -> Vec<(usize, usize)> {
-        let mut edges = Vec::with_capacity(self.vertices.len() / 2);
-        if self.vertices.is_empty() {
-            return vec![];
-        }
-        let mut last = self.vertices[0];
-        for vertex in self.vertices.iter().skip(1) {
-            edges.push((last, *vertex));
-            last = *vertex;
-        }
-        edges.push((last, self.vertices[0]));
-        edges
-    }
-
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    #[inline(always)]
-    fn double_edges_index(&self) -> Vec<(usize, usize)> {
-        let mut edges = Vec::with_capacity(self.vertices.len());
-        let mut last = self.vertices[0];
-        for vertex in self.vertices.iter().skip(1) {
-            edges.push((last, *vertex));
-            last = *vertex;
-        }
-        edges.push((last, self.vertices[0]));
-        let mut last = self.vertices[0];
-        for vertex in self.vertices.iter().skip(1) {
-            edges.push((last, *vertex));
-            last = *vertex;
-        }
-        edges.push((last, self.vertices[0]));
-        edges
-    }
-}
-
+/// A navigation mesh
 #[derive(Debug, Default, Clone)]
 pub struct Mesh {
+    /// List of `Vertex` in this mesh
     pub vertices: Vec<Vertex>,
+    /// List of `Polygons` in this mesh
     pub polygons: Vec<Polygon>,
     baked_polygons: IndexMap<i32, Vec<usize>>,
     #[cfg(feature = "stats")]
-    pub scenarios: Cell<u32>,
+    pub(crate) scenarios: Cell<u32>,
 }
 
 struct Root(Vec2);
+
 impl PartialEq for Root {
     #[inline(always)]
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
     }
 }
+
 impl Eq for Root {}
+
 impl Hash for Root {
     #[inline(always)]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
@@ -183,10 +84,12 @@ impl Hash for Root {
 }
 
 impl Mesh {
+    /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
     pub fn unbake(&mut self) {
         self.baked_polygons.clear();
     }
 
+    /// Pre-compute optimizations on the mesh
     pub fn bake(&mut self) {
         for polygon in &mut self.polygons {
             polygon.aabb = polygon.vertices.iter().fold(
@@ -231,6 +134,7 @@ impl Mesh {
         }
     }
 
+    /// Create a `Mesh` from a list of [`Vertex`] and [`Polygon`].
     pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Mesh {
         let mut mesh = Mesh {
             vertices,
@@ -243,6 +147,7 @@ impl Mesh {
         mesh
     }
 
+    /// Create a `Mesh` from a file in the format described in the CPP reference implementation.
     pub fn from_file(path: &str) -> Mesh {
         let file = std::fs::File::open(path).unwrap();
         let mut mesh = Mesh::default();
@@ -270,8 +175,10 @@ impl Mesh {
                     let x = values.next().unwrap().parse().unwrap();
                     let y = values.next().unwrap().parse().unwrap();
                     let _ = values.next();
-                    let vertex =
-                        Vertex::from_coords(x, y, values.map(|v| v.parse().unwrap()).collect());
+                    let vertex = Vertex::new(
+                        Vec2::new(x, y),
+                        values.map(|v| v.parse().unwrap()).collect(),
+                    );
                     mesh.vertices.push(vertex);
                 } else {
                     phase = 2;
@@ -294,35 +201,11 @@ impl Mesh {
     }
 }
 
-struct SearchInstance<'m> {
-    queue: BinaryHeap<SearchNode>,
-    node_buffer: Vec<SearchNode>,
-    root_history: HashMap<Root, f32>,
-    to: Vec2,
-    polygon_to: isize,
-    mesh: &'m Mesh,
-    #[cfg(feature = "stats")]
-    start: Instant,
-    #[cfg(feature = "stats")]
-    pushed: usize,
-    #[cfg(feature = "stats")]
-    popped: usize,
-    #[cfg(feature = "stats")]
-    successors_called: usize,
-    #[cfg(feature = "stats")]
-    nodes_generated: usize,
-    #[cfg(feature = "stats")]
-    nodes_pruned_post_pop: usize,
-    #[cfg(debug_assertions)]
-    debug: bool,
-    #[cfg(debug_assertions)]
-    fail_fast: i32,
-}
-
 impl Mesh {
+    /// Compute a path between two points.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub fn path(&self, from: Vec2, to: Vec2) -> Path {
+    pub fn path(&self, from: Vec2, to: Vec2) -> Option<Path> {
         #[cfg(feature = "stats")]
         let start = Instant::now();
 
@@ -330,11 +213,7 @@ impl Mesh {
         let starting_polygon = if let Some(polygon) = self.polygons.get(starting_polygon_index) {
             polygon
         } else {
-            return Path {
-                len: -1.0,
-                path: vec![],
-                complete: false,
-            };
+            return None;
         };
         let ending_polygon = self.get_point_location(to);
 
@@ -353,11 +232,10 @@ impl Mesh {
                 );
                 self.scenarios.set(self.scenarios.get() + 1);
             }
-            return Path {
-                len: from.distance(to),
+            return Some(Path {
+                length: from.distance(to),
                 path: vec![to],
-                complete: true,
-            };
+            });
         }
 
         let mut search_instance = SearchInstance {
@@ -435,7 +313,7 @@ impl Mesh {
         }
         search_instance.flush_nodes();
 
-        while let Some(next) = search_instance.queue.pop() {
+        while let Some(next) = search_instance.pop_node() {
             #[cfg(feature = "verbose")]
             println!("popped off: {}", next);
             #[cfg(feature = "stats")]
@@ -454,8 +332,6 @@ impl Mesh {
                     continue;
                 }
             }
-            //     _ => (),
-            // }
 
             if next.polygon_to == ending_polygon as isize {
                 #[cfg(feature = "stats")]
@@ -494,11 +370,10 @@ impl Mesh {
                 if complete {
                     path.push(to);
                 }
-                return Path {
+                return Some(Path {
                     path,
-                    len: next.f + next.g,
-                    complete,
-                };
+                    length: next.f + next.g,
+                });
             }
             search_instance.successors(next);
         }
@@ -510,11 +385,7 @@ impl Mesh {
             search_instance.pushed,
             search_instance.popped
         );
-        Path {
-            path: vec![],
-            len: -1.0,
-            complete: false,
-        }
+        None
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
@@ -545,9 +416,10 @@ impl Mesh {
         search_instance.successors(node);
         search_instance.queue.drain().collect()
     }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[cfg(test)]
-    fn edges_between(&self, node: &SearchNode) -> Vec<Successor> {
+    fn edges_between(&self, node: &SearchNode) -> Vec<instance::Successor> {
         let search_instance = SearchInstance {
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
@@ -574,402 +446,8 @@ impl Mesh {
     }
 }
 
-impl<'m> SearchInstance<'m> {
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    #[inline(always)]
-    fn edges_between(&self, node: &SearchNode) -> Vec<Successor> {
-        let mut successors = vec![];
-
-        let polygon = self.mesh.polygons.get(node.polygon_to as usize).unwrap();
-
-        if node.interval.0.distance(node.root) < 1.0e-5
-            || node.interval.1.distance(node.root) < 1.0e-5
-            || node.root.side(node.interval) == EdgeSide::Edge
-        {
-            // println!("collinear");
-            // TODO: possible optimisation
-        }
-        if polygon.vertices.len() == 3 {
-            // println!("triangle");
-            // TODO: possible optimisation
-        }
-
-        let right_index = {
-            let mut temp = 0;
-            while polygon.vertices[temp] != node.edge.1 {
-                temp += 1;
-            }
-            temp + 1
-        };
-        let left_index = polygon.vertices.len() + right_index - 1 - 1;
-
-        let mut ty = SuccessorType::RightNonObservable;
-        for edge in &polygon.double_edges_index()[right_index..=left_index] {
-            let start = if let Some(vertex) = self.mesh.vertices.get(edge.0) {
-                vertex
-            } else {
-                continue;
-            };
-            let end = if let Some(vertex) = self.mesh.vertices.get(edge.1) {
-                vertex
-            } else {
-                continue;
-            };
-            let mut start_point = start.coords;
-            let end_point = end.coords;
-
-            #[cfg(debug_assertions)]
-            if self.debug {
-                println!("| {:?} : {:?} / {:?}", edge, start_point, end_point);
-                println!(
-                    "|   {:?} - {:?}",
-                    start_point.side((node.root, node.interval.0)),
-                    start_point.side((node.root, node.interval.1))
-                );
-                println!(
-                    "|   {:?} - {:?}",
-                    end_point.side((node.root, node.interval.0)),
-                    end_point.side((node.root, node.interval.1))
-                );
-            }
-
-            match start_point.side((node.root, node.interval.0)) {
-                EdgeSide::Right => {
-                    if let Some(intersect) = line_intersect_segment(
-                        (node.root, node.interval.0),
-                        (start_point, end_point),
-                    ) {
-                        #[cfg(debug_assertions)]
-                        if self.debug {
-                            println!("|   intersection 0 {:?}", intersect);
-                            println!(
-                                "|     {:?} / {:?}",
-                                intersect.distance(start_point),
-                                intersect.distance(end_point)
-                            );
-                        }
-                        if intersect.distance(start_point) > 1.0e-3
-                            && intersect.distance(end_point) > 1.0e-3
-                        {
-                            successors.push(Successor {
-                                interval: (start_point, intersect),
-                                edge: *edge,
-                                ty,
-                            });
-                            start_point = intersect;
-                        } else {
-                            #[cfg(debug_assertions)]
-                            if self.debug {
-                                println!("|     ignoring intersection");
-                            }
-                        }
-                        if intersect.distance(end_point) > 1.0e-3 {
-                            ty = SuccessorType::Observable;
-                        }
-                    }
-                }
-                EdgeSide::Left => {
-                    if ty == SuccessorType::RightNonObservable {
-                        ty = SuccessorType::Observable;
-                    }
-                }
-                EdgeSide::Edge => match end_point.side((node.root, node.interval.0)) {
-                    EdgeSide::Edge | EdgeSide::Left => {
-                        ty = SuccessorType::Observable;
-                    }
-                    _ => (),
-                },
-            }
-            let mut end_intersection_p = None;
-            let mut found_intersection = false;
-            if end_point.side((node.root, node.interval.1)) == EdgeSide::Left {
-                if let Some(intersect) =
-                    line_intersect_segment((node.root, node.interval.1), (start_point, end_point))
-                {
-                    #[cfg(debug_assertions)]
-                    if self.debug {
-                        println!("|   intersection 1 {:?}", intersect);
-                        println!(
-                            "|     {:?} / {:?}",
-                            intersect.distance(start_point),
-                            intersect.distance(end_point)
-                        );
-                    }
-
-                    if intersect.distance(end_point) > 1.0e-3 {
-                        end_intersection_p = Some(intersect);
-                    } else {
-                        #[cfg(debug_assertions)]
-                        if self.debug {
-                            println!("|     ignoring intersection");
-                        }
-                    }
-                    found_intersection = true;
-                }
-            }
-            successors.push(Successor {
-                interval: (start_point, end_intersection_p.unwrap_or(end_point)),
-                edge: *edge,
-                ty,
-            });
-            match end_point.side((node.root, node.interval.1)) {
-                EdgeSide::Left => {
-                    if found_intersection {
-                        ty = SuccessorType::LeftNonObservable;
-                    }
-                    if let Some(intersect) = end_intersection_p {
-                        successors.push(Successor {
-                            interval: (intersect, end_point),
-                            edge: *edge,
-                            ty,
-                        });
-                    }
-                }
-                EdgeSide::Edge => match end_point.side((node.root, node.interval.0)) {
-                    EdgeSide::Edge | EdgeSide::Left => {
-                        ty = SuccessorType::LeftNonObservable;
-                    }
-                    _ => (),
-                },
-                _ => (),
-            }
-        }
-
-        successors
-    }
-
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    #[inline(always)]
-    fn add_node(
-        &mut self,
-        root: Vec2,
-        other_side: isize,
-        start: (Vec2, usize),
-        end: (Vec2, usize),
-        node: &SearchNode,
-    ) {
-        #[cfg(feature = "stats")]
-        {
-            self.nodes_generated += 1;
-        }
-
-        let mut path = node.path.clone();
-        if root != node.root {
-            path.push(node.root);
-        }
-
-        let heuristic = heuristic(root, self.to, (start.0, end.0));
-        let new_f = node.f + node.root.distance(root);
-        if new_f.is_nan() || heuristic.is_nan() {
-            #[cfg(debug_assertions)]
-            if self.debug {
-                println!("x one of the distance is NaN");
-            }
-
-            return;
-        }
-
-        let new_node = SearchNode {
-            path,
-            root,
-            interval: (start.0, end.0),
-            edge: (start.1, end.1),
-            polygon_from: node.polygon_to as isize,
-            polygon_to: other_side,
-            f: new_f,
-            g: heuristic,
-        };
-
-        match self.root_history.entry(Root(root)) {
-            Entry::Occupied(mut o) => {
-                if o.get() < &new_node.f {
-                    #[cfg(debug_assertions)]
-                    if self.debug {
-                        println!("x already got a better path");
-                    }
-                } else {
-                    #[cfg(debug_assertions)]
-                    if self.debug {
-                        println!("o added!");
-                    }
-                    o.insert(new_node.f);
-                    self.node_buffer.push(new_node);
-                }
-            }
-            Entry::Vacant(v) => {
-                #[cfg(debug_assertions)]
-                if self.debug {
-                    println!("o added!");
-                }
-                v.insert(new_node.f);
-                self.node_buffer.push(new_node);
-            }
-        }
-    }
-
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    #[inline(always)]
-    fn flush_nodes(&mut self) {
-        #[cfg(feature = "stats")]
-        {
-            self.pushed += self.node_buffer.len();
-        }
-        #[cfg(feature = "verbose")]
-        for new_node in &self.node_buffer {
-            println!("        pushing: {}", new_node);
-        }
-        self.queue.extend(self.node_buffer.drain(..));
-    }
-
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    #[inline(always)]
-    fn successors(&mut self, mut node: SearchNode) {
-        loop {
-            #[cfg(feature = "stats")]
-            {
-                self.successors_called += 1;
-            }
-            #[cfg(debug_assertions)]
-            // select a search node to enable debug more
-            if false {
-                self.debug = true;
-                self.fail_fast = 3;
-            }
-            for successor in self.edges_between(&node) {
-                let start = self.mesh.vertices.get(successor.edge.0).unwrap();
-                let end = self.mesh.vertices.get(successor.edge.1).unwrap();
-
-                #[cfg(debug_assertions)]
-                if self.debug {
-                    println!("v {:?}", successor);
-                }
-
-                let mut other_side = isize::MAX;
-                // find the polygon at the other side of this edge
-                for i in &start.polygons {
-                    if *i != -1 && *i != node.polygon_to as isize && end.polygons.contains(i) {
-                        other_side = *i;
-                    }
-                }
-
-                #[cfg(debug_assertions)]
-                if self.debug {
-                    println!("| going to {:?}", other_side);
-                }
-
-                // prune edges that don't have a polygon on the other side: cul de sac pruning
-                if other_side == isize::MAX {
-                    #[cfg(debug_assertions)]
-                    if self.debug {
-                        println!("x cul de sac");
-                    }
-
-                    continue;
-                }
-
-                // prune edges that only lead to one other polygon, and not the target: dead end pruning
-                if self.polygon_to != other_side
-                    && self
-                        .mesh
-                        .polygons
-                        .get(other_side as usize)
-                        .unwrap()
-                        .is_one_way
-                {
-                    #[cfg(debug_assertions)]
-                    if self.debug {
-                        println!("x dead end");
-                    }
-
-                    continue;
-                }
-
-                const EPSILON: f32 = 1.0e-5;
-                let root = match successor.ty {
-                    SuccessorType::RightNonObservable => {
-                        if successor.interval.0.distance(start.coords) > EPSILON {
-                            #[cfg(debug_assertions)]
-                            if self.debug {
-                                println!("x non observable on an intersection");
-                            }
-                            continue;
-                        }
-                        let vertex = self.mesh.vertices.get(node.edge.0).unwrap();
-                        if vertex.is_corner && vertex.coords.distance(node.interval.0) < EPSILON {
-                            node.interval.0
-                        } else {
-                            #[cfg(debug_assertions)]
-                            if self.debug {
-                                println!("x non observable on an non corner");
-                            }
-                            continue;
-                        }
-                    }
-                    SuccessorType::Observable => node.root,
-                    SuccessorType::LeftNonObservable => {
-                        if successor.interval.1.distance(end.coords) > EPSILON {
-                            #[cfg(debug_assertions)]
-                            if self.debug {
-                                println!("x non observable on an intersection");
-                            }
-                            continue;
-                        }
-                        let vertex = self.mesh.vertices.get(node.edge.1).unwrap();
-                        if vertex.is_corner && vertex.coords.distance(node.interval.1) < EPSILON {
-                            node.interval.1
-                        } else {
-                            #[cfg(debug_assertions)]
-                            if self.debug {
-                                println!("x non observable on an non corner");
-                            }
-                            continue;
-                        }
-                    }
-                };
-
-                #[cfg(debug_assertions)]
-                if self.debug {
-                    println!("| through root {:?}", root);
-                }
-
-                self.add_node(
-                    root,
-                    other_side,
-                    (successor.interval.0, successor.edge.0),
-                    (successor.interval.1, successor.edge.1),
-                    &node,
-                )
-            }
-
-            if self.node_buffer.len() == 1 && self.node_buffer[0].polygon_to != self.polygon_to {
-                #[cfg(feature = "verbose")]
-                for new_node in &self.node_buffer {
-                    println!("        intermediate: {}", new_node);
-                }
-                node = self.node_buffer.drain(..).next().unwrap();
-                #[cfg(debug_assertions)]
-                {
-                    self.fail_fast -= 1;
-                    if self.fail_fast == 0 {
-                        panic!()
-                    }
-                }
-            } else {
-                #[cfg(debug_assertions)]
-                {
-                    self.fail_fast -= 1;
-                    if self.fail_fast == 0 {
-                        panic!()
-                    }
-                }
-                break;
-            }
-        }
-        self.flush_nodes();
-    }
-}
-
 impl Mesh {
+    /// Check if a given point is in a `Mesh`
     pub fn point_in_mesh(&self, point: Vec2) -> bool {
         self.get_point_location(point) != usize::MAX
     }
@@ -1124,25 +602,25 @@ mod tests {
     fn mesh_u_grid() -> Mesh {
         Mesh {
             vertices: vec![
-                Vertex::from_coords(0, 0, vec![0, -1]),
-                Vertex::from_coords(1, 0, vec![0, 1, -1]),
-                Vertex::from_coords(2, 0, vec![1, 2, -1]),
-                Vertex::from_coords(3, 0, vec![2, -1]),
-                Vertex::from_coords(0, 1, vec![3, 0, -1]),
-                Vertex::from_coords(1, 1, vec![3, 1, 0, -1]),
-                Vertex::from_coords(2, 1, vec![4, 2, 1, -1]),
-                Vertex::from_coords(3, 1, vec![4, 2, -1]),
-                Vertex::from_coords(0, 2, vec![3, -1]),
-                Vertex::from_coords(1, 2, vec![3, -1]),
-                Vertex::from_coords(2, 2, vec![4, -1]),
-                Vertex::from_coords(3, 2, vec![4, -1]),
+                Vertex::new(Vec2::new(0., 0.), vec![0, -1]),
+                Vertex::new(Vec2::new(1., 0.), vec![0, 1, -1]),
+                Vertex::new(Vec2::new(2., 0.), vec![1, 2, -1]),
+                Vertex::new(Vec2::new(3., 0.), vec![2, -1]),
+                Vertex::new(Vec2::new(0., 1.), vec![3, 0, -1]),
+                Vertex::new(Vec2::new(1., 1.), vec![3, 1, 0, -1]),
+                Vertex::new(Vec2::new(2., 1.), vec![4, 2, 1, -1]),
+                Vertex::new(Vec2::new(3., 1.), vec![4, 2, -1]),
+                Vertex::new(Vec2::new(0., 2.), vec![3, -1]),
+                Vertex::new(Vec2::new(1., 2.), vec![3, -1]),
+                Vertex::new(Vec2::new(2., 2.), vec![4, -1]),
+                Vertex::new(Vec2::new(3., 2.), vec![4, -1]),
             ],
             polygons: vec![
-                Polygon::using(4, vec![0, 1, 5, 4, -1, 1, 3, -1]),
-                Polygon::using(4, vec![1, 2, 6, 5, -1, 2, -1, 0]),
-                Polygon::using(4, vec![2, 3, 7, 6, -1, -1, 4, 1]),
-                Polygon::using(4, vec![4, 5, 9, 8, 0, -1, -1, -1]),
-                Polygon::using(4, vec![6, 7, 11, 10, 2, -1, -1, -1]),
+                Polygon::new(vec![0, 1, 5, 4], false),
+                Polygon::new(vec![1, 2, 6, 5], false),
+                Polygon::new(vec![2, 3, 7, 6], false),
+                Polygon::new(vec![4, 5, 9, 8], true),
+                Polygon::new(vec![6, 7, 11, 10], true),
             ],
             baked_polygons: IndexMap::default(),
         }
@@ -1190,11 +668,10 @@ mod tests {
         assert_eq!(successors[0].path, Vec::<Vec2>::new());
 
         assert_eq!(
-            mesh.path(from, to),
+            mesh.path(from, to).unwrap(),
             Path {
                 path: vec![to],
-                len: from.distance(to),
-                complete: true,
+                length: from.distance(to),
             }
         );
     }
@@ -1230,11 +707,10 @@ mod tests {
         assert_eq!(successors[0].path, Vec::<Vec2>::new());
 
         assert_eq!(
-            mesh.path(from, to),
+            mesh.path(from, to).unwrap(),
             Path {
                 path: vec![to],
-                len: from.distance(to),
-                complete: true,
+                length: from.distance(to),
             }
         );
     }
@@ -1273,13 +749,12 @@ mod tests {
         assert_eq!(successors[0].path, vec![from, Vec2::new(1.0, 1.0)]);
 
         assert_eq!(
-            mesh.path(from, to),
+            mesh.path(from, to).unwrap(),
             Path {
                 path: vec![Vec2::new(1.0, 1.0), Vec2::new(2.0, 1.0), to],
-                len: from.distance(Vec2::new(1.0, 1.0))
+                length: from.distance(Vec2::new(1.0, 1.0))
                     + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
                     + Vec2::new(2.0, 1.0).distance(to),
-                complete: true,
             }
         );
     }
@@ -1319,13 +794,12 @@ mod tests {
         assert_eq!(successors[0].path, vec![from, Vec2::new(1.0, 1.0)]);
 
         assert_eq!(
-            mesh.path(from, to),
+            mesh.path(from, to).unwrap(),
             Path {
                 path: vec![Vec2::new(1.0, 1.0), Vec2::new(2.0, 1.0), to],
-                len: from.distance(Vec2::new(1.0, 1.0))
+                length: from.distance(Vec2::new(1.0, 1.0))
                     + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
                     + Vec2::new(2.0, 1.0).distance(to),
-                complete: true,
             }
         );
     }
@@ -1333,38 +807,38 @@ mod tests {
     fn mesh_from_paper() -> Mesh {
         Mesh {
             vertices: vec![
-                Vertex::from_coords(0, 6, vec![0, -1]),           // 0
-                Vertex::from_coords(2, 5, vec![0, -1, 2]),        // 1
-                Vertex::from_coords(5, 7, vec![0, 2, -1]),        // 2
-                Vertex::from_coords(5, 8, vec![0, -1]),           // 3
-                Vertex::from_coords(0, 8, vec![0, -1]),           // 4
-                Vertex::from_coords(1, 4, vec![1, -1]),           // 5
-                Vertex::from_coords(2, 1, vec![1, -1]),           // 6
-                Vertex::from_coords(4, 1, vec![1, -1]),           // 7
-                Vertex::from_coords(4, 2, vec![1, -1, 2]),        // 8
-                Vertex::from_coords(2, 4, vec![1, 2, -1]),        // 9
-                Vertex::from_coords(7, 4, vec![2, -1, 4]),        // 10
-                Vertex::from_coords(10, 7, vec![2, 4, 6, -1, 3]), // 11
-                Vertex::from_coords(7, 7, vec![2, 3, -1]),        // 12
-                Vertex::from_coords(11, 8, vec![3, -1]),          // 13
-                Vertex::from_coords(7, 8, vec![3, -1]),           // 14
-                Vertex::from_coords(7, 0, vec![5, 4, -1]),        // 15
-                Vertex::from_coords(11, 3, vec![4, 5, -1]),       // 16
-                Vertex::from_coords(11, 5, vec![4, -1, 6]),       // 17
-                Vertex::from_coords(12, 0, vec![5, -1]),          // 18
-                Vertex::from_coords(12, 3, vec![5, -1]),          // 19
-                Vertex::from_coords(13, 5, vec![6, -1]),          // 20
-                Vertex::from_coords(13, 7, vec![6, -1]),          // 21
-                Vertex::from_coords(1, 3, vec![1, -1]),           // 22
+                Vertex::new(Vec2::new(0., 6.), vec![0, -1]),    // 0
+                Vertex::new(Vec2::new(2., 5.), vec![0, -1, 2]), // 1
+                Vertex::new(Vec2::new(5., 7.), vec![0, 2, -1]), // 2
+                Vertex::new(Vec2::new(5., 8.), vec![0, -1]),    // 3
+                Vertex::new(Vec2::new(0., 8.), vec![0, -1]),    // 4
+                Vertex::new(Vec2::new(1., 4.), vec![1, -1]),    // 5
+                Vertex::new(Vec2::new(2., 1.), vec![1, -1]),    // 6
+                Vertex::new(Vec2::new(4., 1.), vec![1, -1]),    // 7
+                Vertex::new(Vec2::new(4., 2.), vec![1, -1, 2]), // 8
+                Vertex::new(Vec2::new(2., 4.), vec![1, 2, -1]), // 9
+                Vertex::new(Vec2::new(7., 4.), vec![2, -1, 4]), // 10
+                Vertex::new(Vec2::new(10., 7.), vec![2, 4, 6, -1, 3]), // 11
+                Vertex::new(Vec2::new(7., 7.), vec![2, 3, -1]), // 12
+                Vertex::new(Vec2::new(11., 8.), vec![3, -1]),   // 13
+                Vertex::new(Vec2::new(7., 8.), vec![3, -1]),    // 14
+                Vertex::new(Vec2::new(7., 0.), vec![5, 4, -1]), // 15
+                Vertex::new(Vec2::new(11., 3.), vec![4, 5, -1]), // 16
+                Vertex::new(Vec2::new(11., 5.), vec![4, -1, 6]), // 17
+                Vertex::new(Vec2::new(12., 0.), vec![5, -1]),   // 18
+                Vertex::new(Vec2::new(12., 3.), vec![5, -1]),   // 19
+                Vertex::new(Vec2::new(13., 5.), vec![6, -1]),   // 20
+                Vertex::new(Vec2::new(13., 7.), vec![6, -1]),   // 21
+                Vertex::new(Vec2::new(1., 3.), vec![1, -1]),    // 22
             ],
             polygons: vec![
-                Polygon::using(5, vec![0, 1, 2, 3, 4, -1, -1, 2, -1, -1]),
-                Polygon::using(6, vec![5, 22, 6, 7, 8, 9, -1, -1, -1, -1, 2, -1]),
-                Polygon::using(7, vec![1, 9, 8, 10, 11, 12, 2, -1, 1, -1, 4, 3, -1, 0]),
-                Polygon::using(4, vec![12, 11, 13, 14, 2, -1, -1, -1]),
-                Polygon::using(5, vec![10, 15, 16, 17, 11, -1, 5, -1, 6, 2]),
-                Polygon::using(4, vec![15, 18, 19, 16, -1, -1, -1, 4]),
-                Polygon::using(4, vec![11, 17, 20, 21, 4, -1, -1, -1]),
+                Polygon::new(vec![0, 1, 2, 3, 4], true),
+                Polygon::new(vec![5, 22, 6, 7, 8, 9], true),
+                Polygon::new(vec![1, 9, 8, 10, 11, 12, 2], false),
+                Polygon::new(vec![12, 11, 13, 14], true),
+                Polygon::new(vec![10, 15, 16, 17, 11], false),
+                Polygon::new(vec![15, 18, 19, 16], true),
+                Polygon::new(vec![11, 17, 20, 21], true),
             ],
             baked_polygons: IndexMap::default(),
         }
@@ -1417,8 +891,8 @@ mod tests {
         assert_eq!(successors[0].edge, (11, 10));
         assert_eq!(successors[0].path, Vec::<Vec2>::new());
 
-        assert_eq!(mesh.path(from, to).len, from.distance(to));
-        assert_eq!(mesh.path(from, to).path, vec![to]);
+        assert_eq!(mesh.path(from, to).unwrap().length, from.distance(to));
+        assert_eq!(mesh.path(from, to).unwrap().path, vec![to]);
     }
 
     #[test]
@@ -1488,13 +962,13 @@ mod tests {
         assert_eq!(successors[2].path, Vec::<Vec2>::new());
 
         assert_delta!(
-            mesh.path(from, to).len,
+            mesh.path(from, to).unwrap().length,
             from.distance(Vec2::new(11.0, 3.0))
                 + Vec2::new(11.0, 3.0).distance(Vec2::new(11.0, 5.0))
                 + Vec2::new(11.0, 5.0).distance(to)
         );
         assert_eq!(
-            mesh.path(from, to).path,
+            mesh.path(from, to).unwrap().path,
             vec![Vec2::new(11.0, 3.0), Vec2::new(11.0, 5.0), to]
         );
     }
@@ -1550,10 +1024,13 @@ mod tests {
         assert_eq!(successors[0].path, Vec::<Vec2>::new());
 
         assert_delta!(
-            mesh.path(from, to).len,
+            mesh.path(from, to).unwrap().length,
             from.distance(Vec2::new(7.0, 4.0)) + Vec2::new(7.0, 4.0).distance(to)
         );
-        assert_eq!(mesh.path(from, to).path, vec![Vec2::new(7.0, 4.0), to]);
+        assert_eq!(
+            mesh.path(from, to).unwrap().path,
+            vec![Vec2::new(7.0, 4.0), to]
+        );
     }
 
     #[test]
@@ -1612,14 +1089,14 @@ mod tests {
         assert_eq!(successors.len(), 1);
 
         assert_delta!(
-            mesh.path(from, to).len,
+            mesh.path(from, to).unwrap().length,
             from.distance(Vec2::new(7.0, 4.0))
                 + Vec2::new(7.0, 4.0).distance(Vec2::new(4.0, 2.0))
                 + Vec2::new(4.0, 2.0).distance(to)
         );
 
         assert_eq!(
-            mesh.path(from, to).path,
+            mesh.path(from, to).unwrap().path,
             vec![Vec2::new(7.0, 4.0), Vec2::new(4.0, 2.0), to]
         );
     }

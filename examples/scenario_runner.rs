@@ -52,6 +52,6 @@ fn main() {
     let mesh = Mesh::from_file(&args.next().unwrap());
 
     for scenario in Scenarios::from_file(&args.next().unwrap()).0 {
-        mesh.path(scenario.from, scenario.to);
+        mesh.path(scenario.from, scenario.to).unwrap();
     }
 }

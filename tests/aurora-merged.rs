@@ -20,7 +20,8 @@ fn aurora_merged_tqoopurmvw() {
     assert_delta!(
         aurora
             .path(Vec2::new(749.0, 97.0), Vec2::new(749.0, 104.0))
-            .len,
+            .unwrap()
+            .length,
         7.0
     );
 }
@@ -30,7 +31,8 @@ fn aurora_merged_cclvlrnsaq() {
     assert_delta!(
         aurora
             .path(Vec2::new(8.0, 646.0), Vec2::new(11.0, 642.0))
-            .len,
+            .unwrap()
+            .length,
         5.0
     );
 }
@@ -40,7 +42,8 @@ fn aurora_merged_lokgejgyeu() {
     assert_delta!(
         aurora
             .path(Vec2::new(271.0, 287.0), Vec2::new(276.0, 283.0))
-            .len,
+            .unwrap()
+            .length,
         6.40312
     );
 }
@@ -50,7 +53,8 @@ fn aurora_merged_fffwgyojmu() {
     assert_delta!(
         aurora
             .path(Vec2::new(814.0, 570.0), Vec2::new(810.0, 571.0))
-            .len,
+            .unwrap()
+            .length,
         4.12311
     );
 }
@@ -60,7 +64,8 @@ fn aurora_merged_znopuuwfbo() {
     assert_delta!(
         aurora
             .path(Vec2::new(579.0, 169.0), Vec2::new(575.0, 163.0))
-            .len,
+            .unwrap()
+            .length,
         7.2111
     );
 }
@@ -70,7 +75,8 @@ fn aurora_merged_xgykiahuvy() {
     assert_delta!(
         aurora
             .path(Vec2::new(548.0, 325.0), Vec2::new(551.0, 321.0))
-            .len,
+            .unwrap()
+            .length,
         5.0
     );
 }
@@ -80,7 +86,8 @@ fn aurora_merged_xqnwiicacp() {
     assert_delta!(
         aurora
             .path(Vec2::new(89.0, 124.0), Vec2::new(95.0, 127.0))
-            .len,
+            .unwrap()
+            .length,
         6.7082
     );
 }
@@ -90,7 +97,8 @@ fn aurora_merged_lrocxpovdd() {
     assert_delta!(
         aurora
             .path(Vec2::new(195.0, 114.0), Vec2::new(192.0, 120.0))
-            .len,
+            .unwrap()
+            .length,
         6.7082
     );
 }
@@ -100,7 +108,8 @@ fn aurora_merged_zkupujzlnz() {
     assert_delta!(
         aurora
             .path(Vec2::new(146.0, 290.0), Vec2::new(142.0, 287.0))
-            .len,
+            .unwrap()
+            .length,
         5.0
     );
 }
@@ -110,7 +119,8 @@ fn aurora_merged_yxwciqahzj() {
     assert_delta!(
         aurora
             .path(Vec2::new(114.0, 437.0), Vec2::new(117.0, 433.0))
-            .len,
+            .unwrap()
+            .length,
         5.0
     );
 }
@@ -120,7 +130,8 @@ fn aurora_merged_pgnwizkzsx() {
     assert_delta!(
         aurora
             .path(Vec2::new(358.0, 666.0), Vec2::new(368.0, 669.0))
-            .len,
+            .unwrap()
+            .length,
         10.4403
     );
 }
@@ -130,7 +141,8 @@ fn aurora_merged_xetnfuiwkg() {
     assert_delta!(
         aurora
             .path(Vec2::new(840.0, 252.0), Vec2::new(847.0, 248.0))
-            .len,
+            .unwrap()
+            .length,
         8.06226
     );
 }
@@ -140,7 +152,8 @@ fn aurora_merged_mccasdpiih() {
     assert_delta!(
         aurora
             .path(Vec2::new(428.0, 300.0), Vec2::new(418.0, 301.0))
-            .len,
+            .unwrap()
+            .length,
         10.0499
     );
 }
@@ -150,7 +163,8 @@ fn aurora_merged_pipwqwqkcb() {
     assert_delta!(
         aurora
             .path(Vec2::new(895.0, 646.0), Vec2::new(903.0, 641.0))
-            .len,
+            .unwrap()
+            .length,
         9.53663
     );
 }
@@ -160,7 +174,8 @@ fn aurora_merged_rimxktqqvo() {
     assert_delta!(
         aurora
             .path(Vec2::new(940.0, 471.0), Vec2::new(929.0, 473.0))
-            .len,
+            .unwrap()
+            .length,
         11.1803
     );
 }
@@ -170,7 +185,8 @@ fn aurora_merged_xxajehdmel() {
     assert_delta!(
         aurora
             .path(Vec2::new(612.0, 654.0), Vec2::new(607.0, 645.0))
-            .len,
+            .unwrap()
+            .length,
         10.2956
     );
 }
@@ -180,7 +196,8 @@ fn aurora_merged_lfqktfrhks() {
     assert_delta!(
         aurora
             .path(Vec2::new(610.0, 451.0), Vec2::new(617.0, 454.0))
-            .len,
+            .unwrap()
+            .length,
         7.61577
     );
 }
@@ -190,7 +207,8 @@ fn aurora_merged_ubisazfsnw() {
     assert_delta!(
         aurora
             .path(Vec2::new(300.0, 358.0), Vec2::new(291.0, 351.0))
-            .len,
+            .unwrap()
+            .length,
         11.4018
     );
 }
@@ -200,7 +218,8 @@ fn aurora_merged_naonzhadop() {
     assert_delta!(
         aurora
             .path(Vec2::new(10.0, 655.0), Vec2::new(18.0, 663.0))
-            .len,
+            .unwrap()
+            .length,
         11.3137
     );
 }
@@ -210,7 +229,8 @@ fn aurora_merged_uatyayxqgc() {
     assert_delta!(
         aurora
             .path(Vec2::new(490.0, 682.0), Vec2::new(500.0, 680.0))
-            .len,
+            .unwrap()
+            .length,
         10.198
     );
 }
@@ -220,7 +240,8 @@ fn aurora_merged_azczlysdps() {
     assert_delta!(
         aurora
             .path(Vec2::new(70.0, 554.0), Vec2::new(73.0, 540.0))
-            .len,
+            .unwrap()
+            .length,
         14.3178
     );
 }
@@ -230,7 +251,8 @@ fn aurora_merged_ztmtlengrf() {
     assert_delta!(
         aurora
             .path(Vec2::new(717.0, 172.0), Vec2::new(729.0, 170.0))
-            .len,
+            .unwrap()
+            .length,
         12.1655
     );
 }
@@ -240,7 +262,8 @@ fn aurora_merged_kwjvbxlbsv() {
     assert_delta!(
         aurora
             .path(Vec2::new(521.0, 706.0), Vec2::new(508.0, 702.0))
-            .len,
+            .unwrap()
+            .length,
         13.6015
     );
 }
@@ -250,7 +273,8 @@ fn aurora_merged_rkdjjhlwzf() {
     assert_delta!(
         aurora
             .path(Vec2::new(717.0, 683.0), Vec2::new(731.0, 681.0))
-            .len,
+            .unwrap()
+            .length,
         14.1421
     );
 }
@@ -260,7 +284,8 @@ fn aurora_merged_tqvljiiugf() {
     assert_delta!(
         aurora
             .path(Vec2::new(392.0, 601.0), Vec2::new(405.0, 606.0))
-            .len,
+            .unwrap()
+            .length,
         13.9284
     );
 }
@@ -270,7 +295,8 @@ fn aurora_merged_bnvsxwbniz() {
     assert_delta!(
         aurora
             .path(Vec2::new(347.0, 272.0), Vec2::new(348.0, 285.0))
-            .len,
+            .unwrap()
+            .length,
         13.0384
     );
 }
@@ -280,7 +306,8 @@ fn aurora_merged_gmqzfevnpo() {
     assert_delta!(
         aurora
             .path(Vec2::new(229.0, 639.0), Vec2::new(240.0, 631.0))
-            .len,
+            .unwrap()
+            .length,
         13.6015
     );
 }
@@ -290,7 +317,8 @@ fn aurora_merged_vjzvhpyyui() {
     assert_delta!(
         aurora
             .path(Vec2::new(749.0, 423.0), Vec2::new(739.0, 412.0))
-            .len,
+            .unwrap()
+            .length,
         14.8661
     );
 }
@@ -300,7 +328,8 @@ fn aurora_merged_hozkxmukgo() {
     assert_delta!(
         aurora
             .path(Vec2::new(485.0, 297.0), Vec2::new(472.0, 300.0))
-            .len,
+            .unwrap()
+            .length,
         13.3417
     );
 }
@@ -310,7 +339,8 @@ fn aurora_merged_hipbpqjqbq() {
     assert_delta!(
         aurora
             .path(Vec2::new(628.0, 302.0), Vec2::new(638.0, 309.0))
-            .len,
+            .unwrap()
+            .length,
         12.2066
     );
 }
@@ -320,7 +350,8 @@ fn aurora_merged_mcxawlojjj() {
     assert_delta!(
         aurora
             .path(Vec2::new(386.0, 468.0), Vec2::new(374.0, 483.0))
-            .len,
+            .unwrap()
+            .length,
         19.2094
     );
 }
@@ -330,7 +361,8 @@ fn aurora_merged_niujsezumi() {
     assert_delta!(
         aurora
             .path(Vec2::new(483.0, 499.0), Vec2::new(468.0, 487.0))
-            .len,
+            .unwrap()
+            .length,
         19.2094
     );
 }
@@ -340,7 +372,8 @@ fn aurora_merged_ltcttxevlg() {
     assert_delta!(
         aurora
             .path(Vec2::new(869.0, 424.0), Vec2::new(854.0, 416.0))
-            .len,
+            .unwrap()
+            .length,
         17.0
     );
 }
@@ -350,7 +383,8 @@ fn aurora_merged_lcvljzpkvd() {
     assert_delta!(
         aurora
             .path(Vec2::new(514.0, 346.0), Vec2::new(499.0, 337.0))
-            .len,
+            .unwrap()
+            .length,
         17.4929
     );
 }
@@ -360,7 +394,8 @@ fn aurora_merged_nwuwiqvrek() {
     assert_delta!(
         aurora
             .path(Vec2::new(208.0, 251.0), Vec2::new(218.0, 238.0))
-            .len,
+            .unwrap()
+            .length,
         16.4012
     );
 }
@@ -370,7 +405,8 @@ fn aurora_merged_dwckffntix() {
     assert_delta!(
         aurora
             .path(Vec2::new(676.0, 100.0), Vec2::new(669.0, 115.0))
-            .len,
+            .unwrap()
+            .length,
         16.5529
     );
 }
@@ -380,7 +416,8 @@ fn aurora_merged_zfgogbdsvj() {
     assert_delta!(
         aurora
             .path(Vec2::new(881.0, 382.0), Vec2::new(897.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         17.4642
     );
 }
@@ -390,7 +427,8 @@ fn aurora_merged_ejuthidzms() {
     assert_delta!(
         aurora
             .path(Vec2::new(927.0, 418.0), Vec2::new(932.0, 404.0))
-            .len,
+            .unwrap()
+            .length,
         14.8661
     );
 }
@@ -400,7 +438,8 @@ fn aurora_merged_pxqlgzyqlh() {
     assert_delta!(
         aurora
             .path(Vec2::new(323.0, 99.0), Vec2::new(309.0, 90.0))
-            .len,
+            .unwrap()
+            .length,
         16.6433
     );
 }
@@ -410,7 +449,8 @@ fn aurora_merged_piamvgpjcj() {
     assert_delta!(
         aurora
             .path(Vec2::new(354.0, 118.0), Vec2::new(337.0, 112.0))
-            .len,
+            .unwrap()
+            .length,
         18.0278
     );
 }
@@ -420,7 +460,8 @@ fn aurora_merged_oecnbcxell() {
     assert_delta!(
         aurora
             .path(Vec2::new(719.0, 111.0), Vec2::new(700.0, 114.0))
-            .len,
+            .unwrap()
+            .length,
         19.2354
     );
 }
@@ -430,7 +471,8 @@ fn aurora_merged_jxrzthavjn() {
     assert_delta!(
         aurora
             .path(Vec2::new(863.0, 142.0), Vec2::new(884.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         21.587
     );
 }
@@ -440,7 +482,8 @@ fn aurora_merged_qwbdickslr() {
     assert_delta!(
         aurora
             .path(Vec2::new(442.0, 456.0), Vec2::new(447.0, 477.0))
-            .len,
+            .unwrap()
+            .length,
         21.587
     );
 }
@@ -450,7 +493,8 @@ fn aurora_merged_fqqfzpzxwt() {
     assert_delta!(
         aurora
             .path(Vec2::new(903.0, 419.0), Vec2::new(911.0, 436.0))
-            .len,
+            .unwrap()
+            .length,
         18.7883
     );
 }
@@ -460,7 +504,8 @@ fn aurora_merged_fimkyomjei() {
     assert_delta!(
         aurora
             .path(Vec2::new(813.0, 242.0), Vec2::new(790.0, 244.0))
-            .len,
+            .unwrap()
+            .length,
         23.0868
     );
 }
@@ -470,7 +515,8 @@ fn aurora_merged_iajrfxitdi() {
     assert_delta!(
         aurora
             .path(Vec2::new(604.0, 197.0), Vec2::new(619.0, 214.0))
-            .len,
+            .unwrap()
+            .length,
         22.6716
     );
 }
@@ -480,7 +526,8 @@ fn aurora_merged_gicnryiync() {
     assert_delta!(
         aurora
             .path(Vec2::new(274.0, 273.0), Vec2::new(258.0, 257.0))
-            .len,
+            .unwrap()
+            .length,
         22.6274
     );
 }
@@ -490,7 +537,8 @@ fn aurora_merged_uwkqffvmfl() {
     assert_delta!(
         aurora
             .path(Vec2::new(313.0, 547.0), Vec2::new(317.0, 526.0))
-            .len,
+            .unwrap()
+            .length,
         21.3776
     );
 }
@@ -500,7 +548,8 @@ fn aurora_merged_jgujqoizee() {
     assert_delta!(
         aurora
             .path(Vec2::new(134.0, 674.0), Vec2::new(116.0, 665.0))
-            .len,
+            .unwrap()
+            .length,
         20.1246
     );
 }
@@ -510,7 +559,8 @@ fn aurora_merged_hrbvuysztl() {
     assert_delta!(
         aurora
             .path(Vec2::new(464.0, 326.0), Vec2::new(474.0, 343.0))
-            .len,
+            .unwrap()
+            .length,
         19.7231
     );
 }
@@ -520,7 +570,8 @@ fn aurora_merged_bduqitjszq() {
     assert_delta!(
         aurora
             .path(Vec2::new(58.0, 404.0), Vec2::new(45.0, 385.0))
-            .len,
+            .unwrap()
+            .length,
         23.0217
     );
 }
@@ -530,7 +581,8 @@ fn aurora_merged_jwoekyskqr() {
     assert_delta!(
         aurora
             .path(Vec2::new(55.0, 166.0), Vec2::new(76.0, 182.0))
-            .len,
+            .unwrap()
+            .length,
         26.4008
     );
 }
@@ -540,7 +592,8 @@ fn aurora_merged_nfmthareeh() {
     assert_delta!(
         aurora
             .path(Vec2::new(14.0, 387.0), Vec2::new(40.0, 390.0))
-            .len,
+            .unwrap()
+            .length,
         26.1725
     );
 }
@@ -550,7 +603,8 @@ fn aurora_merged_icvutckzev() {
     assert_delta!(
         aurora
             .path(Vec2::new(493.0, 444.0), Vec2::new(470.0, 436.0))
-            .len,
+            .unwrap()
+            .length,
         24.3516
     );
 }
@@ -560,7 +614,8 @@ fn aurora_merged_pjxcvzmwml() {
     assert_delta!(
         aurora
             .path(Vec2::new(653.0, 394.0), Vec2::new(674.0, 407.0))
-            .len,
+            .unwrap()
+            .length,
         24.6982
     );
 }
@@ -570,7 +625,8 @@ fn aurora_merged_afgyrtixjj() {
     assert_delta!(
         aurora
             .path(Vec2::new(836.0, 122.0), Vec2::new(857.0, 111.0))
-            .len,
+            .unwrap()
+            .length,
         23.7065
     );
 }
@@ -580,7 +636,8 @@ fn aurora_merged_uhgmlxvtov() {
     assert_delta!(
         aurora
             .path(Vec2::new(27.0, 591.0), Vec2::new(42.0, 573.0))
-            .len,
+            .unwrap()
+            .length,
         23.455
     );
 }
@@ -590,7 +647,8 @@ fn aurora_merged_uoztiyeojg() {
     assert_delta!(
         aurora
             .path(Vec2::new(761.0, 368.0), Vec2::new(740.0, 358.0))
-            .len,
+            .unwrap()
+            .length,
         23.2594
     );
 }
@@ -600,7 +658,8 @@ fn aurora_merged_dbhbzmhfzn() {
     assert_delta!(
         aurora
             .path(Vec2::new(693.0, 312.0), Vec2::new(682.0, 298.0))
-            .len,
+            .unwrap()
+            .length,
         22.1812
     );
 }
@@ -610,7 +669,8 @@ fn aurora_merged_uyfyhnabgx() {
     assert_delta!(
         aurora
             .path(Vec2::new(126.0, 183.0), Vec2::new(103.0, 189.0))
-            .len,
+            .unwrap()
+            .length,
         23.7697
     );
 }
@@ -620,7 +680,8 @@ fn aurora_merged_ofylakmlfx() {
     assert_delta!(
         aurora
             .path(Vec2::new(545.0, 503.0), Vec2::new(517.0, 507.0))
-            .len,
+            .unwrap()
+            .length,
         28.2843
     );
 }
@@ -630,7 +691,8 @@ fn aurora_merged_iqfbrbxfdl() {
     assert_delta!(
         aurora
             .path(Vec2::new(812.0, 550.0), Vec2::new(809.0, 577.0))
-            .len,
+            .unwrap()
+            .length,
         27.1662
     );
 }
@@ -640,7 +702,8 @@ fn aurora_merged_tfoikavpmq() {
     assert_delta!(
         aurora
             .path(Vec2::new(885.0, 286.0), Vec2::new(860.0, 299.0))
-            .len,
+            .unwrap()
+            .length,
         28.178
     );
 }
@@ -650,7 +713,8 @@ fn aurora_merged_koqmgituss() {
     assert_delta!(
         aurora
             .path(Vec2::new(818.0, 292.0), Vec2::new(795.0, 306.0))
-            .len,
+            .unwrap()
+            .length,
         26.9258
     );
 }
@@ -660,7 +724,8 @@ fn aurora_merged_qxjutyfmxo() {
     assert_delta!(
         aurora
             .path(Vec2::new(467.0, 205.0), Vec2::new(446.0, 185.0))
-            .len,
+            .unwrap()
+            .length,
         29.0
     );
 }
@@ -670,7 +735,8 @@ fn aurora_merged_swizcmghvv() {
     assert_delta!(
         aurora
             .path(Vec2::new(114.0, 464.0), Vec2::new(143.0, 469.0))
-            .len,
+            .unwrap()
+            .length,
         29.4279
     );
 }
@@ -680,7 +746,8 @@ fn aurora_merged_ltozfxpqfs() {
     assert_delta!(
         aurora
             .path(Vec2::new(717.0, 368.0), Vec2::new(741.0, 381.0))
-            .len,
+            .unwrap()
+            .length,
         27.2947
     );
 }
@@ -690,7 +757,8 @@ fn aurora_merged_zcxrpufpyt() {
     assert_delta!(
         aurora
             .path(Vec2::new(432.0, 259.0), Vec2::new(462.0, 258.0))
-            .len,
+            .unwrap()
+            .length,
         30.0167
     );
 }
@@ -700,7 +768,8 @@ fn aurora_merged_udzfvsnaek() {
     assert_delta!(
         aurora
             .path(Vec2::new(134.0, 434.0), Vec2::new(136.0, 405.0))
-            .len,
+            .unwrap()
+            .length,
         29.0689
     );
 }
@@ -710,7 +779,8 @@ fn aurora_merged_glelhvhyoy() {
     assert_delta!(
         aurora
             .path(Vec2::new(305.0, 683.0), Vec2::new(275.0, 681.0))
-            .len,
+            .unwrap()
+            .length,
         30.0666
     );
 }
@@ -720,7 +790,8 @@ fn aurora_merged_kkrhngdxlj() {
     assert_delta!(
         aurora
             .path(Vec2::new(336.0, 321.0), Vec2::new(336.0, 353.0))
-            .len,
+            .unwrap()
+            .length,
         32.0
     );
 }
@@ -730,7 +801,8 @@ fn aurora_merged_zqxegsjjvo() {
     assert_delta!(
         aurora
             .path(Vec2::new(646.0, 410.0), Vec2::new(642.0, 444.0))
-            .len,
+            .unwrap()
+            .length,
         34.2345
     );
 }
@@ -740,7 +812,8 @@ fn aurora_merged_oxahqsdlhg() {
     assert_delta!(
         aurora
             .path(Vec2::new(255.0, 382.0), Vec2::new(281.0, 362.0))
-            .len,
+            .unwrap()
+            .length,
         32.8024
     );
 }
@@ -750,7 +823,8 @@ fn aurora_merged_nsueqjyjkd() {
     assert_delta!(
         aurora
             .path(Vec2::new(326.0, 509.0), Vec2::new(298.0, 520.0))
-            .len,
+            .unwrap()
+            .length,
         30.313
     );
 }
@@ -760,7 +834,8 @@ fn aurora_merged_rxweizlrml() {
     assert_delta!(
         aurora
             .path(Vec2::new(980.0, 447.0), Vec2::new(965.0, 418.0))
-            .len,
+            .unwrap()
+            .length,
         32.6497
     );
 }
@@ -770,7 +845,8 @@ fn aurora_merged_kmpgztxeru() {
     assert_delta!(
         aurora
             .path(Vec2::new(645.0, 591.0), Vec2::new(619.0, 573.0))
-            .len,
+            .unwrap()
+            .length,
         31.6969
     );
 }
@@ -780,7 +856,8 @@ fn aurora_merged_zxqlhvbmyi() {
     assert_delta!(
         aurora
             .path(Vec2::new(123.0, 465.0), Vec2::new(142.0, 492.0))
-            .len,
+            .unwrap()
+            .length,
         33.0151
     );
 }
@@ -790,7 +867,8 @@ fn aurora_merged_fdsvxkfbdr() {
     assert_delta!(
         aurora
             .path(Vec2::new(387.0, 227.0), Vec2::new(358.0, 239.0))
-            .len,
+            .unwrap()
+            .length,
         31.3847
     );
 }
@@ -800,7 +878,8 @@ fn aurora_merged_ollcjefcog() {
     assert_delta!(
         aurora
             .path(Vec2::new(383.0, 340.0), Vec2::new(390.0, 370.0))
-            .len,
+            .unwrap()
+            .length,
         32.8629
     );
 }
@@ -810,7 +889,8 @@ fn aurora_merged_qbfmapettn() {
     assert_delta!(
         aurora
             .path(Vec2::new(100.0, 290.0), Vec2::new(129.0, 303.0))
-            .len,
+            .unwrap()
+            .length,
         33.7275
     );
 }
@@ -820,7 +900,8 @@ fn aurora_merged_afknbgneln() {
     assert_delta!(
         aurora
             .path(Vec2::new(555.0, 646.0), Vec2::new(528.0, 624.0))
-            .len,
+            .unwrap()
+            .length,
         34.8281
     );
 }
@@ -830,7 +911,8 @@ fn aurora_merged_zpzggakaey() {
     assert_delta!(
         aurora
             .path(Vec2::new(457.0, 673.0), Vec2::new(493.0, 670.0))
-            .len,
+            .unwrap()
+            .length,
         36.1248
     );
 }
@@ -840,7 +922,8 @@ fn aurora_merged_nmjicxusdc() {
     assert_delta!(
         aurora
             .path(Vec2::new(13.0, 622.0), Vec2::new(28.0, 604.0))
-            .len,
+            .unwrap()
+            .length,
         37.4046
     );
 }
@@ -850,7 +933,8 @@ fn aurora_merged_ryhorwlrwq() {
     assert_delta!(
         aurora
             .path(Vec2::new(278.0, 92.0), Vec2::new(314.0, 98.0))
-            .len,
+            .unwrap()
+            .length,
         36.4966
     );
 }
@@ -860,7 +944,8 @@ fn aurora_merged_dvwuixprla() {
     assert_delta!(
         aurora
             .path(Vec2::new(527.0, 541.0), Vec2::new(520.0, 506.0))
-            .len,
+            .unwrap()
+            .length,
         35.6931
     );
 }
@@ -870,7 +955,8 @@ fn aurora_merged_jgfvztsrfg() {
     assert_delta!(
         aurora
             .path(Vec2::new(774.0, 216.0), Vec2::new(805.0, 216.0))
-            .len,
+            .unwrap()
+            .length,
         35.4222
     );
 }
@@ -880,7 +966,8 @@ fn aurora_merged_ukoufeakrd() {
     assert_delta!(
         aurora
             .path(Vec2::new(229.0, 698.0), Vec2::new(199.0, 714.0))
-            .len,
+            .unwrap()
+            .length,
         34.0
     );
 }
@@ -890,7 +977,8 @@ fn aurora_merged_nkuqpkddgh() {
     assert_delta!(
         aurora
             .path(Vec2::new(592.0, 177.0), Vec2::new(607.0, 146.0))
-            .len,
+            .unwrap()
+            .length,
         34.4384
     );
 }
@@ -900,7 +988,8 @@ fn aurora_merged_snqcuuaxqu() {
     assert_delta!(
         aurora
             .path(Vec2::new(889.0, 512.0), Vec2::new(874.0, 482.0))
-            .len,
+            .unwrap()
+            .length,
         33.541
     );
 }
@@ -910,7 +999,8 @@ fn aurora_merged_bwvltefrjj() {
     assert_delta!(
         aurora
             .path(Vec2::new(251.0, 98.0), Vec2::new(222.0, 115.0))
-            .len,
+            .unwrap()
+            .length,
         33.6155
     );
 }
@@ -920,7 +1010,8 @@ fn aurora_merged_rkcwoueoil() {
     assert_delta!(
         aurora
             .path(Vec2::new(903.0, 380.0), Vec2::new(935.0, 352.0))
-            .len,
+            .unwrap()
+            .length,
         42.5206
     );
 }
@@ -930,7 +1021,8 @@ fn aurora_merged_zhldwdmxyx() {
     assert_delta!(
         aurora
             .path(Vec2::new(537.0, 193.0), Vec2::new(567.0, 219.0))
-            .len,
+            .unwrap()
+            .length,
         39.6989
     );
 }
@@ -940,7 +1032,8 @@ fn aurora_merged_ayqpqyarhu() {
     assert_delta!(
         aurora
             .path(Vec2::new(230.0, 281.0), Vec2::new(263.0, 261.0))
-            .len,
+            .unwrap()
+            .length,
         39.0
     );
 }
@@ -950,7 +1043,8 @@ fn aurora_merged_fmuurqbxdl() {
     assert_delta!(
         aurora
             .path(Vec2::new(636.0, 85.0), Vec2::new(603.0, 106.0))
-            .len,
+            .unwrap()
+            .length,
         39.5876
     );
 }
@@ -960,7 +1054,8 @@ fn aurora_merged_hjylrcsyxd() {
     assert_delta!(
         aurora
             .path(Vec2::new(620.0, 235.0), Vec2::new(641.0, 268.0))
-            .len,
+            .unwrap()
+            .length,
         39.2753
     );
 }
@@ -970,7 +1065,8 @@ fn aurora_merged_qbnkzqyvdf() {
     assert_delta!(
         aurora
             .path(Vec2::new(167.0, 235.0), Vec2::new(201.0, 255.0))
-            .len,
+            .unwrap()
+            .length,
         39.4462
     );
 }
@@ -980,7 +1076,8 @@ fn aurora_merged_dgkripqwmi() {
     assert_delta!(
         aurora
             .path(Vec2::new(315.0, 338.0), Vec2::new(337.0, 307.0))
-            .len,
+            .unwrap()
+            .length,
         38.0132
     );
 }
@@ -990,7 +1087,8 @@ fn aurora_merged_mcfucosfai() {
     assert_delta!(
         aurora
             .path(Vec2::new(72.0, 402.0), Vec2::new(101.0, 431.0))
-            .len,
+            .unwrap()
+            .length,
         41.0122
     );
 }
@@ -1000,7 +1098,8 @@ fn aurora_merged_kbmyimwdvp() {
     assert_delta!(
         aurora
             .path(Vec2::new(632.0, 742.0), Vec2::new(623.0, 704.0))
-            .len,
+            .unwrap()
+            .length,
         39.108
     );
 }
@@ -1010,7 +1109,8 @@ fn aurora_merged_awqvvjuhho() {
     assert_delta!(
         aurora
             .path(Vec2::new(709.0, 584.0), Vec2::new(741.0, 599.0))
-            .len,
+            .unwrap()
+            .length,
         39.4709
     );
 }
@@ -1020,7 +1120,8 @@ fn aurora_merged_nkfmnziula() {
     assert_delta!(
         aurora
             .path(Vec2::new(908.0, 292.0), Vec2::new(911.0, 257.0))
-            .len,
+            .unwrap()
+            .length,
         42.4083
     );
 }
@@ -1030,7 +1131,8 @@ fn aurora_merged_foobsuxdyp() {
     assert_delta!(
         aurora
             .path(Vec2::new(104.0, 564.0), Vec2::new(145.0, 566.0))
-            .len,
+            .unwrap()
+            .length,
         42.1045
     );
 }
@@ -1040,7 +1142,8 @@ fn aurora_merged_xdhnlfegrw() {
     assert_delta!(
         aurora
             .path(Vec2::new(272.0, 92.0), Vec2::new(233.0, 106.0))
-            .len,
+            .unwrap()
+            .length,
         41.4367
     );
 }
@@ -1050,7 +1153,8 @@ fn aurora_merged_bhkneqnlpl() {
     assert_delta!(
         aurora
             .path(Vec2::new(322.0, 296.0), Vec2::new(283.0, 277.0))
-            .len,
+            .unwrap()
+            .length,
         43.382
     );
 }
@@ -1060,7 +1164,8 @@ fn aurora_merged_gtbzkyhimv() {
     assert_delta!(
         aurora
             .path(Vec2::new(442.0, 460.0), Vec2::new(398.0, 467.0))
-            .len,
+            .unwrap()
+            .length,
         44.5533
     );
 }
@@ -1070,7 +1175,8 @@ fn aurora_merged_syetcbymyd() {
     assert_delta!(
         aurora
             .path(Vec2::new(774.0, 350.0), Vec2::new(731.0, 362.0))
-            .len,
+            .unwrap()
+            .length,
         44.643
     );
 }
@@ -1080,7 +1186,8 @@ fn aurora_merged_pbqyinexws() {
     assert_delta!(
         aurora
             .path(Vec2::new(118.0, 721.0), Vec2::new(95.0, 686.0))
-            .len,
+            .unwrap()
+            .length,
         41.8808
     );
 }
@@ -1090,7 +1197,8 @@ fn aurora_merged_wobhgwixsf() {
     assert_delta!(
         aurora
             .path(Vec2::new(569.0, 163.0), Vec2::new(607.0, 183.0))
-            .len,
+            .unwrap()
+            .length,
         42.9418
     );
 }
@@ -1100,7 +1208,8 @@ fn aurora_merged_ubtxfugbii() {
     assert_delta!(
         aurora
             .path(Vec2::new(87.0, 632.0), Vec2::new(122.0, 610.0))
-            .len,
+            .unwrap()
+            .length,
         41.3401
     );
 }
@@ -1110,7 +1219,8 @@ fn aurora_merged_ohhdtykvjd() {
     assert_delta!(
         aurora
             .path(Vec2::new(214.0, 529.0), Vec2::new(176.0, 551.0))
-            .len,
+            .unwrap()
+            .length,
         43.909
     );
 }
@@ -1120,7 +1230,8 @@ fn aurora_merged_tiahhmrcfv() {
     assert_delta!(
         aurora
             .path(Vec2::new(75.0, 148.0), Vec2::new(113.0, 141.0))
-            .len,
+            .unwrap()
+            .length,
         46.5038
     );
 }
@@ -1130,7 +1241,8 @@ fn aurora_merged_zwqwhnezqp() {
     assert_delta!(
         aurora
             .path(Vec2::new(572.0, 486.0), Vec2::new(533.0, 464.0))
-            .len,
+            .unwrap()
+            .length,
         44.7772
     );
 }
@@ -1140,7 +1252,8 @@ fn aurora_merged_ugcidugjnv() {
     assert_delta!(
         aurora
             .path(Vec2::new(456.0, 589.0), Vec2::new(492.0, 618.0))
-            .len,
+            .unwrap()
+            .length,
         46.2277
     );
 }
@@ -1150,7 +1263,8 @@ fn aurora_merged_zyuxfabxaa() {
     assert_delta!(
         aurora
             .path(Vec2::new(488.0, 493.0), Vec2::new(454.0, 456.0))
-            .len,
+            .unwrap()
+            .length,
         50.2769
     );
 }
@@ -1160,7 +1274,8 @@ fn aurora_merged_mxjteqgzvd() {
     assert_delta!(
         aurora
             .path(Vec2::new(835.0, 549.0), Vec2::new(788.0, 555.0))
-            .len,
+            .unwrap()
+            .length,
         47.3814
     );
 }
@@ -1170,7 +1285,8 @@ fn aurora_merged_putguhurkp() {
     assert_delta!(
         aurora
             .path(Vec2::new(191.0, 701.0), Vec2::new(237.0, 714.0))
-            .len,
+            .unwrap()
+            .length,
         47.8017
     );
 }
@@ -1180,7 +1296,8 @@ fn aurora_merged_zkzdnpfeeu() {
     assert_delta!(
         aurora
             .path(Vec2::new(909.0, 261.0), Vec2::new(897.0, 279.0))
-            .len,
+            .unwrap()
+            .length,
         47.9312
     );
 }
@@ -1190,7 +1307,8 @@ fn aurora_merged_jbwqdimbnl() {
     assert_delta!(
         aurora
             .path(Vec2::new(614.0, 608.0), Vec2::new(650.0, 572.0))
-            .len,
+            .unwrap()
+            .length,
         50.9117
     );
 }
@@ -1200,7 +1318,8 @@ fn aurora_merged_obbjjngndf() {
     assert_delta!(
         aurora
             .path(Vec2::new(487.0, 539.0), Vec2::new(452.0, 574.0))
-            .len,
+            .unwrap()
+            .length,
         49.4975
     );
 }
@@ -1210,7 +1329,8 @@ fn aurora_merged_iylyasrbkh() {
     assert_delta!(
         aurora
             .path(Vec2::new(806.0, 370.0), Vec2::new(765.0, 348.0))
-            .len,
+            .unwrap()
+            .length,
         46.5296
     );
 }
@@ -1220,7 +1340,8 @@ fn aurora_merged_qyaslupbtz() {
     assert_delta!(
         aurora
             .path(Vec2::new(905.0, 592.0), Vec2::new(859.0, 570.0))
-            .len,
+            .unwrap()
+            .length,
         50.9902
     );
 }
@@ -1230,7 +1351,8 @@ fn aurora_merged_snuwroswod() {
     assert_delta!(
         aurora
             .path(Vec2::new(713.0, 657.0), Vec2::new(711.0, 604.0))
-            .len,
+            .unwrap()
+            .length,
         53.0377
     );
 }
@@ -1240,7 +1362,8 @@ fn aurora_merged_myjjtyrrby() {
     assert_delta!(
         aurora
             .path(Vec2::new(468.0, 288.0), Vec2::new(428.0, 324.0))
-            .len,
+            .unwrap()
+            .length,
         53.8145
     );
 }
@@ -1250,7 +1373,8 @@ fn aurora_merged_srykvkkzfn() {
     assert_delta!(
         aurora
             .path(Vec2::new(567.0, 158.0), Vec2::new(544.0, 140.0))
-            .len,
+            .unwrap()
+            .length,
         51.2681
     );
 }
@@ -1260,7 +1384,8 @@ fn aurora_merged_dyklqmsobv() {
     assert_delta!(
         aurora
             .path(Vec2::new(488.0, 138.0), Vec2::new(467.0, 156.0))
-            .len,
+            .unwrap()
+            .length,
         47.5703
     );
 }
@@ -1270,7 +1395,8 @@ fn aurora_merged_kmszholbgv() {
     assert_delta!(
         aurora
             .path(Vec2::new(631.0, 402.0), Vec2::new(620.0, 353.0))
-            .len,
+            .unwrap()
+            .length,
         50.3406
     );
 }
@@ -1280,7 +1406,8 @@ fn aurora_merged_rvqwtjtdwy() {
     assert_delta!(
         aurora
             .path(Vec2::new(681.0, 216.0), Vec2::new(707.0, 178.0))
-            .len,
+            .unwrap()
+            .length,
         52.9495
     );
 }
@@ -1290,7 +1417,8 @@ fn aurora_merged_mvfkawqhtf() {
     assert_delta!(
         aurora
             .path(Vec2::new(801.0, 543.0), Vec2::new(851.0, 551.0))
-            .len,
+            .unwrap()
+            .length,
         50.636
     );
 }
@@ -1300,7 +1428,8 @@ fn aurora_merged_ecykohikwk() {
     assert_delta!(
         aurora
             .path(Vec2::new(549.0, 600.0), Vec2::new(503.0, 621.0))
-            .len,
+            .unwrap()
+            .length,
         50.5668
     );
 }
@@ -1310,7 +1439,8 @@ fn aurora_merged_qucwiazxhd() {
     assert_delta!(
         aurora
             .path(Vec2::new(976.0, 624.0), Vec2::new(923.0, 629.0))
-            .len,
+            .unwrap()
+            .length,
         53.2353
     );
 }
@@ -1320,7 +1450,8 @@ fn aurora_merged_axojabfseg() {
     assert_delta!(
         aurora
             .path(Vec2::new(965.0, 415.0), Vec2::new(1023.0, 412.0))
-            .len,
+            .unwrap()
+            .length,
         58.0775
     );
 }
@@ -1330,7 +1461,8 @@ fn aurora_merged_qbqoabrauy() {
     assert_delta!(
         aurora
             .path(Vec2::new(902.0, 343.0), Vec2::new(923.0, 295.0))
-            .len,
+            .unwrap()
+            .length,
         52.3927
     );
 }
@@ -1340,7 +1472,8 @@ fn aurora_merged_aqxmclxbxj() {
     assert_delta!(
         aurora
             .path(Vec2::new(228.0, 212.0), Vec2::new(182.0, 239.0))
-            .len,
+            .unwrap()
+            .length,
         53.3385
     );
 }
@@ -1350,7 +1483,8 @@ fn aurora_merged_kpqijgckeh() {
     assert_delta!(
         aurora
             .path(Vec2::new(795.0, 680.0), Vec2::new(747.0, 700.0))
-            .len,
+            .unwrap()
+            .length,
         52.0
     );
 }
@@ -1360,7 +1494,8 @@ fn aurora_merged_tikgglggxp() {
     assert_delta!(
         aurora
             .path(Vec2::new(710.0, 398.0), Vec2::new(686.0, 434.0))
-            .len,
+            .unwrap()
+            .length,
         56.8737
     );
 }
@@ -1370,7 +1505,8 @@ fn aurora_merged_ldzpwrsyox() {
     assert_delta!(
         aurora
             .path(Vec2::new(318.0, 166.0), Vec2::new(294.0, 209.0))
-            .len,
+            .unwrap()
+            .length,
         55.5646
     );
 }
@@ -1380,7 +1516,8 @@ fn aurora_merged_sseyjoioia() {
     assert_delta!(
         aurora
             .path(Vec2::new(166.0, 303.0), Vec2::new(209.0, 269.0))
-            .len,
+            .unwrap()
+            .length,
         54.8759
     );
 }
@@ -1390,7 +1527,8 @@ fn aurora_merged_xybajfredd() {
     assert_delta!(
         aurora
             .path(Vec2::new(117.0, 105.0), Vec2::new(70.0, 133.0))
-            .len,
+            .unwrap()
+            .length,
         54.7083
     );
 }
@@ -1400,7 +1538,8 @@ fn aurora_merged_nlssjzvuuw() {
     assert_delta!(
         aurora
             .path(Vec2::new(544.0, 302.0), Vec2::new(593.0, 319.0))
-            .len,
+            .unwrap()
+            .length,
         51.8652
     );
 }
@@ -1410,7 +1549,8 @@ fn aurora_merged_ixoktyieri() {
     assert_delta!(
         aurora
             .path(Vec2::new(658.0, 344.0), Vec2::new(704.0, 319.0))
-            .len,
+            .unwrap()
+            .length,
         52.3546
     );
 }
@@ -1420,7 +1560,8 @@ fn aurora_merged_csbopjapgl() {
     assert_delta!(
         aurora
             .path(Vec2::new(426.0, 140.0), Vec2::new(406.0, 109.0))
-            .len,
+            .unwrap()
+            .length,
         56.8809
     );
 }
@@ -1430,7 +1571,8 @@ fn aurora_merged_dfisuwipfj() {
     assert_delta!(
         aurora
             .path(Vec2::new(245.0, 594.0), Vec2::new(236.0, 631.0))
-            .len,
+            .unwrap()
+            .length,
         58.3086
     );
 }
@@ -1440,7 +1582,8 @@ fn aurora_merged_jgfvqzifnh() {
     assert_delta!(
         aurora
             .path(Vec2::new(210.0, 530.0), Vec2::new(155.0, 525.0))
-            .len,
+            .unwrap()
+            .length,
         56.8212
     );
 }
@@ -1450,7 +1593,8 @@ fn aurora_merged_pefylzkkor() {
     assert_delta!(
         aurora
             .path(Vec2::new(255.0, 572.0), Vec2::new(210.0, 531.0))
-            .len,
+            .unwrap()
+            .length,
         60.8769
     );
 }
@@ -1460,7 +1604,8 @@ fn aurora_merged_gsnkoqdouv() {
     assert_delta!(
         aurora
             .path(Vec2::new(21.0, 585.0), Vec2::new(61.0, 618.0))
-            .len,
+            .unwrap()
+            .length,
         57.9557
     );
 }
@@ -1470,7 +1615,8 @@ fn aurora_merged_vwngwcfflp() {
     assert_delta!(
         aurora
             .path(Vec2::new(114.0, 237.0), Vec2::new(117.0, 281.0))
-            .len,
+            .unwrap()
+            .length,
         56.7178
     );
 }
@@ -1480,7 +1626,8 @@ fn aurora_merged_zvormnttby() {
     assert_delta!(
         aurora
             .path(Vec2::new(1021.0, 340.0), Vec2::new(967.0, 346.0))
-            .len,
+            .unwrap()
+            .length,
         57.1555
     );
 }
@@ -1490,7 +1637,8 @@ fn aurora_merged_loqxyyjxas() {
     assert_delta!(
         aurora
             .path(Vec2::new(644.0, 340.0), Vec2::new(598.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         57.8014
     );
 }
@@ -1500,7 +1648,8 @@ fn aurora_merged_jfrxqngkhh() {
     assert_delta!(
         aurora
             .path(Vec2::new(123.0, 157.0), Vec2::new(68.0, 178.0))
-            .len,
+            .unwrap()
+            .length,
         58.8727
     );
 }
@@ -1510,7 +1659,8 @@ fn aurora_merged_lkzmpnxark() {
     assert_delta!(
         aurora
             .path(Vec2::new(536.0, 261.0), Vec2::new(562.0, 307.0))
-            .len,
+            .unwrap()
+            .length,
         56.3745
     );
 }
@@ -1520,7 +1670,8 @@ fn aurora_merged_ecedjsxeal() {
     assert_delta!(
         aurora
             .path(Vec2::new(672.0, 72.0), Vec2::new(724.0, 79.0))
-            .len,
+            .unwrap()
+            .length,
         60.6906
     );
 }
@@ -1530,7 +1681,8 @@ fn aurora_merged_bdreokcnjx() {
     assert_delta!(
         aurora
             .path(Vec2::new(508.0, 318.0), Vec2::new(494.0, 295.0))
-            .len,
+            .unwrap()
+            .length,
         59.7026
     );
 }
@@ -1540,7 +1692,8 @@ fn aurora_merged_qmfgzxgdky() {
     assert_delta!(
         aurora
             .path(Vec2::new(676.0, 115.0), Vec2::new(644.0, 94.0))
-            .len,
+            .unwrap()
+            .length,
         59.7014
     );
 }
@@ -1550,7 +1703,8 @@ fn aurora_merged_pcvzczftjt() {
     assert_delta!(
         aurora
             .path(Vec2::new(127.0, 281.0), Vec2::new(102.0, 337.0))
-            .len,
+            .unwrap()
+            .length,
         63.9275
     );
 }
@@ -1560,7 +1714,8 @@ fn aurora_merged_jhbuitkxmc() {
     assert_delta!(
         aurora
             .path(Vec2::new(629.0, 627.0), Vec2::new(569.0, 644.0))
-            .len,
+            .unwrap()
+            .length,
         65.0856
     );
 }
@@ -1570,7 +1725,8 @@ fn aurora_merged_sekvygellt() {
     assert_delta!(
         aurora
             .path(Vec2::new(472.0, 544.0), Vec2::new(531.0, 530.0))
-            .len,
+            .unwrap()
+            .length,
         60.7235
     );
 }
@@ -1580,7 +1736,8 @@ fn aurora_merged_xeoudhujux() {
     assert_delta!(
         aurora
             .path(Vec2::new(223.0, 646.0), Vec2::new(249.0, 674.0))
-            .len,
+            .unwrap()
+            .length,
         62.6869
     );
 }
@@ -1590,7 +1747,8 @@ fn aurora_merged_lmaeathjkt() {
     assert_delta!(
         aurora
             .path(Vec2::new(447.0, 458.0), Vec2::new(425.0, 415.0))
-            .len,
+            .unwrap()
+            .length,
         61.8827
     );
 }
@@ -1600,7 +1758,8 @@ fn aurora_merged_cwfmcgbwoy() {
     assert_delta!(
         aurora
             .path(Vec2::new(147.0, 390.0), Vec2::new(86.0, 376.0))
-            .len,
+            .unwrap()
+            .length,
         62.5859
     );
 }
@@ -1610,7 +1769,8 @@ fn aurora_merged_mbgbjfyrqt() {
     assert_delta!(
         aurora
             .path(Vec2::new(382.0, 542.0), Vec2::new(432.0, 506.0))
-            .len,
+            .unwrap()
+            .length,
         61.6117
     );
 }
@@ -1620,7 +1780,8 @@ fn aurora_merged_rjlaitsfro() {
     assert_delta!(
         aurora
             .path(Vec2::new(470.0, 547.0), Vec2::new(541.0, 548.0))
-            .len,
+            .unwrap()
+            .length,
         71.007
     );
 }
@@ -1630,7 +1791,8 @@ fn aurora_merged_lixstjnlgp() {
     assert_delta!(
         aurora
             .path(Vec2::new(771.0, 393.0), Vec2::new(832.0, 372.0))
-            .len,
+            .unwrap()
+            .length,
         66.3305
     );
 }
@@ -1640,7 +1802,8 @@ fn aurora_merged_rfexakfskk() {
     assert_delta!(
         aurora
             .path(Vec2::new(226.0, 502.0), Vec2::new(194.0, 452.0))
-            .len,
+            .unwrap()
+            .length,
         65.6878
     );
 }
@@ -1650,7 +1813,8 @@ fn aurora_merged_ypjzgablsj() {
     assert_delta!(
         aurora
             .path(Vec2::new(668.0, 535.0), Vec2::new(695.0, 595.0))
-            .len,
+            .unwrap()
+            .length,
         69.0304
     );
 }
@@ -1660,7 +1824,8 @@ fn aurora_merged_wxbuwoxros() {
     assert_delta!(
         aurora
             .path(Vec2::new(577.0, 669.0), Vec2::new(523.0, 635.0))
-            .len,
+            .unwrap()
+            .length,
         63.8122
     );
 }
@@ -1670,7 +1835,8 @@ fn aurora_merged_qotlazdqht() {
     assert_delta!(
         aurora
             .path(Vec2::new(454.0, 341.0), Vec2::new(494.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         69.223
     );
 }
@@ -1680,7 +1846,8 @@ fn aurora_merged_qjnrbuqdtq() {
     assert_delta!(
         aurora
             .path(Vec2::new(6.0, 410.0), Vec2::new(56.0, 369.0))
-            .len,
+            .unwrap()
+            .length,
         67.448
     );
 }
@@ -1690,7 +1857,8 @@ fn aurora_merged_wamcqpvidd() {
     assert_delta!(
         aurora
             .path(Vec2::new(499.0, 552.0), Vec2::new(525.0, 491.0))
-            .len,
+            .unwrap()
+            .length,
         66.3099
     );
 }
@@ -1700,7 +1868,8 @@ fn aurora_merged_svphshvlfj() {
     assert_delta!(
         aurora
             .path(Vec2::new(334.0, 566.0), Vec2::new(390.0, 603.0))
-            .len,
+            .unwrap()
+            .length,
         67.1193
     );
 }
@@ -1710,7 +1879,8 @@ fn aurora_merged_qvruqqwtgy() {
     assert_delta!(
         aurora
             .path(Vec2::new(720.0, 180.0), Vec2::new(731.0, 226.0))
-            .len,
+            .unwrap()
+            .length,
         63.0995
     );
 }
@@ -1720,7 +1890,8 @@ fn aurora_merged_ajlrijtrvg() {
     assert_delta!(
         aurora
             .path(Vec2::new(201.0, 399.0), Vec2::new(265.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         68.352
     );
 }
@@ -1730,7 +1901,8 @@ fn aurora_merged_opfaeoekze() {
     assert_delta!(
         aurora
             .path(Vec2::new(809.0, 595.0), Vec2::new(741.0, 611.0))
-            .len,
+            .unwrap()
+            .length,
         69.857
     );
 }
@@ -1740,7 +1912,8 @@ fn aurora_merged_ndanmwixbn() {
     assert_delta!(
         aurora
             .path(Vec2::new(697.0, 576.0), Vec2::new(762.0, 559.0))
-            .len,
+            .unwrap()
+            .length,
         67.1863
     );
 }
@@ -1750,7 +1923,8 @@ fn aurora_merged_uwqzsazjwf() {
     assert_delta!(
         aurora
             .path(Vec2::new(633.0, 584.0), Vec2::new(691.0, 544.0))
-            .len,
+            .unwrap()
+            .length,
         70.4557
     );
 }
@@ -1760,7 +1934,8 @@ fn aurora_merged_puuskzgrhp() {
     assert_delta!(
         aurora
             .path(Vec2::new(58.0, 653.0), Vec2::new(123.0, 630.0))
-            .len,
+            .unwrap()
+            .length,
         71.0863
     );
 }
@@ -1770,7 +1945,8 @@ fn aurora_merged_asfmfthgfd() {
     assert_delta!(
         aurora
             .path(Vec2::new(659.0, 165.0), Vec2::new(731.0, 161.0))
-            .len,
+            .unwrap()
+            .length,
         72.111
     );
 }
@@ -1780,7 +1956,8 @@ fn aurora_merged_hdpjdfwink() {
     assert_delta!(
         aurora
             .path(Vec2::new(769.0, 647.0), Vec2::new(758.0, 666.0))
-            .len,
+            .unwrap()
+            .length,
         70.1669
     );
 }
@@ -1790,7 +1967,8 @@ fn aurora_merged_thuevkvoma() {
     assert_delta!(
         aurora
             .path(Vec2::new(615.0, 651.0), Vec2::new(543.0, 643.0))
-            .len,
+            .unwrap()
+            .length,
         72.4431
     );
 }
@@ -1800,7 +1978,8 @@ fn aurora_merged_traryjokzh() {
     assert_delta!(
         aurora
             .path(Vec2::new(215.0, 111.0), Vec2::new(191.0, 74.0))
-            .len,
+            .unwrap()
+            .length,
         71.0889
     );
 }
@@ -1810,7 +1989,8 @@ fn aurora_merged_rxtzzzramd() {
     assert_delta!(
         aurora
             .path(Vec2::new(442.0, 123.0), Vec2::new(382.0, 131.0))
-            .len,
+            .unwrap()
+            .length,
         69.5767
     );
 }
@@ -1820,7 +2000,8 @@ fn aurora_merged_spdcautcea() {
     assert_delta!(
         aurora
             .path(Vec2::new(129.0, 209.0), Vec2::new(177.0, 245.0))
-            .len,
+            .unwrap()
+            .length,
         71.5466
     );
 }
@@ -1830,7 +2011,8 @@ fn aurora_merged_yhvayfgsmk() {
     assert_delta!(
         aurora
             .path(Vec2::new(174.0, 372.0), Vec2::new(184.0, 299.0))
-            .len,
+            .unwrap()
+            .length,
         73.6817
     );
 }
@@ -1840,7 +2022,8 @@ fn aurora_merged_cvitaaccvd() {
     assert_delta!(
         aurora
             .path(Vec2::new(518.0, 354.0), Vec2::new(513.0, 281.0))
-            .len,
+            .unwrap()
+            .length,
         75.4362
     );
 }
@@ -1850,7 +2033,8 @@ fn aurora_merged_jvweurbmqd() {
     assert_delta!(
         aurora
             .path(Vec2::new(664.0, 269.0), Vec2::new(729.0, 305.0))
-            .len,
+            .unwrap()
+            .length,
         74.3034
     );
 }
@@ -1860,7 +2044,8 @@ fn aurora_merged_zctckcchkd() {
     assert_delta!(
         aurora
             .path(Vec2::new(965.0, 154.0), Vec2::new(905.0, 192.0))
-            .len,
+            .unwrap()
+            .length,
         71.4347
     );
 }
@@ -1870,7 +2055,8 @@ fn aurora_merged_nfwjckuhcj() {
     assert_delta!(
         aurora
             .path(Vec2::new(307.0, 617.0), Vec2::new(283.0, 687.0))
-            .len,
+            .unwrap()
+            .length,
         74.0999
     );
 }
@@ -1880,7 +2066,8 @@ fn aurora_merged_kdpnscjbak() {
     assert_delta!(
         aurora
             .path(Vec2::new(270.0, 200.0), Vec2::new(324.0, 250.0))
-            .len,
+            .unwrap()
+            .length,
         75.4775
     );
 }
@@ -1890,7 +2077,8 @@ fn aurora_merged_textnxdkro() {
     assert_delta!(
         aurora
             .path(Vec2::new(652.0, 519.0), Vec2::new(629.0, 580.0))
-            .len,
+            .unwrap()
+            .length,
         74.2269
     );
 }
@@ -1900,7 +2088,8 @@ fn aurora_merged_fpnjkwrife() {
     assert_delta!(
         aurora
             .path(Vec2::new(770.0, 119.0), Vec2::new(711.0, 76.0))
-            .len,
+            .unwrap()
+            .length,
         73.1276
     );
 }
@@ -1910,7 +2099,8 @@ fn aurora_merged_gzizqbqykq() {
     assert_delta!(
         aurora
             .path(Vec2::new(201.0, 286.0), Vec2::new(163.0, 333.0))
-            .len,
+            .unwrap()
+            .length,
         70.0244
     );
 }
@@ -1920,7 +2110,8 @@ fn aurora_merged_olrbzhvigq() {
     assert_delta!(
         aurora
             .path(Vec2::new(664.0, 633.0), Vec2::new(591.0, 607.0))
-            .len,
+            .unwrap()
+            .length,
         77.4919
     );
 }
@@ -1930,7 +2121,8 @@ fn aurora_merged_rozegpzwdc() {
     assert_delta!(
         aurora
             .path(Vec2::new(706.0, 537.0), Vec2::new(706.0, 609.0))
-            .len,
+            .unwrap()
+            .length,
         77.2939
     );
 }
@@ -1940,7 +2132,8 @@ fn aurora_merged_svcchqvzie() {
     assert_delta!(
         aurora
             .path(Vec2::new(494.0, 134.0), Vec2::new(528.0, 179.0))
-            .len,
+            .unwrap()
+            .length,
         79.5731
     );
 }
@@ -1950,7 +2143,8 @@ fn aurora_merged_uzmbiffjnr() {
     assert_delta!(
         aurora
             .path(Vec2::new(453.0, 520.0), Vec2::new(436.0, 534.0))
-            .len,
+            .unwrap()
+            .length,
         73.7515
     );
 }
@@ -1960,7 +2154,8 @@ fn aurora_merged_hupliftcfd() {
     assert_delta!(
         aurora
             .path(Vec2::new(182.0, 354.0), Vec2::new(216.0, 322.0))
-            .len,
+            .unwrap()
+            .length,
         74.9783
     );
 }
@@ -1970,7 +2165,8 @@ fn aurora_merged_pdhxabyjwa() {
     assert_delta!(
         aurora
             .path(Vec2::new(543.0, 643.0), Vec2::new(498.0, 593.0))
-            .len,
+            .unwrap()
+            .length,
         76.8788
     );
 }
@@ -1980,7 +2176,8 @@ fn aurora_merged_ueqozknucf() {
     assert_delta!(
         aurora
             .path(Vec2::new(278.0, 489.0), Vec2::new(336.0, 514.0))
-            .len,
+            .unwrap()
+            .length,
         76.9914
     );
 }
@@ -1990,7 +2187,8 @@ fn aurora_merged_dienzwnvmw() {
     assert_delta!(
         aurora
             .path(Vec2::new(596.0, 151.0), Vec2::new(526.0, 164.0))
-            .len,
+            .unwrap()
+            .length,
         74.2301
     );
 }
@@ -2000,7 +2198,8 @@ fn aurora_merged_gotkxuqgfo() {
     assert_delta!(
         aurora
             .path(Vec2::new(719.0, 606.0), Vec2::new(766.0, 543.0))
-            .len,
+            .unwrap()
+            .length,
         81.5821
     );
 }
@@ -2010,7 +2209,8 @@ fn aurora_merged_gfelcxtpsa() {
     assert_delta!(
         aurora
             .path(Vec2::new(367.0, 719.0), Vec2::new(299.0, 752.0))
-            .len,
+            .unwrap()
+            .length,
         75.5844
     );
 }
@@ -2020,7 +2220,8 @@ fn aurora_merged_zpiulakeqw() {
     assert_delta!(
         aurora
             .path(Vec2::new(706.0, 524.0), Vec2::new(778.0, 491.0))
-            .len,
+            .unwrap()
+            .length,
         79.2023
     );
 }
@@ -2030,7 +2231,8 @@ fn aurora_merged_tblzcvueuo() {
     assert_delta!(
         aurora
             .path(Vec2::new(913.0, 482.0), Vec2::new(842.0, 453.0))
-            .len,
+            .unwrap()
+            .length,
         84.5886
     );
 }
@@ -2040,7 +2242,8 @@ fn aurora_merged_bwvytavkae() {
     assert_delta!(
         aurora
             .path(Vec2::new(451.0, 146.0), Vec2::new(436.0, 80.0))
-            .len,
+            .unwrap()
+            .length,
         81.8474
     );
 }
@@ -2050,7 +2253,8 @@ fn aurora_merged_lbsmsabdei() {
     assert_delta!(
         aurora
             .path(Vec2::new(252.0, 560.0), Vec2::new(322.0, 602.0))
-            .len,
+            .unwrap()
+            .length,
         81.6333
     );
 }
@@ -2060,7 +2264,8 @@ fn aurora_merged_cdhvyyjilx() {
     assert_delta!(
         aurora
             .path(Vec2::new(930.0, 540.0), Vec2::new(911.0, 492.0))
-            .len,
+            .unwrap()
+            .length,
         80.5801
     );
 }
@@ -2070,7 +2275,8 @@ fn aurora_merged_ehjpxurrzi() {
     assert_delta!(
         aurora
             .path(Vec2::new(545.0, 172.0), Vec2::new(620.0, 201.0))
-            .len,
+            .unwrap()
+            .length,
         80.4114
     );
 }
@@ -2080,7 +2286,8 @@ fn aurora_merged_alvscednqp() {
     assert_delta!(
         aurora
             .path(Vec2::new(839.0, 525.0), Vec2::new(894.0, 569.0))
-            .len,
+            .unwrap()
+            .length,
         81.5683
     );
 }
@@ -2090,7 +2297,8 @@ fn aurora_merged_vrxagadgek() {
     assert_delta!(
         aurora
             .path(Vec2::new(528.0, 461.0), Vec2::new(491.0, 514.0))
-            .len,
+            .unwrap()
+            .length,
         82.9281
     );
 }
@@ -2100,7 +2308,8 @@ fn aurora_merged_odqtvdkmag() {
     assert_delta!(
         aurora
             .path(Vec2::new(678.0, 368.0), Vec2::new(648.0, 425.0))
-            .len,
+            .unwrap()
+            .length,
         79.0596
     );
 }
@@ -2110,7 +2319,8 @@ fn aurora_merged_xcdkybdpof() {
     assert_delta!(
         aurora
             .path(Vec2::new(527.0, 325.0), Vec2::new(451.0, 350.0))
-            .len,
+            .unwrap()
+            .length,
         80.0062
     );
 }
@@ -2120,7 +2330,8 @@ fn aurora_merged_irdxiqmaoe() {
     assert_delta!(
         aurora
             .path(Vec2::new(878.0, 245.0), Vec2::new(932.0, 302.0))
-            .len,
+            .unwrap()
+            .length,
         86.1604
     );
 }
@@ -2130,7 +2341,8 @@ fn aurora_merged_zjohkbfmxt() {
     assert_delta!(
         aurora
             .path(Vec2::new(41.0, 509.0), Vec2::new(118.0, 525.0))
-            .len,
+            .unwrap()
+            .length,
         82.2626
     );
 }
@@ -2140,7 +2352,8 @@ fn aurora_merged_sbeyxeyqfo() {
     assert_delta!(
         aurora
             .path(Vec2::new(798.0, 442.0), Vec2::new(869.0, 484.0))
-            .len,
+            .unwrap()
+            .length,
         83.0759
     );
 }
@@ -2150,7 +2363,8 @@ fn aurora_merged_dkemlbwupx() {
     assert_delta!(
         aurora
             .path(Vec2::new(820.0, 400.0), Vec2::new(795.0, 334.0))
-            .len,
+            .unwrap()
+            .length,
         83.4117
     );
 }
@@ -2160,7 +2374,8 @@ fn aurora_merged_nkwaezczwi() {
     assert_delta!(
         aurora
             .path(Vec2::new(94.0, 406.0), Vec2::new(143.0, 476.0))
-            .len,
+            .unwrap()
+            .length,
         85.4459
     );
 }
@@ -2170,7 +2385,8 @@ fn aurora_merged_iwuclbazex() {
     assert_delta!(
         aurora
             .path(Vec2::new(102.0, 375.0), Vec2::new(24.0, 405.0))
-            .len,
+            .unwrap()
+            .length,
         84.9267
     );
 }
@@ -2180,7 +2396,8 @@ fn aurora_merged_sgysfbwwes() {
     assert_delta!(
         aurora
             .path(Vec2::new(169.0, 179.0), Vec2::new(138.0, 195.0))
-            .len,
+            .unwrap()
+            .length,
         86.0704
     );
 }
@@ -2190,7 +2407,8 @@ fn aurora_merged_xpfanbyfkx() {
     assert_delta!(
         aurora
             .path(Vec2::new(624.0, 290.0), Vec2::new(597.0, 233.0))
-            .len,
+            .unwrap()
+            .length,
         84.8778
     );
 }
@@ -2200,7 +2418,8 @@ fn aurora_merged_szmqdlrtwg() {
     assert_delta!(
         aurora
             .path(Vec2::new(744.0, 158.0), Vec2::new(712.0, 80.0))
-            .len,
+            .unwrap()
+            .length,
         87.0808
     );
 }
@@ -2210,7 +2429,8 @@ fn aurora_merged_yblzivlrkj() {
     assert_delta!(
         aurora
             .path(Vec2::new(526.0, 394.0), Vec2::new(521.0, 332.0))
-            .len,
+            .unwrap()
+            .length,
         80.4314
     );
 }
@@ -2220,7 +2440,8 @@ fn aurora_merged_jnclnqyqfm() {
     assert_delta!(
         aurora
             .path(Vec2::new(764.0, 636.0), Vec2::new(845.0, 667.0))
-            .len,
+            .unwrap()
+            .length,
         87.3999
     );
 }
@@ -2230,7 +2451,8 @@ fn aurora_merged_xcyqanzgru() {
     assert_delta!(
         aurora
             .path(Vec2::new(524.0, 587.0), Vec2::new(445.0, 625.0))
-            .len,
+            .unwrap()
+            .length,
         88.3247
     );
 }
@@ -2240,7 +2462,8 @@ fn aurora_merged_bvabwpiefd() {
     assert_delta!(
         aurora
             .path(Vec2::new(592.0, 241.0), Vec2::new(518.0, 189.0))
-            .len,
+            .unwrap()
+            .length,
         90.4434
     );
 }
@@ -2250,7 +2473,8 @@ fn aurora_merged_bcshxylbql() {
     assert_delta!(
         aurora
             .path(Vec2::new(527.0, 565.0), Vec2::new(606.0, 533.0))
-            .len,
+            .unwrap()
+            .length,
         88.2341
     );
 }
@@ -2260,7 +2484,8 @@ fn aurora_merged_cckzkuqeyc() {
     assert_delta!(
         aurora
             .path(Vec2::new(514.0, 320.0), Vec2::new(555.0, 244.0))
-            .len,
+            .unwrap()
+            .length,
         86.3539
     );
 }
@@ -2270,7 +2495,8 @@ fn aurora_merged_kvkflwypda() {
     assert_delta!(
         aurora
             .path(Vec2::new(320.0, 660.0), Vec2::new(256.0, 603.0))
-            .len,
+            .unwrap()
+            .length,
         89.4251
     );
 }
@@ -2280,7 +2506,8 @@ fn aurora_merged_dbxytqzlqw() {
     assert_delta!(
         aurora
             .path(Vec2::new(266.0, 645.0), Vec2::new(267.0, 561.0))
-            .len,
+            .unwrap()
+            .length,
         86.1849
     );
 }
@@ -2290,7 +2517,8 @@ fn aurora_merged_ircjpvmrhu() {
     assert_delta!(
         aurora
             .path(Vec2::new(708.0, 567.0), Vec2::new(796.0, 557.0))
-            .len,
+            .unwrap()
+            .length,
         88.5664
     );
 }
@@ -2300,7 +2528,8 @@ fn aurora_merged_djwzgckjrr() {
     assert_delta!(
         aurora
             .path(Vec2::new(487.0, 167.0), Vec2::new(570.0, 136.0))
-            .len,
+            .unwrap()
+            .length,
         88.6002
     );
 }
@@ -2310,7 +2539,8 @@ fn aurora_merged_qqsqafolku() {
     assert_delta!(
         aurora
             .path(Vec2::new(674.0, 378.0), Vec2::new(746.0, 372.0))
-            .len,
+            .unwrap()
+            .length,
         84.3871
     );
 }
@@ -2320,7 +2550,8 @@ fn aurora_merged_yvdamhvjee() {
     assert_delta!(
         aurora
             .path(Vec2::new(609.0, 609.0), Vec2::new(657.0, 532.0))
-            .len,
+            .unwrap()
+            .length,
         95.4461
     );
 }
@@ -2330,7 +2561,8 @@ fn aurora_merged_dbnpgyavgi() {
     assert_delta!(
         aurora
             .path(Vec2::new(13.0, 326.0), Vec2::new(28.0, 413.0))
-            .len,
+            .unwrap()
+            .length,
         93.7099
     );
 }
@@ -2340,7 +2572,8 @@ fn aurora_merged_hypohhzkfp() {
     assert_delta!(
         aurora
             .path(Vec2::new(591.0, 609.0), Vec2::new(530.0, 678.0))
-            .len,
+            .unwrap()
+            .length,
         96.2778
     );
 }
@@ -2350,7 +2583,8 @@ fn aurora_merged_caousbnkmm() {
     assert_delta!(
         aurora
             .path(Vec2::new(75.0, 144.0), Vec2::new(167.0, 155.0))
-            .len,
+            .unwrap()
+            .length,
         93.1209
     );
 }
@@ -2360,7 +2594,8 @@ fn aurora_merged_wnqakepmiu() {
     assert_delta!(
         aurora
             .path(Vec2::new(244.0, 617.0), Vec2::new(218.0, 530.0))
-            .len,
+            .unwrap()
+            .length,
         92.9498
     );
 }
@@ -2370,7 +2605,8 @@ fn aurora_merged_unddajzepc() {
     assert_delta!(
         aurora
             .path(Vec2::new(820.0, 495.0), Vec2::new(823.0, 587.0))
-            .len,
+            .unwrap()
+            .length,
         94.1679
     );
 }
@@ -2380,7 +2616,8 @@ fn aurora_merged_dqcuvnbpvl() {
     assert_delta!(
         aurora
             .path(Vec2::new(321.0, 624.0), Vec2::new(228.0, 608.0))
-            .len,
+            .unwrap()
+            .length,
         94.6241
     );
 }
@@ -2390,7 +2627,8 @@ fn aurora_merged_psqoistner() {
     assert_delta!(
         aurora
             .path(Vec2::new(444.0, 121.0), Vec2::new(392.0, 163.0))
-            .len,
+            .unwrap()
+            .length,
         93.1583
     );
 }
@@ -2400,7 +2638,8 @@ fn aurora_merged_nitmiglcik() {
     assert_delta!(
         aurora
             .path(Vec2::new(524.0, 640.0), Vec2::new(469.0, 566.0))
-            .len,
+            .unwrap()
+            .length,
         93.3364
     );
 }
@@ -2410,7 +2649,8 @@ fn aurora_merged_yxwqhrnlal() {
     assert_delta!(
         aurora
             .path(Vec2::new(684.0, 309.0), Vec2::new(701.0, 333.0))
-            .len,
+            .unwrap()
+            .length,
         91.1695
     );
 }
@@ -2420,7 +2660,8 @@ fn aurora_merged_ryhxwitcvg() {
     assert_delta!(
         aurora
             .path(Vec2::new(909.0, 548.0), Vec2::new(969.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         96.8366
     );
 }
@@ -2430,7 +2671,8 @@ fn aurora_merged_bvxwwsxgzq() {
     assert_delta!(
         aurora
             .path(Vec2::new(473.0, 245.0), Vec2::new(562.0, 253.0))
-            .len,
+            .unwrap()
+            .length,
         95.3451
     );
 }
@@ -2440,7 +2682,8 @@ fn aurora_merged_eypbzpzyld() {
     assert_delta!(
         aurora
             .path(Vec2::new(543.0, 309.0), Vec2::new(498.0, 231.0))
-            .len,
+            .unwrap()
+            .length,
         97.0411
     );
 }
@@ -2450,7 +2693,8 @@ fn aurora_merged_zrqzretgvt() {
     assert_delta!(
         aurora
             .path(Vec2::new(889.0, 615.0), Vec2::new(808.0, 567.0))
-            .len,
+            .unwrap()
+            .length,
         94.2606
     );
 }
@@ -2460,7 +2704,8 @@ fn aurora_merged_byieluofhe() {
     assert_delta!(
         aurora
             .path(Vec2::new(722.0, 228.0), Vec2::new(729.0, 144.0))
-            .len,
+            .unwrap()
+            .length,
         92.2824
     );
 }
@@ -2470,7 +2715,8 @@ fn aurora_merged_pnpfrwdlud() {
     assert_delta!(
         aurora
             .path(Vec2::new(165.0, 263.0), Vec2::new(249.0, 307.0))
-            .len,
+            .unwrap()
+            .length,
         94.8262
     );
 }
@@ -2480,7 +2726,8 @@ fn aurora_merged_mgkldwnjod() {
     assert_delta!(
         aurora
             .path(Vec2::new(862.0, 631.0), Vec2::new(952.0, 605.0))
-            .len,
+            .unwrap()
+            .length,
         93.6803
     );
 }
@@ -2490,7 +2737,8 @@ fn aurora_merged_wftrssyfux() {
     assert_delta!(
         aurora
             .path(Vec2::new(356.0, 124.0), Vec2::new(452.0, 112.0))
-            .len,
+            .unwrap()
+            .length,
         97.6132
     );
 }
@@ -2500,7 +2748,8 @@ fn aurora_merged_kzmqfyvbis() {
     assert_delta!(
         aurora
             .path(Vec2::new(169.0, 531.0), Vec2::new(258.0, 509.0))
-            .len,
+            .unwrap()
+            .length,
         93.672
     );
 }
@@ -2510,7 +2759,8 @@ fn aurora_merged_mpansjcicm() {
     assert_delta!(
         aurora
             .path(Vec2::new(357.0, 722.0), Vec2::new(449.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         95.8801
     );
 }
@@ -2520,7 +2770,8 @@ fn aurora_merged_fzereafvdt() {
     assert_delta!(
         aurora
             .path(Vec2::new(651.0, 529.0), Vec2::new(678.0, 624.0))
-            .len,
+            .unwrap()
+            .length,
         101.655
     );
 }
@@ -2530,7 +2781,8 @@ fn aurora_merged_pyibjoxrnk() {
     assert_delta!(
         aurora
             .path(Vec2::new(170.0, 648.0), Vec2::new(253.0, 659.0))
-            .len,
+            .unwrap()
+            .length,
         100.206
     );
 }
@@ -2540,7 +2792,8 @@ fn aurora_merged_fbubcbwnfh() {
     assert_delta!(
         aurora
             .path(Vec2::new(122.0, 383.0), Vec2::new(211.0, 346.0))
-            .len,
+            .unwrap()
+            .length,
         96.3846
     );
 }
@@ -2550,7 +2803,8 @@ fn aurora_merged_txxrppmcnz() {
     assert_delta!(
         aurora
             .path(Vec2::new(355.0, 488.0), Vec2::new(436.0, 515.0))
-            .len,
+            .unwrap()
+            .length,
         101.788
     );
 }
@@ -2560,7 +2814,8 @@ fn aurora_merged_vsfzuuodht() {
     assert_delta!(
         aurora
             .path(Vec2::new(828.0, 95.0), Vec2::new(780.0, 130.0))
-            .len,
+            .unwrap()
+            .length,
         100.879
     );
 }
@@ -2570,7 +2825,8 @@ fn aurora_merged_hhderbqucv() {
     assert_delta!(
         aurora
             .path(Vec2::new(67.0, 376.0), Vec2::new(138.0, 434.0))
-            .len,
+            .unwrap()
+            .length,
         97.9025
     );
 }
@@ -2580,7 +2836,8 @@ fn aurora_merged_dzuvoiwfms() {
     assert_delta!(
         aurora
             .path(Vec2::new(625.0, 130.0), Vec2::new(716.0, 90.0))
-            .len,
+            .unwrap()
+            .length,
         99.917
     );
 }
@@ -2590,7 +2847,8 @@ fn aurora_merged_rwndjrkpxn() {
     assert_delta!(
         aurora
             .path(Vec2::new(482.0, 50.0), Vec2::new(433.0, 122.0))
-            .len,
+            .unwrap()
+            .length,
         99.7744
     );
 }
@@ -2600,7 +2858,8 @@ fn aurora_merged_fgankbiyym() {
     assert_delta!(
         aurora
             .path(Vec2::new(150.0, 589.0), Vec2::new(224.0, 516.0))
-            .len,
+            .unwrap()
+            .length,
         103.948
     );
 }
@@ -2610,7 +2869,8 @@ fn aurora_merged_ulzzpptxyq() {
     assert_delta!(
         aurora
             .path(Vec2::new(526.0, 313.0), Vec2::new(437.0, 351.0))
-            .len,
+            .unwrap()
+            .length,
         96.7729
     );
 }
@@ -2620,7 +2880,8 @@ fn aurora_merged_nwzamkirdn() {
     assert_delta!(
         aurora
             .path(Vec2::new(250.0, 656.0), Vec2::new(203.0, 576.0))
-            .len,
+            .unwrap()
+            .length,
         107.144
     );
 }
@@ -2630,7 +2891,8 @@ fn aurora_merged_bebqddclur() {
     assert_delta!(
         aurora
             .path(Vec2::new(824.0, 607.0), Vec2::new(836.0, 512.0))
-            .len,
+            .unwrap()
+            .length,
         103.089
     );
 }
@@ -2640,7 +2902,8 @@ fn aurora_merged_yareyjhhil() {
     assert_delta!(
         aurora
             .path(Vec2::new(859.0, 219.0), Vec2::new(943.0, 278.0))
-            .len,
+            .unwrap()
+            .length,
         102.65
     );
 }
@@ -2650,7 +2913,8 @@ fn aurora_merged_cjkcxizhit() {
     assert_delta!(
         aurora
             .path(Vec2::new(429.0, 487.0), Vec2::new(527.0, 456.0))
-            .len,
+            .unwrap()
+            .length,
         102.793
     );
 }
@@ -2660,7 +2924,8 @@ fn aurora_merged_gecbtqlxtl() {
     assert_delta!(
         aurora
             .path(Vec2::new(827.0, 661.0), Vec2::new(765.0, 726.0))
-            .len,
+            .unwrap()
+            .length,
         106.58
     );
 }
@@ -2670,7 +2935,8 @@ fn aurora_merged_vajjziclyd() {
     assert_delta!(
         aurora
             .path(Vec2::new(979.0, 312.0), Vec2::new(949.0, 266.0))
-            .len,
+            .unwrap()
+            .length,
         100.064
     );
 }
@@ -2680,7 +2946,8 @@ fn aurora_merged_fsenzvfroa() {
     assert_delta!(
         aurora
             .path(Vec2::new(702.0, 392.0), Vec2::new(729.0, 388.0))
-            .len,
+            .unwrap()
+            .length,
         100.328
     );
 }
@@ -2690,7 +2957,8 @@ fn aurora_merged_skkwzwekvu() {
     assert_delta!(
         aurora
             .path(Vec2::new(1023.0, 360.0), Vec2::new(962.0, 280.0))
-            .len,
+            .unwrap()
+            .length,
         106.438
     );
 }
@@ -2700,7 +2968,8 @@ fn aurora_merged_lsehkokojn() {
     assert_delta!(
         aurora
             .path(Vec2::new(516.0, 203.0), Vec2::new(449.0, 261.0))
-            .len,
+            .unwrap()
+            .length,
         103.808
     );
 }
@@ -2710,7 +2979,8 @@ fn aurora_merged_sgucgpfcsp() {
     assert_delta!(
         aurora
             .path(Vec2::new(546.0, 601.0), Vec2::new(466.0, 575.0))
-            .len,
+            .unwrap()
+            .length,
         102.607
     );
 }
@@ -2720,7 +2990,8 @@ fn aurora_merged_psodbgmapn() {
     assert_delta!(
         aurora
             .path(Vec2::new(715.0, 702.0), Vec2::new(632.0, 654.0))
-            .len,
+            .unwrap()
+            .length,
         109.622
     );
 }
@@ -2730,7 +3001,8 @@ fn aurora_merged_txdbrineht() {
     assert_delta!(
         aurora
             .path(Vec2::new(740.0, 244.0), Vec2::new(737.0, 158.0))
-            .len,
+            .unwrap()
+            .length,
         105.764
     );
 }
@@ -2740,7 +3012,8 @@ fn aurora_merged_hyysdvvygz() {
     assert_delta!(
         aurora
             .path(Vec2::new(78.0, 194.0), Vec2::new(173.0, 150.0))
-            .len,
+            .unwrap()
+            .length,
         104.695
     );
 }
@@ -2750,7 +3023,8 @@ fn aurora_merged_aarliwuurf() {
     assert_delta!(
         aurora
             .path(Vec2::new(134.0, 666.0), Vec2::new(187.0, 574.0))
-            .len,
+            .unwrap()
+            .length,
         106.195
     );
 }
@@ -2760,7 +3034,8 @@ fn aurora_merged_rnbsojpdrf() {
     assert_delta!(
         aurora
             .path(Vec2::new(256.0, 719.0), Vec2::new(365.0, 706.0))
-            .len,
+            .unwrap()
+            .length,
         110.25
     );
 }
@@ -2770,7 +3045,8 @@ fn aurora_merged_svmdiqupkf() {
     assert_delta!(
         aurora
             .path(Vec2::new(852.0, 307.0), Vec2::new(835.0, 239.0))
-            .len,
+            .unwrap()
+            .length,
         105.822
     );
 }
@@ -2780,7 +3056,8 @@ fn aurora_merged_qlcbsbxykf() {
     assert_delta!(
         aurora
             .path(Vec2::new(177.0, 420.0), Vec2::new(180.0, 449.0))
-            .len,
+            .unwrap()
+            .length,
         107.705
     );
 }
@@ -2790,7 +3067,8 @@ fn aurora_merged_ylnairjvce() {
     assert_delta!(
         aurora
             .path(Vec2::new(458.0, 269.0), Vec2::new(518.0, 324.0))
-            .len,
+            .unwrap()
+            .length,
         109.626
     );
 }
@@ -2800,7 +3078,8 @@ fn aurora_merged_ubverbwatu() {
     assert_delta!(
         aurora
             .path(Vec2::new(185.0, 186.0), Vec2::new(239.0, 96.0))
-            .len,
+            .unwrap()
+            .length,
         105.766
     );
 }
@@ -2810,7 +3089,8 @@ fn aurora_merged_vofzcchfqq() {
     assert_delta!(
         aurora
             .path(Vec2::new(115.0, 583.0), Vec2::new(229.0, 584.0))
-            .len,
+            .unwrap()
+            .length,
         114.005
     );
 }
@@ -2820,7 +3100,8 @@ fn aurora_merged_gdsxlgiunu() {
     assert_delta!(
         aurora
             .path(Vec2::new(166.0, 631.0), Vec2::new(186.0, 718.0))
-            .len,
+            .unwrap()
+            .length,
         108.15
     );
 }
@@ -2830,7 +3111,8 @@ fn aurora_merged_szorqxnmlp() {
     assert_delta!(
         aurora
             .path(Vec2::new(607.0, 367.0), Vec2::new(501.0, 384.0))
-            .len,
+            .unwrap()
+            .length,
         109.317
     );
 }
@@ -2840,7 +3122,8 @@ fn aurora_merged_aycxotzzof() {
     assert_delta!(
         aurora
             .path(Vec2::new(876.0, 314.0), Vec2::new(775.0, 307.0))
-            .len,
+            .unwrap()
+            .length,
         109.238
     );
 }
@@ -2850,7 +3133,8 @@ fn aurora_merged_pnyjezhtwp() {
     assert_delta!(
         aurora
             .path(Vec2::new(692.0, 269.0), Vec2::new(622.0, 335.0))
-            .len,
+            .unwrap()
+            .length,
         107.923
     );
 }
@@ -2860,7 +3144,8 @@ fn aurora_merged_zryqgussdv() {
     assert_delta!(
         aurora
             .path(Vec2::new(828.0, 515.0), Vec2::new(766.0, 609.0))
-            .len,
+            .unwrap()
+            .length,
         112.606
     );
 }
@@ -2870,7 +3155,8 @@ fn aurora_merged_awominbujs() {
     assert_delta!(
         aurora
             .path(Vec2::new(773.0, 354.0), Vec2::new(861.0, 289.0))
-            .len,
+            .unwrap()
+            .length,
         112.932
     );
 }
@@ -2880,7 +3166,8 @@ fn aurora_merged_turgmcgrjd() {
     assert_delta!(
         aurora
             .path(Vec2::new(99.0, 387.0), Vec2::new(62.0, 436.0))
-            .len,
+            .unwrap()
+            .length,
         110.422
     );
 }
@@ -2890,7 +3177,8 @@ fn aurora_merged_qvqjlkoljh() {
     assert_delta!(
         aurora
             .path(Vec2::new(176.0, 639.0), Vec2::new(294.0, 639.0))
-            .len,
+            .unwrap()
+            .length,
         118.0
     );
 }
@@ -2900,7 +3188,8 @@ fn aurora_merged_erpailnozn() {
     assert_delta!(
         aurora
             .path(Vec2::new(458.0, 405.0), Vec2::new(549.0, 340.0))
-            .len,
+            .unwrap()
+            .length,
         111.844
     );
 }
@@ -2910,7 +3199,8 @@ fn aurora_merged_rjwajaciue() {
     assert_delta!(
         aurora
             .path(Vec2::new(308.0, 226.0), Vec2::new(195.0, 231.0))
-            .len,
+            .unwrap()
+            .length,
         113.579
     );
 }
@@ -2920,7 +3210,8 @@ fn aurora_merged_tdkaiwxwxp() {
     assert_delta!(
         aurora
             .path(Vec2::new(827.0, 456.0), Vec2::new(921.0, 434.0))
-            .len,
+            .unwrap()
+            .length,
         117.226
     );
 }
@@ -2930,7 +3221,8 @@ fn aurora_merged_rhpcxmntih() {
     assert_delta!(
         aurora
             .path(Vec2::new(469.0, 434.0), Vec2::new(455.0, 539.0))
-            .len,
+            .unwrap()
+            .length,
         112.804
     );
 }
@@ -2940,7 +3232,8 @@ fn aurora_merged_dquhxqnzor() {
     assert_delta!(
         aurora
             .path(Vec2::new(135.0, 656.0), Vec2::new(124.0, 613.0))
-            .len,
+            .unwrap()
+            .length,
         111.949
     );
 }
@@ -2950,7 +3243,8 @@ fn aurora_merged_zzhvcahgus() {
     assert_delta!(
         aurora
             .path(Vec2::new(508.0, 504.0), Vec2::new(393.0, 503.0))
-            .len,
+            .unwrap()
+            .length,
         116.462
     );
 }
@@ -2960,7 +3254,8 @@ fn aurora_merged_azyfmlhtcu() {
     assert_delta!(
         aurora
             .path(Vec2::new(515.0, 427.0), Vec2::new(516.0, 316.0))
-            .len,
+            .unwrap()
+            .length,
         113.893
     );
 }
@@ -2970,7 +3265,8 @@ fn aurora_merged_rifmopjaxf() {
     assert_delta!(
         aurora
             .path(Vec2::new(221.0, 260.0), Vec2::new(124.0, 321.0))
-            .len,
+            .unwrap()
+            .length,
         114.586
     );
 }
@@ -2980,7 +3276,8 @@ fn aurora_merged_wpnchjszie() {
     assert_delta!(
         aurora
             .path(Vec2::new(492.0, 553.0), Vec2::new(480.0, 447.0))
-            .len,
+            .unwrap()
+            .length,
         115.111
     );
 }
@@ -2990,7 +3287,8 @@ fn aurora_merged_rmiigpjpiv() {
     assert_delta!(
         aurora
             .path(Vec2::new(265.0, 319.0), Vec2::new(195.0, 357.0))
-            .len,
+            .unwrap()
+            .length,
         115.028
     );
 }
@@ -3000,7 +3298,8 @@ fn aurora_merged_qhlllcepag() {
     assert_delta!(
         aurora
             .path(Vec2::new(550.0, 201.0), Vec2::new(451.0, 261.0))
-            .len,
+            .unwrap()
+            .length,
         115.763
     );
 }
@@ -3010,7 +3309,8 @@ fn aurora_merged_agmgpimmyd() {
     assert_delta!(
         aurora
             .path(Vec2::new(323.0, 128.0), Vec2::new(337.0, 243.0))
-            .len,
+            .unwrap()
+            .length,
         115.849
     );
 }
@@ -3020,7 +3320,8 @@ fn aurora_merged_ojzlbuotts() {
     assert_delta!(
         aurora
             .path(Vec2::new(429.0, 627.0), Vec2::new(555.0, 628.0))
-            .len,
+            .unwrap()
+            .length,
         126.004
     );
 }
@@ -3030,7 +3331,8 @@ fn aurora_merged_gqnfuqsrko() {
     assert_delta!(
         aurora
             .path(Vec2::new(734.0, 569.0), Vec2::new(850.0, 543.0))
-            .len,
+            .unwrap()
+            .length,
         118.878
     );
 }
@@ -3040,7 +3342,8 @@ fn aurora_merged_nsjqwvtnny() {
     assert_delta!(
         aurora
             .path(Vec2::new(700.0, 595.0), Vec2::new(820.0, 612.0))
-            .len,
+            .unwrap()
+            .length,
         121.277
     );
 }
@@ -3050,7 +3353,8 @@ fn aurora_merged_pujxijqhvm() {
     assert_delta!(
         aurora
             .path(Vec2::new(841.0, 523.0), Vec2::new(837.0, 620.0))
-            .len,
+            .unwrap()
+            .length,
         118.67
     );
 }
@@ -3060,7 +3364,8 @@ fn aurora_merged_uopjuhojoq() {
     assert_delta!(
         aurora
             .path(Vec2::new(422.0, 523.0), Vec2::new(484.0, 548.0))
-            .len,
+            .unwrap()
+            .length,
         119.616
     );
 }
@@ -3070,7 +3375,8 @@ fn aurora_merged_ajefivbaoc() {
     assert_delta!(
         aurora
             .path(Vec2::new(556.0, 541.0), Vec2::new(524.0, 626.0))
-            .len,
+            .unwrap()
+            .length,
         124.426
     );
 }
@@ -3080,7 +3386,8 @@ fn aurora_merged_ozcxwmejxk() {
     assert_delta!(
         aurora
             .path(Vec2::new(159.0, 396.0), Vec2::new(186.0, 489.0))
-            .len,
+            .unwrap()
+            .length,
         120.74
     );
 }
@@ -3090,7 +3397,8 @@ fn aurora_merged_byafswsxrr() {
     assert_delta!(
         aurora
             .path(Vec2::new(816.0, 262.0), Vec2::new(918.0, 265.0))
-            .len,
+            .unwrap()
+            .length,
         118.635
     );
 }
@@ -3100,7 +3408,8 @@ fn aurora_merged_gdawgdekbo() {
     assert_delta!(
         aurora
             .path(Vec2::new(340.0, 103.0), Vec2::new(445.0, 151.0))
-            .len,
+            .unwrap()
+            .length,
         115.451
     );
 }
@@ -3110,7 +3419,8 @@ fn aurora_merged_ggcrkxzifh() {
     assert_delta!(
         aurora
             .path(Vec2::new(755.0, 164.0), Vec2::new(852.0, 111.0))
-            .len,
+            .unwrap()
+            .length,
         116.292
     );
 }
@@ -3120,7 +3430,8 @@ fn aurora_merged_vkkiyfwioj() {
     assert_delta!(
         aurora
             .path(Vec2::new(810.0, 524.0), Vec2::new(894.0, 468.0))
-            .len,
+            .unwrap()
+            .length,
         120.924
     );
 }
@@ -3130,7 +3441,8 @@ fn aurora_merged_ihhcuzdpmw() {
     assert_delta!(
         aurora
             .path(Vec2::new(605.0, 561.0), Vec2::new(689.0, 575.0))
-            .len,
+            .unwrap()
+            .length,
         123.012
     );
 }
@@ -3140,7 +3452,8 @@ fn aurora_merged_kqgwyjzxft() {
     assert_delta!(
         aurora
             .path(Vec2::new(371.0, 179.0), Vec2::new(263.0, 125.0))
-            .len,
+            .unwrap()
+            .length,
         120.748
     );
 }
@@ -3150,7 +3463,8 @@ fn aurora_merged_mswjmooomi() {
     assert_delta!(
         aurora
             .path(Vec2::new(298.0, 741.0), Vec2::new(181.0, 708.0))
-            .len,
+            .unwrap()
+            .length,
         121.644
     );
 }
@@ -3160,7 +3474,8 @@ fn aurora_merged_tprmnqjneg() {
     assert_delta!(
         aurora
             .path(Vec2::new(556.0, 247.0), Vec2::new(531.0, 215.0))
-            .len,
+            .unwrap()
+            .length,
         123.026
     );
 }
@@ -3170,7 +3485,8 @@ fn aurora_merged_wnforrgjle() {
     assert_delta!(
         aurora
             .path(Vec2::new(858.0, 121.0), Vec2::new(760.0, 200.0))
-            .len,
+            .unwrap()
+            .length,
         126.749
     );
 }
@@ -3180,7 +3496,8 @@ fn aurora_merged_lyfeadmujo() {
     assert_delta!(
         aurora
             .path(Vec2::new(259.0, 107.0), Vec2::new(333.0, 187.0))
-            .len,
+            .unwrap()
+            .length,
         119.329
     );
 }
@@ -3190,7 +3507,8 @@ fn aurora_merged_bdjmzmygbb() {
     assert_delta!(
         aurora
             .path(Vec2::new(449.0, 626.0), Vec2::new(549.0, 553.0))
-            .len,
+            .unwrap()
+            .length,
         124.803
     );
 }
@@ -3200,7 +3518,8 @@ fn aurora_merged_jzprfkqntk() {
     assert_delta!(
         aurora
             .path(Vec2::new(422.0, 620.0), Vec2::new(315.0, 562.0))
-            .len,
+            .unwrap()
+            .length,
         121.709
     );
 }
@@ -3210,7 +3529,8 @@ fn aurora_merged_bfhefdojna() {
     assert_delta!(
         aurora
             .path(Vec2::new(736.0, 174.0), Vec2::new(623.0, 139.0))
-            .len,
+            .unwrap()
+            .length,
         122.716
     );
 }
@@ -3220,7 +3540,8 @@ fn aurora_merged_gimybnmbel() {
     assert_delta!(
         aurora
             .path(Vec2::new(571.0, 598.0), Vec2::new(450.0, 628.0))
-            .len,
+            .unwrap()
+            .length,
         124.733
     );
 }
@@ -3230,7 +3551,8 @@ fn aurora_merged_dvwohszeam() {
     assert_delta!(
         aurora
             .path(Vec2::new(494.0, 599.0), Vec2::new(604.0, 608.0))
-            .len,
+            .unwrap()
+            .length,
         129.666
     );
 }
@@ -3240,7 +3562,8 @@ fn aurora_merged_gfkjyhqhbc() {
     assert_delta!(
         aurora
             .path(Vec2::new(323.0, 681.0), Vec2::new(236.0, 706.0))
-            .len,
+            .unwrap()
+            .length,
         121.637
     );
 }
@@ -3250,7 +3573,8 @@ fn aurora_merged_gbhdajvpqi() {
     assert_delta!(
         aurora
             .path(Vec2::new(873.0, 564.0), Vec2::new(977.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         124.808
     );
 }
@@ -3260,7 +3584,8 @@ fn aurora_merged_ildtmprlca() {
     assert_delta!(
         aurora
             .path(Vec2::new(232.0, 79.0), Vec2::new(117.0, 122.0))
-            .len,
+            .unwrap()
+            .length,
         123.911
     );
 }
@@ -3270,7 +3595,8 @@ fn aurora_merged_sthnslvsbp() {
     assert_delta!(
         aurora
             .path(Vec2::new(35.0, 481.0), Vec2::new(40.0, 404.0))
-            .len,
+            .unwrap()
+            .length,
         128.897
     );
 }
@@ -3280,7 +3606,8 @@ fn aurora_merged_muyqpwaqqs() {
     assert_delta!(
         aurora
             .path(Vec2::new(416.0, 451.0), Vec2::new(296.0, 484.0))
-            .len,
+            .unwrap()
+            .length,
         125.304
     );
 }
@@ -3290,7 +3617,8 @@ fn aurora_merged_bvcsvehkib() {
     assert_delta!(
         aurora
             .path(Vec2::new(456.0, 630.0), Vec2::new(563.0, 561.0))
-            .len,
+            .unwrap()
+            .length,
         127.318
     );
 }
@@ -3300,7 +3628,8 @@ fn aurora_merged_edjminadpx() {
     assert_delta!(
         aurora
             .path(Vec2::new(287.0, 538.0), Vec2::new(407.0, 570.0))
-            .len,
+            .unwrap()
+            .length,
         124.193
     );
 }
@@ -3310,7 +3639,8 @@ fn aurora_merged_lyboxxnaeb() {
     assert_delta!(
         aurora
             .path(Vec2::new(433.0, 666.0), Vec2::new(318.0, 709.0))
-            .len,
+            .unwrap()
+            .length,
         122.776
     );
 }
@@ -3320,7 +3650,8 @@ fn aurora_merged_jfjhfkohcg() {
     assert_delta!(
         aurora
             .path(Vec2::new(523.0, 573.0), Vec2::new(497.0, 453.0))
-            .len,
+            .unwrap()
+            .length,
         127.196
     );
 }
@@ -3330,7 +3661,8 @@ fn aurora_merged_dddyqnsyxh() {
     assert_delta!(
         aurora
             .path(Vec2::new(139.0, 270.0), Vec2::new(183.0, 376.0))
-            .len,
+            .unwrap()
+            .length,
         130.02
     );
 }
@@ -3340,7 +3672,8 @@ fn aurora_merged_sunlqzxvqg() {
     assert_delta!(
         aurora
             .path(Vec2::new(229.0, 222.0), Vec2::new(126.0, 139.0))
-            .len,
+            .unwrap()
+            .length,
         132.28
     );
 }
@@ -3350,7 +3683,8 @@ fn aurora_merged_tbzatpdpnu() {
     assert_delta!(
         aurora
             .path(Vec2::new(609.0, 299.0), Vec2::new(508.0, 364.0))
-            .len,
+            .unwrap()
+            .length,
         128.118
     );
 }
@@ -3360,7 +3694,8 @@ fn aurora_merged_wlokiikgpl() {
     assert_delta!(
         aurora
             .path(Vec2::new(345.0, 344.0), Vec2::new(438.0, 349.0))
-            .len,
+            .unwrap()
+            .length,
         126.209
     );
 }
@@ -3370,7 +3705,8 @@ fn aurora_merged_ufotiimmue() {
     assert_delta!(
         aurora
             .path(Vec2::new(432.0, 110.0), Vec2::new(552.0, 149.0))
-            .len,
+            .unwrap()
+            .length,
         126.5
     );
 }
@@ -3380,7 +3716,8 @@ fn aurora_merged_ykmkdlkxro() {
     assert_delta!(
         aurora
             .path(Vec2::new(201.0, 373.0), Vec2::new(64.0, 368.0))
-            .len,
+            .unwrap()
+            .length,
         137.091
     );
 }
@@ -3390,7 +3727,8 @@ fn aurora_merged_ljanwkehup() {
     assert_delta!(
         aurora
             .path(Vec2::new(469.0, 405.0), Vec2::new(564.0, 307.0))
-            .len,
+            .unwrap()
+            .length,
         136.488
     );
 }
@@ -3400,7 +3738,8 @@ fn aurora_merged_naxeqnbzub() {
     assert_delta!(
         aurora
             .path(Vec2::new(765.0, 374.0), Vec2::new(894.0, 350.0))
-            .len,
+            .unwrap()
+            .length,
         131.334
     );
 }
@@ -3410,7 +3749,8 @@ fn aurora_merged_swnngqeylc() {
     assert_delta!(
         aurora
             .path(Vec2::new(567.0, 416.0), Vec2::new(623.0, 347.0))
-            .len,
+            .unwrap()
+            .length,
         128.501
     );
 }
@@ -3420,7 +3760,8 @@ fn aurora_merged_gnesebntkp() {
     assert_delta!(
         aurora
             .path(Vec2::new(982.0, 359.0), Vec2::new(859.0, 311.0))
-            .len,
+            .unwrap()
+            .length,
         133.355
     );
 }
@@ -3430,7 +3771,8 @@ fn aurora_merged_odvihurnxf() {
     assert_delta!(
         aurora
             .path(Vec2::new(825.0, 254.0), Vec2::new(712.0, 187.0))
-            .len,
+            .unwrap()
+            .length,
         132.362
     );
 }
@@ -3440,7 +3782,8 @@ fn aurora_merged_vmsdkvmsvx() {
     assert_delta!(
         aurora
             .path(Vec2::new(177.0, 581.0), Vec2::new(271.0, 556.0))
-            .len,
+            .unwrap()
+            .length,
         136.399
     );
 }
@@ -3450,7 +3793,8 @@ fn aurora_merged_wifgvplkhq() {
     assert_delta!(
         aurora
             .path(Vec2::new(611.0, 477.0), Vec2::new(705.0, 567.0))
-            .len,
+            .unwrap()
+            .length,
         136.083
     );
 }
@@ -3460,7 +3804,8 @@ fn aurora_merged_ydbovdpuww() {
     assert_delta!(
         aurora
             .path(Vec2::new(467.0, 676.0), Vec2::new(598.0, 661.0))
-            .len,
+            .unwrap()
+            .length,
         133.475
     );
 }
@@ -3470,7 +3815,8 @@ fn aurora_merged_fhswjeowty() {
     assert_delta!(
         aurora
             .path(Vec2::new(260.0, 502.0), Vec2::new(291.0, 597.0))
-            .len,
+            .unwrap()
+            .length,
         136.976
     );
 }
@@ -3480,7 +3826,8 @@ fn aurora_merged_gvpjjylovz() {
     assert_delta!(
         aurora
             .path(Vec2::new(805.0, 727.0), Vec2::new(758.0, 635.0))
-            .len,
+            .unwrap()
+            .length,
         134.216
     );
 }
@@ -3490,7 +3837,8 @@ fn aurora_merged_inywlditvp() {
     assert_delta!(
         aurora
             .path(Vec2::new(429.0, 687.0), Vec2::new(342.0, 701.0))
-            .len,
+            .unwrap()
+            .length,
         132.358
     );
 }
@@ -3500,7 +3848,8 @@ fn aurora_merged_byilghhgke() {
     assert_delta!(
         aurora
             .path(Vec2::new(607.0, 40.0), Vec2::new(730.0, 42.0))
-            .len,
+            .unwrap()
+            .length,
         133.171
     );
 }
@@ -3510,7 +3859,8 @@ fn aurora_merged_huxugnqaiv() {
     assert_delta!(
         aurora
             .path(Vec2::new(262.0, 499.0), Vec2::new(376.0, 562.0))
-            .len,
+            .unwrap()
+            .length,
         130.287
     );
 }
@@ -3520,7 +3870,8 @@ fn aurora_merged_prlabwsbtl() {
     assert_delta!(
         aurora
             .path(Vec2::new(473.0, 285.0), Vec2::new(604.0, 326.0))
-            .len,
+            .unwrap()
+            .length,
         139.231
     );
 }
@@ -3530,7 +3881,8 @@ fn aurora_merged_fhwgiaobpq() {
     assert_delta!(
         aurora
             .path(Vec2::new(528.0, 292.0), Vec2::new(572.0, 225.0))
-            .len,
+            .unwrap()
+            .length,
         137.677
     );
 }
@@ -3540,7 +3892,8 @@ fn aurora_merged_tcvwyqclmc() {
     assert_delta!(
         aurora
             .path(Vec2::new(800.0, 249.0), Vec2::new(720.0, 152.0))
-            .len,
+            .unwrap()
+            .length,
         138.227
     );
 }
@@ -3550,7 +3903,8 @@ fn aurora_merged_cfikcavmja() {
     assert_delta!(
         aurora
             .path(Vec2::new(554.0, 686.0), Vec2::new(425.0, 686.0))
-            .len,
+            .unwrap()
+            .length,
         135.514
     );
 }
@@ -3560,7 +3914,8 @@ fn aurora_merged_stcbqfapoj() {
     assert_delta!(
         aurora
             .path(Vec2::new(156.0, 258.0), Vec2::new(293.0, 281.0))
-            .len,
+            .unwrap()
+            .length,
         140.492
     );
 }
@@ -3570,7 +3925,8 @@ fn aurora_merged_taipitshme() {
     assert_delta!(
         aurora
             .path(Vec2::new(404.0, 92.0), Vec2::new(525.0, 154.0))
-            .len,
+            .unwrap()
+            .length,
         135.96
     );
 }
@@ -3580,7 +3936,8 @@ fn aurora_merged_afklpvvtwd() {
     assert_delta!(
         aurora
             .path(Vec2::new(682.0, 532.0), Vec2::new(654.0, 649.0))
-            .len,
+            .unwrap()
+            .length,
         134.929
     );
 }
@@ -3590,7 +3947,8 @@ fn aurora_merged_yspdpfztjw() {
     assert_delta!(
         aurora
             .path(Vec2::new(340.0, 697.0), Vec2::new(306.0, 660.0))
-            .len,
+            .unwrap()
+            .length,
         136.33
     );
 }
@@ -3600,7 +3958,8 @@ fn aurora_merged_ieutcawfuy() {
     assert_delta!(
         aurora
             .path(Vec2::new(688.0, 355.0), Vec2::new(817.0, 324.0))
-            .len,
+            .unwrap()
+            .length,
         135.82
     );
 }
@@ -3610,7 +3969,8 @@ fn aurora_merged_ckilmljiii() {
     assert_delta!(
         aurora
             .path(Vec2::new(524.0, 300.0), Vec2::new(547.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         134.456
     );
 }
@@ -3620,7 +3980,8 @@ fn aurora_merged_cudyublrog() {
     assert_delta!(
         aurora
             .path(Vec2::new(427.0, 269.0), Vec2::new(551.0, 206.0))
-            .len,
+            .unwrap()
+            .length,
         139.086
     );
 }
@@ -3630,7 +3991,8 @@ fn aurora_merged_byrhnxgxvn() {
     assert_delta!(
         aurora
             .path(Vec2::new(449.0, 208.0), Vec2::new(348.0, 98.0))
-            .len,
+            .unwrap()
+            .length,
         149.416
     );
 }
@@ -3640,7 +4002,8 @@ fn aurora_merged_qipswkfhzg() {
     assert_delta!(
         aurora
             .path(Vec2::new(457.0, 483.0), Vec2::new(366.0, 386.0))
-            .len,
+            .unwrap()
+            .length,
         142.206
     );
 }
@@ -3650,7 +4013,8 @@ fn aurora_merged_yefendgadg() {
     assert_delta!(
         aurora
             .path(Vec2::new(850.0, 365.0), Vec2::new(957.0, 460.0))
-            .len,
+            .unwrap()
+            .length,
         144.053
     );
 }
@@ -3660,7 +4024,8 @@ fn aurora_merged_owgucrxpol() {
     assert_delta!(
         aurora
             .path(Vec2::new(766.0, 149.0), Vec2::new(907.0, 129.0))
-            .len,
+            .unwrap()
+            .length,
         142.585
     );
 }
@@ -3670,7 +4035,8 @@ fn aurora_merged_qslhveaaum() {
     assert_delta!(
         aurora
             .path(Vec2::new(541.0, 247.0), Vec2::new(413.0, 301.0))
-            .len,
+            .unwrap()
+            .length,
         140.008
     );
 }
@@ -3680,7 +4046,8 @@ fn aurora_merged_ndmyavpiaj() {
     assert_delta!(
         aurora
             .path(Vec2::new(825.0, 378.0), Vec2::new(918.0, 469.0))
-            .len,
+            .unwrap()
+            .length,
         141.696
     );
 }
@@ -3690,7 +4057,8 @@ fn aurora_merged_rkfhmvggbm() {
     assert_delta!(
         aurora
             .path(Vec2::new(711.0, 346.0), Vec2::new(831.0, 278.0))
-            .len,
+            .unwrap()
+            .length,
         137.928
     );
 }
@@ -3700,7 +4068,8 @@ fn aurora_merged_pmyxtbycsu() {
     assert_delta!(
         aurora
             .path(Vec2::new(880.0, 500.0), Vec2::new(837.0, 547.0))
-            .len,
+            .unwrap()
+            .length,
         138.679
     );
 }
@@ -3710,7 +4079,8 @@ fn aurora_merged_tryqsitfim() {
     assert_delta!(
         aurora
             .path(Vec2::new(686.0, 581.0), Vec2::new(812.0, 639.0))
-            .len,
+            .unwrap()
+            .length,
         138.763
     );
 }
@@ -3720,7 +4090,8 @@ fn aurora_merged_bpohiajbeg() {
     assert_delta!(
         aurora
             .path(Vec2::new(121.0, 241.0), Vec2::new(39.0, 151.0))
-            .len,
+            .unwrap()
+            .length,
         142.817
     );
 }
@@ -3730,7 +4101,8 @@ fn aurora_merged_drmxdwofgn() {
     assert_delta!(
         aurora
             .path(Vec2::new(334.0, 349.0), Vec2::new(202.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         142.821
     );
 }
@@ -3740,7 +4112,8 @@ fn aurora_merged_upvrkibxuc() {
     assert_delta!(
         aurora
             .path(Vec2::new(935.0, 610.0), Vec2::new(833.0, 524.0))
-            .len,
+            .unwrap()
+            .length,
         143.02
     );
 }
@@ -3750,7 +4123,8 @@ fn aurora_merged_zsuanpycwf() {
     assert_delta!(
         aurora
             .path(Vec2::new(455.0, 532.0), Vec2::new(406.0, 409.0))
-            .len,
+            .unwrap()
+            .length,
         149.544
     );
 }
@@ -3760,7 +4134,8 @@ fn aurora_merged_ckzkfphmqn() {
     assert_delta!(
         aurora
             .path(Vec2::new(812.0, 191.0), Vec2::new(672.0, 227.0))
-            .len,
+            .unwrap()
+            .length,
         144.617
     );
 }
@@ -3770,7 +4145,8 @@ fn aurora_merged_ipbsmfnumq() {
     assert_delta!(
         aurora
             .path(Vec2::new(683.0, 406.0), Vec2::new(667.0, 317.0))
-            .len,
+            .unwrap()
+            .length,
         144.737
     );
 }
@@ -3780,7 +4156,8 @@ fn aurora_merged_iyalytemlk() {
     assert_delta!(
         aurora
             .path(Vec2::new(486.0, 683.0), Vec2::new(628.0, 681.0))
-            .len,
+            .unwrap()
+            .length,
         145.697
     );
 }
@@ -3790,7 +4167,8 @@ fn aurora_merged_kcybfsdlnp() {
     assert_delta!(
         aurora
             .path(Vec2::new(399.0, 261.0), Vec2::new(308.0, 150.0))
-            .len,
+            .unwrap()
+            .length,
         146.233
     );
 }
@@ -3800,7 +4178,8 @@ fn aurora_merged_fqpvfqhkvs() {
     assert_delta!(
         aurora
             .path(Vec2::new(773.0, 504.0), Vec2::new(903.0, 464.0))
-            .len,
+            .unwrap()
+            .length,
         141.756
     );
 }
@@ -3810,7 +4189,8 @@ fn aurora_merged_qpjoylikhc() {
     assert_delta!(
         aurora
             .path(Vec2::new(321.0, 522.0), Vec2::new(215.0, 581.0))
-            .len,
+            .unwrap()
+            .length,
         144.722
     );
 }
@@ -3820,7 +4200,8 @@ fn aurora_merged_kjmmnemzip() {
     assert_delta!(
         aurora
             .path(Vec2::new(790.0, 142.0), Vec2::new(810.0, 256.0))
-            .len,
+            .unwrap()
+            .length,
         147.918
     );
 }
@@ -3830,7 +4211,8 @@ fn aurora_merged_suyevxuufz() {
     assert_delta!(
         aurora
             .path(Vec2::new(797.0, 248.0), Vec2::new(933.0, 276.0))
-            .len,
+            .unwrap()
+            .length,
         147.208
     );
 }
@@ -3840,7 +4222,8 @@ fn aurora_merged_ioraxlhmaq() {
     assert_delta!(
         aurora
             .path(Vec2::new(769.0, 200.0), Vec2::new(900.0, 138.0))
-            .len,
+            .unwrap()
+            .length,
         144.931
     );
 }
@@ -3850,7 +4233,8 @@ fn aurora_merged_tyeawyjlkm() {
     assert_delta!(
         aurora
             .path(Vec2::new(588.0, 367.0), Vec2::new(497.0, 325.0))
-            .len,
+            .unwrap()
+            .length,
         148.565
     );
 }
@@ -3860,7 +4244,8 @@ fn aurora_merged_ckkkiairze() {
     assert_delta!(
         aurora
             .path(Vec2::new(277.0, 389.0), Vec2::new(386.0, 300.0))
-            .len,
+            .unwrap()
+            .length,
         148.544
     );
 }
@@ -3870,7 +4255,8 @@ fn aurora_merged_mnmcseqean() {
     assert_delta!(
         aurora
             .path(Vec2::new(119.0, 646.0), Vec2::new(233.0, 723.0))
-            .len,
+            .unwrap()
+            .length,
         146.179
     );
 }
@@ -3880,7 +4266,8 @@ fn aurora_merged_yulhfwexmi() {
     assert_delta!(
         aurora
             .path(Vec2::new(579.0, 135.0), Vec2::new(672.0, 236.0))
-            .len,
+            .unwrap()
+            .length,
         147.476
     );
 }
@@ -3890,7 +4277,8 @@ fn aurora_merged_gcagltcter() {
     assert_delta!(
         aurora
             .path(Vec2::new(237.0, 54.0), Vec2::new(203.0, 197.0))
-            .len,
+            .unwrap()
+            .length,
         149.81
     );
 }
@@ -3900,7 +4288,8 @@ fn aurora_merged_crgwhcfpps() {
     assert_delta!(
         aurora
             .path(Vec2::new(185.0, 152.0), Vec2::new(33.0, 158.0))
-            .len,
+            .unwrap()
+            .length,
         153.783
     );
 }
@@ -3910,7 +4299,8 @@ fn aurora_merged_qdxcigsomi() {
     assert_delta!(
         aurora
             .path(Vec2::new(920.0, 444.0), Vec2::new(789.0, 429.0))
-            .len,
+            .unwrap()
+            .length,
         149.376
     );
 }
@@ -3920,7 +4310,8 @@ fn aurora_merged_tbkgypvemx() {
     assert_delta!(
         aurora
             .path(Vec2::new(594.0, 182.0), Vec2::new(742.0, 187.0))
-            .len,
+            .unwrap()
+            .length,
         150.47
     );
 }
@@ -3930,7 +4321,8 @@ fn aurora_merged_waukevlgmk() {
     assert_delta!(
         aurora
             .path(Vec2::new(443.0, 480.0), Vec2::new(389.0, 588.0))
-            .len,
+            .unwrap()
+            .length,
         152.957
     );
 }
@@ -3940,7 +4332,8 @@ fn aurora_merged_dufegjdlvn() {
     assert_delta!(
         aurora
             .path(Vec2::new(882.0, 490.0), Vec2::new(869.0, 369.0))
-            .len,
+            .unwrap()
+            .length,
         155.027
     );
 }
@@ -3950,7 +4343,8 @@ fn aurora_merged_gvmnqokvuq() {
     assert_delta!(
         aurora
             .path(Vec2::new(258.0, 125.0), Vec2::new(340.0, 252.0))
-            .len,
+            .unwrap()
+            .length,
         152.023
     );
 }
@@ -3960,7 +4354,8 @@ fn aurora_merged_uumizommff() {
     assert_delta!(
         aurora
             .path(Vec2::new(236.0, 480.0), Vec2::new(88.0, 454.0))
-            .len,
+            .unwrap()
+            .length,
         152.556
     );
 }
@@ -3970,7 +4365,8 @@ fn aurora_merged_aeekcmejrt() {
     assert_delta!(
         aurora
             .path(Vec2::new(766.0, 715.0), Vec2::new(772.0, 609.0))
-            .len,
+            .unwrap()
+            .length,
         155.232
     );
 }
@@ -3980,7 +4376,8 @@ fn aurora_merged_gdlbvuvcch() {
     assert_delta!(
         aurora
             .path(Vec2::new(820.0, 274.0), Vec2::new(950.0, 349.0))
-            .len,
+            .unwrap()
+            .length,
         150.106
     );
 }
@@ -3990,7 +4387,8 @@ fn aurora_merged_xtfotuetrh() {
     assert_delta!(
         aurora
             .path(Vec2::new(355.0, 563.0), Vec2::new(503.0, 546.0))
-            .len,
+            .unwrap()
+            .length,
         152.626
     );
 }
@@ -4000,7 +4398,8 @@ fn aurora_merged_mmplkzjtat() {
     assert_delta!(
         aurora
             .path(Vec2::new(794.0, 674.0), Vec2::new(928.0, 604.0))
-            .len,
+            .unwrap()
+            .length,
         151.182
     );
 }
@@ -4010,7 +4409,8 @@ fn aurora_merged_bxvqsxopvd() {
     assert_delta!(
         aurora
             .path(Vec2::new(462.0, 255.0), Vec2::new(487.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         151.721
     );
 }
@@ -4020,7 +4420,8 @@ fn aurora_merged_ofjaoyhudf() {
     assert_delta!(
         aurora
             .path(Vec2::new(272.0, 577.0), Vec2::new(113.0, 582.0))
-            .len,
+            .unwrap()
+            .length,
         160.231
     );
 }
@@ -4030,7 +4431,8 @@ fn aurora_merged_tylvfpuzea() {
     assert_delta!(
         aurora
             .path(Vec2::new(222.0, 644.0), Vec2::new(373.0, 677.0))
-            .len,
+            .unwrap()
+            .length,
         160.811
     );
 }
@@ -4040,7 +4442,8 @@ fn aurora_merged_fzkysbhbnc() {
     assert_delta!(
         aurora
             .path(Vec2::new(335.0, 158.0), Vec2::new(481.0, 202.0))
-            .len,
+            .unwrap()
+            .length,
         153.226
     );
 }
@@ -4050,7 +4453,8 @@ fn aurora_merged_iafxbbilbv() {
     assert_delta!(
         aurora
             .path(Vec2::new(260.0, 312.0), Vec2::new(185.0, 416.0))
-            .len,
+            .unwrap()
+            .length,
         158.572
     );
 }
@@ -4060,7 +4464,8 @@ fn aurora_merged_apuravukxp() {
     assert_delta!(
         aurora
             .path(Vec2::new(582.0, 598.0), Vec2::new(473.0, 673.0))
-            .len,
+            .unwrap()
+            .length,
         153.715
     );
 }
@@ -4070,7 +4475,8 @@ fn aurora_merged_jldmrfmnye() {
     assert_delta!(
         aurora
             .path(Vec2::new(633.0, 195.0), Vec2::new(708.0, 70.0))
-            .len,
+            .unwrap()
+            .length,
         158.24
     );
 }
@@ -4080,7 +4486,8 @@ fn aurora_merged_hpbdtxerhe() {
     assert_delta!(
         aurora
             .path(Vec2::new(184.0, 541.0), Vec2::new(53.0, 559.0))
-            .len,
+            .unwrap()
+            .length,
         154.085
     );
 }
@@ -4090,7 +4497,8 @@ fn aurora_merged_csflzpmgma() {
     assert_delta!(
         aurora
             .path(Vec2::new(121.0, 603.0), Vec2::new(273.0, 567.0))
-            .len,
+            .unwrap()
+            .length,
         156.453
     );
 }
@@ -4100,7 +4508,8 @@ fn aurora_merged_waydkjqfmg() {
     assert_delta!(
         aurora
             .path(Vec2::new(617.0, 500.0), Vec2::new(478.0, 556.0))
-            .len,
+            .unwrap()
+            .length,
         157.818
     );
 }
@@ -4110,7 +4519,8 @@ fn aurora_merged_ulcyqzxlfb() {
     assert_delta!(
         aurora
             .path(Vec2::new(926.0, 461.0), Vec2::new(989.0, 330.0))
-            .len,
+            .unwrap()
+            .length,
         158.092
     );
 }
@@ -4120,7 +4530,8 @@ fn aurora_merged_wudxgjztcu() {
     assert_delta!(
         aurora
             .path(Vec2::new(557.0, 132.0), Vec2::new(412.0, 193.0))
-            .len,
+            .unwrap()
+            .length,
         165.026
     );
 }
@@ -4130,7 +4541,8 @@ fn aurora_merged_yskzcqvkwy() {
     assert_delta!(
         aurora
             .path(Vec2::new(934.0, 627.0), Vec2::new(770.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         164.585
     );
 }
@@ -4140,7 +4552,8 @@ fn aurora_merged_otbpqaqhsn() {
     assert_delta!(
         aurora
             .path(Vec2::new(305.0, 697.0), Vec2::new(187.0, 711.0))
-            .len,
+            .unwrap()
+            .length,
         159.321
     );
 }
@@ -4150,7 +4563,8 @@ fn aurora_merged_uleqjidcpi() {
     assert_delta!(
         aurora
             .path(Vec2::new(316.0, 373.0), Vec2::new(410.0, 372.0))
-            .len,
+            .unwrap()
+            .length,
         157.286
     );
 }
@@ -4160,7 +4574,8 @@ fn aurora_merged_xvqbtiwyqo() {
     assert_delta!(
         aurora
             .path(Vec2::new(258.0, 627.0), Vec2::new(146.0, 530.0))
-            .len,
+            .unwrap()
+            .length,
         157.567
     );
 }
@@ -4170,7 +4585,8 @@ fn aurora_merged_wysmtsmwjx() {
     assert_delta!(
         aurora
             .path(Vec2::new(836.0, 651.0), Vec2::new(815.0, 492.0))
-            .len,
+            .unwrap()
+            .length,
         161.868
     );
 }
@@ -4180,7 +4596,8 @@ fn aurora_merged_nnnujvhuxb() {
     assert_delta!(
         aurora
             .path(Vec2::new(351.0, 368.0), Vec2::new(348.0, 462.0))
-            .len,
+            .unwrap()
+            .length,
         159.461
     );
 }
@@ -4190,7 +4607,8 @@ fn aurora_merged_vyggjhuhps() {
     assert_delta!(
         aurora
             .path(Vec2::new(206.0, 469.0), Vec2::new(330.0, 573.0))
-            .len,
+            .unwrap()
+            .length,
         163.413
     );
 }
@@ -4200,7 +4618,8 @@ fn aurora_merged_tkowzrerxd() {
     assert_delta!(
         aurora
             .path(Vec2::new(692.0, 544.0), Vec2::new(835.0, 475.0))
-            .len,
+            .unwrap()
+            .length,
         158.777
     );
 }
@@ -4210,7 +4629,8 @@ fn aurora_merged_llwnorktuo() {
     assert_delta!(
         aurora
             .path(Vec2::new(265.0, 149.0), Vec2::new(131.0, 201.0))
-            .len,
+            .unwrap()
+            .length,
         161.894
     );
 }
@@ -4220,7 +4640,8 @@ fn aurora_merged_prriffetes() {
     assert_delta!(
         aurora
             .path(Vec2::new(338.0, 474.0), Vec2::new(213.0, 434.0))
-            .len,
+            .unwrap()
+            .length,
         163.459
     );
 }
@@ -4230,7 +4651,8 @@ fn aurora_merged_laxqxfshxe() {
     assert_delta!(
         aurora
             .path(Vec2::new(979.0, 430.0), Vec2::new(850.0, 441.0))
-            .len,
+            .unwrap()
+            .length,
         161.263
     );
 }
@@ -4240,7 +4662,8 @@ fn aurora_merged_kleeafrpnr() {
     assert_delta!(
         aurora
             .path(Vec2::new(329.0, 193.0), Vec2::new(233.0, 281.0))
-            .len,
+            .unwrap()
+            .length,
         159.323
     );
 }
@@ -4250,7 +4673,8 @@ fn aurora_merged_hqerrdpmva() {
     assert_delta!(
         aurora
             .path(Vec2::new(306.0, 315.0), Vec2::new(421.0, 436.0))
-            .len,
+            .unwrap()
+            .length,
         169.07
     );
 }
@@ -4260,7 +4684,8 @@ fn aurora_merged_vwkarhogic() {
     assert_delta!(
         aurora
             .path(Vec2::new(142.0, 660.0), Vec2::new(232.0, 524.0))
-            .len,
+            .unwrap()
+            .length,
         168.439
     );
 }
@@ -4270,7 +4695,8 @@ fn aurora_merged_eqkxtkvbyf() {
     assert_delta!(
         aurora
             .path(Vec2::new(358.0, 115.0), Vec2::new(212.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         162.386
     );
 }
@@ -4280,7 +4706,8 @@ fn aurora_merged_eshtmyfhud() {
     assert_delta!(
         aurora
             .path(Vec2::new(308.0, 387.0), Vec2::new(177.0, 478.0))
-            .len,
+            .unwrap()
+            .length,
         161.827
     );
 }
@@ -4290,7 +4717,8 @@ fn aurora_merged_xvtmsbussb() {
     assert_delta!(
         aurora
             .path(Vec2::new(577.0, 373.0), Vec2::new(724.0, 416.0))
-            .len,
+            .unwrap()
+            .length,
         159.53
     );
 }
@@ -4300,7 +4728,8 @@ fn aurora_merged_gyaakcqubl() {
     assert_delta!(
         aurora
             .path(Vec2::new(373.0, 124.0), Vec2::new(292.0, 210.0))
-            .len,
+            .unwrap()
+            .length,
         164.841
     );
 }
@@ -4310,7 +4739,8 @@ fn aurora_merged_odtdfgsjvx() {
     assert_delta!(
         aurora
             .path(Vec2::new(588.0, 113.0), Vec2::new(451.0, 204.0))
-            .len,
+            .unwrap()
+            .length,
         166.026
     );
 }
@@ -4320,7 +4750,8 @@ fn aurora_merged_wjondiqwvq() {
     assert_delta!(
         aurora
             .path(Vec2::new(511.0, 192.0), Vec2::new(357.0, 153.0))
-            .len,
+            .unwrap()
+            .length,
         164.475
     );
 }
@@ -4330,7 +4761,8 @@ fn aurora_merged_othaoyuuuq() {
     assert_delta!(
         aurora
             .path(Vec2::new(86.0, 220.0), Vec2::new(140.0, 338.0))
-            .len,
+            .unwrap()
+            .length,
         167.778
     );
 }
@@ -4340,7 +4772,8 @@ fn aurora_merged_obmrnrmuuy() {
     assert_delta!(
         aurora
             .path(Vec2::new(283.0, 146.0), Vec2::new(271.0, 245.0))
-            .len,
+            .unwrap()
+            .length,
         166.83
     );
 }
@@ -4350,7 +4783,8 @@ fn aurora_merged_ymybsjffci() {
     assert_delta!(
         aurora
             .path(Vec2::new(752.0, 123.0), Vec2::new(592.0, 151.0))
-            .len,
+            .unwrap()
+            .length,
         167.203
     );
 }
@@ -4360,7 +4794,8 @@ fn aurora_merged_kazdomgnfi() {
     assert_delta!(
         aurora
             .path(Vec2::new(249.0, 473.0), Vec2::new(177.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         172.179
     );
 }
@@ -4370,7 +4805,8 @@ fn aurora_merged_qfgapevsdm() {
     assert_delta!(
         aurora
             .path(Vec2::new(750.0, 343.0), Vec2::new(906.0, 343.0))
-            .len,
+            .unwrap()
+            .length,
         164.868
     );
 }
@@ -4380,7 +4816,8 @@ fn aurora_merged_wjduuxuurb() {
     assert_delta!(
         aurora
             .path(Vec2::new(281.0, 680.0), Vec2::new(155.0, 673.0))
-            .len,
+            .unwrap()
+            .length,
         164.082
     );
 }
@@ -4390,7 +4827,8 @@ fn aurora_merged_dgwzrvfayb() {
     assert_delta!(
         aurora
             .path(Vec2::new(404.0, 581.0), Vec2::new(373.0, 483.0))
-            .len,
+            .unwrap()
+            .length,
         167.047
     );
 }
@@ -4400,7 +4838,8 @@ fn aurora_merged_wxjqymmbbi() {
     assert_delta!(
         aurora
             .path(Vec2::new(855.0, 365.0), Vec2::new(870.0, 480.0))
-            .len,
+            .unwrap()
+            .length,
         170.752
     );
 }
@@ -4410,7 +4849,8 @@ fn aurora_merged_zpaubznktz() {
     assert_delta!(
         aurora
             .path(Vec2::new(858.0, 461.0), Vec2::new(806.0, 610.0))
-            .len,
+            .unwrap()
+            .length,
         169.693
     );
 }
@@ -4420,7 +4860,8 @@ fn aurora_merged_louohelqoq() {
     assert_delta!(
         aurora
             .path(Vec2::new(931.0, 443.0), Vec2::new(1003.0, 299.0))
-            .len,
+            .unwrap()
+            .length,
         174.761
     );
 }
@@ -4430,7 +4871,8 @@ fn aurora_merged_ddusbhsxci() {
     assert_delta!(
         aurora
             .path(Vec2::new(534.0, 473.0), Vec2::new(390.0, 386.0))
-            .len,
+            .unwrap()
+            .length,
         168.241
     );
 }
@@ -4440,7 +4882,8 @@ fn aurora_merged_vmdgvbuink() {
     assert_delta!(
         aurora
             .path(Vec2::new(414.0, 519.0), Vec2::new(570.0, 564.0))
-            .len,
+            .unwrap()
+            .length,
         170.573
     );
 }
@@ -4450,7 +4893,8 @@ fn aurora_merged_ohnsfrsajz() {
     assert_delta!(
         aurora
             .path(Vec2::new(437.0, 393.0), Vec2::new(545.0, 280.0))
-            .len,
+            .unwrap()
+            .length,
         171.173
     );
 }
@@ -4460,7 +4904,8 @@ fn aurora_merged_onukwjlxuv() {
     assert_delta!(
         aurora
             .path(Vec2::new(83.0, 474.0), Vec2::new(169.0, 326.0))
-            .len,
+            .unwrap()
+            .length,
         171.883
     );
 }
@@ -4470,7 +4915,8 @@ fn aurora_merged_qksugrrjor() {
     assert_delta!(
         aurora
             .path(Vec2::new(181.0, 636.0), Vec2::new(23.0, 612.0))
-            .len,
+            .unwrap()
+            .length,
         172.545
     );
 }
@@ -4480,7 +4926,8 @@ fn aurora_merged_flfvuqtjnc() {
     assert_delta!(
         aurora
             .path(Vec2::new(375.0, 604.0), Vec2::new(223.0, 533.0))
-            .len,
+            .unwrap()
+            .length,
         171.12
     );
 }
@@ -4490,7 +4937,8 @@ fn aurora_merged_wchefbosbb() {
     assert_delta!(
         aurora
             .path(Vec2::new(935.0, 612.0), Vec2::new(800.0, 693.0))
-            .len,
+            .unwrap()
+            .length,
         167.634
     );
 }
@@ -4500,7 +4948,8 @@ fn aurora_merged_qpgscdfaru() {
     assert_delta!(
         aurora
             .path(Vec2::new(431.0, 242.0), Vec2::new(279.0, 173.0))
-            .len,
+            .unwrap()
+            .length,
         167.413
     );
 }
@@ -4510,7 +4959,8 @@ fn aurora_merged_rlzacdsfqi() {
     assert_delta!(
         aurora
             .path(Vec2::new(465.0, 295.0), Vec2::new(622.0, 339.0))
-            .len,
+            .unwrap()
+            .length,
         169.643
     );
 }
@@ -4520,7 +4970,8 @@ fn aurora_merged_mooxaephwb() {
     assert_delta!(
         aurora
             .path(Vec2::new(544.0, 660.0), Vec2::new(642.0, 514.0))
-            .len,
+            .unwrap()
+            .length,
         175.98
     );
 }
@@ -4530,7 +4981,8 @@ fn aurora_merged_sqklvamfbe() {
     assert_delta!(
         aurora
             .path(Vec2::new(243.0, 688.0), Vec2::new(240.0, 528.0))
-            .len,
+            .unwrap()
+            .length,
         178.875
     );
 }
@@ -4540,7 +4992,8 @@ fn aurora_merged_euhsphjzri() {
     assert_delta!(
         aurora
             .path(Vec2::new(819.0, 231.0), Vec2::new(650.0, 195.0))
-            .len,
+            .unwrap()
+            .length,
         175.312
     );
 }
@@ -4550,7 +5003,8 @@ fn aurora_merged_sxvdcdzdde() {
     assert_delta!(
         aurora
             .path(Vec2::new(375.0, 484.0), Vec2::new(519.0, 556.0))
-            .len,
+            .unwrap()
+            .length,
         171.601
     );
 }
@@ -4560,7 +5014,8 @@ fn aurora_merged_hxnotfjeod() {
     assert_delta!(
         aurora
             .path(Vec2::new(322.0, 545.0), Vec2::new(480.0, 508.0))
-            .len,
+            .unwrap()
+            .length,
         174.304
     );
 }
@@ -4570,7 +5025,8 @@ fn aurora_merged_ybsbpnlzlp() {
     assert_delta!(
         aurora
             .path(Vec2::new(924.0, 560.0), Vec2::new(856.0, 466.0))
-            .len,
+            .unwrap()
+            .length,
         172.538
     );
 }
@@ -4580,7 +5036,8 @@ fn aurora_merged_xvlmsmpney() {
     assert_delta!(
         aurora
             .path(Vec2::new(579.0, 293.0), Vec2::new(411.0, 311.0))
-            .len,
+            .unwrap()
+            .length,
         172.892
     );
 }
@@ -4590,7 +5047,8 @@ fn aurora_merged_oveeipzhps() {
     assert_delta!(
         aurora
             .path(Vec2::new(334.0, 331.0), Vec2::new(503.0, 339.0))
-            .len,
+            .unwrap()
+            .length,
         175.926
     );
 }
@@ -4600,7 +5058,8 @@ fn aurora_merged_rghfbdchhm() {
     assert_delta!(
         aurora
             .path(Vec2::new(679.0, 354.0), Vec2::new(590.0, 280.0))
-            .len,
+            .unwrap()
+            .length,
         172.808
     );
 }
@@ -4610,7 +5069,8 @@ fn aurora_merged_ivtajitait() {
     assert_delta!(
         aurora
             .path(Vec2::new(551.0, 328.0), Vec2::new(377.0, 315.0))
-            .len,
+            .unwrap()
+            .length,
         177.865
     );
 }
@@ -4620,7 +5080,8 @@ fn aurora_merged_hxromhllmm() {
     assert_delta!(
         aurora
             .path(Vec2::new(890.0, 490.0), Vec2::new(980.0, 446.0))
-            .len,
+            .unwrap()
+            .length,
         181.533
     );
 }
@@ -4630,7 +5091,8 @@ fn aurora_merged_wdbwlmofbo() {
     assert_delta!(
         aurora
             .path(Vec2::new(243.0, 295.0), Vec2::new(101.0, 364.0))
-            .len,
+            .unwrap()
+            .length,
         177.181
     );
 }
@@ -4640,7 +5102,8 @@ fn aurora_merged_tqfjfzblkp() {
     assert_delta!(
         aurora
             .path(Vec2::new(846.0, 438.0), Vec2::new(741.0, 294.0))
-            .len,
+            .unwrap()
+            .length,
         181.413
     );
 }
@@ -4650,7 +5113,8 @@ fn aurora_merged_epchobnejq() {
     assert_delta!(
         aurora
             .path(Vec2::new(766.0, 514.0), Vec2::new(610.0, 596.0))
-            .len,
+            .unwrap()
+            .length,
         176.298
     );
 }
@@ -4660,7 +5124,8 @@ fn aurora_merged_mxpvpgwagi() {
     assert_delta!(
         aurora
             .path(Vec2::new(2.0, 409.0), Vec2::new(174.0, 390.0))
-            .len,
+            .unwrap()
+            .length,
         179.584
     );
 }
@@ -4670,7 +5135,8 @@ fn aurora_merged_apaxqzecxw() {
     assert_delta!(
         aurora
             .path(Vec2::new(35.0, 506.0), Vec2::new(204.0, 453.0))
-            .len,
+            .unwrap()
+            .length,
         178.924
     );
 }
@@ -4680,7 +5146,8 @@ fn aurora_merged_hhajyviojy() {
     assert_delta!(
         aurora
             .path(Vec2::new(276.0, 248.0), Vec2::new(236.0, 357.0))
-            .len,
+            .unwrap()
+            .length,
         179.213
     );
 }
@@ -4690,7 +5157,8 @@ fn aurora_merged_mvxzzuzesl() {
     assert_delta!(
         aurora
             .path(Vec2::new(346.0, 662.0), Vec2::new(189.0, 686.0))
-            .len,
+            .unwrap()
+            .length,
         175.221
     );
 }
@@ -4700,7 +5168,8 @@ fn aurora_merged_nyvhbgtizf() {
     assert_delta!(
         aurora
             .path(Vec2::new(915.0, 136.0), Vec2::new(743.0, 110.0))
-            .len,
+            .unwrap()
+            .length,
         176.634
     );
 }
@@ -4710,7 +5179,8 @@ fn aurora_merged_rzzyxlqqrv() {
     assert_delta!(
         aurora
             .path(Vec2::new(459.0, 488.0), Vec2::new(286.0, 512.0))
-            .len,
+            .unwrap()
+            .length,
         181.012
     );
 }
@@ -4720,7 +5190,8 @@ fn aurora_merged_ysujusfkpf() {
     assert_delta!(
         aurora
             .path(Vec2::new(809.0, 250.0), Vec2::new(904.0, 325.0))
-            .len,
+            .unwrap()
+            .length,
         180.298
     );
 }
@@ -4730,7 +5201,8 @@ fn aurora_merged_sxgmolypux() {
     assert_delta!(
         aurora
             .path(Vec2::new(681.0, 180.0), Vec2::new(844.0, 194.0))
-            .len,
+            .unwrap()
+            .length,
         179.713
     );
 }
@@ -4740,7 +5212,8 @@ fn aurora_merged_ohlasoanuu() {
     assert_delta!(
         aurora
             .path(Vec2::new(863.0, 117.0), Vec2::new(678.0, 100.0))
-            .len,
+            .unwrap()
+            .length,
         186.097
     );
 }
@@ -4750,7 +5223,8 @@ fn aurora_merged_zhpecekaix() {
     assert_delta!(
         aurora
             .path(Vec2::new(332.0, 99.0), Vec2::new(493.0, 55.0))
-            .len,
+            .unwrap()
+            .length,
         179.698
     );
 }
@@ -4760,7 +5234,8 @@ fn aurora_merged_mmygigqkmw() {
     assert_delta!(
         aurora
             .path(Vec2::new(603.0, 188.0), Vec2::new(762.0, 104.0))
-            .len,
+            .unwrap()
+            .length,
         179.825
     );
 }
@@ -4770,7 +5245,8 @@ fn aurora_merged_ewxdyrkoba() {
     assert_delta!(
         aurora
             .path(Vec2::new(650.0, 622.0), Vec2::new(764.0, 530.0))
-            .len,
+            .unwrap()
+            .length,
         182.094
     );
 }
@@ -4780,7 +5256,8 @@ fn aurora_merged_qilciinwdb() {
     assert_delta!(
         aurora
             .path(Vec2::new(255.0, 23.0), Vec2::new(414.0, 108.0))
-            .len,
+            .unwrap()
+            .length,
         180.294
     );
 }
@@ -4790,7 +5267,8 @@ fn aurora_merged_erakangjkn() {
     assert_delta!(
         aurora
             .path(Vec2::new(464.0, 444.0), Vec2::new(589.0, 560.0))
-            .len,
+            .unwrap()
+            .length,
         181.807
     );
 }
@@ -4800,7 +5278,8 @@ fn aurora_merged_ctyfedjwvo() {
     assert_delta!(
         aurora
             .path(Vec2::new(634.0, 294.0), Vec2::new(780.0, 365.0))
-            .len,
+            .unwrap()
+            .length,
         181.317
     );
 }
@@ -4810,7 +5289,8 @@ fn aurora_merged_flemrgoiyr() {
     assert_delta!(
         aurora
             .path(Vec2::new(894.0, 172.0), Vec2::new(725.0, 211.0))
-            .len,
+            .unwrap()
+            .length,
         183.489
     );
 }
@@ -4820,7 +5300,8 @@ fn aurora_merged_jikbdehbme() {
     assert_delta!(
         aurora
             .path(Vec2::new(197.0, 485.0), Vec2::new(39.0, 386.0))
-            .len,
+            .unwrap()
+            .length,
         187.699
     );
 }
@@ -4830,7 +5311,8 @@ fn aurora_merged_hwgvqnxmcj() {
     assert_delta!(
         aurora
             .path(Vec2::new(448.0, 230.0), Vec2::new(609.0, 248.0))
-            .len,
+            .unwrap()
+            .length,
         184.641
     );
 }
@@ -4840,7 +5322,8 @@ fn aurora_merged_rxzebllpdd() {
     assert_delta!(
         aurora
             .path(Vec2::new(168.0, 170.0), Vec2::new(338.0, 235.0))
-            .len,
+            .unwrap()
+            .length,
         182.003
     );
 }
@@ -4850,7 +5333,8 @@ fn aurora_merged_ehtnzntayc() {
     assert_delta!(
         aurora
             .path(Vec2::new(70.0, 352.0), Vec2::new(45.0, 519.0))
-            .len,
+            .unwrap()
+            .length,
         183.486
     );
 }
@@ -4860,7 +5344,8 @@ fn aurora_merged_gfxscaurru() {
     assert_delta!(
         aurora
             .path(Vec2::new(232.0, 643.0), Vec2::new(105.0, 516.0))
-            .len,
+            .unwrap()
+            .length,
         189.423
     );
 }
@@ -4870,7 +5355,8 @@ fn aurora_merged_nyrodqqfki() {
     assert_delta!(
         aurora
             .path(Vec2::new(696.0, 112.0), Vec2::new(565.0, 38.0))
-            .len,
+            .unwrap()
+            .length,
         183.043
     );
 }
@@ -4880,7 +5366,8 @@ fn aurora_merged_imyygnnzeq() {
     assert_delta!(
         aurora
             .path(Vec2::new(481.0, 361.0), Vec2::new(309.0, 330.0))
-            .len,
+            .unwrap()
+            .length,
         183.115
     );
 }
@@ -4890,7 +5377,8 @@ fn aurora_merged_syrgclpyss() {
     assert_delta!(
         aurora
             .path(Vec2::new(248.0, 213.0), Vec2::new(251.0, 53.0))
-            .len,
+            .unwrap()
+            .length,
         185.151
     );
 }
@@ -4900,7 +5388,8 @@ fn aurora_merged_udniadtbqy() {
     assert_delta!(
         aurora
             .path(Vec2::new(245.0, 323.0), Vec2::new(99.0, 228.0))
-            .len,
+            .unwrap()
+            .length,
         185.278
     );
 }
@@ -4910,7 +5399,8 @@ fn aurora_merged_eudgbflclh() {
     assert_delta!(
         aurora
             .path(Vec2::new(175.0, 616.0), Vec2::new(52.0, 509.0))
-            .len,
+            .unwrap()
+            .length,
         188.069
     );
 }
@@ -4920,7 +5410,8 @@ fn aurora_merged_pwgjrypsib() {
     assert_delta!(
         aurora
             .path(Vec2::new(592.0, 376.0), Vec2::new(681.0, 451.0))
-            .len,
+            .unwrap()
+            .length,
         192.924
     );
 }
@@ -4930,7 +5421,8 @@ fn aurora_merged_csxtvgegti() {
     assert_delta!(
         aurora
             .path(Vec2::new(697.0, 675.0), Vec2::new(642.0, 510.0))
-            .len,
+            .unwrap()
+            .length,
         191.851
     );
 }
@@ -4940,7 +5432,8 @@ fn aurora_merged_npvewchkyh() {
     assert_delta!(
         aurora
             .path(Vec2::new(781.0, 198.0), Vec2::new(602.0, 154.0))
-            .len,
+            .unwrap()
+            .length,
         188.678
     );
 }
@@ -4950,7 +5443,8 @@ fn aurora_merged_unfkuvcctq() {
     assert_delta!(
         aurora
             .path(Vec2::new(749.0, 97.0), Vec2::new(621.0, 222.0))
-            .len,
+            .unwrap()
+            .length,
         186.518
     );
 }
@@ -4960,7 +5454,8 @@ fn aurora_merged_svfbagqiwy() {
     assert_delta!(
         aurora
             .path(Vec2::new(322.0, 287.0), Vec2::new(173.0, 328.0))
-            .len,
+            .unwrap()
+            .length,
         188.084
     );
 }
@@ -4970,7 +5465,8 @@ fn aurora_merged_xcpdsbprtw() {
     assert_delta!(
         aurora
             .path(Vec2::new(854.0, 448.0), Vec2::new(823.0, 629.0))
-            .len,
+            .unwrap()
+            .length,
         194.695
     );
 }
@@ -4980,7 +5476,8 @@ fn aurora_merged_orqxepimbz() {
     assert_delta!(
         aurora
             .path(Vec2::new(602.0, 513.0), Vec2::new(678.0, 630.0))
-            .len,
+            .unwrap()
+            .length,
         186.046
     );
 }
@@ -4990,7 +5487,8 @@ fn aurora_merged_yugkzzxvax() {
     assert_delta!(
         aurora
             .path(Vec2::new(747.0, 566.0), Vec2::new(749.0, 669.0))
-            .len,
+            .unwrap()
+            .length,
         192.915
     );
 }
@@ -5000,7 +5498,8 @@ fn aurora_merged_iirwteshri() {
     assert_delta!(
         aurora
             .path(Vec2::new(355.0, 266.0), Vec2::new(463.0, 157.0))
-            .len,
+            .unwrap()
+            .length,
         186.596
     );
 }
@@ -5010,7 +5509,8 @@ fn aurora_merged_ueapwqlktz() {
     assert_delta!(
         aurora
             .path(Vec2::new(147.0, 705.0), Vec2::new(321.0, 638.0))
-            .len,
+            .unwrap()
+            .length,
         186.55
     );
 }
@@ -5020,7 +5520,8 @@ fn aurora_merged_bpjjqmagxt() {
     assert_delta!(
         aurora
             .path(Vec2::new(608.0, 378.0), Vec2::new(471.0, 300.0))
-            .len,
+            .unwrap()
+            .length,
         194.326
     );
 }
@@ -5030,7 +5531,8 @@ fn aurora_merged_xxerfleigj() {
     assert_delta!(
         aurora
             .path(Vec2::new(187.0, 136.0), Vec2::new(345.0, 253.0))
-            .len,
+            .unwrap()
+            .length,
         196.664
     );
 }
@@ -5040,7 +5542,8 @@ fn aurora_merged_zlvvvwrgbf() {
     assert_delta!(
         aurora
             .path(Vec2::new(537.0, 209.0), Vec2::new(371.0, 305.0))
-            .len,
+            .unwrap()
+            .length,
         191.76
     );
 }
@@ -5050,7 +5553,8 @@ fn aurora_merged_kimfouuegw() {
     assert_delta!(
         aurora
             .path(Vec2::new(549.0, 562.0), Vec2::new(735.0, 514.0))
-            .len,
+            .unwrap()
+            .length,
         194.016
     );
 }
@@ -5060,7 +5564,8 @@ fn aurora_merged_dggkgonzkz() {
     assert_delta!(
         aurora
             .path(Vec2::new(33.0, 601.0), Vec2::new(223.0, 623.0))
-            .len,
+            .unwrap()
+            .length,
         196.21
     );
 }
@@ -5070,7 +5575,8 @@ fn aurora_merged_wmxcmjwqbp() {
     assert_delta!(
         aurora
             .path(Vec2::new(475.0, 301.0), Vec2::new(658.0, 251.0))
-            .len,
+            .unwrap()
+            .length,
         198.251
     );
 }
@@ -5080,7 +5586,8 @@ fn aurora_merged_rkqzmwemod() {
     assert_delta!(
         aurora
             .path(Vec2::new(842.0, 670.0), Vec2::new(652.0, 650.0))
-            .len,
+            .unwrap()
+            .length,
         193.201
     );
 }
@@ -5090,7 +5597,8 @@ fn aurora_merged_ncsnorgdzs() {
     assert_delta!(
         aurora
             .path(Vec2::new(103.0, 700.0), Vec2::new(228.0, 565.0))
-            .len,
+            .unwrap()
+            .length,
         195.824
     );
 }
@@ -5100,7 +5608,8 @@ fn aurora_merged_yaxqxdpibe() {
     assert_delta!(
         aurora
             .path(Vec2::new(386.0, 661.0), Vec2::new(524.0, 644.0))
-            .len,
+            .unwrap()
+            .length,
         200.087
     );
 }
@@ -5110,7 +5619,8 @@ fn aurora_merged_whtujvnffi() {
     assert_delta!(
         aurora
             .path(Vec2::new(835.0, 475.0), Vec2::new(889.0, 626.0))
-            .len,
+            .unwrap()
+            .length,
         196.045
     );
 }
@@ -5120,7 +5630,8 @@ fn aurora_merged_usuxfszlza() {
     assert_delta!(
         aurora
             .path(Vec2::new(990.0, 423.0), Vec2::new(819.0, 369.0))
-            .len,
+            .unwrap()
+            .length,
         196.748
     );
 }
@@ -5130,7 +5641,8 @@ fn aurora_merged_seppswtvqs() {
     assert_delta!(
         aurora
             .path(Vec2::new(915.0, 533.0), Vec2::new(978.0, 406.0))
-            .len,
+            .unwrap()
+            .length,
         197.576
     );
 }
@@ -5140,7 +5652,8 @@ fn aurora_merged_bloctfqvsp() {
     assert_delta!(
         aurora
             .path(Vec2::new(794.0, 134.0), Vec2::new(620.0, 51.0))
-            .len,
+            .unwrap()
+            .length,
         193.667
     );
 }
@@ -5150,7 +5663,8 @@ fn aurora_merged_jatxrvvwmz() {
     assert_delta!(
         aurora
             .path(Vec2::new(9.0, 437.0), Vec2::new(160.0, 504.0))
-            .len,
+            .unwrap()
+            .length,
         204.523
     );
 }
@@ -5160,7 +5674,8 @@ fn aurora_merged_dcxuytluxe() {
     assert_delta!(
         aurora
             .path(Vec2::new(88.0, 292.0), Vec2::new(277.0, 242.0))
-            .len,
+            .unwrap()
+            .length,
         197.357
     );
 }
@@ -5170,7 +5685,8 @@ fn aurora_merged_alguloudjl() {
     assert_delta!(
         aurora
             .path(Vec2::new(226.0, 229.0), Vec2::new(33.0, 197.0))
-            .len,
+            .unwrap()
+            .length,
         197.895
     );
 }
@@ -5180,7 +5696,8 @@ fn aurora_merged_ouxaxfjdjc() {
     assert_delta!(
         aurora
             .path(Vec2::new(530.0, 162.0), Vec2::new(726.0, 192.0))
-            .len,
+            .unwrap()
+            .length,
         199.664
     );
 }
@@ -5190,7 +5707,8 @@ fn aurora_merged_nilnwcdesq() {
     assert_delta!(
         aurora
             .path(Vec2::new(508.0, 454.0), Vec2::new(518.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         199.708
     );
 }
@@ -5200,7 +5718,8 @@ fn aurora_merged_akabqwstac() {
     assert_delta!(
         aurora
             .path(Vec2::new(771.0, 378.0), Vec2::new(628.0, 315.0))
-            .len,
+            .unwrap()
+            .length,
         198.242
     );
 }
@@ -5210,7 +5729,8 @@ fn aurora_merged_jklntrtvmw() {
     assert_delta!(
         aurora
             .path(Vec2::new(792.0, 84.0), Vec2::new(626.0, 188.0))
-            .len,
+            .unwrap()
+            .length,
         196.305
     );
 }
@@ -5220,7 +5740,8 @@ fn aurora_merged_ogsoxmvtze() {
     assert_delta!(
         aurora
             .path(Vec2::new(402.0, 505.0), Vec2::new(597.0, 501.0))
-            .len,
+            .unwrap()
+            .length,
         206.097
     );
 }
@@ -5230,7 +5751,8 @@ fn aurora_merged_gyxddkagbw() {
     assert_delta!(
         aurora
             .path(Vec2::new(978.0, 326.0), Vec2::new(983.0, 455.0))
-            .len,
+            .unwrap()
+            .length,
         207.018
     );
 }
@@ -5240,7 +5762,8 @@ fn aurora_merged_pcnxofywti() {
     assert_delta!(
         aurora
             .path(Vec2::new(304.0, 537.0), Vec2::new(491.0, 472.0))
-            .len,
+            .unwrap()
+            .length,
         201.396
     );
 }
@@ -5250,7 +5773,8 @@ fn aurora_merged_magdlvmtlw() {
     assert_delta!(
         aurora
             .path(Vec2::new(622.0, 698.0), Vec2::new(813.0, 660.0))
-            .len,
+            .unwrap()
+            .length,
         199.122
     );
 }
@@ -5260,7 +5784,8 @@ fn aurora_merged_fwxncmtqrt() {
     assert_delta!(
         aurora
             .path(Vec2::new(389.0, 476.0), Vec2::new(337.0, 316.0))
-            .len,
+            .unwrap()
+            .length,
         204.466
     );
 }
@@ -5270,7 +5795,8 @@ fn aurora_merged_ihhcmecnyf() {
     assert_delta!(
         aurora
             .path(Vec2::new(958.0, 384.0), Vec2::new(877.0, 243.0))
-            .len,
+            .unwrap()
+            .length,
         202.756
     );
 }
@@ -5280,7 +5806,8 @@ fn aurora_merged_nbslvbnioz() {
     assert_delta!(
         aurora
             .path(Vec2::new(133.0, 106.0), Vec2::new(220.0, 220.0))
-            .len,
+            .unwrap()
+            .length,
         202.284
     );
 }
@@ -5290,7 +5817,8 @@ fn aurora_merged_gxtdgcdmkl() {
     assert_delta!(
         aurora
             .path(Vec2::new(681.0, 697.0), Vec2::new(548.0, 605.0))
-            .len,
+            .unwrap()
+            .length,
         199.454
     );
 }
@@ -5300,7 +5828,8 @@ fn aurora_merged_qruzjuvrop() {
     assert_delta!(
         aurora
             .path(Vec2::new(701.0, 426.0), Vec2::new(836.0, 522.0))
-            .len,
+            .unwrap()
+            .length,
         198.012
     );
 }
@@ -5310,7 +5839,8 @@ fn aurora_merged_rgyiavjlpb() {
     assert_delta!(
         aurora
             .path(Vec2::new(160.0, 291.0), Vec2::new(42.0, 434.0))
-            .len,
+            .unwrap()
+            .length,
         199.254
     );
 }
@@ -5320,7 +5850,8 @@ fn aurora_merged_pogniwmdhe() {
     assert_delta!(
         aurora
             .path(Vec2::new(396.0, 590.0), Vec2::new(590.0, 644.0))
-            .len,
+            .unwrap()
+            .length,
         202.771
     );
 }
@@ -5330,7 +5861,8 @@ fn aurora_merged_ocwpjqdnfx() {
     assert_delta!(
         aurora
             .path(Vec2::new(801.0, 446.0), Vec2::new(730.0, 324.0))
-            .len,
+            .unwrap()
+            .length,
         206.696
     );
 }
@@ -5340,7 +5872,8 @@ fn aurora_merged_vfhaihizzc() {
     assert_delta!(
         aurora
             .path(Vec2::new(597.0, 457.0), Vec2::new(414.0, 377.0))
-            .len,
+            .unwrap()
+            .length,
         200.115
     );
 }
@@ -5350,7 +5883,8 @@ fn aurora_merged_uiifxiztse() {
     assert_delta!(
         aurora
             .path(Vec2::new(125.0, 216.0), Vec2::new(298.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         203.715
     );
 }
@@ -5360,7 +5894,8 @@ fn aurora_merged_bgnslazahh() {
     assert_delta!(
         aurora
             .path(Vec2::new(273.0, 525.0), Vec2::new(288.0, 665.0))
-            .len,
+            .unwrap()
+            .length,
         202.155
     );
 }
@@ -5370,7 +5905,8 @@ fn aurora_merged_fsxianeqds() {
     assert_delta!(
         aurora
             .path(Vec2::new(601.0, 533.0), Vec2::new(715.0, 665.0))
-            .len,
+            .unwrap()
+            .length,
         205.821
     );
 }
@@ -5380,7 +5916,8 @@ fn aurora_merged_nmolqabxef() {
     assert_delta!(
         aurora
             .path(Vec2::new(711.0, 266.0), Vec2::new(874.0, 175.0))
-            .len,
+            .unwrap()
+            .length,
         206.216
     );
 }
@@ -5390,7 +5927,8 @@ fn aurora_merged_xqsuaaiywd() {
     assert_delta!(
         aurora
             .path(Vec2::new(293.0, 249.0), Vec2::new(177.0, 172.0))
-            .len,
+            .unwrap()
+            .length,
         201.476
     );
 }
@@ -5400,7 +5938,8 @@ fn aurora_merged_iqjvflgfuc() {
     assert_delta!(
         aurora
             .path(Vec2::new(444.0, 430.0), Vec2::new(489.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         207.735
     );
 }
@@ -5410,7 +5949,8 @@ fn aurora_merged_zndikqahha() {
     assert_delta!(
         aurora
             .path(Vec2::new(458.0, 532.0), Vec2::new(258.0, 539.0))
-            .len,
+            .unwrap()
+            .length,
         206.98
     );
 }
@@ -5420,7 +5960,8 @@ fn aurora_merged_mzzqsmpfkf() {
     assert_delta!(
         aurora
             .path(Vec2::new(664.0, 364.0), Vec2::new(875.0, 362.0))
-            .len,
+            .unwrap()
+            .length,
         213.235
     );
 }
@@ -5430,7 +5971,8 @@ fn aurora_merged_yjaddznrqy() {
     assert_delta!(
         aurora
             .path(Vec2::new(653.0, 318.0), Vec2::new(506.0, 194.0))
-            .len,
+            .unwrap()
+            .length,
         206.847
     );
 }
@@ -5440,7 +5982,8 @@ fn aurora_merged_rhruwfojia() {
     assert_delta!(
         aurora
             .path(Vec2::new(847.0, 326.0), Vec2::new(652.0, 330.0))
-            .len,
+            .unwrap()
+            .length,
         207.1
     );
 }
@@ -5450,7 +5993,8 @@ fn aurora_merged_fkrvwakusg() {
     assert_delta!(
         aurora
             .path(Vec2::new(494.0, 280.0), Vec2::new(583.0, 410.0))
-            .len,
+            .unwrap()
+            .length,
         208.274
     );
 }
@@ -5460,7 +6004,8 @@ fn aurora_merged_pikgbexnrl() {
     assert_delta!(
         aurora
             .path(Vec2::new(38.0, 554.0), Vec2::new(200.0, 461.0))
-            .len,
+            .unwrap()
+            .length,
         208.278
     );
 }
@@ -5470,7 +6015,8 @@ fn aurora_merged_cgkrwjoxjg() {
     assert_delta!(
         aurora
             .path(Vec2::new(805.0, 474.0), Vec2::new(687.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         207.139
     );
 }
@@ -5480,7 +6026,8 @@ fn aurora_merged_snmzkhtrkn() {
     assert_delta!(
         aurora
             .path(Vec2::new(425.0, 77.0), Vec2::new(303.0, 228.0))
-            .len,
+            .unwrap()
+            .length,
         211.559
     );
 }
@@ -5490,7 +6037,8 @@ fn aurora_merged_jopmuamjov() {
     assert_delta!(
         aurora
             .path(Vec2::new(920.0, 301.0), Vec2::new(910.0, 492.0))
-            .len,
+            .unwrap()
+            .length,
         210.543
     );
 }
@@ -5500,7 +6048,8 @@ fn aurora_merged_irzxocbxhd() {
     assert_delta!(
         aurora
             .path(Vec2::new(1018.0, 306.0), Vec2::new(862.0, 434.0))
-            .len,
+            .unwrap()
+            .length,
         207.889
     );
 }
@@ -5510,7 +6059,8 @@ fn aurora_merged_qljoqblfay() {
     assert_delta!(
         aurora
             .path(Vec2::new(796.0, 115.0), Vec2::new(595.0, 105.0))
-            .len,
+            .unwrap()
+            .length,
         207.152
     );
 }
@@ -5520,7 +6070,8 @@ fn aurora_merged_yucxhvroxm() {
     assert_delta!(
         aurora
             .path(Vec2::new(957.0, 321.0), Vec2::new(877.0, 183.0))
-            .len,
+            .unwrap()
+            .length,
         211.778
     );
 }
@@ -5530,7 +6081,8 @@ fn aurora_merged_chskiesmju() {
     assert_delta!(
         aurora
             .path(Vec2::new(418.0, 694.0), Vec2::new(625.0, 670.0))
-            .len,
+            .unwrap()
+            .length,
         213.136
     );
 }
@@ -5540,7 +6092,8 @@ fn aurora_merged_zphglgnqdc() {
     assert_delta!(
         aurora
             .path(Vec2::new(604.0, 732.0), Vec2::new(607.0, 690.0))
-            .len,
+            .unwrap()
+            .length,
         212.884
     );
 }
@@ -5550,7 +6103,8 @@ fn aurora_merged_vbdowukzgo() {
     assert_delta!(
         aurora
             .path(Vec2::new(922.0, 415.0), Vec2::new(864.0, 522.0))
-            .len,
+            .unwrap()
+            .length,
         210.044
     );
 }
@@ -5560,7 +6114,8 @@ fn aurora_merged_ebvzgvvfzx() {
     assert_delta!(
         aurora
             .path(Vec2::new(385.0, 578.0), Vec2::new(567.0, 680.0))
-            .len,
+            .unwrap()
+            .length,
         211.439
     );
 }
@@ -5570,7 +6125,8 @@ fn aurora_merged_xggqhvqchq() {
     assert_delta!(
         aurora
             .path(Vec2::new(213.0, 460.0), Vec2::new(13.0, 521.0))
-            .len,
+            .unwrap()
+            .length,
         211.274
     );
 }
@@ -5580,7 +6136,8 @@ fn aurora_merged_hwruclbfyh() {
     assert_delta!(
         aurora
             .path(Vec2::new(42.0, 588.0), Vec2::new(199.0, 701.0))
-            .len,
+            .unwrap()
+            .length,
         213.179
     );
 }
@@ -5590,7 +6147,8 @@ fn aurora_merged_safrbxzesr() {
     assert_delta!(
         aurora
             .path(Vec2::new(284.0, 85.0), Vec2::new(368.0, 275.0))
-            .len,
+            .unwrap()
+            .length,
         209.189
     );
 }
@@ -5600,7 +6158,8 @@ fn aurora_merged_ijuhdopnps() {
     assert_delta!(
         aurora
             .path(Vec2::new(210.0, 647.0), Vec2::new(232.0, 466.0))
-            .len,
+            .unwrap()
+            .length,
         215.503
     );
 }
@@ -5610,7 +6169,8 @@ fn aurora_merged_gtpuazfrsa() {
     assert_delta!(
         aurora
             .path(Vec2::new(251.0, 231.0), Vec2::new(111.0, 118.0))
-            .len,
+            .unwrap()
+            .length,
         210.622
     );
 }
@@ -5620,7 +6180,8 @@ fn aurora_merged_eblfrxxjos() {
     assert_delta!(
         aurora
             .path(Vec2::new(778.0, 647.0), Vec2::new(788.0, 487.0))
-            .len,
+            .unwrap()
+            .length,
         214.56
     );
 }
@@ -5630,7 +6191,8 @@ fn aurora_merged_pstvfkbiph() {
     assert_delta!(
         aurora
             .path(Vec2::new(357.0, 484.0), Vec2::new(476.0, 576.0))
-            .len,
+            .unwrap()
+            .length,
         213.721
     );
 }
@@ -5640,7 +6202,8 @@ fn aurora_merged_ibmyemqpac() {
     assert_delta!(
         aurora
             .path(Vec2::new(413.0, 177.0), Vec2::new(473.0, 271.0))
-            .len,
+            .unwrap()
+            .length,
         214.377
     );
 }
@@ -5650,7 +6213,8 @@ fn aurora_merged_bmncusikue() {
     assert_delta!(
         aurora
             .path(Vec2::new(164.0, 351.0), Vec2::new(230.0, 415.0))
-            .len,
+            .unwrap()
+            .length,
         221.926
     );
 }
@@ -5660,7 +6224,8 @@ fn aurora_merged_udalptpzlk() {
     assert_delta!(
         aurora
             .path(Vec2::new(960.0, 274.0), Vec2::new(770.0, 370.0))
-            .len,
+            .unwrap()
+            .length,
         213.957
     );
 }
@@ -5670,7 +6235,8 @@ fn aurora_merged_peikqmurot() {
     assert_delta!(
         aurora
             .path(Vec2::new(173.0, 227.0), Vec2::new(187.0, 346.0))
-            .len,
+            .unwrap()
+            .length,
         215.753
     );
 }
@@ -5680,7 +6246,8 @@ fn aurora_merged_dypavfknkx() {
     assert_delta!(
         aurora
             .path(Vec2::new(894.0, 487.0), Vec2::new(789.0, 348.0))
-            .len,
+            .unwrap()
+            .length,
         217.319
     );
 }
@@ -5690,7 +6257,8 @@ fn aurora_merged_ndmseuspjl() {
     assert_delta!(
         aurora
             .path(Vec2::new(225.0, 274.0), Vec2::new(421.0, 219.0))
-            .len,
+            .unwrap()
+            .length,
         217.784
     );
 }
@@ -5700,7 +6268,8 @@ fn aurora_merged_wzamyfvccv() {
     assert_delta!(
         aurora
             .path(Vec2::new(635.0, 584.0), Vec2::new(837.0, 652.0))
-            .len,
+            .unwrap()
+            .length,
         214.457
     );
 }
@@ -5710,7 +6279,8 @@ fn aurora_merged_xiryixqlyi() {
     assert_delta!(
         aurora
             .path(Vec2::new(621.0, 153.0), Vec2::new(526.0, 28.0))
-            .len,
+            .unwrap()
+            .length,
         214.572
     );
 }
@@ -5720,7 +6290,8 @@ fn aurora_merged_jhmdteuwko() {
     assert_delta!(
         aurora
             .path(Vec2::new(881.0, 244.0), Vec2::new(848.0, 129.0))
-            .len,
+            .unwrap()
+            .length,
         218.857
     );
 }
@@ -5730,7 +6301,8 @@ fn aurora_merged_zlqkbsiflx() {
     assert_delta!(
         aurora
             .path(Vec2::new(741.0, 412.0), Vec2::new(664.0, 523.0))
-            .len,
+            .unwrap()
+            .length,
         216.44
     );
 }
@@ -5740,7 +6312,8 @@ fn aurora_merged_eeswfxrvso() {
     assert_delta!(
         aurora
             .path(Vec2::new(407.0, 561.0), Vec2::new(511.0, 666.0))
-            .len,
+            .unwrap()
+            .length,
         217.731
     );
 }
@@ -5750,7 +6323,8 @@ fn aurora_merged_ujoetfwzih() {
     assert_delta!(
         aurora
             .path(Vec2::new(778.0, 507.0), Vec2::new(950.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         218.827
     );
 }
@@ -5760,7 +6334,8 @@ fn aurora_merged_lgypnbzzrs() {
     assert_delta!(
         aurora
             .path(Vec2::new(495.0, 376.0), Vec2::new(335.0, 371.0))
-            .len,
+            .unwrap()
+            .length,
         214.937
     );
 }
@@ -5770,7 +6345,8 @@ fn aurora_merged_uygpjldxsj() {
     assert_delta!(
         aurora
             .path(Vec2::new(944.0, 333.0), Vec2::new(728.0, 326.0))
-            .len,
+            .unwrap()
+            .length,
         221.049
     );
 }
@@ -5780,7 +6356,8 @@ fn aurora_merged_fttnqqieng() {
     assert_delta!(
         aurora
             .path(Vec2::new(511.0, 389.0), Vec2::new(309.0, 318.0))
-            .len,
+            .unwrap()
+            .length,
         220.553
     );
 }
@@ -5790,7 +6367,8 @@ fn aurora_merged_gukhfswxut() {
     assert_delta!(
         aurora
             .path(Vec2::new(713.0, 537.0), Vec2::new(504.0, 580.0))
-            .len,
+            .unwrap()
+            .length,
         217.888
     );
 }
@@ -5800,7 +6378,8 @@ fn aurora_merged_gfaskgnmos() {
     assert_delta!(
         aurora
             .path(Vec2::new(504.0, 160.0), Vec2::new(603.0, 270.0))
-            .len,
+            .unwrap()
+            .length,
         221.895
     );
 }
@@ -5810,7 +6389,8 @@ fn aurora_merged_njxxaunldj() {
     assert_delta!(
         aurora
             .path(Vec2::new(799.0, 504.0), Vec2::new(954.0, 383.0))
-            .len,
+            .unwrap()
+            .length,
         218.98
     );
 }
@@ -5820,7 +6400,8 @@ fn aurora_merged_ngiiurancq() {
     assert_delta!(
         aurora
             .path(Vec2::new(364.0, 614.0), Vec2::new(255.0, 485.0))
-            .len,
+            .unwrap()
+            .length,
         220.263
     );
 }
@@ -5830,7 +6411,8 @@ fn aurora_merged_yxziydmfvb() {
     assert_delta!(
         aurora
             .path(Vec2::new(365.0, 602.0), Vec2::new(588.0, 600.0))
-            .len,
+            .unwrap()
+            .length,
         226.416
     );
 }
@@ -5840,7 +6422,8 @@ fn aurora_merged_mnxtwepnok() {
     assert_delta!(
         aurora
             .path(Vec2::new(547.0, 281.0), Vec2::new(696.0, 353.0))
-            .len,
+            .unwrap()
+            .length,
         219.968
     );
 }
@@ -5850,7 +6433,8 @@ fn aurora_merged_jayaadhlhv() {
     assert_delta!(
         aurora
             .path(Vec2::new(721.0, 394.0), Vec2::new(539.0, 341.0))
-            .len,
+            .unwrap()
+            .length,
         221.279
     );
 }
@@ -5860,7 +6444,8 @@ fn aurora_merged_pjskurxahy() {
     assert_delta!(
         aurora
             .path(Vec2::new(156.0, 297.0), Vec2::new(318.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         220.32
     );
 }
@@ -5870,7 +6455,8 @@ fn aurora_merged_cqfgjjppcz() {
     assert_delta!(
         aurora
             .path(Vec2::new(104.0, 374.0), Vec2::new(79.0, 214.0))
-            .len,
+            .unwrap()
+            .length,
         227.57
     );
 }
@@ -5880,7 +6466,8 @@ fn aurora_merged_zwcxksbvdi() {
     assert_delta!(
         aurora
             .path(Vec2::new(459.0, 364.0), Vec2::new(513.0, 181.0))
-            .len,
+            .unwrap()
+            .length,
         227.045
     );
 }
@@ -5890,7 +6477,8 @@ fn aurora_merged_aifjwihedv() {
     assert_delta!(
         aurora
             .path(Vec2::new(422.0, 339.0), Vec2::new(220.0, 267.0))
-            .len,
+            .unwrap()
+            .length,
         222.11
     );
 }
@@ -5900,7 +6488,8 @@ fn aurora_merged_yhaqvgxwav() {
     assert_delta!(
         aurora
             .path(Vec2::new(581.0, 681.0), Vec2::new(482.0, 637.0))
-            .len,
+            .unwrap()
+            .length,
         221.812
     );
 }
@@ -5910,7 +6499,8 @@ fn aurora_merged_bwqctuhyly() {
     assert_delta!(
         aurora
             .path(Vec2::new(723.0, 329.0), Vec2::new(555.0, 221.0))
-            .len,
+            .unwrap()
+            .length,
         219.11
     );
 }
@@ -5920,7 +6510,8 @@ fn aurora_merged_espckkdsqg() {
     assert_delta!(
         aurora
             .path(Vec2::new(438.0, 636.0), Vec2::new(661.0, 594.0))
-            .len,
+            .unwrap()
+            .length,
         229.07
     );
 }
@@ -5930,7 +6521,8 @@ fn aurora_merged_tauffreyft() {
     assert_delta!(
         aurora
             .path(Vec2::new(424.0, 411.0), Vec2::new(634.0, 465.0))
-            .len,
+            .unwrap()
+            .length,
         225.474
     );
 }
@@ -5940,7 +6532,8 @@ fn aurora_merged_sjzcgcrzue() {
     assert_delta!(
         aurora
             .path(Vec2::new(45.0, 416.0), Vec2::new(229.0, 473.0))
-            .len,
+            .unwrap()
+            .length,
         223.592
     );
 }
@@ -5950,7 +6543,8 @@ fn aurora_merged_fqqgblrrzw() {
     assert_delta!(
         aurora
             .path(Vec2::new(198.0, 352.0), Vec2::new(52.0, 534.0))
-            .len,
+            .unwrap()
+            .length,
         239.656
     );
 }
@@ -5960,7 +6554,8 @@ fn aurora_merged_rpioczuyvy() {
     assert_delta!(
         aurora
             .path(Vec2::new(44.0, 429.0), Vec2::new(184.0, 271.0))
-            .len,
+            .unwrap()
+            .length,
         226.393
     );
 }
@@ -5970,7 +6565,8 @@ fn aurora_merged_oufsziahrm() {
     assert_delta!(
         aurora
             .path(Vec2::new(294.0, 324.0), Vec2::new(486.0, 422.0))
-            .len,
+            .unwrap()
+            .length,
         234.908
     );
 }
@@ -5980,7 +6576,8 @@ fn aurora_merged_fludsrnlei() {
     assert_delta!(
         aurora
             .path(Vec2::new(481.0, 366.0), Vec2::new(304.0, 383.0))
-            .len,
+            .unwrap()
+            .length,
         224.219
     );
 }
@@ -5990,7 +6587,8 @@ fn aurora_merged_yljikuqhub() {
     assert_delta!(
         aurora
             .path(Vec2::new(376.0, 611.0), Vec2::new(368.0, 463.0))
-            .len,
+            .unwrap()
+            .length,
         230.688
     );
 }
@@ -6000,7 +6598,8 @@ fn aurora_merged_slytogqeya() {
     assert_delta!(
         aurora
             .path(Vec2::new(738.0, 262.0), Vec2::new(858.0, 135.0))
-            .len,
+            .unwrap()
+            .length,
         223.436
     );
 }
@@ -6010,7 +6609,8 @@ fn aurora_merged_alybnzbgkd() {
     assert_delta!(
         aurora
             .path(Vec2::new(237.0, 603.0), Vec2::new(26.0, 656.0))
-            .len,
+            .unwrap()
+            .length,
         223.627
     );
 }
@@ -6020,7 +6620,8 @@ fn aurora_merged_mbuhaqutwj() {
     assert_delta!(
         aurora
             .path(Vec2::new(609.0, 415.0), Vec2::new(624.0, 452.0))
-            .len,
+            .unwrap()
+            .length,
         225.432
     );
 }
@@ -6030,7 +6631,8 @@ fn aurora_merged_cmfiuqovdg() {
     assert_delta!(
         aurora
             .path(Vec2::new(989.0, 596.0), Vec2::new(838.0, 473.0))
-            .len,
+            .unwrap()
+            .length,
         228.117
     );
 }
@@ -6040,7 +6642,8 @@ fn aurora_merged_usjyzvwyxx() {
     assert_delta!(
         aurora
             .path(Vec2::new(431.0, 164.0), Vec2::new(194.0, 167.0))
-            .len,
+            .unwrap()
+            .length,
         239.016
     );
 }
@@ -6050,7 +6653,8 @@ fn aurora_merged_sqwqxeqvjf() {
     assert_delta!(
         aurora
             .path(Vec2::new(660.0, 726.0), Vec2::new(855.0, 640.0))
-            .len,
+            .unwrap()
+            .length,
         229.616
     );
 }
@@ -6060,7 +6664,8 @@ fn aurora_merged_ycbkkbjmiy() {
     assert_delta!(
         aurora
             .path(Vec2::new(770.0, 639.0), Vec2::new(555.0, 620.0))
-            .len,
+            .unwrap()
+            .length,
         227.223
     );
 }
@@ -6070,7 +6675,8 @@ fn aurora_merged_qbnlgcckeq() {
     assert_delta!(
         aurora
             .path(Vec2::new(797.0, 613.0), Vec2::new(599.0, 508.0))
-            .len,
+            .unwrap()
+            .length,
         231.476
     );
 }
@@ -6080,7 +6686,8 @@ fn aurora_merged_lllrfrcxst() {
     assert_delta!(
         aurora
             .path(Vec2::new(695.0, 661.0), Vec2::new(618.0, 482.0))
-            .len,
+            .unwrap()
+            .length,
         235.097
     );
 }
@@ -6090,7 +6697,8 @@ fn aurora_merged_lfdexnyfya() {
     assert_delta!(
         aurora
             .path(Vec2::new(211.0, 660.0), Vec2::new(89.0, 541.0))
-            .len,
+            .unwrap()
+            .length,
         232.407
     );
 }
@@ -6100,7 +6708,8 @@ fn aurora_merged_bidhplikvx() {
     assert_delta!(
         aurora
             .path(Vec2::new(387.0, 514.0), Vec2::new(300.0, 483.0))
-            .len,
+            .unwrap()
+            .length,
         233.101
     );
 }
@@ -6110,7 +6719,8 @@ fn aurora_merged_iemimmvkvf() {
     assert_delta!(
         aurora
             .path(Vec2::new(147.0, 333.0), Vec2::new(199.0, 244.0))
-            .len,
+            .unwrap()
+            .length,
         231.198
     );
 }
@@ -6120,7 +6730,8 @@ fn aurora_merged_zmdnxkqjnx() {
     assert_delta!(
         aurora
             .path(Vec2::new(446.0, 654.0), Vec2::new(527.0, 564.0))
-            .len,
+            .unwrap()
+            .length,
         238.427
     );
 }
@@ -6130,7 +6741,8 @@ fn aurora_merged_btjdudqkct() {
     assert_delta!(
         aurora
             .path(Vec2::new(862.0, 484.0), Vec2::new(751.0, 638.0))
-            .len,
+            .unwrap()
+            .length,
         233.369
     );
 }
@@ -6140,7 +6752,8 @@ fn aurora_merged_uvdcaaehfy() {
     assert_delta!(
         aurora
             .path(Vec2::new(323.0, 708.0), Vec2::new(90.0, 686.0))
-            .len,
+            .unwrap()
+            .length,
         239.059
     );
 }
@@ -6150,7 +6763,8 @@ fn aurora_merged_ggniuhwinf() {
     assert_delta!(
         aurora
             .path(Vec2::new(423.0, 93.0), Vec2::new(301.0, 274.0))
-            .len,
+            .unwrap()
+            .length,
         238.412
     );
 }
@@ -6160,7 +6774,8 @@ fn aurora_merged_xxbldfowjc() {
     assert_delta!(
         aurora
             .path(Vec2::new(890.0, 296.0), Vec2::new(860.0, 449.0))
-            .len,
+            .unwrap()
+            .length,
         237.411
     );
 }
@@ -6170,7 +6785,8 @@ fn aurora_merged_gppivsqjfm() {
     assert_delta!(
         aurora
             .path(Vec2::new(287.0, 144.0), Vec2::new(505.0, 217.0))
-            .len,
+            .unwrap()
+            .length,
         231.767
     );
 }
@@ -6180,7 +6796,8 @@ fn aurora_merged_cqovvqzode() {
     assert_delta!(
         aurora
             .path(Vec2::new(449.0, 686.0), Vec2::new(308.0, 707.0))
-            .len,
+            .unwrap()
+            .length,
         232.008
     );
 }
@@ -6190,7 +6807,8 @@ fn aurora_merged_ppcpvjnmar() {
     assert_delta!(
         aurora
             .path(Vec2::new(461.0, 307.0), Vec2::new(452.0, 113.0))
-            .len,
+            .unwrap()
+            .length,
         242.494
     );
 }
@@ -6200,7 +6818,8 @@ fn aurora_merged_xgmfwzovrb() {
     assert_delta!(
         aurora
             .path(Vec2::new(231.0, 480.0), Vec2::new(218.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         235.39
     );
 }
@@ -6210,7 +6829,8 @@ fn aurora_merged_fxiqegcgta() {
     assert_delta!(
         aurora
             .path(Vec2::new(434.0, 156.0), Vec2::new(198.0, 177.0))
-            .len,
+            .unwrap()
+            .length,
         242.862
     );
 }
@@ -6220,7 +6840,8 @@ fn aurora_merged_ihfivihpwt() {
     assert_delta!(
         aurora
             .path(Vec2::new(734.0, 573.0), Vec2::new(530.0, 683.0))
-            .len,
+            .unwrap()
+            .length,
         240.421
     );
 }
@@ -6230,7 +6851,8 @@ fn aurora_merged_afnodzlkaz() {
     assert_delta!(
         aurora
             .path(Vec2::new(384.0, 294.0), Vec2::new(160.0, 295.0))
-            .len,
+            .unwrap()
+            .length,
         235.407
     );
 }
@@ -6240,7 +6862,8 @@ fn aurora_merged_eisasiyftj() {
     assert_delta!(
         aurora
             .path(Vec2::new(367.0, 280.0), Vec2::new(560.0, 160.0))
-            .len,
+            .unwrap()
+            .length,
         242.259
     );
 }
@@ -6250,7 +6873,8 @@ fn aurora_merged_potglgpuvm() {
     assert_delta!(
         aurora
             .path(Vec2::new(932.0, 416.0), Vec2::new(771.0, 539.0))
-            .len,
+            .unwrap()
+            .length,
         235.097
     );
 }
@@ -6260,7 +6884,8 @@ fn aurora_merged_tsankavheq() {
     assert_delta!(
         aurora
             .path(Vec2::new(808.0, 601.0), Vec2::new(575.0, 637.0))
-            .len,
+            .unwrap()
+            .length,
         243.909
     );
 }
@@ -6270,7 +6895,8 @@ fn aurora_merged_bgvsoyhznr() {
     assert_delta!(
         aurora
             .path(Vec2::new(194.0, 347.0), Vec2::new(33.0, 534.0))
-            .len,
+            .unwrap()
+            .length,
         247.181
     );
 }
@@ -6280,7 +6906,8 @@ fn aurora_merged_pxhuqscmys() {
     assert_delta!(
         aurora
             .path(Vec2::new(495.0, 495.0), Vec2::new(729.0, 532.0))
-            .len,
+            .unwrap()
+            .length,
         239.689
     );
 }
@@ -6290,7 +6917,8 @@ fn aurora_merged_zpbpvrugtn() {
     assert_delta!(
         aurora
             .path(Vec2::new(399.0, 647.0), Vec2::new(502.0, 603.0))
-            .len,
+            .unwrap()
+            .length,
         239.987
     );
 }
@@ -6300,7 +6928,8 @@ fn aurora_merged_ydacvpgpyz() {
     assert_delta!(
         aurora
             .path(Vec2::new(714.0, 358.0), Vec2::new(573.0, 212.0))
-            .len,
+            .unwrap()
+            .length,
         237.645
     );
 }
@@ -6310,7 +6939,8 @@ fn aurora_merged_mhpdlcvfup() {
     assert_delta!(
         aurora
             .path(Vec2::new(642.0, 102.0), Vec2::new(848.0, 169.0))
-            .len,
+            .unwrap()
+            .length,
         235.78
     );
 }
@@ -6320,7 +6950,8 @@ fn aurora_merged_rhbqtybzzu() {
     assert_delta!(
         aurora
             .path(Vec2::new(461.0, 292.0), Vec2::new(234.0, 325.0))
-            .len,
+            .unwrap()
+            .length,
         239.853
     );
 }
@@ -6330,7 +6961,8 @@ fn aurora_merged_samnevxuqt() {
     assert_delta!(
         aurora
             .path(Vec2::new(528.0, 141.0), Vec2::new(288.0, 137.0))
-            .len,
+            .unwrap()
+            .length,
         244.596
     );
 }
@@ -6340,7 +6972,8 @@ fn aurora_merged_fsqkrajrcq() {
     assert_delta!(
         aurora
             .path(Vec2::new(699.0, 588.0), Vec2::new(496.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         242.071
     );
 }
@@ -6350,7 +6983,8 @@ fn aurora_merged_gsvmwfnlvy() {
     assert_delta!(
         aurora
             .path(Vec2::new(571.0, 474.0), Vec2::new(795.0, 527.0))
-            .len,
+            .unwrap()
+            .length,
         240.125
     );
 }
@@ -6360,7 +6994,8 @@ fn aurora_merged_dbnbpeovzr() {
     assert_delta!(
         aurora
             .path(Vec2::new(852.0, 268.0), Vec2::new(964.0, 434.0))
-            .len,
+            .unwrap()
+            .length,
         241.389
     );
 }
@@ -6370,7 +7005,8 @@ fn aurora_merged_olpzshdbnw() {
     assert_delta!(
         aurora
             .path(Vec2::new(591.0, 564.0), Vec2::new(417.0, 671.0))
-            .len,
+            .unwrap()
+            .length,
         244.188
     );
 }
@@ -6380,7 +7016,8 @@ fn aurora_merged_ttjlpujwcv() {
     assert_delta!(
         aurora
             .path(Vec2::new(232.0, 401.0), Vec2::new(301.0, 302.0))
-            .len,
+            .unwrap()
+            .length,
         243.265
     );
 }
@@ -6390,7 +7027,8 @@ fn aurora_merged_baxijfwdkj() {
     assert_delta!(
         aurora
             .path(Vec2::new(55.0, 589.0), Vec2::new(298.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         248.444
     );
 }
@@ -6400,7 +7038,8 @@ fn aurora_merged_xnprrzsnpp() {
     assert_delta!(
         aurora
             .path(Vec2::new(353.0, 453.0), Vec2::new(164.0, 593.0))
-            .len,
+            .unwrap()
+            .length,
         241.667
     );
 }
@@ -6410,7 +7049,8 @@ fn aurora_merged_vxqdddzlde() {
     assert_delta!(
         aurora
             .path(Vec2::new(623.0, 706.0), Vec2::new(827.0, 626.0))
-            .len,
+            .unwrap()
+            .length,
         243.438
     );
 }
@@ -6420,7 +7060,8 @@ fn aurora_merged_ryoahkfdhi() {
     assert_delta!(
         aurora
             .path(Vec2::new(31.0, 466.0), Vec2::new(16.0, 541.0))
-            .len,
+            .unwrap()
+            .length,
         247.582
     );
 }
@@ -6430,7 +7071,8 @@ fn aurora_merged_oaubodnqsr() {
     assert_delta!(
         aurora
             .path(Vec2::new(745.0, 670.0), Vec2::new(608.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         246.752
     );
 }
@@ -6440,7 +7082,8 @@ fn aurora_merged_lxparaftzi() {
     assert_delta!(
         aurora
             .path(Vec2::new(244.0, 185.0), Vec2::new(480.0, 186.0))
-            .len,
+            .unwrap()
+            .length,
         249.351
     );
 }
@@ -6450,7 +7093,8 @@ fn aurora_merged_aaqiwguznu() {
     assert_delta!(
         aurora
             .path(Vec2::new(203.0, 511.0), Vec2::new(420.0, 553.0))
-            .len,
+            .unwrap()
+            .length,
         244.072
     );
 }
@@ -6460,7 +7104,8 @@ fn aurora_merged_rfrszuzeud() {
     assert_delta!(
         aurora
             .path(Vec2::new(909.0, 490.0), Vec2::new(973.0, 280.0))
-            .len,
+            .unwrap()
+            .length,
         249.973
     );
 }
@@ -6470,7 +7115,8 @@ fn aurora_merged_aunbopgvhl() {
     assert_delta!(
         aurora
             .path(Vec2::new(148.0, 469.0), Vec2::new(125.0, 240.0))
-            .len,
+            .unwrap()
+            .length,
         248.567
     );
 }
@@ -6480,7 +7126,8 @@ fn aurora_merged_ewsihfufcl() {
     assert_delta!(
         aurora
             .path(Vec2::new(581.0, 293.0), Vec2::new(818.0, 338.0))
-            .len,
+            .unwrap()
+            .length,
         245.051
     );
 }
@@ -6490,7 +7137,8 @@ fn aurora_merged_mhbvjfoasr() {
     assert_delta!(
         aurora
             .path(Vec2::new(241.0, 333.0), Vec2::new(476.0, 328.0))
-            .len,
+            .unwrap()
+            .length,
         243.293
     );
 }
@@ -6500,7 +7148,8 @@ fn aurora_merged_krgkhlvzlc() {
     assert_delta!(
         aurora
             .path(Vec2::new(433.0, 657.0), Vec2::new(199.0, 663.0))
-            .len,
+            .unwrap()
+            .length,
         246.176
     );
 }
@@ -6510,7 +7159,8 @@ fn aurora_merged_gnzhzexcvc() {
     assert_delta!(
         aurora
             .path(Vec2::new(570.0, 33.0), Vec2::new(431.0, 142.0))
-            .len,
+            .unwrap()
+            .length,
         245.148
     );
 }
@@ -6520,7 +7170,8 @@ fn aurora_merged_ffhwbtuvqz() {
     assert_delta!(
         aurora
             .path(Vec2::new(739.0, 514.0), Vec2::new(519.0, 621.0))
-            .len,
+            .unwrap()
+            .length,
         252.843
     );
 }
@@ -6530,7 +7181,8 @@ fn aurora_merged_kfccganacg() {
     assert_delta!(
         aurora
             .path(Vec2::new(461.0, 126.0), Vec2::new(267.0, 258.0))
-            .len,
+            .unwrap()
+            .length,
         249.148
     );
 }
@@ -6540,7 +7192,8 @@ fn aurora_merged_jrmwponpqq() {
     assert_delta!(
         aurora
             .path(Vec2::new(919.0, 153.0), Vec2::new(714.0, 170.0))
-            .len,
+            .unwrap()
+            .length,
         247.913
     );
 }
@@ -6550,7 +7203,8 @@ fn aurora_merged_nkybmlegoy() {
     assert_delta!(
         aurora
             .path(Vec2::new(635.0, 187.0), Vec2::new(880.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         255.253
     );
 }
@@ -6560,7 +7214,8 @@ fn aurora_merged_kjdtgowbqo() {
     assert_delta!(
         aurora
             .path(Vec2::new(909.0, 465.0), Vec2::new(694.0, 559.0))
-            .len,
+            .unwrap()
+            .length,
         243.719
     );
 }
@@ -6570,7 +7225,8 @@ fn aurora_merged_imwbomprho() {
     assert_delta!(
         aurora
             .path(Vec2::new(532.0, 147.0), Vec2::new(429.0, 225.0))
-            .len,
+            .unwrap()
+            .length,
         254.289
     );
 }
@@ -6580,7 +7236,8 @@ fn aurora_merged_jvfjdtmmsn() {
     assert_delta!(
         aurora
             .path(Vec2::new(218.0, 602.0), Vec2::new(397.0, 583.0))
-            .len,
+            .unwrap()
+            .length,
         245.525
     );
 }
@@ -6590,7 +7247,8 @@ fn aurora_merged_lqqhqkwpej() {
     assert_delta!(
         aurora
             .path(Vec2::new(179.0, 122.0), Vec2::new(425.0, 172.0))
-            .len,
+            .unwrap()
+            .length,
         254.369
     );
 }
@@ -6600,7 +7258,8 @@ fn aurora_merged_mxgyxhaizm() {
     assert_delta!(
         aurora
             .path(Vec2::new(365.0, 691.0), Vec2::new(255.0, 538.0))
-            .len,
+            .unwrap()
+            .length,
         250.886
     );
 }
@@ -6610,7 +7269,8 @@ fn aurora_merged_jmtrfxrtzf() {
     assert_delta!(
         aurora
             .path(Vec2::new(509.0, 454.0), Vec2::new(734.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         248.635
     );
 }
@@ -6620,7 +7280,8 @@ fn aurora_merged_gyevmctdms() {
     assert_delta!(
         aurora
             .path(Vec2::new(67.0, 330.0), Vec2::new(217.0, 179.0))
-            .len,
+            .unwrap()
+            .length,
         256.281
     );
 }
@@ -6630,7 +7291,8 @@ fn aurora_merged_setmvsykug() {
     assert_delta!(
         aurora
             .path(Vec2::new(154.0, 675.0), Vec2::new(55.0, 496.0))
-            .len,
+            .unwrap()
+            .length,
         256.523
     );
 }
@@ -6640,7 +7302,8 @@ fn aurora_merged_jyxihrzkfk() {
     assert_delta!(
         aurora
             .path(Vec2::new(577.0, 480.0), Vec2::new(398.0, 595.0))
-            .len,
+            .unwrap()
+            .length,
         251.883
     );
 }
@@ -6650,7 +7313,8 @@ fn aurora_merged_skwjoiigyz() {
     assert_delta!(
         aurora
             .path(Vec2::new(47.0, 450.0), Vec2::new(6.0, 554.0))
-            .len,
+            .unwrap()
+            .length,
         249.712
     );
 }
@@ -6660,7 +7324,8 @@ fn aurora_merged_fdyobkxfat() {
     assert_delta!(
         aurora
             .path(Vec2::new(379.0, 526.0), Vec2::new(298.0, 498.0))
-            .len,
+            .unwrap()
+            .length,
         250.278
     );
 }
@@ -6670,7 +7335,8 @@ fn aurora_merged_nhiewlkamo() {
     assert_delta!(
         aurora
             .path(Vec2::new(314.0, 215.0), Vec2::new(555.0, 143.0))
-            .len,
+            .unwrap()
+            .length,
         257.637
     );
 }
@@ -6680,7 +7346,8 @@ fn aurora_merged_yohiktekko() {
     assert_delta!(
         aurora
             .path(Vec2::new(630.0, 253.0), Vec2::new(456.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         251.281
     );
 }
@@ -6690,7 +7357,8 @@ fn aurora_merged_fbskiksyuv() {
     assert_delta!(
         aurora
             .path(Vec2::new(207.0, 419.0), Vec2::new(377.0, 604.0))
-            .len,
+            .unwrap()
+            .length,
         263.3
     );
 }
@@ -6700,7 +7368,8 @@ fn aurora_merged_mmazofuyao() {
     assert_delta!(
         aurora
             .path(Vec2::new(43.0, 578.0), Vec2::new(89.0, 446.0))
-            .len,
+            .unwrap()
+            .length,
         250.51
     );
 }
@@ -6710,7 +7379,8 @@ fn aurora_merged_tkojjbmosy() {
     assert_delta!(
         aurora
             .path(Vec2::new(470.0, 51.0), Vec2::new(598.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         254.42
     );
 }
@@ -6720,7 +7390,8 @@ fn aurora_merged_uopdocidxg() {
     assert_delta!(
         aurora
             .path(Vec2::new(791.0, 188.0), Vec2::new(794.0, 338.0))
-            .len,
+            .unwrap()
+            .length,
         254.738
     );
 }
@@ -6730,7 +7401,8 @@ fn aurora_merged_malibdoigm() {
     assert_delta!(
         aurora
             .path(Vec2::new(169.0, 131.0), Vec2::new(72.0, 293.0))
-            .len,
+            .unwrap()
+            .length,
         255.546
     );
 }
@@ -6740,7 +7412,8 @@ fn aurora_merged_bjwdjlshbh() {
     assert_delta!(
         aurora
             .path(Vec2::new(827.0, 418.0), Vec2::new(701.0, 442.0))
-            .len,
+            .unwrap()
+            .length,
         256.967
     );
 }
@@ -6750,7 +7423,8 @@ fn aurora_merged_zcvivwdqlk() {
     assert_delta!(
         aurora
             .path(Vec2::new(848.0, 279.0), Vec2::new(753.0, 232.0))
-            .len,
+            .unwrap()
+            .length,
         256.52
     );
 }
@@ -6760,7 +7434,8 @@ fn aurora_merged_trixtkgfmh() {
     assert_delta!(
         aurora
             .path(Vec2::new(418.0, 547.0), Vec2::new(183.0, 487.0))
-            .len,
+            .unwrap()
+            .length,
         256.25
     );
 }
@@ -6770,7 +7445,8 @@ fn aurora_merged_bjymvzwebe() {
     assert_delta!(
         aurora
             .path(Vec2::new(815.0, 406.0), Vec2::new(944.0, 547.0))
-            .len,
+            .unwrap()
+            .length,
         255.274
     );
 }
@@ -6780,7 +7456,8 @@ fn aurora_merged_cdzodgenhv() {
     assert_delta!(
         aurora
             .path(Vec2::new(807.0, 198.0), Vec2::new(774.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         259.527
     );
 }
@@ -6790,7 +7467,8 @@ fn aurora_merged_jmubdazjqg() {
     assert_delta!(
         aurora
             .path(Vec2::new(836.0, 209.0), Vec2::new(1014.0, 379.0))
-            .len,
+            .unwrap()
+            .length,
         256.155
     );
 }
@@ -6800,7 +7478,8 @@ fn aurora_merged_ufjbdiynyu() {
     assert_delta!(
         aurora
             .path(Vec2::new(734.0, 407.0), Vec2::new(524.0, 488.0))
-            .len,
+            .unwrap()
+            .length,
         257.078
     );
 }
@@ -6810,7 +7489,8 @@ fn aurora_merged_vvvpyvsfhs() {
     assert_delta!(
         aurora
             .path(Vec2::new(238.0, 421.0), Vec2::new(237.0, 272.0))
-            .len,
+            .unwrap()
+            .length,
         255.65
     );
 }
@@ -6820,7 +7500,8 @@ fn aurora_merged_ouzvbrmytw() {
     assert_delta!(
         aurora
             .path(Vec2::new(497.0, 665.0), Vec2::new(285.0, 702.0))
-            .len,
+            .unwrap()
+            .length,
         263.069
     );
 }
@@ -6830,7 +7511,8 @@ fn aurora_merged_iqttyctzny() {
     assert_delta!(
         aurora
             .path(Vec2::new(364.0, 166.0), Vec2::new(621.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         264.982
     );
 }
@@ -6840,7 +7522,8 @@ fn aurora_merged_uxlfgmqizf() {
     assert_delta!(
         aurora
             .path(Vec2::new(650.0, 575.0), Vec2::new(746.0, 417.0))
-            .len,
+            .unwrap()
+            .length,
         261.928
     );
 }
@@ -6850,7 +7533,8 @@ fn aurora_merged_dxjwtgxpzl() {
     assert_delta!(
         aurora
             .path(Vec2::new(259.0, 293.0), Vec2::new(169.0, 187.0))
-            .len,
+            .unwrap()
+            .length,
         256.412
     );
 }
@@ -6860,7 +7544,8 @@ fn aurora_merged_gjbmkotxmi() {
     assert_delta!(
         aurora
             .path(Vec2::new(49.0, 536.0), Vec2::new(115.0, 303.0))
-            .len,
+            .unwrap()
+            .length,
         264.878
     );
 }
@@ -6870,7 +7555,8 @@ fn aurora_merged_imtualmmly() {
     assert_delta!(
         aurora
             .path(Vec2::new(883.0, 372.0), Vec2::new(880.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         259.556
     );
 }
@@ -6880,7 +7566,8 @@ fn aurora_merged_riaimtjfby() {
     assert_delta!(
         aurora
             .path(Vec2::new(866.0, 351.0), Vec2::new(832.0, 513.0))
-            .len,
+            .unwrap()
+            .length,
         261.386
     );
 }
@@ -6890,7 +7577,8 @@ fn aurora_merged_hvfzyabhlc() {
     assert_delta!(
         aurora
             .path(Vec2::new(102.0, 211.0), Vec2::new(359.0, 232.0))
-            .len,
+            .unwrap()
+            .length,
         269.746
     );
 }
@@ -6900,7 +7588,8 @@ fn aurora_merged_cxbvizozin() {
     assert_delta!(
         aurora
             .path(Vec2::new(822.0, 640.0), Vec2::new(746.0, 423.0))
-            .len,
+            .unwrap()
+            .length,
         266.339
     );
 }
@@ -6910,7 +7599,8 @@ fn aurora_merged_gqhuavgiqi() {
     assert_delta!(
         aurora
             .path(Vec2::new(684.0, 70.0), Vec2::new(827.0, 217.0))
-            .len,
+            .unwrap()
+            .length,
         261.986
     );
 }
@@ -6920,7 +7610,8 @@ fn aurora_merged_wffmmfbmdg() {
     assert_delta!(
         aurora
             .path(Vec2::new(419.0, 574.0), Vec2::new(646.0, 558.0))
-            .len,
+            .unwrap()
+            .length,
         267.048
     );
 }
@@ -6930,7 +7621,8 @@ fn aurora_merged_ypcssfqqro() {
     assert_delta!(
         aurora
             .path(Vec2::new(220.0, 511.0), Vec2::new(1.0, 441.0))
-            .len,
+            .unwrap()
+            .length,
         264.169
     );
 }
@@ -6940,7 +7632,8 @@ fn aurora_merged_hknnkyhqbi() {
     assert_delta!(
         aurora
             .path(Vec2::new(787.0, 432.0), Vec2::new(850.0, 350.0))
-            .len,
+            .unwrap()
+            .length,
         268.436
     );
 }
@@ -6950,7 +7643,8 @@ fn aurora_merged_kpzxfpybvm() {
     assert_delta!(
         aurora
             .path(Vec2::new(451.0, 72.0), Vec2::new(603.0, 243.0))
-            .len,
+            .unwrap()
+            .length,
         267.156
     );
 }
@@ -6960,7 +7654,8 @@ fn aurora_merged_jmertrzipd() {
     assert_delta!(
         aurora
             .path(Vec2::new(916.0, 612.0), Vec2::new(662.0, 652.0))
-            .len,
+            .unwrap()
+            .length,
         266.9
     );
 }
@@ -6970,7 +7665,8 @@ fn aurora_merged_tibndfqzwz() {
     assert_delta!(
         aurora
             .path(Vec2::new(843.0, 478.0), Vec2::new(609.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         262.484
     );
 }
@@ -6980,7 +7676,8 @@ fn aurora_merged_wpmqlpdgib() {
     assert_delta!(
         aurora
             .path(Vec2::new(391.0, 663.0), Vec2::new(138.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         266.84
     );
 }
@@ -6990,7 +7687,8 @@ fn aurora_merged_mxohbkkhly() {
     assert_delta!(
         aurora
             .path(Vec2::new(512.0, 164.0), Vec2::new(269.0, 83.0))
-            .len,
+            .unwrap()
+            .length,
         260.84
     );
 }
@@ -7000,7 +7698,8 @@ fn aurora_merged_npeffrkouh() {
     assert_delta!(
         aurora
             .path(Vec2::new(80.0, 160.0), Vec2::new(82.0, 299.0))
-            .len,
+            .unwrap()
+            .length,
         264.576
     );
 }
@@ -7010,7 +7709,8 @@ fn aurora_merged_padgrfvall() {
     assert_delta!(
         aurora
             .path(Vec2::new(280.0, 568.0), Vec2::new(407.0, 601.0))
-            .len,
+            .unwrap()
+            .length,
         259.138
     );
 }
@@ -7020,7 +7720,8 @@ fn aurora_merged_lcvijlkkst() {
     assert_delta!(
         aurora
             .path(Vec2::new(767.0, 429.0), Vec2::new(889.0, 353.0))
-            .len,
+            .unwrap()
+            .length,
         274.702
     );
 }
@@ -7030,7 +7731,8 @@ fn aurora_merged_bcwduskmvv() {
     assert_delta!(
         aurora
             .path(Vec2::new(362.0, 220.0), Vec2::new(125.0, 306.0))
-            .len,
+            .unwrap()
+            .length,
         263.792
     );
 }
@@ -7040,7 +7742,8 @@ fn aurora_merged_xcozgpbtgx() {
     assert_delta!(
         aurora
             .path(Vec2::new(764.0, 203.0), Vec2::new(940.0, 357.0))
-            .len,
+            .unwrap()
+            .length,
         269.994
     );
 }
@@ -7050,7 +7753,8 @@ fn aurora_merged_jdchuovhhl() {
     assert_delta!(
         aurora
             .path(Vec2::new(220.0, 54.0), Vec2::new(398.0, 231.0))
-            .len,
+            .unwrap()
+            .length,
         263.402
     );
 }
@@ -7060,7 +7764,8 @@ fn aurora_merged_exhrlyfedx() {
     assert_delta!(
         aurora
             .path(Vec2::new(67.0, 402.0), Vec2::new(313.0, 330.0))
-            .len,
+            .unwrap()
+            .length,
         266.703
     );
 }
@@ -7070,7 +7775,8 @@ fn aurora_merged_vfakmpvrmc() {
     assert_delta!(
         aurora
             .path(Vec2::new(149.0, 294.0), Vec2::new(408.0, 316.0))
-            .len,
+            .unwrap()
+            .length,
         266.903
     );
 }
@@ -7080,7 +7786,8 @@ fn aurora_merged_cyfquiytxe() {
     assert_delta!(
         aurora
             .path(Vec2::new(725.0, 260.0), Vec2::new(906.0, 127.0))
-            .len,
+            .unwrap()
+            .length,
         261.839
     );
 }
@@ -7090,7 +7797,8 @@ fn aurora_merged_cngzmfuaux() {
     assert_delta!(
         aurora
             .path(Vec2::new(99.0, 464.0), Vec2::new(28.0, 603.0))
-            .len,
+            .unwrap()
+            .length,
         269.578
     );
 }
@@ -7100,7 +7808,8 @@ fn aurora_merged_fqvemaxjar() {
     assert_delta!(
         aurora
             .path(Vec2::new(242.0, 489.0), Vec2::new(492.0, 568.0))
-            .len,
+            .unwrap()
+            .length,
         269.65
     );
 }
@@ -7110,7 +7819,8 @@ fn aurora_merged_rxvsuagyle() {
     assert_delta!(
         aurora
             .path(Vec2::new(525.0, 529.0), Vec2::new(614.0, 686.0))
-            .len,
+            .unwrap()
+            .length,
         267.8
     );
 }
@@ -7120,7 +7830,8 @@ fn aurora_merged_howasctedu() {
     assert_delta!(
         aurora
             .path(Vec2::new(789.0, 106.0), Vec2::new(535.0, 181.0))
-            .len,
+            .unwrap()
+            .length,
         268.19
     );
 }
@@ -7130,7 +7841,8 @@ fn aurora_merged_xzykmbkqqm() {
     assert_delta!(
         aurora
             .path(Vec2::new(325.0, 640.0), Vec2::new(60.0, 685.0))
-            .len,
+            .unwrap()
+            .length,
         276.914
     );
 }
@@ -7140,7 +7852,8 @@ fn aurora_merged_augvikwqzv() {
     assert_delta!(
         aurora
             .path(Vec2::new(443.0, 349.0), Vec2::new(694.0, 355.0))
-            .len,
+            .unwrap()
+            .length,
         271.022
     );
 }
@@ -7150,7 +7863,8 @@ fn aurora_merged_murlybvyzr() {
     assert_delta!(
         aurora
             .path(Vec2::new(817.0, 584.0), Vec2::new(557.0, 605.0))
-            .len,
+            .unwrap()
+            .length,
         274.758
     );
 }
@@ -7160,7 +7874,8 @@ fn aurora_merged_fzhvaarzdi() {
     assert_delta!(
         aurora
             .path(Vec2::new(72.0, 662.0), Vec2::new(17.0, 488.0))
-            .len,
+            .unwrap()
+            .length,
         275.481
     );
 }
@@ -7170,7 +7885,8 @@ fn aurora_merged_voaxntdrxv() {
     assert_delta!(
         aurora
             .path(Vec2::new(411.0, 521.0), Vec2::new(662.0, 453.0))
-            .len,
+            .unwrap()
+            .length,
         273.995
     );
 }
@@ -7180,7 +7896,8 @@ fn aurora_merged_xuuypshkii() {
     assert_delta!(
         aurora
             .path(Vec2::new(322.0, 375.0), Vec2::new(91.0, 425.0))
-            .len,
+            .unwrap()
+            .length,
         273.026
     );
 }
@@ -7190,7 +7907,8 @@ fn aurora_merged_kxepqwscie() {
     assert_delta!(
         aurora
             .path(Vec2::new(220.0, 493.0), Vec2::new(318.0, 693.0))
-            .len,
+            .unwrap()
+            .length,
         272.764
     );
 }
@@ -7200,7 +7918,8 @@ fn aurora_merged_jfjkzbqoxb() {
     assert_delta!(
         aurora
             .path(Vec2::new(78.0, 660.0), Vec2::new(21.0, 482.0))
-            .len,
+            .unwrap()
+            .length,
         275.712
     );
 }
@@ -7210,7 +7929,8 @@ fn aurora_merged_tebirlsfca() {
     assert_delta!(
         aurora
             .path(Vec2::new(247.0, 97.0), Vec2::new(179.0, 255.0))
-            .len,
+            .unwrap()
+            .length,
         269.23
     );
 }
@@ -7220,7 +7940,8 @@ fn aurora_merged_mvshdkipjw() {
     assert_delta!(
         aurora
             .path(Vec2::new(294.0, 499.0), Vec2::new(37.0, 545.0))
-            .len,
+            .unwrap()
+            .length,
         272.027
     );
 }
@@ -7230,7 +7951,8 @@ fn aurora_merged_xcmdoitzoj() {
     assert_delta!(
         aurora
             .path(Vec2::new(468.0, 163.0), Vec2::new(704.0, 196.0))
-            .len,
+            .unwrap()
+            .length,
         275.26
     );
 }
@@ -7240,7 +7962,8 @@ fn aurora_merged_qoselsdjnv() {
     assert_delta!(
         aurora
             .path(Vec2::new(546.0, 427.0), Vec2::new(760.0, 426.0))
-            .len,
+            .unwrap()
+            .length,
         272.081
     );
 }
@@ -7250,7 +7973,8 @@ fn aurora_merged_oxdqfcggwe() {
     assert_delta!(
         aurora
             .path(Vec2::new(940.0, 430.0), Vec2::new(853.0, 231.0))
-            .len,
+            .unwrap()
+            .length,
         278.698
     );
 }
@@ -7260,7 +7984,8 @@ fn aurora_merged_ufgmvdpfry() {
     assert_delta!(
         aurora
             .path(Vec2::new(414.0, 273.0), Vec2::new(157.0, 363.0))
-            .len,
+            .unwrap()
+            .length,
         275.684
     );
 }
@@ -7270,7 +7995,8 @@ fn aurora_merged_qgizwhcrfj() {
     assert_delta!(
         aurora
             .path(Vec2::new(410.0, 452.0), Vec2::new(449.0, 264.0))
-            .len,
+            .unwrap()
+            .length,
         278.757
     );
 }
@@ -7280,7 +8006,8 @@ fn aurora_merged_wtryjryecz() {
     assert_delta!(
         aurora
             .path(Vec2::new(250.0, 83.0), Vec2::new(115.0, 275.0))
-            .len,
+            .unwrap()
+            .length,
         275.379
     );
 }
@@ -7290,7 +8017,8 @@ fn aurora_merged_ozxbijekiw() {
     assert_delta!(
         aurora
             .path(Vec2::new(32.0, 653.0), Vec2::new(264.0, 500.0))
-            .len,
+            .unwrap()
+            .length,
         277.908
     );
 }
@@ -7300,7 +8028,8 @@ fn aurora_merged_opvgobqvmg() {
     assert_delta!(
         aurora
             .path(Vec2::new(196.0, 69.0), Vec2::new(348.0, 272.0))
-            .len,
+            .unwrap()
+            .length,
         271.375
     );
 }
@@ -7310,7 +8039,8 @@ fn aurora_merged_crorpduhyj() {
     assert_delta!(
         aurora
             .path(Vec2::new(704.0, 282.0), Vec2::new(792.0, 264.0))
-            .len,
+            .unwrap()
+            .length,
         270.881
     );
 }
@@ -7320,7 +8050,8 @@ fn aurora_merged_kqlcubcxcq() {
     assert_delta!(
         aurora
             .path(Vec2::new(329.0, 351.0), Vec2::new(528.0, 545.0))
-            .len,
+            .unwrap()
+            .length,
         287.643
     );
 }
@@ -7330,7 +8061,8 @@ fn aurora_merged_nqzptikqjr() {
     assert_delta!(
         aurora
             .path(Vec2::new(373.0, 726.0), Vec2::new(277.0, 602.0))
-            .len,
+            .unwrap()
+            .length,
         278.563
     );
 }
@@ -7340,7 +8072,8 @@ fn aurora_merged_fvunohwrec() {
     assert_delta!(
         aurora
             .path(Vec2::new(565.0, 607.0), Vec2::new(706.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         282.344
     );
 }
@@ -7350,7 +8083,8 @@ fn aurora_merged_zjlvmhzlok() {
     assert_delta!(
         aurora
             .path(Vec2::new(140.0, 637.0), Vec2::new(174.0, 453.0))
-            .len,
+            .unwrap()
+            .length,
         281.129
     );
 }
@@ -7360,7 +8094,8 @@ fn aurora_merged_ikxmaakjzk() {
     assert_delta!(
         aurora
             .path(Vec2::new(174.0, 592.0), Vec2::new(443.0, 648.0))
-            .len,
+            .unwrap()
+            .length,
         277.524
     );
 }
@@ -7370,7 +8105,8 @@ fn aurora_merged_ylepobnzvj() {
     assert_delta!(
         aurora
             .path(Vec2::new(774.0, 503.0), Vec2::new(624.0, 721.0))
-            .len,
+            .unwrap()
+            .length,
         283.334
     );
 }
@@ -7380,7 +8116,8 @@ fn aurora_merged_bophkdqwut() {
     assert_delta!(
         aurora
             .path(Vec2::new(393.0, 449.0), Vec2::new(149.0, 575.0))
-            .len,
+            .unwrap()
+            .length,
         274.612
     );
 }
@@ -7390,7 +8127,8 @@ fn aurora_merged_cjosueijzb() {
     assert_delta!(
         aurora
             .path(Vec2::new(349.0, 145.0), Vec2::new(482.0, 274.0))
-            .len,
+            .unwrap()
+            .length,
         277.004
     );
 }
@@ -7400,7 +8138,8 @@ fn aurora_merged_okopsvjllo() {
     assert_delta!(
         aurora
             .path(Vec2::new(712.0, 315.0), Vec2::new(435.0, 299.0))
-            .len,
+            .unwrap()
+            .length,
         281.968
     );
 }
@@ -7410,7 +8149,8 @@ fn aurora_merged_uafzmxgmee() {
     assert_delta!(
         aurora
             .path(Vec2::new(606.0, 170.0), Vec2::new(862.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         281.659
     );
 }
@@ -7420,7 +8160,8 @@ fn aurora_merged_klivphgiuv() {
     assert_delta!(
         aurora
             .path(Vec2::new(808.0, 270.0), Vec2::new(1012.0, 377.0))
-            .len,
+            .unwrap()
+            .length,
         283.56
     );
 }
@@ -7430,7 +8171,8 @@ fn aurora_merged_uyweujrabw() {
     assert_delta!(
         aurora
             .path(Vec2::new(363.0, 237.0), Vec2::new(295.0, 368.0))
-            .len,
+            .unwrap()
+            .length,
         282.696
     );
 }
@@ -7440,7 +8182,8 @@ fn aurora_merged_ogajplhvlf() {
     assert_delta!(
         aurora
             .path(Vec2::new(140.0, 137.0), Vec2::new(205.0, 302.0))
-            .len,
+            .unwrap()
+            .length,
         282.889
     );
 }
@@ -7450,7 +8193,8 @@ fn aurora_merged_niqoaogkai() {
     assert_delta!(
         aurora
             .path(Vec2::new(868.0, 299.0), Vec2::new(700.0, 420.0))
-            .len,
+            .unwrap()
+            .length,
         281.845
     );
 }
@@ -7460,7 +8204,8 @@ fn aurora_merged_qqtudcgjvc() {
     assert_delta!(
         aurora
             .path(Vec2::new(775.0, 420.0), Vec2::new(967.0, 347.0))
-            .len,
+            .unwrap()
+            .length,
         286.67
     );
 }
@@ -7470,7 +8215,8 @@ fn aurora_merged_soksjqpvdo() {
     assert_delta!(
         aurora
             .path(Vec2::new(794.0, 179.0), Vec2::new(878.0, 348.0))
-            .len,
+            .unwrap()
+            .length,
         279.989
     );
 }
@@ -7480,7 +8226,8 @@ fn aurora_merged_bpvkjcxcbd() {
     assert_delta!(
         aurora
             .path(Vec2::new(194.0, 310.0), Vec2::new(183.0, 109.0))
-            .len,
+            .unwrap()
+            .length,
         289.481
     );
 }
@@ -7490,7 +8237,8 @@ fn aurora_merged_xcrcuqziqu() {
     assert_delta!(
         aurora
             .path(Vec2::new(844.0, 199.0), Vec2::new(677.0, 369.0))
-            .len,
+            .unwrap()
+            .length,
         284.239
     );
 }
@@ -7500,7 +8248,8 @@ fn aurora_merged_mmbieervgi() {
     assert_delta!(
         aurora
             .path(Vec2::new(686.0, 382.0), Vec2::new(505.0, 448.0))
-            .len,
+            .unwrap()
+            .length,
         280.895
     );
 }
@@ -7510,7 +8259,8 @@ fn aurora_merged_owsfmgmnob() {
     assert_delta!(
         aurora
             .path(Vec2::new(743.0, 280.0), Vec2::new(783.0, 355.0))
-            .len,
+            .unwrap()
+            .length,
         283.718
     );
 }
@@ -7520,7 +8270,8 @@ fn aurora_merged_mibovvscqj() {
     assert_delta!(
         aurora
             .path(Vec2::new(62.0, 617.0), Vec2::new(324.0, 550.0))
-            .len,
+            .unwrap()
+            .length,
         284.318
     );
 }
@@ -7530,7 +8281,8 @@ fn aurora_merged_xnzpzjzyka() {
     assert_delta!(
         aurora
             .path(Vec2::new(213.0, 346.0), Vec2::new(361.0, 202.0))
-            .len,
+            .unwrap()
+            .length,
         286.119
     );
 }
@@ -7540,7 +8292,8 @@ fn aurora_merged_ufetrmotfo() {
     assert_delta!(
         aurora
             .path(Vec2::new(96.0, 597.0), Vec2::new(145.0, 421.0))
-            .len,
+            .unwrap()
+            .length,
         291.28
     );
 }
@@ -7550,7 +8303,8 @@ fn aurora_merged_ayagwmopio() {
     assert_delta!(
         aurora
             .path(Vec2::new(570.0, 343.0), Vec2::new(573.0, 132.0))
-            .len,
+            .unwrap()
+            .length,
         289.533
     );
 }
@@ -7560,7 +8314,8 @@ fn aurora_merged_cjvxmcvuxw() {
     assert_delta!(
         aurora
             .path(Vec2::new(497.0, 158.0), Vec2::new(762.0, 259.0))
-            .len,
+            .unwrap()
+            .length,
         285.367
     );
 }
@@ -7570,7 +8325,8 @@ fn aurora_merged_pgwqdfmegr() {
     assert_delta!(
         aurora
             .path(Vec2::new(838.0, 248.0), Vec2::new(625.0, 95.0))
-            .len,
+            .unwrap()
+            .length,
         283.857
     );
 }
@@ -7580,7 +8336,8 @@ fn aurora_merged_vazoushhxp() {
     assert_delta!(
         aurora
             .path(Vec2::new(113.0, 478.0), Vec2::new(110.0, 220.0))
-            .len,
+            .unwrap()
+            .length,
         287.128
     );
 }
@@ -7590,7 +8347,8 @@ fn aurora_merged_jkwyadxent() {
     assert_delta!(
         aurora
             .path(Vec2::new(46.0, 518.0), Vec2::new(176.0, 266.0))
-            .len,
+            .unwrap()
+            .length,
         289.133
     );
 }
@@ -7600,7 +8358,8 @@ fn aurora_merged_mnyrvnctdk() {
     assert_delta!(
         aurora
             .path(Vec2::new(655.0, 636.0), Vec2::new(458.0, 493.0))
-            .len,
+            .unwrap()
+            .length,
         284.045
     );
 }
@@ -7610,7 +8369,8 @@ fn aurora_merged_yjmvmqidwy() {
     assert_delta!(
         aurora
             .path(Vec2::new(648.0, 585.0), Vec2::new(900.0, 479.0))
-            .len,
+            .unwrap()
+            .length,
         282.311
     );
 }
@@ -7620,7 +8380,8 @@ fn aurora_merged_lrzvfaryfy() {
     assert_delta!(
         aurora
             .path(Vec2::new(385.0, 339.0), Vec2::new(472.0, 129.0))
-            .len,
+            .unwrap()
+            .length,
         294.848
     );
 }
@@ -7630,7 +8391,8 @@ fn aurora_merged_hwurtdpbgj() {
     assert_delta!(
         aurora
             .path(Vec2::new(629.0, 239.0), Vec2::new(347.0, 210.0))
-            .len,
+            .unwrap()
+            .length,
         290.739
     );
 }
@@ -7640,7 +8402,8 @@ fn aurora_merged_wghgrftyex() {
     assert_delta!(
         aurora
             .path(Vec2::new(259.0, 627.0), Vec2::new(27.0, 487.0))
-            .len,
+            .unwrap()
+            .length,
         290.22
     );
 }
@@ -7650,7 +8413,8 @@ fn aurora_merged_hhfcjlotyz() {
     assert_delta!(
         aurora
             .path(Vec2::new(808.0, 343.0), Vec2::new(553.0, 211.0))
-            .len,
+            .unwrap()
+            .length,
         287.153
     );
 }
@@ -7660,7 +8424,8 @@ fn aurora_merged_rdgcujbuzs() {
     assert_delta!(
         aurora
             .path(Vec2::new(477.0, 124.0), Vec2::new(454.0, 361.0))
-            .len,
+            .unwrap()
+            .length,
         295.356
     );
 }
@@ -7670,7 +8435,8 @@ fn aurora_merged_xdlybhkpan() {
     assert_delta!(
         aurora
             .path(Vec2::new(233.0, 106.0), Vec2::new(492.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         290.251
     );
 }
@@ -7680,7 +8446,8 @@ fn aurora_merged_jhlczcidrt() {
     assert_delta!(
         aurora
             .path(Vec2::new(441.0, 141.0), Vec2::new(552.0, 346.0))
-            .len,
+            .unwrap()
+            .length,
         289.594
     );
 }
@@ -7690,7 +8457,8 @@ fn aurora_merged_roinuymksf() {
     assert_delta!(
         aurora
             .path(Vec2::new(287.0, 486.0), Vec2::new(281.0, 715.0))
-            .len,
+            .unwrap()
+            .length,
         295.692
     );
 }
@@ -7700,7 +8468,8 @@ fn aurora_merged_pekyuxhvfm() {
     assert_delta!(
         aurora
             .path(Vec2::new(275.0, 25.0), Vec2::new(111.0, 230.0))
-            .len,
+            .unwrap()
+            .length,
         291.598
     );
 }
@@ -7710,7 +8479,8 @@ fn aurora_merged_eirovbsnhn() {
     assert_delta!(
         aurora
             .path(Vec2::new(724.0, 529.0), Vec2::new(867.0, 420.0))
-            .len,
+            .unwrap()
+            .length,
         285.903
     );
 }
@@ -7720,7 +8490,8 @@ fn aurora_merged_svpnfwlcrn() {
     assert_delta!(
         aurora
             .path(Vec2::new(668.0, 353.0), Vec2::new(823.0, 260.0))
-            .len,
+            .unwrap()
+            .length,
         288.852
     );
 }
@@ -7730,7 +8501,8 @@ fn aurora_merged_sgenpjptla() {
     assert_delta!(
         aurora
             .path(Vec2::new(39.0, 164.0), Vec2::new(13.0, 327.0))
-            .len,
+            .unwrap()
+            .length,
         291.061
     );
 }
@@ -7740,7 +8512,8 @@ fn aurora_merged_lnlkjkvarj() {
     assert_delta!(
         aurora
             .path(Vec2::new(496.0, 591.0), Vec2::new(355.0, 623.0))
-            .len,
+            .unwrap()
+            .length,
         297.477
     );
 }
@@ -7750,7 +8523,8 @@ fn aurora_merged_anjblqruky() {
     assert_delta!(
         aurora
             .path(Vec2::new(228.0, 384.0), Vec2::new(349.0, 210.0))
-            .len,
+            .unwrap()
+            .length,
         296.628
     );
 }
@@ -7760,7 +8534,8 @@ fn aurora_merged_lsirsfxfte() {
     assert_delta!(
         aurora
             .path(Vec2::new(878.0, 576.0), Vec2::new(636.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         291.473
     );
 }
@@ -7770,7 +8545,8 @@ fn aurora_merged_kidbqynrms() {
     assert_delta!(
         aurora
             .path(Vec2::new(749.0, 705.0), Vec2::new(571.0, 700.0))
-            .len,
+            .unwrap()
+            .length,
         295.334
     );
 }
@@ -7780,7 +8556,8 @@ fn aurora_merged_kavwdtkpcn() {
     assert_delta!(
         aurora
             .path(Vec2::new(270.0, 69.0), Vec2::new(17.0, 193.0))
-            .len,
+            .unwrap()
+            .length,
         291.812
     );
 }
@@ -7790,7 +8567,8 @@ fn aurora_merged_oaugczueuq() {
     assert_delta!(
         aurora
             .path(Vec2::new(230.0, 356.0), Vec2::new(281.0, 200.0))
-            .len,
+            .unwrap()
+            .length,
         296.23
     );
 }
@@ -7800,7 +8578,8 @@ fn aurora_merged_qcyjaslcic() {
     assert_delta!(
         aurora
             .path(Vec2::new(139.0, 490.0), Vec2::new(309.0, 618.0))
-            .len,
+            .unwrap()
+            .length,
         296.522
     );
 }
@@ -7810,7 +8589,8 @@ fn aurora_merged_pppegwvxgu() {
     assert_delta!(
         aurora
             .path(Vec2::new(505.0, 149.0), Vec2::new(449.0, 383.0))
-            .len,
+            .unwrap()
+            .length,
         298.154
     );
 }
@@ -7820,7 +8600,8 @@ fn aurora_merged_dfgcdxcckg() {
     assert_delta!(
         aurora
             .path(Vec2::new(51.0, 299.0), Vec2::new(341.0, 313.0))
-            .len,
+            .unwrap()
+            .length,
         298.338
     );
 }
@@ -7830,7 +8611,8 @@ fn aurora_merged_mylnclcpkm() {
     assert_delta!(
         aurora
             .path(Vec2::new(267.0, 376.0), Vec2::new(523.0, 263.0))
-            .len,
+            .unwrap()
+            .length,
         293.847
     );
 }
@@ -7840,7 +8622,8 @@ fn aurora_merged_kwomjvwvwv() {
     assert_delta!(
         aurora
             .path(Vec2::new(392.0, 627.0), Vec2::new(563.0, 550.0))
-            .len,
+            .unwrap()
+            .length,
         297.653
     );
 }
@@ -7850,7 +8633,8 @@ fn aurora_merged_ezwotwjdbr() {
     assert_delta!(
         aurora
             .path(Vec2::new(132.0, 100.0), Vec2::new(405.0, 158.0))
-            .len,
+            .unwrap()
+            .length,
         294.013
     );
 }
@@ -7860,7 +8644,8 @@ fn aurora_merged_vrizddrgiv() {
     assert_delta!(
         aurora
             .path(Vec2::new(660.0, 196.0), Vec2::new(872.0, 289.0))
-            .len,
+            .unwrap()
+            .length,
         299.148
     );
 }
@@ -7870,7 +8655,8 @@ fn aurora_merged_ypofxhlvrk() {
     assert_delta!(
         aurora
             .path(Vec2::new(335.0, 323.0), Vec2::new(510.0, 139.0))
-            .len,
+            .unwrap()
+            .length,
         297.536
     );
 }
@@ -7880,7 +8666,8 @@ fn aurora_merged_vlfibxxucp() {
     assert_delta!(
         aurora
             .path(Vec2::new(77.0, 375.0), Vec2::new(337.0, 265.0))
-            .len,
+            .unwrap()
+            .length,
         298.86
     );
 }
@@ -7890,7 +8677,8 @@ fn aurora_merged_znzeumxknm() {
     assert_delta!(
         aurora
             .path(Vec2::new(698.0, 615.0), Vec2::new(727.0, 409.0))
-            .len,
+            .unwrap()
+            .length,
         304.138
     );
 }
@@ -7900,7 +8688,8 @@ fn aurora_merged_bejyheayae() {
     assert_delta!(
         aurora
             .path(Vec2::new(458.0, 194.0), Vec2::new(166.0, 132.0))
-            .len,
+            .unwrap()
+            .length,
         299.568
     );
 }
@@ -7910,7 +8699,8 @@ fn aurora_merged_wwaygufzhi() {
     assert_delta!(
         aurora
             .path(Vec2::new(631.0, 464.0), Vec2::new(834.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         299.631
     );
 }
@@ -7920,7 +8710,8 @@ fn aurora_merged_oshpjqbgox() {
     assert_delta!(
         aurora
             .path(Vec2::new(86.0, 565.0), Vec2::new(32.0, 428.0))
-            .len,
+            .unwrap()
+            .length,
         298.591
     );
 }
@@ -7930,7 +8721,8 @@ fn aurora_merged_srspyyqbol() {
     assert_delta!(
         aurora
             .path(Vec2::new(376.0, 719.0), Vec2::new(233.0, 646.0))
-            .len,
+            .unwrap()
+            .length,
         302.246
     );
 }
@@ -7940,7 +8732,8 @@ fn aurora_merged_tiezgokzni() {
     assert_delta!(
         aurora
             .path(Vec2::new(335.0, 611.0), Vec2::new(138.0, 483.0))
-            .len,
+            .unwrap()
+            .length,
         302.391
     );
 }
@@ -7950,7 +8743,8 @@ fn aurora_merged_lmhilabxqj() {
     assert_delta!(
         aurora
             .path(Vec2::new(701.0, 223.0), Vec2::new(424.0, 171.0))
-            .len,
+            .unwrap()
+            .length,
         298.38
     );
 }
@@ -7960,7 +8754,8 @@ fn aurora_merged_bsqqjnqxis() {
     assert_delta!(
         aurora
             .path(Vec2::new(405.0, 134.0), Vec2::new(115.0, 177.0))
-            .len,
+            .unwrap()
+            .length,
         306.041
     );
 }
@@ -7970,7 +8765,8 @@ fn aurora_merged_vnmexxheld() {
     assert_delta!(
         aurora
             .path(Vec2::new(660.0, 614.0), Vec2::new(946.0, 578.0))
-            .len,
+            .unwrap()
+            .length,
         300.536
     );
 }
@@ -7980,7 +8776,8 @@ fn aurora_merged_ytlcusnlbf() {
     assert_delta!(
         aurora
             .path(Vec2::new(216.0, 305.0), Vec2::new(427.0, 485.0))
-            .len,
+            .unwrap()
+            .length,
         305.795
     );
 }
@@ -7990,7 +8787,8 @@ fn aurora_merged_azponicdya() {
     assert_delta!(
         aurora
             .path(Vec2::new(448.0, 395.0), Vec2::new(420.0, 463.0))
-            .len,
+            .unwrap()
+            .length,
         309.479
     );
 }
@@ -8000,7 +8798,8 @@ fn aurora_merged_zpcvsgyhpy() {
     assert_delta!(
         aurora
             .path(Vec2::new(672.0, 103.0), Vec2::new(859.0, 183.0))
-            .len,
+            .unwrap()
+            .length,
         303.844
     );
 }
@@ -8010,7 +8809,8 @@ fn aurora_merged_nzuprwpejp() {
     assert_delta!(
         aurora
             .path(Vec2::new(466.0, 531.0), Vec2::new(257.0, 578.0))
-            .len,
+            .unwrap()
+            .length,
         299.773
     );
 }
@@ -8020,7 +8820,8 @@ fn aurora_merged_javqjaipis() {
     assert_delta!(
         aurora
             .path(Vec2::new(228.0, 97.0), Vec2::new(179.0, 311.0))
-            .len,
+            .unwrap()
+            .length,
         303.671
     );
 }
@@ -8030,7 +8831,8 @@ fn aurora_merged_whugwqppiv() {
     assert_delta!(
         aurora
             .path(Vec2::new(543.0, 277.0), Vec2::new(637.0, 96.0))
-            .len,
+            .unwrap()
+            .length,
         301.05
     );
 }
@@ -8040,7 +8842,8 @@ fn aurora_merged_nrnquntapn() {
     assert_delta!(
         aurora
             .path(Vec2::new(896.0, 175.0), Vec2::new(693.0, 318.0))
-            .len,
+            .unwrap()
+            .length,
         306.758
     );
 }
@@ -8050,7 +8853,8 @@ fn aurora_merged_soxacrqfza() {
     assert_delta!(
         aurora
             .path(Vec2::new(525.0, 654.0), Vec2::new(311.0, 541.0))
-            .len,
+            .unwrap()
+            .length,
         304.721
     );
 }
@@ -8060,7 +8864,8 @@ fn aurora_merged_rtpcettpyv() {
     assert_delta!(
         aurora
             .path(Vec2::new(470.0, 462.0), Vec2::new(700.0, 615.0))
-            .len,
+            .unwrap()
+            .length,
         303.386
     );
 }
@@ -8070,7 +8875,8 @@ fn aurora_merged_zjsoolmjrz() {
     assert_delta!(
         aurora
             .path(Vec2::new(784.0, 734.0), Vec2::new(619.0, 531.0))
-            .len,
+            .unwrap()
+            .length,
         308.02
     );
 }
@@ -8080,7 +8886,8 @@ fn aurora_merged_oqaythnqmd() {
     assert_delta!(
         aurora
             .path(Vec2::new(646.0, 412.0), Vec2::new(892.0, 285.0))
-            .len,
+            .unwrap()
+            .length,
         300.29
     );
 }
@@ -8090,7 +8897,8 @@ fn aurora_merged_avozuzmibp() {
     assert_delta!(
         aurora
             .path(Vec2::new(376.0, 192.0), Vec2::new(588.0, 27.0))
-            .len,
+            .unwrap()
+            .length,
         306.702
     );
 }
@@ -8100,7 +8908,8 @@ fn aurora_merged_gmunjmxwgc() {
     assert_delta!(
         aurora
             .path(Vec2::new(223.0, 151.0), Vec2::new(196.0, 360.0))
-            .len,
+            .unwrap()
+            .length,
         304.762
     );
 }
@@ -8110,7 +8919,8 @@ fn aurora_merged_erbhrsfkgo() {
     assert_delta!(
         aurora
             .path(Vec2::new(246.0, 586.0), Vec2::new(455.0, 560.0))
-            .len,
+            .unwrap()
+            .length,
         304.17
     );
 }
@@ -8120,7 +8930,8 @@ fn aurora_merged_yhingiykge() {
     assert_delta!(
         aurora
             .path(Vec2::new(445.0, 69.0), Vec2::new(645.0, 260.0))
-            .len,
+            .unwrap()
+            .length,
         309.947
     );
 }
@@ -8130,7 +8941,8 @@ fn aurora_merged_fbnnyuaaba() {
     assert_delta!(
         aurora
             .path(Vec2::new(628.0, 501.0), Vec2::new(647.0, 347.0))
-            .len,
+            .unwrap()
+            .length,
         307.523
     );
 }
@@ -8140,7 +8952,8 @@ fn aurora_merged_uscthqeivb() {
     assert_delta!(
         aurora
             .path(Vec2::new(903.0, 353.0), Vec2::new(711.0, 438.0))
-            .len,
+            .unwrap()
+            .length,
         311.782
     );
 }
@@ -8150,7 +8963,8 @@ fn aurora_merged_sslanvfxuo() {
     assert_delta!(
         aurora
             .path(Vec2::new(62.0, 552.0), Vec2::new(290.0, 664.0))
-            .len,
+            .unwrap()
+            .length,
         308.318
     );
 }
@@ -8160,7 +8974,8 @@ fn aurora_merged_uxivdabzox() {
     assert_delta!(
         aurora
             .path(Vec2::new(491.0, 536.0), Vec2::new(798.0, 546.0))
-            .len,
+            .unwrap()
+            .length,
         313.495
     );
 }
@@ -8170,7 +8985,8 @@ fn aurora_merged_ryazwyukqt() {
     assert_delta!(
         aurora
             .path(Vec2::new(142.0, 142.0), Vec2::new(452.0, 190.0))
-            .len,
+            .unwrap()
+            .length,
         314.74
     );
 }
@@ -8180,7 +8996,8 @@ fn aurora_merged_btjeeutyvb() {
     assert_delta!(
         aurora
             .path(Vec2::new(698.0, 188.0), Vec2::new(470.0, 260.0))
-            .len,
+            .unwrap()
+            .length,
         312.797
     );
 }
@@ -8190,7 +9007,8 @@ fn aurora_merged_ihtveuohqf() {
     assert_delta!(
         aurora
             .path(Vec2::new(197.0, 84.0), Vec2::new(451.0, 235.0))
-            .len,
+            .unwrap()
+            .length,
         311.626
     );
 }
@@ -8200,7 +9018,8 @@ fn aurora_merged_ufneapvamx() {
     assert_delta!(
         aurora
             .path(Vec2::new(398.0, 245.0), Vec2::new(97.0, 178.0))
-            .len,
+            .unwrap()
+            .length,
         312.181
     );
 }
@@ -8210,7 +9029,8 @@ fn aurora_merged_tllfstxsrw() {
     assert_delta!(
         aurora
             .path(Vec2::new(721.0, 370.0), Vec2::new(509.0, 231.0))
-            .len,
+            .unwrap()
+            .length,
         305.99
     );
 }
@@ -8220,7 +9040,8 @@ fn aurora_merged_lsxeznrghg() {
     assert_delta!(
         aurora
             .path(Vec2::new(129.0, 670.0), Vec2::new(73.0, 448.0))
-            .len,
+            .unwrap()
+            .length,
         312.338
     );
 }
@@ -8230,7 +9051,8 @@ fn aurora_merged_jalljjtoyq() {
     assert_delta!(
         aurora
             .path(Vec2::new(778.0, 524.0), Vec2::new(516.0, 659.0))
-            .len,
+            .unwrap()
+            .length,
         317.78
     );
 }
@@ -8240,7 +9062,8 @@ fn aurora_merged_lnnctsnyst() {
     assert_delta!(
         aurora
             .path(Vec2::new(259.0, 78.0), Vec2::new(195.0, 271.0))
-            .len,
+            .unwrap()
+            .length,
         313.106
     );
 }
@@ -8250,7 +9073,8 @@ fn aurora_merged_lyqxkeqapq() {
     assert_delta!(
         aurora
             .path(Vec2::new(255.0, 572.0), Vec2::new(66.0, 395.0))
-            .len,
+            .unwrap()
+            .length,
         318.313
     );
 }
@@ -8260,7 +9084,8 @@ fn aurora_merged_oxgakrlxgd() {
     assert_delta!(
         aurora
             .path(Vec2::new(767.0, 610.0), Vec2::new(483.0, 508.0))
-            .len,
+            .unwrap()
+            .length,
         315.955
     );
 }
@@ -8270,7 +9095,8 @@ fn aurora_merged_tparsumemw() {
     assert_delta!(
         aurora
             .path(Vec2::new(63.0, 333.0), Vec2::new(286.0, 504.0))
-            .len,
+            .unwrap()
+            .length,
         316.434
     );
 }
@@ -8280,7 +9106,8 @@ fn aurora_merged_norlvrfaqy() {
     assert_delta!(
         aurora
             .path(Vec2::new(346.0, 263.0), Vec2::new(45.0, 335.0))
-            .len,
+            .unwrap()
+            .length,
         313.267
     );
 }
@@ -8290,7 +9117,8 @@ fn aurora_merged_udtbeuscnm() {
     assert_delta!(
         aurora
             .path(Vec2::new(336.0, 660.0), Vec2::new(174.0, 498.0))
-            .len,
+            .unwrap()
+            .length,
         314.05
     );
 }
@@ -8300,7 +9128,8 @@ fn aurora_merged_idpwqwcqgs() {
     assert_delta!(
         aurora
             .path(Vec2::new(696.0, 248.0), Vec2::new(440.0, 164.0))
-            .len,
+            .unwrap()
+            .length,
         309.947
     );
 }
@@ -8310,7 +9139,8 @@ fn aurora_merged_znmodhwibs() {
     assert_delta!(
         aurora
             .path(Vec2::new(212.0, 225.0), Vec2::new(509.0, 153.0))
-            .len,
+            .unwrap()
+            .length,
         311.711
     );
 }
@@ -8320,7 +9150,8 @@ fn aurora_merged_kedgnkebev() {
     assert_delta!(
         aurora
             .path(Vec2::new(486.0, 397.0), Vec2::new(565.0, 167.0))
-            .len,
+            .unwrap()
+            .length,
         313.135
     );
 }
@@ -8330,7 +9161,8 @@ fn aurora_merged_bxzjlwqvzm() {
     assert_delta!(
         aurora
             .path(Vec2::new(380.0, 307.0), Vec2::new(258.0, 509.0))
-            .len,
+            .unwrap()
+            .length,
         318.701
     );
 }
@@ -8340,7 +9172,8 @@ fn aurora_merged_bmljnilxik() {
     assert_delta!(
         aurora
             .path(Vec2::new(141.0, 366.0), Vec2::new(337.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         314.686
     );
 }
@@ -8350,7 +9183,8 @@ fn aurora_merged_cuhtszzqwx() {
     assert_delta!(
         aurora
             .path(Vec2::new(428.0, 265.0), Vec2::new(329.0, 220.0))
-            .len,
+            .unwrap()
+            .length,
         316.204
     );
 }
@@ -8360,7 +9194,8 @@ fn aurora_merged_ywyxglgxim() {
     assert_delta!(
         aurora
             .path(Vec2::new(716.0, 345.0), Vec2::new(494.0, 166.0))
-            .len,
+            .unwrap()
+            .length,
         316.741
     );
 }
@@ -8370,7 +9205,8 @@ fn aurora_merged_uhextmqioe() {
     assert_delta!(
         aurora
             .path(Vec2::new(193.0, 100.0), Vec2::new(501.0, 56.0))
-            .len,
+            .unwrap()
+            .length,
         315.439
     );
 }
@@ -8380,7 +9216,8 @@ fn aurora_merged_hfwicqfqmg() {
     assert_delta!(
         aurora
             .path(Vec2::new(662.0, 447.0), Vec2::new(711.0, 697.0))
-            .len,
+            .unwrap()
+            .length,
         321.433
     );
 }
@@ -8390,7 +9227,8 @@ fn aurora_merged_qoulxmmbmp() {
     assert_delta!(
         aurora
             .path(Vec2::new(207.0, 436.0), Vec2::new(378.0, 640.0))
-            .len,
+            .unwrap()
+            .length,
         318.014
     );
 }
@@ -8400,7 +9238,8 @@ fn aurora_merged_fqewimqmaq() {
     assert_delta!(
         aurora
             .path(Vec2::new(284.0, 553.0), Vec2::new(599.0, 539.0))
-            .len,
+            .unwrap()
+            .length,
         323.287
     );
 }
@@ -8410,7 +9249,8 @@ fn aurora_merged_zvfzikeltk() {
     assert_delta!(
         aurora
             .path(Vec2::new(448.0, 244.0), Vec2::new(559.0, 18.0))
-            .len,
+            .unwrap()
+            .length,
         315.571
     );
 }
@@ -8420,7 +9260,8 @@ fn aurora_merged_xekvssszil() {
     assert_delta!(
         aurora
             .path(Vec2::new(716.0, 363.0), Vec2::new(420.0, 347.0))
-            .len,
+            .unwrap()
+            .length,
         317.424
     );
 }
@@ -8430,7 +9271,8 @@ fn aurora_merged_zooyuvgips() {
     assert_delta!(
         aurora
             .path(Vec2::new(558.0, 678.0), Vec2::new(243.0, 660.0))
-            .len,
+            .unwrap()
+            .length,
         323.434
     );
 }
@@ -8440,7 +9282,8 @@ fn aurora_merged_charvhxtoc() {
     assert_delta!(
         aurora
             .path(Vec2::new(59.0, 514.0), Vec2::new(233.0, 298.0))
-            .len,
+            .unwrap()
+            .length,
         319.251
     );
 }
@@ -8450,7 +9293,8 @@ fn aurora_merged_vumqtkpmtb() {
     assert_delta!(
         aurora
             .path(Vec2::new(117.0, 393.0), Vec2::new(3.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         319.349
     );
 }
@@ -8460,7 +9304,8 @@ fn aurora_merged_nufildkjoo() {
     assert_delta!(
         aurora
             .path(Vec2::new(550.0, 451.0), Vec2::new(807.0, 422.0))
-            .len,
+            .unwrap()
+            .length,
         320.221
     );
 }
@@ -8470,7 +9315,8 @@ fn aurora_merged_jhmaseaksu() {
     assert_delta!(
         aurora
             .path(Vec2::new(737.0, 683.0), Vec2::new(583.0, 533.0))
-            .len,
+            .unwrap()
+            .length,
         325.535
     );
 }
@@ -8480,7 +9326,8 @@ fn aurora_merged_azbomkipvo() {
     assert_delta!(
         aurora
             .path(Vec2::new(235.0, 561.0), Vec2::new(394.0, 546.0))
-            .len,
+            .unwrap()
+            .length,
         317.456
     );
 }
@@ -8490,7 +9337,8 @@ fn aurora_merged_qmfoeptbkc() {
     assert_delta!(
         aurora
             .path(Vec2::new(376.0, 330.0), Vec2::new(294.0, 218.0))
-            .len,
+            .unwrap()
+            .length,
         317.698
     );
 }
@@ -8500,7 +9348,8 @@ fn aurora_merged_issdngxgmr() {
     assert_delta!(
         aurora
             .path(Vec2::new(324.0, 343.0), Vec2::new(392.0, 569.0))
-            .len,
+            .unwrap()
+            .length,
         327.473
     );
 }
@@ -8510,7 +9359,8 @@ fn aurora_merged_njsaoqykrp() {
     assert_delta!(
         aurora
             .path(Vec2::new(283.0, 537.0), Vec2::new(597.0, 541.0))
-            .len,
+            .unwrap()
+            .length,
         324.725
     );
 }
@@ -8520,7 +9370,8 @@ fn aurora_merged_yjlrnmnvhe() {
     assert_delta!(
         aurora
             .path(Vec2::new(969.0, 274.0), Vec2::new(814.0, 469.0))
-            .len,
+            .unwrap()
+            .length,
         331.225
     );
 }
@@ -8530,7 +9381,8 @@ fn aurora_merged_trdtnyywws() {
     assert_delta!(
         aurora
             .path(Vec2::new(598.0, 474.0), Vec2::new(791.0, 322.0))
-            .len,
+            .unwrap()
+            .length,
         321.992
     );
 }
@@ -8540,7 +9392,8 @@ fn aurora_merged_geugcabvsz() {
     assert_delta!(
         aurora
             .path(Vec2::new(461.0, 601.0), Vec2::new(346.0, 720.0))
-            .len,
+            .unwrap()
+            .length,
         327.48
     );
 }
@@ -8550,7 +9403,8 @@ fn aurora_merged_frqymazdcv() {
     assert_delta!(
         aurora
             .path(Vec2::new(101.0, 670.0), Vec2::new(349.0, 581.0))
-            .len,
+            .unwrap()
+            .length,
         325.527
     );
 }
@@ -8560,7 +9414,8 @@ fn aurora_merged_ddidhjstem() {
     assert_delta!(
         aurora
             .path(Vec2::new(93.0, 696.0), Vec2::new(318.0, 528.0))
-            .len,
+            .unwrap()
+            .length,
         325.764
     );
 }
@@ -8570,7 +9425,8 @@ fn aurora_merged_vgwwvizzuk() {
     assert_delta!(
         aurora
             .path(Vec2::new(256.0, 703.0), Vec2::new(28.0, 595.0))
-            .len,
+            .unwrap()
+            .length,
         330.379
     );
 }
@@ -8580,7 +9436,8 @@ fn aurora_merged_yiwwyrauxy() {
     assert_delta!(
         aurora
             .path(Vec2::new(539.0, 686.0), Vec2::new(246.0, 558.0))
-            .len,
+            .unwrap()
+            .length,
         323.091
     );
 }
@@ -8590,7 +9447,8 @@ fn aurora_merged_mewetxaqfy() {
     assert_delta!(
         aurora
             .path(Vec2::new(648.0, 161.0), Vec2::new(334.0, 136.0))
-            .len,
+            .unwrap()
+            .length,
         324.917
     );
 }
@@ -8600,7 +9458,8 @@ fn aurora_merged_plyiuhywaw() {
     assert_delta!(
         aurora
             .path(Vec2::new(925.0, 344.0), Vec2::new(619.0, 328.0))
-            .len,
+            .unwrap()
+            .length,
         326.091
     );
 }
@@ -8610,7 +9469,8 @@ fn aurora_merged_pxgfdjnqzt() {
     assert_delta!(
         aurora
             .path(Vec2::new(143.0, 438.0), Vec2::new(431.0, 326.0))
-            .len,
+            .unwrap()
+            .length,
         323.525
     );
 }
@@ -8620,7 +9480,8 @@ fn aurora_merged_vcmjykmfui() {
     assert_delta!(
         aurora
             .path(Vec2::new(757.0, 114.0), Vec2::new(899.0, 287.0))
-            .len,
+            .unwrap()
+            .length,
         328.351
     );
 }
@@ -8630,7 +9491,8 @@ fn aurora_merged_hgzvmrcroz() {
     assert_delta!(
         aurora
             .path(Vec2::new(22.0, 158.0), Vec2::new(308.0, 292.0))
-            .len,
+            .unwrap()
+            .length,
         328.302
     );
 }
@@ -8640,7 +9502,8 @@ fn aurora_merged_iejvnoeinr() {
     assert_delta!(
         aurora
             .path(Vec2::new(128.0, 550.0), Vec2::new(117.0, 323.0))
-            .len,
+            .unwrap()
+            .length,
         325.882
     );
 }
@@ -8650,7 +9513,8 @@ fn aurora_merged_ngqyeaqnfl() {
     assert_delta!(
         aurora
             .path(Vec2::new(362.0, 78.0), Vec2::new(669.0, 75.0))
-            .len,
+            .unwrap()
+            .length,
         323.802
     );
 }
@@ -8660,7 +9524,8 @@ fn aurora_merged_mktjereeam() {
     assert_delta!(
         aurora
             .path(Vec2::new(415.0, 409.0), Vec2::new(316.0, 312.0))
-            .len,
+            .unwrap()
+            .length,
         327.931
     );
 }
@@ -8670,7 +9535,8 @@ fn aurora_merged_efoatorlwu() {
     assert_delta!(
         aurora
             .path(Vec2::new(591.0, 502.0), Vec2::new(845.0, 706.0))
-            .len,
+            .unwrap()
+            .length,
         329.833
     );
 }
@@ -8680,7 +9546,8 @@ fn aurora_merged_qgkulnjdbv() {
     assert_delta!(
         aurora
             .path(Vec2::new(685.0, 530.0), Vec2::new(725.0, 340.0))
-            .len,
+            .unwrap()
+            .length,
         329.019
     );
 }
@@ -8690,7 +9557,8 @@ fn aurora_merged_angjihnjpv() {
     assert_delta!(
         aurora
             .path(Vec2::new(371.0, 566.0), Vec2::new(53.0, 509.0))
-            .len,
+            .unwrap()
+            .length,
         329.439
     );
 }
@@ -8700,7 +9568,8 @@ fn aurora_merged_qhvabyirps() {
     assert_delta!(
         aurora
             .path(Vec2::new(74.0, 399.0), Vec2::new(182.0, 155.0))
-            .len,
+            .unwrap()
+            .length,
         331.16
     );
 }
@@ -8710,7 +9579,8 @@ fn aurora_merged_oagdugnvxg() {
     assert_delta!(
         aurora
             .path(Vec2::new(655.0, 587.0), Vec2::new(941.0, 461.0))
-            .len,
+            .unwrap()
+            .length,
         325.09
     );
 }
@@ -8720,7 +9590,8 @@ fn aurora_merged_whvnywehzq() {
     assert_delta!(
         aurora
             .path(Vec2::new(286.0, 360.0), Vec2::new(184.0, 171.0))
-            .len,
+            .unwrap()
+            .length,
         331.889
     );
 }
@@ -8730,7 +9601,8 @@ fn aurora_merged_olgwxibopx() {
     assert_delta!(
         aurora
             .path(Vec2::new(58.0, 133.0), Vec2::new(147.0, 386.0))
-            .len,
+            .unwrap()
+            .length,
         334.082
     );
 }
@@ -8740,7 +9612,8 @@ fn aurora_merged_nksdlfxbez() {
     assert_delta!(
         aurora
             .path(Vec2::new(857.0, 650.0), Vec2::new(573.0, 491.0))
-            .len,
+            .unwrap()
+            .length,
         330.302
     );
 }
@@ -8750,7 +9623,8 @@ fn aurora_merged_hwumgijkjc() {
     assert_delta!(
         aurora
             .path(Vec2::new(206.0, 102.0), Vec2::new(208.0, 335.0))
-            .len,
+            .unwrap()
+            .length,
         331.32
     );
 }
@@ -8760,7 +9634,8 @@ fn aurora_merged_vtvronncxi() {
     assert_delta!(
         aurora
             .path(Vec2::new(380.0, 564.0), Vec2::new(98.0, 535.0))
-            .len,
+            .unwrap()
+            .length,
         329.336
     );
 }
@@ -8770,7 +9645,8 @@ fn aurora_merged_twzukzhmyr() {
     assert_delta!(
         aurora
             .path(Vec2::new(507.0, 311.0), Vec2::new(653.0, 96.0))
-            .len,
+            .unwrap()
+            .length,
         330.127
     );
 }
@@ -8780,7 +9656,8 @@ fn aurora_merged_mpvebihcfb() {
     assert_delta!(
         aurora
             .path(Vec2::new(113.0, 463.0), Vec2::new(398.0, 333.0))
-            .len,
+            .unwrap()
+            .length,
         333.927
     );
 }
@@ -8790,7 +9667,8 @@ fn aurora_merged_ynixsmxuix() {
     assert_delta!(
         aurora
             .path(Vec2::new(233.0, 184.0), Vec2::new(329.0, 339.0))
-            .len,
+            .unwrap()
+            .length,
         328.142
     );
 }
@@ -8800,7 +9678,8 @@ fn aurora_merged_cbwhueywor() {
     assert_delta!(
         aurora
             .path(Vec2::new(19.0, 505.0), Vec2::new(318.0, 371.0))
-            .len,
+            .unwrap()
+            .length,
         333.661
     );
 }
@@ -8810,7 +9689,8 @@ fn aurora_merged_cjuqocryyb() {
     assert_delta!(
         aurora
             .path(Vec2::new(1015.0, 445.0), Vec2::new(693.0, 443.0))
-            .len,
+            .unwrap()
+            .length,
         332.103
     );
 }
@@ -8820,7 +9700,8 @@ fn aurora_merged_mrbodbbphr() {
     assert_delta!(
         aurora
             .path(Vec2::new(374.0, 334.0), Vec2::new(198.0, 521.0))
-            .len,
+            .unwrap()
+            .length,
         332.168
     );
 }
@@ -8830,7 +9711,8 @@ fn aurora_merged_vnfbetolus() {
     assert_delta!(
         aurora
             .path(Vec2::new(284.0, 248.0), Vec2::new(493.0, 329.0))
-            .len,
+            .unwrap()
+            .length,
         335.657
     );
 }
@@ -8840,7 +9722,8 @@ fn aurora_merged_mznlzuaxia() {
     assert_delta!(
         aurora
             .path(Vec2::new(593.0, 661.0), Vec2::new(279.0, 574.0))
-            .len,
+            .unwrap()
+            .length,
         335.327
     );
 }
@@ -8850,7 +9733,8 @@ fn aurora_merged_wdbxwodbus() {
     assert_delta!(
         aurora
             .path(Vec2::new(862.0, 397.0), Vec2::new(545.0, 383.0))
-            .len,
+            .unwrap()
+            .length,
         331.306
     );
 }
@@ -8860,7 +9744,8 @@ fn aurora_merged_pjtseactxj() {
     assert_delta!(
         aurora
             .path(Vec2::new(401.0, 543.0), Vec2::new(174.0, 534.0))
-            .len,
+            .unwrap()
+            .length,
         335.188
     );
 }
@@ -8870,7 +9755,8 @@ fn aurora_merged_ozaipjacwk() {
     assert_delta!(
         aurora
             .path(Vec2::new(652.0, 449.0), Vec2::new(460.0, 680.0))
-            .len,
+            .unwrap()
+            .length,
         337.743
     );
 }
@@ -8880,7 +9766,8 @@ fn aurora_merged_ekncwmmyna() {
     assert_delta!(
         aurora
             .path(Vec2::new(749.0, 417.0), Vec2::new(895.0, 235.0))
-            .len,
+            .unwrap()
+            .length,
         333.643
     );
 }
@@ -8890,7 +9777,8 @@ fn aurora_merged_tdlooarlqt() {
     assert_delta!(
         aurora
             .path(Vec2::new(664.0, 239.0), Vec2::new(434.0, 274.0))
-            .len,
+            .unwrap()
+            .length,
         332.787
     );
 }
@@ -8900,7 +9788,8 @@ fn aurora_merged_kkaetewqkn() {
     assert_delta!(
         aurora
             .path(Vec2::new(468.0, 577.0), Vec2::new(789.0, 489.0))
-            .len,
+            .unwrap()
+            .length,
         335.683
     );
 }
@@ -8910,7 +9799,8 @@ fn aurora_merged_fpwnllzzbo() {
     assert_delta!(
         aurora
             .path(Vec2::new(616.0, 62.0), Vec2::new(306.0, 51.0))
-            .len,
+            .unwrap()
+            .length,
         330.974
     );
 }
@@ -8920,7 +9810,8 @@ fn aurora_merged_amqckibmiw() {
     assert_delta!(
         aurora
             .path(Vec2::new(696.0, 110.0), Vec2::new(826.0, 280.0))
-            .len,
+            .unwrap()
+            .length,
         341.174
     );
 }
@@ -8930,7 +9821,8 @@ fn aurora_merged_lweucgqucf() {
     assert_delta!(
         aurora
             .path(Vec2::new(73.0, 136.0), Vec2::new(164.0, 386.0))
-            .len,
+            .unwrap()
+            .length,
         341.101
     );
 }
@@ -8940,7 +9832,8 @@ fn aurora_merged_zwpxlprcda() {
     assert_delta!(
         aurora
             .path(Vec2::new(477.0, 590.0), Vec2::new(335.0, 752.0))
-            .len,
+            .unwrap()
+            .length,
         337.186
     );
 }
@@ -8950,7 +9843,8 @@ fn aurora_merged_mucbiwvehk() {
     assert_delta!(
         aurora
             .path(Vec2::new(438.0, 499.0), Vec2::new(632.0, 671.0))
-            .len,
+            .unwrap()
+            .length,
         336.215
     );
 }
@@ -8960,7 +9854,8 @@ fn aurora_merged_idhlqhrdvk() {
     assert_delta!(
         aurora
             .path(Vec2::new(253.0, 339.0), Vec2::new(572.0, 247.0))
-            .len,
+            .unwrap()
+            .length,
         336.527
     );
 }
@@ -8970,7 +9865,8 @@ fn aurora_merged_yrqagrvvof() {
     assert_delta!(
         aurora
             .path(Vec2::new(512.0, 412.0), Vec2::new(417.0, 188.0))
-            .len,
+            .unwrap()
+            .length,
         337.467
     );
 }
@@ -8980,7 +9876,8 @@ fn aurora_merged_hzojitfjrq() {
     assert_delta!(
         aurora
             .path(Vec2::new(433.0, 197.0), Vec2::new(132.0, 319.0))
-            .len,
+            .unwrap()
+            .length,
         338.677
     );
 }
@@ -8990,7 +9887,8 @@ fn aurora_merged_wtvguskmky() {
     assert_delta!(
         aurora
             .path(Vec2::new(420.0, 317.0), Vec2::new(205.0, 504.0))
-            .len,
+            .unwrap()
+            .length,
         335.174
     );
 }
@@ -9000,7 +9898,8 @@ fn aurora_merged_qsaycaoddd() {
     assert_delta!(
         aurora
             .path(Vec2::new(427.0, 460.0), Vec2::new(288.0, 265.0))
-            .len,
+            .unwrap()
+            .length,
         340.82
     );
 }
@@ -9010,7 +9909,8 @@ fn aurora_merged_qcjonchstl() {
     assert_delta!(
         aurora
             .path(Vec2::new(502.0, 497.0), Vec2::new(181.0, 462.0))
-            .len,
+            .unwrap()
+            .length,
         339.457
     );
 }
@@ -9020,7 +9920,8 @@ fn aurora_merged_mhundusdxe() {
     assert_delta!(
         aurora
             .path(Vec2::new(808.0, 470.0), Vec2::new(483.0, 521.0))
-            .len,
+            .unwrap()
+            .length,
         342.358
     );
 }
@@ -9030,7 +9931,8 @@ fn aurora_merged_qcfffdrleh() {
     assert_delta!(
         aurora
             .path(Vec2::new(406.0, 464.0), Vec2::new(95.0, 454.0))
-            .len,
+            .unwrap()
+            .length,
         340.502
     );
 }
@@ -9040,7 +9942,8 @@ fn aurora_merged_phiyobzonb() {
     assert_delta!(
         aurora
             .path(Vec2::new(343.0, 254.0), Vec2::new(566.0, 263.0))
-            .len,
+            .unwrap()
+            .length,
         346.188
     );
 }
@@ -9050,7 +9953,8 @@ fn aurora_merged_guymjezupv() {
     assert_delta!(
         aurora
             .path(Vec2::new(903.0, 466.0), Vec2::new(601.0, 604.0))
-            .len,
+            .unwrap()
+            .length,
         338.366
     );
 }
@@ -9060,7 +9964,8 @@ fn aurora_merged_qducrnjwju() {
     assert_delta!(
         aurora
             .path(Vec2::new(554.0, 575.0), Vec2::new(866.0, 442.0))
-            .len,
+            .unwrap()
+            .length,
         343.438
     );
 }
@@ -9070,7 +9975,8 @@ fn aurora_merged_qtefvaizap() {
     assert_delta!(
         aurora
             .path(Vec2::new(767.0, 303.0), Vec2::new(473.0, 143.0))
-            .len,
+            .unwrap()
+            .length,
         340.131
     );
 }
@@ -9080,7 +9986,8 @@ fn aurora_merged_yompdwykvz() {
     assert_delta!(
         aurora
             .path(Vec2::new(277.0, 318.0), Vec2::new(13.0, 529.0))
-            .len,
+            .unwrap()
+            .length,
         348.338
     );
 }
@@ -9090,7 +9997,8 @@ fn aurora_merged_ptofqarmvg() {
     assert_delta!(
         aurora
             .path(Vec2::new(752.0, 511.0), Vec2::new(639.0, 359.0))
-            .len,
+            .unwrap()
+            .length,
         339.859
     );
 }
@@ -9100,7 +10008,8 @@ fn aurora_merged_yesmsnslag() {
     assert_delta!(
         aurora
             .path(Vec2::new(702.0, 215.0), Vec2::new(790.0, 391.0))
-            .len,
+            .unwrap()
+            .length,
         346.261
     );
 }
@@ -9110,7 +10019,8 @@ fn aurora_merged_mrwdjialib() {
     assert_delta!(
         aurora
             .path(Vec2::new(539.0, 151.0), Vec2::new(764.0, 326.0))
-            .len,
+            .unwrap()
+            .length,
         339.301
     );
 }
@@ -9120,7 +10030,8 @@ fn aurora_merged_anjelaqwss() {
     assert_delta!(
         aurora
             .path(Vec2::new(878.0, 118.0), Vec2::new(774.0, 301.0))
-            .len,
+            .unwrap()
+            .length,
         348.095
     );
 }
@@ -9130,7 +10041,8 @@ fn aurora_merged_roghkhrnck() {
     assert_delta!(
         aurora
             .path(Vec2::new(341.0, 605.0), Vec2::new(34.0, 572.0))
-            .len,
+            .unwrap()
+            .length,
         345.946
     );
 }
@@ -9140,7 +10052,8 @@ fn aurora_merged_alpleckplh() {
     assert_delta!(
         aurora
             .path(Vec2::new(464.0, 361.0), Vec2::new(463.0, 483.0))
-            .len,
+            .unwrap()
+            .length,
         345.542
     );
 }
@@ -9150,7 +10063,8 @@ fn aurora_merged_wqhutagxzn() {
     assert_delta!(
         aurora
             .path(Vec2::new(17.0, 156.0), Vec2::new(316.0, 308.0))
-            .len,
+            .unwrap()
+            .length,
         347.137
     );
 }
@@ -9160,7 +10074,8 @@ fn aurora_merged_ppjzgxwnno() {
     assert_delta!(
         aurora
             .path(Vec2::new(100.0, 274.0), Vec2::new(431.0, 299.0))
-            .len,
+            .unwrap()
+            .length,
         346.763
     );
 }
@@ -9170,7 +10085,8 @@ fn aurora_merged_oikgcsehhn() {
     assert_delta!(
         aurora
             .path(Vec2::new(607.0, 216.0), Vec2::new(453.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         351.466
     );
 }
@@ -9180,7 +10096,8 @@ fn aurora_merged_zvclqlstgt() {
     assert_delta!(
         aurora
             .path(Vec2::new(305.0, 89.0), Vec2::new(268.0, 342.0))
-            .len,
+            .unwrap()
+            .length,
         351.094
     );
 }
@@ -9190,7 +10107,8 @@ fn aurora_merged_hsxuizlkjv() {
     assert_delta!(
         aurora
             .path(Vec2::new(763.0, 492.0), Vec2::new(442.0, 462.0))
-            .len,
+            .unwrap()
+            .length,
         344.025
     );
 }
@@ -9200,7 +10118,8 @@ fn aurora_merged_iseothtuva() {
     assert_delta!(
         aurora
             .path(Vec2::new(950.0, 365.0), Vec2::new(640.0, 428.0))
-            .len,
+            .unwrap()
+            .length,
         357.351
     );
 }
@@ -9210,7 +10129,8 @@ fn aurora_merged_gcbtjqhaop() {
     assert_delta!(
         aurora
             .path(Vec2::new(459.0, 669.0), Vec2::new(794.0, 658.0))
-            .len,
+            .unwrap()
+            .length,
         347.926
     );
 }
@@ -9220,7 +10140,8 @@ fn aurora_merged_ejtpmnxznz() {
     assert_delta!(
         aurora
             .path(Vec2::new(776.0, 592.0), Vec2::new(715.0, 357.0))
-            .len,
+            .unwrap()
+            .length,
         348.08
     );
 }
@@ -9230,7 +10151,8 @@ fn aurora_merged_mwamhgvtoh() {
     assert_delta!(
         aurora
             .path(Vec2::new(876.0, 172.0), Vec2::new(647.0, 366.0))
-            .len,
+            .unwrap()
+            .length,
         349.325
     );
 }
@@ -9240,7 +10162,8 @@ fn aurora_merged_qyxwxoksbh() {
     assert_delta!(
         aurora
             .path(Vec2::new(579.0, 360.0), Vec2::new(604.0, 540.0))
-            .len,
+            .unwrap()
+            .length,
         348.051
     );
 }
@@ -9250,7 +10173,8 @@ fn aurora_merged_mdnhicydzk() {
     assert_delta!(
         aurora
             .path(Vec2::new(98.0, 307.0), Vec2::new(142.0, 93.0))
-            .len,
+            .unwrap()
+            .length,
         353.399
     );
 }
@@ -9260,7 +10184,8 @@ fn aurora_merged_xnfjqycaqj() {
     assert_delta!(
         aurora
             .path(Vec2::new(453.0, 229.0), Vec2::new(761.0, 248.0))
-            .len,
+            .unwrap()
+            .length,
         349.701
     );
 }
@@ -9270,7 +10195,8 @@ fn aurora_merged_tnhrtygnzp() {
     assert_delta!(
         aurora
             .path(Vec2::new(52.0, 178.0), Vec2::new(389.0, 126.0))
-            .len,
+            .unwrap()
+            .length,
         349.761
     );
 }
@@ -9280,7 +10206,8 @@ fn aurora_merged_usskbbqofg() {
     assert_delta!(
         aurora
             .path(Vec2::new(425.0, 530.0), Vec2::new(159.0, 586.0))
-            .len,
+            .unwrap()
+            .length,
         345.464
     );
 }
@@ -9290,7 +10217,8 @@ fn aurora_merged_wlaxdjtekq() {
     assert_delta!(
         aurora
             .path(Vec2::new(197.0, 275.0), Vec2::new(463.0, 490.0))
-            .len,
+            .unwrap()
+            .length,
         354.4
     );
 }
@@ -9300,7 +10228,8 @@ fn aurora_merged_ljhlymcwtl() {
     assert_delta!(
         aurora
             .path(Vec2::new(634.0, 327.0), Vec2::new(389.0, 133.0))
-            .len,
+            .unwrap()
+            .length,
         355.084
     );
 }
@@ -9310,7 +10239,8 @@ fn aurora_merged_vpigirwrbo() {
     assert_delta!(
         aurora
             .path(Vec2::new(131.0, 159.0), Vec2::new(112.0, 394.0))
-            .len,
+            .unwrap()
+            .length,
         350.785
     );
 }
@@ -9320,7 +10250,8 @@ fn aurora_merged_haorxdvaai() {
     assert_delta!(
         aurora
             .path(Vec2::new(416.0, 525.0), Vec2::new(150.0, 462.0))
-            .len,
+            .unwrap()
+            .length,
         350.559
     );
 }
@@ -9330,7 +10261,8 @@ fn aurora_merged_juspgdbjhx() {
     assert_delta!(
         aurora
             .path(Vec2::new(669.0, 377.0), Vec2::new(633.0, 624.0))
-            .len,
+            .unwrap()
+            .length,
         356.228
     );
 }
@@ -9340,7 +10272,8 @@ fn aurora_merged_ljpunlrnuf() {
     assert_delta!(
         aurora
             .path(Vec2::new(371.0, 570.0), Vec2::new(128.0, 710.0))
-            .len,
+            .unwrap()
+            .length,
         354.963
     );
 }
@@ -9350,7 +10283,8 @@ fn aurora_merged_phaqknpkzq() {
     assert_delta!(
         aurora
             .path(Vec2::new(402.0, 309.0), Vec2::new(97.0, 465.0))
-            .len,
+            .unwrap()
+            .length,
         354.542
     );
 }
@@ -9360,7 +10294,8 @@ fn aurora_merged_achfqgzool() {
     assert_delta!(
         aurora
             .path(Vec2::new(380.0, 83.0), Vec2::new(514.0, 351.0))
-            .len,
+            .unwrap()
+            .length,
         357.85
     );
 }
@@ -9370,7 +10305,8 @@ fn aurora_merged_rqvamacvmf() {
     assert_delta!(
         aurora
             .path(Vec2::new(370.0, 162.0), Vec2::new(112.0, 360.0))
-            .len,
+            .unwrap()
+            .length,
         354.594
     );
 }
@@ -9380,7 +10316,8 @@ fn aurora_merged_iprimjicvn() {
     assert_delta!(
         aurora
             .path(Vec2::new(8.0, 649.0), Vec2::new(331.0, 524.0))
-            .len,
+            .unwrap()
+            .length,
         353.463
     );
 }
@@ -9390,7 +10327,8 @@ fn aurora_merged_iezyflfgas() {
     assert_delta!(
         aurora
             .path(Vec2::new(224.0, 240.0), Vec2::new(115.0, 430.0))
-            .len,
+            .unwrap()
+            .length,
         350.03
     );
 }
@@ -9400,7 +10338,8 @@ fn aurora_merged_iilfaoykjr() {
     assert_delta!(
         aurora
             .path(Vec2::new(771.0, 202.0), Vec2::new(433.0, 190.0))
-            .len,
+            .unwrap()
+            .length,
         357.452
     );
 }
@@ -9410,7 +10349,8 @@ fn aurora_merged_wzsmrjxgil() {
     assert_delta!(
         aurora
             .path(Vec2::new(837.0, 330.0), Vec2::new(488.0, 272.0))
-            .len,
+            .unwrap()
+            .length,
         358.773
     );
 }
@@ -9420,7 +10360,8 @@ fn aurora_merged_vnocfgkxvu() {
     assert_delta!(
         aurora
             .path(Vec2::new(248.0, 269.0), Vec2::new(120.0, 121.0))
-            .len,
+            .unwrap()
+            .length,
         352.39
     );
 }
@@ -9430,7 +10371,8 @@ fn aurora_merged_cnztgbiejs() {
     assert_delta!(
         aurora
             .path(Vec2::new(561.0, 659.0), Vec2::new(250.0, 486.0))
-            .len,
+            .unwrap()
+            .length,
         356.431
     );
 }
@@ -9440,7 +10382,8 @@ fn aurora_merged_zjmolawwyv() {
     assert_delta!(
         aurora
             .path(Vec2::new(604.0, 690.0), Vec2::new(279.0, 568.0))
-            .len,
+            .unwrap()
+            .length,
         355.942
     );
 }
@@ -9450,7 +10393,8 @@ fn aurora_merged_raykqzutgw() {
     assert_delta!(
         aurora
             .path(Vec2::new(333.0, 632.0), Vec2::new(50.0, 477.0))
-            .len,
+            .unwrap()
+            .length,
         355.498
     );
 }
@@ -9460,7 +10404,8 @@ fn aurora_merged_csiqvmdsjl() {
     assert_delta!(
         aurora
             .path(Vec2::new(638.0, 259.0), Vec2::new(326.0, 101.0))
-            .len,
+            .unwrap()
+            .length,
         357.855
     );
 }
@@ -9470,7 +10415,8 @@ fn aurora_merged_ffgilzrrmq() {
     assert_delta!(
         aurora
             .path(Vec2::new(535.0, 248.0), Vec2::new(725.0, 169.0))
-            .len,
+            .unwrap()
+            .length,
         365.636
     );
 }
@@ -9480,7 +10426,8 @@ fn aurora_merged_tnbunpbmru() {
     assert_delta!(
         aurora
             .path(Vec2::new(560.0, 612.0), Vec2::new(648.0, 358.0))
-            .len,
+            .unwrap()
+            .length,
         358.285
     );
 }
@@ -9490,7 +10437,8 @@ fn aurora_merged_hpurooejad() {
     assert_delta!(
         aurora
             .path(Vec2::new(321.0, 732.0), Vec2::new(320.0, 551.0))
-            .len,
+            .unwrap()
+            .length,
         357.478
     );
 }
@@ -9500,7 +10448,8 @@ fn aurora_merged_ytiynrhwtb() {
     assert_delta!(
         aurora
             .path(Vec2::new(119.0, 387.0), Vec2::new(279.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         359.545
     );
 }
@@ -9510,7 +10459,8 @@ fn aurora_merged_acltqnghii() {
     assert_delta!(
         aurora
             .path(Vec2::new(696.0, 68.0), Vec2::new(361.0, 110.0))
-            .len,
+            .unwrap()
+            .length,
         356.232
     );
 }
@@ -9520,7 +10470,8 @@ fn aurora_merged_jqdydzyuil() {
     assert_delta!(
         aurora
             .path(Vec2::new(877.0, 410.0), Vec2::new(715.0, 631.0))
-            .len,
+            .unwrap()
+            .length,
         363.353
     );
 }
@@ -9530,7 +10481,8 @@ fn aurora_merged_vxdiyotubc() {
     assert_delta!(
         aurora
             .path(Vec2::new(529.0, 547.0), Vec2::new(194.0, 496.0))
-            .len,
+            .unwrap()
+            .length,
         358.741
     );
 }
@@ -9540,7 +10492,8 @@ fn aurora_merged_llcexhdxfu() {
     assert_delta!(
         aurora
             .path(Vec2::new(822.0, 431.0), Vec2::new(734.0, 208.0))
-            .len,
+            .unwrap()
+            .length,
         363.901
     );
 }
@@ -9550,7 +10503,8 @@ fn aurora_merged_gviohfdbes() {
     assert_delta!(
         aurora
             .path(Vec2::new(825.0, 387.0), Vec2::new(700.0, 258.0))
-            .len,
+            .unwrap()
+            .length,
         361.149
     );
 }
@@ -9560,7 +10514,8 @@ fn aurora_merged_gouwtwkhta() {
     assert_delta!(
         aurora
             .path(Vec2::new(77.0, 210.0), Vec2::new(447.0, 212.0))
-            .len,
+            .unwrap()
+            .length,
         373.266
     );
 }
@@ -9570,7 +10525,8 @@ fn aurora_merged_ebacikoopq() {
     assert_delta!(
         aurora
             .path(Vec2::new(907.0, 431.0), Vec2::new(632.0, 599.0))
-            .len,
+            .unwrap()
+            .length,
         361.269
     );
 }
@@ -9580,7 +10536,8 @@ fn aurora_merged_tmvdzexkkh() {
     assert_delta!(
         aurora
             .path(Vec2::new(602.0, 108.0), Vec2::new(690.0, 324.0))
-            .len,
+            .unwrap()
+            .length,
         361.726
     );
 }
@@ -9590,7 +10547,8 @@ fn aurora_merged_kwkwzmtwfx() {
     assert_delta!(
         aurora
             .path(Vec2::new(179.0, 623.0), Vec2::new(320.0, 371.0))
-            .len,
+            .unwrap()
+            .length,
         364.53
     );
 }
@@ -9600,7 +10558,8 @@ fn aurora_merged_apqyphcasq() {
     assert_delta!(
         aurora
             .path(Vec2::new(790.0, 660.0), Vec2::new(446.0, 585.0))
-            .len,
+            .unwrap()
+            .length,
         361.427
     );
 }
@@ -9610,7 +10569,8 @@ fn aurora_merged_vpfdohhmjd() {
     assert_delta!(
         aurora
             .path(Vec2::new(393.0, 281.0), Vec2::new(369.0, 545.0))
-            .len,
+            .unwrap()
+            .length,
         365.689
     );
 }
@@ -9620,7 +10580,8 @@ fn aurora_merged_mmpbfbgcow() {
     assert_delta!(
         aurora
             .path(Vec2::new(292.0, 552.0), Vec2::new(278.0, 303.0))
-            .len,
+            .unwrap()
+            .length,
         374.587
     );
 }
@@ -9630,7 +10591,8 @@ fn aurora_merged_qjwkhktzrx() {
     assert_delta!(
         aurora
             .path(Vec2::new(484.0, 437.0), Vec2::new(614.0, 685.0))
-            .len,
+            .unwrap()
+            .length,
         369.36
     );
 }
@@ -9640,7 +10602,8 @@ fn aurora_merged_nwjghziagh() {
     assert_delta!(
         aurora
             .path(Vec2::new(937.0, 378.0), Vec2::new(725.0, 156.0))
-            .len,
+            .unwrap()
+            .length,
         365.721
     );
 }
@@ -9650,7 +10613,8 @@ fn aurora_merged_vzzphysvgy() {
     assert_delta!(
         aurora
             .path(Vec2::new(499.0, 497.0), Vec2::new(200.0, 350.0))
-            .len,
+            .unwrap()
+            .length,
         368.583
     );
 }
@@ -9660,7 +10624,8 @@ fn aurora_merged_viuefkstzx() {
     assert_delta!(
         aurora
             .path(Vec2::new(580.0, 112.0), Vec2::new(262.0, 263.0))
-            .len,
+            .unwrap()
+            .length,
         368.233
     );
 }
@@ -9670,7 +10635,8 @@ fn aurora_merged_wihdgzorsv() {
     assert_delta!(
         aurora
             .path(Vec2::new(450.0, 580.0), Vec2::new(156.0, 439.0))
-            .len,
+            .unwrap()
+            .length,
         360.804
     );
 }
@@ -9680,7 +10646,8 @@ fn aurora_merged_hwofeoudig() {
     assert_delta!(
         aurora
             .path(Vec2::new(400.0, 335.0), Vec2::new(47.0, 306.0))
-            .len,
+            .unwrap()
+            .length,
         368.488
     );
 }
@@ -9690,7 +10657,8 @@ fn aurora_merged_essxnkpwxp() {
     assert_delta!(
         aurora
             .path(Vec2::new(529.0, 188.0), Vec2::new(832.0, 220.0))
-            .len,
+            .unwrap()
+            .length,
         364.854
     );
 }
@@ -9700,7 +10668,8 @@ fn aurora_merged_ftspmnmcgj() {
     assert_delta!(
         aurora
             .path(Vec2::new(161.0, 373.0), Vec2::new(167.0, 634.0))
-            .len,
+            .unwrap()
+            .length,
         375.213
     );
 }
@@ -9710,7 +10679,8 @@ fn aurora_merged_xxgjggbpwb() {
     assert_delta!(
         aurora
             .path(Vec2::new(473.0, 600.0), Vec2::new(251.0, 632.0))
-            .len,
+            .unwrap()
+            .length,
         366.017
     );
 }
@@ -9720,7 +10690,8 @@ fn aurora_merged_nojqjztplx() {
     assert_delta!(
         aurora
             .path(Vec2::new(118.0, 430.0), Vec2::new(251.0, 211.0))
-            .len,
+            .unwrap()
+            .length,
         368.427
     );
 }
@@ -9730,7 +10701,8 @@ fn aurora_merged_voufgwotaf() {
     assert_delta!(
         aurora
             .path(Vec2::new(430.0, 137.0), Vec2::new(272.0, 368.0))
-            .len,
+            .unwrap()
+            .length,
         369.794
     );
 }
@@ -9740,7 +10712,8 @@ fn aurora_merged_sbvfxqonkg() {
     assert_delta!(
         aurora
             .path(Vec2::new(590.0, 516.0), Vec2::new(935.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         369.327
     );
 }
@@ -9750,7 +10723,8 @@ fn aurora_merged_ydixhgjmsw() {
     assert_delta!(
         aurora
             .path(Vec2::new(338.0, 374.0), Vec2::new(5.0, 413.0))
-            .len,
+            .unwrap()
+            .length,
         368.801
     );
 }
@@ -9760,7 +10734,8 @@ fn aurora_merged_izselsxgeb() {
     assert_delta!(
         aurora
             .path(Vec2::new(621.0, 479.0), Vec2::new(875.0, 360.0))
-            .len,
+            .unwrap()
+            .length,
         374.571
     );
 }
@@ -9770,7 +10745,8 @@ fn aurora_merged_irbuidvqrj() {
     assert_delta!(
         aurora
             .path(Vec2::new(482.0, 271.0), Vec2::new(240.0, 226.0))
-            .len,
+            .unwrap()
+            .length,
         376.014
     );
 }
@@ -9780,7 +10756,8 @@ fn aurora_merged_knwdlqrvyl() {
     assert_delta!(
         aurora
             .path(Vec2::new(613.0, 200.0), Vec2::new(261.0, 188.0))
-            .len,
+            .unwrap()
+            .length,
         375.463
     );
 }
@@ -9790,7 +10767,8 @@ fn aurora_merged_ieftvugvga() {
     assert_delta!(
         aurora
             .path(Vec2::new(2.0, 362.0), Vec2::new(119.0, 171.0))
-            .len,
+            .unwrap()
+            .length,
         366.018
     );
 }
@@ -9800,7 +10778,8 @@ fn aurora_merged_xukgkjnzgs() {
     assert_delta!(
         aurora
             .path(Vec2::new(793.0, 387.0), Vec2::new(807.0, 594.0))
-            .len,
+            .unwrap()
+            .length,
         369.769
     );
 }
@@ -9810,7 +10789,8 @@ fn aurora_merged_cpeiezblfr() {
     assert_delta!(
         aurora
             .path(Vec2::new(276.0, 275.0), Vec2::new(535.0, 287.0))
-            .len,
+            .unwrap()
+            .length,
         367.206
     );
 }
@@ -9820,7 +10800,8 @@ fn aurora_merged_zcjqzpgrjv() {
     assert_delta!(
         aurora
             .path(Vec2::new(483.0, 367.0), Vec2::new(314.0, 303.0))
-            .len,
+            .unwrap()
+            .length,
         368.626
     );
 }
@@ -9830,7 +10811,8 @@ fn aurora_merged_ensmohdwrm() {
     assert_delta!(
         aurora
             .path(Vec2::new(767.0, 729.0), Vec2::new(437.0, 667.0))
-            .len,
+            .unwrap()
+            .length,
         373.482
     );
 }
@@ -9840,7 +10822,8 @@ fn aurora_merged_umudsxxmdm() {
     assert_delta!(
         aurora
             .path(Vec2::new(871.0, 361.0), Vec2::new(522.0, 298.0))
-            .len,
+            .unwrap()
+            .length,
         377.479
     );
 }
@@ -9850,7 +10833,8 @@ fn aurora_merged_omvvgszwix() {
     assert_delta!(
         aurora
             .path(Vec2::new(121.0, 645.0), Vec2::new(44.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         374.455
     );
 }
@@ -9860,7 +10844,8 @@ fn aurora_merged_cjmjbfaujh() {
     assert_delta!(
         aurora
             .path(Vec2::new(801.0, 328.0), Vec2::new(446.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         372.177
     );
 }
@@ -9870,7 +10855,8 @@ fn aurora_merged_mmsvkewltn() {
     assert_delta!(
         aurora
             .path(Vec2::new(540.0, 460.0), Vec2::new(785.0, 332.0))
-            .len,
+            .unwrap()
+            .length,
         369.9
     );
 }
@@ -9880,7 +10866,8 @@ fn aurora_merged_wmkhuagmen() {
     assert_delta!(
         aurora
             .path(Vec2::new(894.0, 620.0), Vec2::new(555.0, 477.0))
-            .len,
+            .unwrap()
+            .length,
         370.948
     );
 }
@@ -9890,7 +10877,8 @@ fn aurora_merged_jbwqzqhdyx() {
     assert_delta!(
         aurora
             .path(Vec2::new(653.0, 285.0), Vec2::new(662.0, 221.0))
-            .len,
+            .unwrap()
+            .length,
         369.702
     );
 }
@@ -9900,7 +10888,8 @@ fn aurora_merged_zalpgvcsch() {
     assert_delta!(
         aurora
             .path(Vec2::new(17.0, 607.0), Vec2::new(383.0, 668.0))
-            .len,
+            .unwrap()
+            .length,
         380.292
     );
 }
@@ -9910,7 +10899,8 @@ fn aurora_merged_wogewrcmyb() {
     assert_delta!(
         aurora
             .path(Vec2::new(463.0, 356.0), Vec2::new(365.0, 263.0))
-            .len,
+            .unwrap()
+            .length,
         379.594
     );
 }
@@ -9920,7 +10910,8 @@ fn aurora_merged_vcvfwiltld() {
     assert_delta!(
         aurora
             .path(Vec2::new(647.0, 585.0), Vec2::new(344.0, 510.0))
-            .len,
+            .unwrap()
+            .length,
         376.343
     );
 }
@@ -9930,7 +10921,8 @@ fn aurora_merged_whydcjsubo() {
     assert_delta!(
         aurora
             .path(Vec2::new(313.0, 176.0), Vec2::new(141.0, 435.0))
-            .len,
+            .unwrap()
+            .length,
         376.441
     );
 }
@@ -9940,7 +10932,8 @@ fn aurora_merged_fpzmsqmbjt() {
     assert_delta!(
         aurora
             .path(Vec2::new(905.0, 377.0), Vec2::new(665.0, 555.0))
-            .len,
+            .unwrap()
+            .length,
         376.086
     );
 }
@@ -9950,7 +10943,8 @@ fn aurora_merged_fnmdyulwcj() {
     assert_delta!(
         aurora
             .path(Vec2::new(850.0, 663.0), Vec2::new(471.0, 636.0))
-            .len,
+            .unwrap()
+            .length,
         385.347
     );
 }
@@ -9960,7 +10954,8 @@ fn aurora_merged_stossobsbf() {
     assert_delta!(
         aurora
             .path(Vec2::new(183.0, 555.0), Vec2::new(264.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         378.811
     );
 }
@@ -9970,7 +10965,8 @@ fn aurora_merged_kpxfrjhwyl() {
     assert_delta!(
         aurora
             .path(Vec2::new(382.0, 440.0), Vec2::new(730.0, 401.0))
-            .len,
+            .unwrap()
+            .length,
         374.328
     );
 }
@@ -9980,7 +10976,8 @@ fn aurora_merged_takqsdwxvp() {
     assert_delta!(
         aurora
             .path(Vec2::new(294.0, 284.0), Vec2::new(43.0, 505.0))
-            .len,
+            .unwrap()
+            .length,
         380.548
     );
 }
@@ -9990,7 +10987,8 @@ fn aurora_merged_sknomujmio() {
     assert_delta!(
         aurora
             .path(Vec2::new(407.0, 490.0), Vec2::new(515.0, 363.0))
-            .len,
+            .unwrap()
+            .length,
         376.821
     );
 }
@@ -10000,7 +10998,8 @@ fn aurora_merged_vpprmuvykg() {
     assert_delta!(
         aurora
             .path(Vec2::new(338.0, 163.0), Vec2::new(712.0, 108.0))
-            .len,
+            .unwrap()
+            .length,
         381.264
     );
 }
@@ -10010,7 +11009,8 @@ fn aurora_merged_cfstxnwmqj() {
     assert_delta!(
         aurora
             .path(Vec2::new(990.0, 295.0), Vec2::new(747.0, 513.0))
-            .len,
+            .unwrap()
+            .length,
         378.891
     );
 }
@@ -10020,7 +11020,8 @@ fn aurora_merged_voldesjmxz() {
     assert_delta!(
         aurora
             .path(Vec2::new(682.0, 149.0), Vec2::new(344.0, 256.0))
-            .len,
+            .unwrap()
+            .length,
         384.67
     );
 }
@@ -10030,7 +11031,8 @@ fn aurora_merged_gxdlfbyigz() {
     assert_delta!(
         aurora
             .path(Vec2::new(711.0, 404.0), Vec2::new(688.0, 683.0))
-            .len,
+            .unwrap()
+            .length,
         387.244
     );
 }
@@ -10040,7 +11042,8 @@ fn aurora_merged_hgyrkrblpp() {
     assert_delta!(
         aurora
             .path(Vec2::new(613.0, 393.0), Vec2::new(968.0, 384.0))
-            .len,
+            .unwrap()
+            .length,
         377.47
     );
 }
@@ -10050,7 +11053,8 @@ fn aurora_merged_lkktbdefcd() {
     assert_delta!(
         aurora
             .path(Vec2::new(754.0, 405.0), Vec2::new(977.0, 285.0))
-            .len,
+            .unwrap()
+            .length,
         387.29
     );
 }
@@ -10060,7 +11064,8 @@ fn aurora_merged_gemvkbrsif() {
     assert_delta!(
         aurora
             .path(Vec2::new(776.0, 308.0), Vec2::new(614.0, 185.0))
-            .len,
+            .unwrap()
+            .length,
         380.363
     );
 }
@@ -10070,7 +11075,8 @@ fn aurora_merged_tlnldosnpw() {
     assert_delta!(
         aurora
             .path(Vec2::new(483.0, 656.0), Vec2::new(345.0, 492.0))
-            .len,
+            .unwrap()
+            .length,
         378.174
     );
 }
@@ -10080,7 +11086,8 @@ fn aurora_merged_rcwfxkdfwj() {
     assert_delta!(
         aurora
             .path(Vec2::new(27.0, 434.0), Vec2::new(243.0, 234.0))
-            .len,
+            .unwrap()
+            .length,
         378.012
     );
 }
@@ -10090,7 +11097,8 @@ fn aurora_merged_gqlcojuhco() {
     assert_delta!(
         aurora
             .path(Vec2::new(411.0, 412.0), Vec2::new(733.0, 602.0))
-            .len,
+            .unwrap()
+            .length,
         377.631
     );
 }
@@ -10100,7 +11108,8 @@ fn aurora_merged_kqntgmgfig() {
     assert_delta!(
         aurora
             .path(Vec2::new(798.0, 401.0), Vec2::new(726.0, 152.0))
-            .len,
+            .unwrap()
+            .length,
         383.313
     );
 }
@@ -10110,7 +11119,8 @@ fn aurora_merged_xdkhthlfed() {
     assert_delta!(
         aurora
             .path(Vec2::new(187.0, 434.0), Vec2::new(526.0, 545.0))
-            .len,
+            .unwrap()
+            .length,
         383.499
     );
 }
@@ -10120,7 +11130,8 @@ fn aurora_merged_jvcbjpllxq() {
     assert_delta!(
         aurora
             .path(Vec2::new(343.0, 101.0), Vec2::new(99.0, 322.0))
-            .len,
+            .unwrap()
+            .length,
         383.827
     );
 }
@@ -10130,7 +11141,8 @@ fn aurora_merged_pvugsmggnw() {
     assert_delta!(
         aurora
             .path(Vec2::new(137.0, 504.0), Vec2::new(502.0, 569.0))
-            .len,
+            .unwrap()
+            .length,
         386.451
     );
 }
@@ -10140,7 +11152,8 @@ fn aurora_merged_olwpxqchpt() {
     assert_delta!(
         aurora
             .path(Vec2::new(215.0, 368.0), Vec2::new(248.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         388.117
     );
 }
@@ -10150,7 +11163,8 @@ fn aurora_merged_uawlvtvoat() {
     assert_delta!(
         aurora
             .path(Vec2::new(65.0, 583.0), Vec2::new(162.0, 317.0))
-            .len,
+            .unwrap()
+            .length,
         386.419
     );
 }
@@ -10160,7 +11174,8 @@ fn aurora_merged_fdiedpjwfu() {
     assert_delta!(
         aurora
             .path(Vec2::new(550.0, 269.0), Vec2::new(928.0, 278.0))
-            .len,
+            .unwrap()
+            .length,
         386.758
     );
 }
@@ -10170,7 +11185,8 @@ fn aurora_merged_ajmmbbfwct() {
     assert_delta!(
         aurora
             .path(Vec2::new(324.0, 536.0), Vec2::new(213.0, 304.0))
-            .len,
+            .unwrap()
+            .length,
         384.076
     );
 }
@@ -10180,7 +11196,8 @@ fn aurora_merged_hwuqskpplh() {
     assert_delta!(
         aurora
             .path(Vec2::new(627.0, 318.0), Vec2::new(671.0, 175.0))
-            .len,
+            .unwrap()
+            .length,
         385.533
     );
 }
@@ -10190,7 +11207,8 @@ fn aurora_merged_bxvmmiuzec() {
     assert_delta!(
         aurora
             .path(Vec2::new(318.0, 388.0), Vec2::new(444.0, 238.0))
-            .len,
+            .unwrap()
+            .length,
         385.422
     );
 }
@@ -10200,7 +11218,8 @@ fn aurora_merged_tchftoupti() {
     assert_delta!(
         aurora
             .path(Vec2::new(361.0, 568.0), Vec2::new(49.0, 362.0))
-            .len,
+            .unwrap()
+            .length,
         387.463
     );
 }
@@ -10210,7 +11229,8 @@ fn aurora_merged_xnxlysmcul() {
     assert_delta!(
         aurora
             .path(Vec2::new(14.0, 331.0), Vec2::new(45.0, 581.0))
-            .len,
+            .unwrap()
+            .length,
         384.823
     );
 }
@@ -10220,7 +11240,8 @@ fn aurora_merged_zaqaijtyvi() {
     assert_delta!(
         aurora
             .path(Vec2::new(116.0, 371.0), Vec2::new(285.0, 120.0))
-            .len,
+            .unwrap()
+            .length,
         389.062
     );
 }
@@ -10230,7 +11251,8 @@ fn aurora_merged_qkbkwdjhmy() {
     assert_delta!(
         aurora
             .path(Vec2::new(339.0, 686.0), Vec2::new(394.0, 430.0))
-            .len,
+            .unwrap()
+            .length,
         391.129
     );
 }
@@ -10240,7 +11262,8 @@ fn aurora_merged_glalvgnesb() {
     assert_delta!(
         aurora
             .path(Vec2::new(475.0, 444.0), Vec2::new(129.0, 291.0))
-            .len,
+            .unwrap()
+            .length,
         386.706
     );
 }
@@ -10250,7 +11273,8 @@ fn aurora_merged_aenyfufnga() {
     assert_delta!(
         aurora
             .path(Vec2::new(8.0, 531.0), Vec2::new(343.0, 649.0))
-            .len,
+            .unwrap()
+            .length,
         382.428
     );
 }
@@ -10260,7 +11284,8 @@ fn aurora_merged_coldbdroou() {
     assert_delta!(
         aurora
             .path(Vec2::new(743.0, 239.0), Vec2::new(747.0, 367.0))
-            .len,
+            .unwrap()
+            .length,
         389.112
     );
 }
@@ -10270,7 +11295,8 @@ fn aurora_merged_tsvemmtybt() {
     assert_delta!(
         aurora
             .path(Vec2::new(30.0, 459.0), Vec2::new(217.0, 171.0))
-            .len,
+            .unwrap()
+            .length,
         390.319
     );
 }
@@ -10280,7 +11306,8 @@ fn aurora_merged_qyuwqtuxnf() {
     assert_delta!(
         aurora
             .path(Vec2::new(143.0, 415.0), Vec2::new(324.0, 142.0))
-            .len,
+            .unwrap()
+            .length,
         390.041
     );
 }
@@ -10290,7 +11317,8 @@ fn aurora_merged_jjuryefali() {
     assert_delta!(
         aurora
             .path(Vec2::new(386.0, 300.0), Vec2::new(382.0, 569.0))
-            .len,
+            .unwrap()
+            .length,
         391.428
     );
 }
@@ -10300,7 +11328,8 @@ fn aurora_merged_tnofmmoxco() {
     assert_delta!(
         aurora
             .path(Vec2::new(852.0, 365.0), Vec2::new(750.0, 220.0))
-            .len,
+            .unwrap()
+            .length,
         386.869
     );
 }
@@ -10310,7 +11339,8 @@ fn aurora_merged_lkzarnofht() {
     assert_delta!(
         aurora
             .path(Vec2::new(625.0, 138.0), Vec2::new(252.0, 79.0))
-            .len,
+            .unwrap()
+            .length,
         384.961
     );
 }
@@ -10320,7 +11350,8 @@ fn aurora_merged_usgwtjldfa() {
     assert_delta!(
         aurora
             .path(Vec2::new(637.0, 346.0), Vec2::new(829.0, 584.0))
-            .len,
+            .unwrap()
+            .length,
         389.616
     );
 }
@@ -10330,7 +11361,8 @@ fn aurora_merged_zksderbbks() {
     assert_delta!(
         aurora
             .path(Vec2::new(506.0, 329.0), Vec2::new(901.0, 303.0))
-            .len,
+            .unwrap()
+            .length,
         398.747
     );
 }
@@ -10340,7 +11372,8 @@ fn aurora_merged_ibmahovdrn() {
     assert_delta!(
         aurora
             .path(Vec2::new(482.0, 553.0), Vec2::new(285.0, 646.0))
-            .len,
+            .unwrap()
+            .length,
         391.15
     );
 }
@@ -10350,7 +11383,8 @@ fn aurora_merged_anfmikshpp() {
     assert_delta!(
         aurora
             .path(Vec2::new(630.0, 697.0), Vec2::new(766.0, 432.0))
-            .len,
+            .unwrap()
+            .length,
         391.079
     );
 }
@@ -10360,7 +11394,8 @@ fn aurora_merged_lpfwlifyko() {
     assert_delta!(
         aurora
             .path(Vec2::new(454.0, 257.0), Vec2::new(816.0, 364.0))
-            .len,
+            .unwrap()
+            .length,
         394.071
     );
 }
@@ -10370,7 +11405,8 @@ fn aurora_merged_jbmskgkjkj() {
     assert_delta!(
         aurora
             .path(Vec2::new(704.0, 369.0), Vec2::new(478.0, 513.0))
-            .len,
+            .unwrap()
+            .length,
         398.299
     );
 }
@@ -10380,7 +11416,8 @@ fn aurora_merged_nmeaaztpra() {
     assert_delta!(
         aurora
             .path(Vec2::new(864.0, 356.0), Vec2::new(662.0, 154.0))
-            .len,
+            .unwrap()
+            .length,
         391.296
     );
 }
@@ -10390,7 +11427,8 @@ fn aurora_merged_zbgccenckn() {
     assert_delta!(
         aurora
             .path(Vec2::new(630.0, 68.0), Vec2::new(544.0, 347.0))
-            .len,
+            .unwrap()
+            .length,
         391.383
     );
 }
@@ -10400,7 +11438,8 @@ fn aurora_merged_dtrnwyomzs() {
     assert_delta!(
         aurora
             .path(Vec2::new(446.0, 318.0), Vec2::new(265.0, 206.0))
-            .len,
+            .unwrap()
+            .length,
         399.45
     );
 }
@@ -10410,7 +11449,8 @@ fn aurora_merged_dhqnbpulsl() {
     assert_delta!(
         aurora
             .path(Vec2::new(136.0, 625.0), Vec2::new(465.0, 460.0))
-            .len,
+            .unwrap()
+            .length,
         390.413
     );
 }
@@ -10420,7 +11460,8 @@ fn aurora_merged_gdzfuwsyws() {
     assert_delta!(
         aurora
             .path(Vec2::new(812.0, 331.0), Vec2::new(600.0, 162.0))
-            .len,
+            .unwrap()
+            .length,
         394.792
     );
 }
@@ -10430,7 +11471,8 @@ fn aurora_merged_nzgalwluju() {
     assert_delta!(
         aurora
             .path(Vec2::new(847.0, 683.0), Vec2::new(521.0, 467.0))
-            .len,
+            .unwrap()
+            .length,
         395.976
     );
 }
@@ -10440,7 +11482,8 @@ fn aurora_merged_kgvulcfthd() {
     assert_delta!(
         aurora
             .path(Vec2::new(380.0, 437.0), Vec2::new(26.0, 600.0))
-            .len,
+            .unwrap()
+            .length,
         390.548
     );
 }
@@ -10450,7 +11493,8 @@ fn aurora_merged_hubwzradnt() {
     assert_delta!(
         aurora
             .path(Vec2::new(380.0, 89.0), Vec2::new(385.0, 351.0))
-            .len,
+            .unwrap()
+            .length,
         400.243
     );
 }
@@ -10460,7 +11504,8 @@ fn aurora_merged_gjmzjgjvie() {
     assert_delta!(
         aurora
             .path(Vec2::new(786.0, 324.0), Vec2::new(411.0, 291.0))
-            .len,
+            .unwrap()
+            .length,
         399.437
     );
 }
@@ -10470,7 +11515,8 @@ fn aurora_merged_tdpjinqugo() {
     assert_delta!(
         aurora
             .path(Vec2::new(642.0, 569.0), Vec2::new(349.0, 366.0))
-            .len,
+            .unwrap()
+            .length,
         391.431
     );
 }
@@ -10480,7 +11526,8 @@ fn aurora_merged_gvuinpwnbq() {
     assert_delta!(
         aurora
             .path(Vec2::new(443.0, 390.0), Vec2::new(192.0, 505.0))
-            .len,
+            .unwrap()
+            .length,
         398.109
     );
 }
@@ -10490,7 +11537,8 @@ fn aurora_merged_imbaegwoaq() {
     assert_delta!(
         aurora
             .path(Vec2::new(467.0, 669.0), Vec2::new(70.0, 661.0))
-            .len,
+            .unwrap()
+            .length,
         402.888
     );
 }
@@ -10500,7 +11548,8 @@ fn aurora_merged_cyskxmgyjb() {
     assert_delta!(
         aurora
             .path(Vec2::new(767.0, 559.0), Vec2::new(786.0, 334.0))
-            .len,
+            .unwrap()
+            .length,
         396.009
     );
 }
@@ -10510,7 +11559,8 @@ fn aurora_merged_fdivchkdgo() {
     assert_delta!(
         aurora
             .path(Vec2::new(529.0, 440.0), Vec2::new(431.0, 456.0))
-            .len,
+            .unwrap()
+            .length,
         403.223
     );
 }
@@ -10520,7 +11570,8 @@ fn aurora_merged_ampdwaiuig() {
     assert_delta!(
         aurora
             .path(Vec2::new(612.0, 47.0), Vec2::new(888.0, 251.0))
-            .len,
+            .unwrap()
+            .length,
         398.249
     );
 }
@@ -10530,7 +11581,8 @@ fn aurora_merged_omtbksuynu() {
     assert_delta!(
         aurora
             .path(Vec2::new(532.0, 381.0), Vec2::new(624.0, 211.0))
-            .len,
+            .unwrap()
+            .length,
         398.016
     );
 }
@@ -10540,7 +11592,8 @@ fn aurora_merged_gyuoicxaet() {
     assert_delta!(
         aurora
             .path(Vec2::new(829.0, 375.0), Vec2::new(454.0, 342.0))
-            .len,
+            .unwrap()
+            .length,
         401.96
     );
 }
@@ -10550,7 +11603,8 @@ fn aurora_merged_qzqdhkiheo() {
     assert_delta!(
         aurora
             .path(Vec2::new(463.0, 61.0), Vec2::new(355.0, 303.0))
-            .len,
+            .unwrap()
+            .length,
         399.139
     );
 }
@@ -10560,7 +11614,8 @@ fn aurora_merged_yjonxwybro() {
     assert_delta!(
         aurora
             .path(Vec2::new(610.0, 319.0), Vec2::new(400.0, 244.0))
-            .len,
+            .unwrap()
+            .length,
         403.331
     );
 }
@@ -10570,7 +11625,8 @@ fn aurora_merged_zycoscprcl() {
     assert_delta!(
         aurora
             .path(Vec2::new(485.0, 373.0), Vec2::new(111.0, 285.0))
-            .len,
+            .unwrap()
+            .length,
         397.104
     );
 }
@@ -10580,7 +11636,8 @@ fn aurora_merged_hhspaubhiu() {
     assert_delta!(
         aurora
             .path(Vec2::new(802.0, 723.0), Vec2::new(439.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         400.644
     );
 }
@@ -10590,7 +11647,8 @@ fn aurora_merged_faqxdaflal() {
     assert_delta!(
         aurora
             .path(Vec2::new(844.0, 559.0), Vec2::new(784.0, 307.0))
-            .len,
+            .unwrap()
+            .length,
         398.74
     );
 }
@@ -10600,7 +11658,8 @@ fn aurora_merged_pcjcxmecfk() {
     assert_delta!(
         aurora
             .path(Vec2::new(741.0, 397.0), Vec2::new(385.0, 543.0))
-            .len,
+            .unwrap()
+            .length,
         402.343
     );
 }
@@ -10610,7 +11669,8 @@ fn aurora_merged_ubdscnlfxc() {
     assert_delta!(
         aurora
             .path(Vec2::new(509.0, 50.0), Vec2::new(418.0, 306.0))
-            .len,
+            .unwrap()
+            .length,
         401.729
     );
 }
@@ -10620,7 +11680,8 @@ fn aurora_merged_heakssenpv() {
     assert_delta!(
         aurora
             .path(Vec2::new(181.0, 472.0), Vec2::new(504.0, 368.0))
-            .len,
+            .unwrap()
+            .length,
         398.876
     );
 }
@@ -10630,7 +11691,8 @@ fn aurora_merged_hdyjwwgdtd() {
     assert_delta!(
         aurora
             .path(Vec2::new(384.0, 679.0), Vec2::new(627.0, 697.0))
-            .len,
+            .unwrap()
+            .length,
         402.887
     );
 }
@@ -10640,7 +11702,8 @@ fn aurora_merged_itgvcgxigs() {
     assert_delta!(
         aurora
             .path(Vec2::new(610.0, 547.0), Vec2::new(996.0, 455.0))
-            .len,
+            .unwrap()
+            .length,
         402.25
     );
 }
@@ -10650,7 +11713,8 @@ fn aurora_merged_tzebzrhntn() {
     assert_delta!(
         aurora
             .path(Vec2::new(198.0, 570.0), Vec2::new(129.0, 320.0))
-            .len,
+            .unwrap()
+            .length,
         406.694
     );
 }
@@ -10660,7 +11724,8 @@ fn aurora_merged_cvzufimvtd() {
     assert_delta!(
         aurora
             .path(Vec2::new(995.0, 618.0), Vec2::new(610.0, 637.0))
-            .len,
+            .unwrap()
+            .length,
         402.078
     );
 }
@@ -10670,7 +11735,8 @@ fn aurora_merged_fmsejsaoxs() {
     assert_delta!(
         aurora
             .path(Vec2::new(459.0, 479.0), Vec2::new(525.0, 262.0))
-            .len,
+            .unwrap()
+            .length,
         403.232
     );
 }
@@ -10680,7 +11746,8 @@ fn aurora_merged_ypipcilmos() {
     assert_delta!(
         aurora
             .path(Vec2::new(443.0, 194.0), Vec2::new(782.0, 368.0))
-            .len,
+            .unwrap()
+            .length,
         399.551
     );
 }
@@ -10690,7 +11757,8 @@ fn aurora_merged_lpuyyvbarc() {
     assert_delta!(
         aurora
             .path(Vec2::new(560.0, 320.0), Vec2::new(292.0, 118.0))
-            .len,
+            .unwrap()
+            .length,
         403.301
     );
 }
@@ -10700,7 +11768,8 @@ fn aurora_merged_wfbgjcordi() {
     assert_delta!(
         aurora
             .path(Vec2::new(496.0, 543.0), Vec2::new(759.0, 360.0))
-            .len,
+            .unwrap()
+            .length,
         409.36
     );
 }
@@ -10710,7 +11779,8 @@ fn aurora_merged_bwclgenumb() {
     assert_delta!(
         aurora
             .path(Vec2::new(478.0, 328.0), Vec2::new(403.0, 530.0))
-            .len,
+            .unwrap()
+            .length,
         402.696
     );
 }
@@ -10720,7 +11790,8 @@ fn aurora_merged_bxnbbihutn() {
     assert_delta!(
         aurora
             .path(Vec2::new(64.0, 604.0), Vec2::new(49.0, 320.0))
-            .len,
+            .unwrap()
+            .length,
         403.551
     );
 }
@@ -10730,7 +11801,8 @@ fn aurora_merged_nolslwlxwk() {
     assert_delta!(
         aurora
             .path(Vec2::new(609.0, 478.0), Vec2::new(418.0, 314.0))
-            .len,
+            .unwrap()
+            .length,
         402.082
     );
 }
@@ -10740,7 +11812,8 @@ fn aurora_merged_lkddqjgqml() {
     assert_delta!(
         aurora
             .path(Vec2::new(594.0, 557.0), Vec2::new(219.0, 507.0))
-            .len,
+            .unwrap()
+            .length,
         410.619
     );
 }
@@ -10750,7 +11823,8 @@ fn aurora_merged_ovatexhmep() {
     assert_delta!(
         aurora
             .path(Vec2::new(684.0, 102.0), Vec2::new(583.0, 323.0))
-            .len,
+            .unwrap()
+            .length,
         403.567
     );
 }
@@ -10760,7 +11834,8 @@ fn aurora_merged_qqftsscwze() {
     assert_delta!(
         aurora
             .path(Vec2::new(516.0, 565.0), Vec2::new(232.0, 378.0))
-            .len,
+            .unwrap()
+            .length,
         413.029
     );
 }
@@ -10770,7 +11845,8 @@ fn aurora_merged_ocncinagql() {
     assert_delta!(
         aurora
             .path(Vec2::new(464.0, 207.0), Vec2::new(850.0, 102.0))
-            .len,
+            .unwrap()
+            .length,
         411.882
     );
 }
@@ -10780,7 +11856,8 @@ fn aurora_merged_ojkmczgidg() {
     assert_delta!(
         aurora
             .path(Vec2::new(246.0, 607.0), Vec2::new(16.0, 362.0))
-            .len,
+            .unwrap()
+            .length,
         410.466
     );
 }
@@ -10790,7 +11867,8 @@ fn aurora_merged_lbeebrpzqf() {
     assert_delta!(
         aurora
             .path(Vec2::new(81.0, 621.0), Vec2::new(43.0, 315.0))
-            .len,
+            .unwrap()
+            .length,
         408.736
     );
 }
@@ -10800,7 +11878,8 @@ fn aurora_merged_hxupudqtgu() {
     assert_delta!(
         aurora
             .path(Vec2::new(399.0, 716.0), Vec2::new(306.0, 545.0))
-            .len,
+            .unwrap()
+            .length,
         403.656
     );
 }
@@ -10810,7 +11889,8 @@ fn aurora_merged_zttqkukbqi() {
     assert_delta!(
         aurora
             .path(Vec2::new(79.0, 125.0), Vec2::new(111.0, 430.0))
-            .len,
+            .unwrap()
+            .length,
         409.152
     );
 }
@@ -10820,7 +11900,8 @@ fn aurora_merged_mgbtizkhet() {
     assert_delta!(
         aurora
             .path(Vec2::new(757.0, 230.0), Vec2::new(465.0, 289.0))
-            .len,
+            .unwrap()
+            .length,
         409.409
     );
 }
@@ -10830,7 +11911,8 @@ fn aurora_merged_ytfwgloxxj() {
     assert_delta!(
         aurora
             .path(Vec2::new(765.0, 176.0), Vec2::new(511.0, 305.0))
-            .len,
+            .unwrap()
+            .length,
         419.386
     );
 }
@@ -10840,7 +11922,8 @@ fn aurora_merged_tkurwqijbh() {
     assert_delta!(
         aurora
             .path(Vec2::new(693.0, 113.0), Vec2::new(309.0, 228.0))
-            .len,
+            .unwrap()
+            .length,
         409.659
     );
 }
@@ -10850,7 +11933,8 @@ fn aurora_merged_wcixcnrnlw() {
     assert_delta!(
         aurora
             .path(Vec2::new(280.0, 77.0), Vec2::new(250.0, 384.0))
-            .len,
+            .unwrap()
+            .length,
         411.317
     );
 }
@@ -10860,7 +11944,8 @@ fn aurora_merged_aqxyqwefst() {
     assert_delta!(
         aurora
             .path(Vec2::new(536.0, 408.0), Vec2::new(285.0, 266.0))
-            .len,
+            .unwrap()
+            .length,
         407.221
     );
 }
@@ -10870,7 +11955,8 @@ fn aurora_merged_urgqnqpyif() {
     assert_delta!(
         aurora
             .path(Vec2::new(737.0, 147.0), Vec2::new(559.0, 310.0))
-            .len,
+            .unwrap()
+            .length,
         415.318
     );
 }
@@ -10880,7 +11966,8 @@ fn aurora_merged_lpblmeaorp() {
     assert_delta!(
         aurora
             .path(Vec2::new(305.0, 139.0), Vec2::new(473.0, 350.0))
-            .len,
+            .unwrap()
+            .length,
         411.773
     );
 }
@@ -10890,7 +11977,8 @@ fn aurora_merged_gohydehuwm() {
     assert_delta!(
         aurora
             .path(Vec2::new(63.0, 154.0), Vec2::new(213.0, 412.0))
-            .len,
+            .unwrap()
+            .length,
         409.67
     );
 }
@@ -10900,7 +11988,8 @@ fn aurora_merged_yfinwhitlb() {
     assert_delta!(
         aurora
             .path(Vec2::new(53.0, 622.0), Vec2::new(9.0, 335.0))
-            .len,
+            .unwrap()
+            .length,
         413.208
     );
 }
@@ -10910,7 +11999,8 @@ fn aurora_merged_vjpggjelox() {
     assert_delta!(
         aurora
             .path(Vec2::new(32.0, 308.0), Vec2::new(328.0, 564.0))
-            .len,
+            .unwrap()
+            .length,
         418.83
     );
 }
@@ -10920,7 +12010,8 @@ fn aurora_merged_krsjzjavdo() {
     assert_delta!(
         aurora
             .path(Vec2::new(431.0, 192.0), Vec2::new(201.0, 412.0))
-            .len,
+            .unwrap()
+            .length,
         415.771
     );
 }
@@ -10930,7 +12021,8 @@ fn aurora_merged_bddpefbuar() {
     assert_delta!(
         aurora
             .path(Vec2::new(87.0, 169.0), Vec2::new(2.0, 421.0))
-            .len,
+            .unwrap()
+            .length,
         415.887
     );
 }
@@ -10940,7 +12032,8 @@ fn aurora_merged_jwvurnjhiy() {
     assert_delta!(
         aurora
             .path(Vec2::new(934.0, 663.0), Vec2::new(526.0, 608.0))
-            .len,
+            .unwrap()
+            .length,
         420.271
     );
 }
@@ -10950,7 +12043,8 @@ fn aurora_merged_ozcvijasot() {
     assert_delta!(
         aurora
             .path(Vec2::new(884.0, 409.0), Vec2::new(589.0, 522.0))
-            .len,
+            .unwrap()
+            .length,
         412.703
     );
 }
@@ -10960,7 +12054,8 @@ fn aurora_merged_gyvorqjkng() {
     assert_delta!(
         aurora
             .path(Vec2::new(154.0, 201.0), Vec2::new(433.0, 392.0))
-            .len,
+            .unwrap()
+            .length,
         414.176
     );
 }
@@ -10970,7 +12065,8 @@ fn aurora_merged_ixrsqxeape() {
     assert_delta!(
         aurora
             .path(Vec2::new(613.0, 303.0), Vec2::new(216.0, 357.0))
-            .len,
+            .unwrap()
+            .length,
         411.753
     );
 }
@@ -10980,7 +12076,8 @@ fn aurora_merged_fbbpmupapo() {
     assert_delta!(
         aurora
             .path(Vec2::new(785.0, 371.0), Vec2::new(523.0, 539.0))
-            .len,
+            .unwrap()
+            .length,
         417.059
     );
 }
@@ -10990,7 +12087,8 @@ fn aurora_merged_odypxsgnbo() {
     assert_delta!(
         aurora
             .path(Vec2::new(130.0, 273.0), Vec2::new(320.0, 567.0))
-            .len,
+            .unwrap()
+            .length,
         420.097
     );
 }
@@ -11000,7 +12098,8 @@ fn aurora_merged_foeywaywms() {
     assert_delta!(
         aurora
             .path(Vec2::new(271.0, 694.0), Vec2::new(632.0, 600.0))
-            .len,
+            .unwrap()
+            .length,
         420.676
     );
 }
@@ -11010,7 +12109,8 @@ fn aurora_merged_chnzuguwer() {
     assert_delta!(
         aurora
             .path(Vec2::new(162.0, 536.0), Vec2::new(168.0, 247.0))
-            .len,
+            .unwrap()
+            .length,
         412.399
     );
 }
@@ -11020,7 +12120,8 @@ fn aurora_merged_vibaijztdz() {
     assert_delta!(
         aurora
             .path(Vec2::new(621.0, 157.0), Vec2::new(620.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         417.794
     );
 }
@@ -11030,7 +12131,8 @@ fn aurora_merged_kbnqfaxuot() {
     assert_delta!(
         aurora
             .path(Vec2::new(577.0, 371.0), Vec2::new(782.0, 225.0))
-            .len,
+            .unwrap()
+            .length,
         416.74
     );
 }
@@ -11040,7 +12142,8 @@ fn aurora_merged_dkkkwwzexw() {
     assert_delta!(
         aurora
             .path(Vec2::new(142.0, 686.0), Vec2::new(79.0, 366.0))
-            .len,
+            .unwrap()
+            .length,
         417.615
     );
 }
@@ -11050,7 +12153,8 @@ fn aurora_merged_yxbyhzgwdr() {
     assert_delta!(
         aurora
             .path(Vec2::new(399.0, 353.0), Vec2::new(47.0, 480.0))
-            .len,
+            .unwrap()
+            .length,
         414.584
     );
 }
@@ -11060,7 +12164,8 @@ fn aurora_merged_curjhpwmij() {
     assert_delta!(
         aurora
             .path(Vec2::new(83.0, 634.0), Vec2::new(110.0, 325.0))
-            .len,
+            .unwrap()
+            .length,
         417.201
     );
 }
@@ -11070,7 +12175,8 @@ fn aurora_merged_nbyndgmcoh() {
     assert_delta!(
         aurora
             .path(Vec2::new(290.0, 369.0), Vec2::new(569.0, 172.0))
-            .len,
+            .unwrap()
+            .length,
         412.043
     );
 }
@@ -11080,7 +12186,8 @@ fn aurora_merged_ylwggpyuot() {
     assert_delta!(
         aurora
             .path(Vec2::new(265.0, 412.0), Vec2::new(399.0, 242.0))
-            .len,
+            .unwrap()
+            .length,
         417.273
     );
 }
@@ -11090,7 +12197,8 @@ fn aurora_merged_tcqshywigp() {
     assert_delta!(
         aurora
             .path(Vec2::new(693.0, 273.0), Vec2::new(862.0, 552.0))
-            .len,
+            .unwrap()
+            .length,
         423.417
     );
 }
@@ -11100,7 +12208,8 @@ fn aurora_merged_yqdfnrmdap() {
     assert_delta!(
         aurora
             .path(Vec2::new(581.0, 438.0), Vec2::new(819.0, 505.0))
-            .len,
+            .unwrap()
+            .length,
         413.794
     );
 }
@@ -11110,7 +12219,8 @@ fn aurora_merged_tgfiwoossk() {
     assert_delta!(
         aurora
             .path(Vec2::new(829.0, 651.0), Vec2::new(936.0, 335.0))
-            .len,
+            .unwrap()
+            .length,
         424.047
     );
 }
@@ -11120,7 +12230,8 @@ fn aurora_merged_rmmvdsfuag() {
     assert_delta!(
         aurora
             .path(Vec2::new(466.0, 505.0), Vec2::new(634.0, 429.0))
-            .len,
+            .unwrap()
+            .length,
         421.057
     );
 }
@@ -11130,7 +12241,8 @@ fn aurora_merged_vkzjyoxale() {
     assert_delta!(
         aurora
             .path(Vec2::new(576.0, 191.0), Vec2::new(706.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         418.507
     );
 }
@@ -11140,7 +12252,8 @@ fn aurora_merged_phsdatwrnt() {
     assert_delta!(
         aurora
             .path(Vec2::new(612.0, 270.0), Vec2::new(206.0, 336.0))
-            .len,
+            .unwrap()
+            .length,
         421.58
     );
 }
@@ -11150,7 +12263,8 @@ fn aurora_merged_dadaivqndt() {
     assert_delta!(
         aurora
             .path(Vec2::new(567.0, 558.0), Vec2::new(237.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         426.173
     );
 }
@@ -11160,7 +12274,8 @@ fn aurora_merged_smbhhwwztt() {
     assert_delta!(
         aurora
             .path(Vec2::new(328.0, 89.0), Vec2::new(234.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         424.918
     );
 }
@@ -11170,7 +12285,8 @@ fn aurora_merged_zcbmjhrbgm() {
     assert_delta!(
         aurora
             .path(Vec2::new(224.0, 285.0), Vec2::new(349.0, 539.0))
-            .len,
+            .unwrap()
+            .length,
         424.938
     );
 }
@@ -11180,7 +12296,8 @@ fn aurora_merged_vdlffidyze() {
     assert_delta!(
         aurora
             .path(Vec2::new(456.0, 635.0), Vec2::new(880.0, 657.0))
-            .len,
+            .unwrap()
+            .length,
         431.499
     );
 }
@@ -11190,7 +12307,8 @@ fn aurora_merged_uaeqnwabup() {
     assert_delta!(
         aurora
             .path(Vec2::new(721.0, 345.0), Vec2::new(432.0, 418.0))
-            .len,
+            .unwrap()
+            .length,
         417.287
     );
 }
@@ -11200,7 +12318,8 @@ fn aurora_merged_befqddvtgt() {
     assert_delta!(
         aurora
             .path(Vec2::new(450.0, 382.0), Vec2::new(107.0, 491.0))
-            .len,
+            .unwrap()
+            .length,
         428.436
     );
 }
@@ -11210,7 +12329,8 @@ fn aurora_merged_dnvtmkwnpd() {
     assert_delta!(
         aurora
             .path(Vec2::new(523.0, 233.0), Vec2::new(853.0, 102.0))
-            .len,
+            .unwrap()
+            .length,
         423.712
     );
 }
@@ -11220,7 +12340,8 @@ fn aurora_merged_qbiodxsnzc() {
     assert_delta!(
         aurora
             .path(Vec2::new(513.0, 401.0), Vec2::new(335.0, 283.0))
-            .len,
+            .unwrap()
+            .length,
         423.937
     );
 }
@@ -11230,7 +12351,8 @@ fn aurora_merged_qultqkgbil() {
     assert_delta!(
         aurora
             .path(Vec2::new(690.0, 102.0), Vec2::new(281.0, 117.0))
-            .len,
+            .unwrap()
+            .length,
         424.367
     );
 }
@@ -11240,7 +12362,8 @@ fn aurora_merged_lnbxxcbcxf() {
     assert_delta!(
         aurora
             .path(Vec2::new(386.0, 288.0), Vec2::new(502.0, 630.0))
-            .len,
+            .unwrap()
+            .length,
         434.657
     );
 }
@@ -11250,7 +12373,8 @@ fn aurora_merged_uemuxgjsyb() {
     assert_delta!(
         aurora
             .path(Vec2::new(339.0, 360.0), Vec2::new(616.0, 568.0))
-            .len,
+            .unwrap()
+            .length,
         422.809
     );
 }
@@ -11260,7 +12384,8 @@ fn aurora_merged_lirtpsqplx() {
     assert_delta!(
         aurora
             .path(Vec2::new(846.0, 659.0), Vec2::new(489.0, 434.0))
-            .len,
+            .unwrap()
+            .length,
         425.043
     );
 }
@@ -11270,7 +12395,8 @@ fn aurora_merged_eelyggchxs() {
     assert_delta!(
         aurora
             .path(Vec2::new(862.0, 388.0), Vec2::new(823.0, 95.0))
-            .len,
+            .unwrap()
+            .length,
         421.173
     );
 }
@@ -11280,7 +12406,8 @@ fn aurora_merged_wujignhdpm() {
     assert_delta!(
         aurora
             .path(Vec2::new(539.0, 335.0), Vec2::new(123.0, 285.0))
-            .len,
+            .unwrap()
+            .length,
         429.989
     );
 }
@@ -11290,7 +12417,8 @@ fn aurora_merged_qtlwgjbhoi() {
     assert_delta!(
         aurora
             .path(Vec2::new(673.0, 696.0), Vec2::new(334.0, 551.0))
-            .len,
+            .unwrap()
+            .length,
         422.286
     );
 }
@@ -11300,7 +12428,8 @@ fn aurora_merged_pmxikjmjtv() {
     assert_delta!(
         aurora
             .path(Vec2::new(826.0, 425.0), Vec2::new(633.0, 565.0))
-            .len,
+            .unwrap()
+            .length,
         423.725
     );
 }
@@ -11310,7 +12439,8 @@ fn aurora_merged_evkrzbzytr() {
     assert_delta!(
         aurora
             .path(Vec2::new(906.0, 584.0), Vec2::new(489.0, 536.0))
-            .len,
+            .unwrap()
+            .length,
         429.246
     );
 }
@@ -11320,7 +12450,8 @@ fn aurora_merged_ehgcjvxxfb() {
     assert_delta!(
         aurora
             .path(Vec2::new(495.0, 623.0), Vec2::new(722.0, 363.0))
-            .len,
+            .unwrap()
+            .length,
         427.88
     );
 }
@@ -11330,7 +12461,8 @@ fn aurora_merged_aqsctbwtfe() {
     assert_delta!(
         aurora
             .path(Vec2::new(876.0, 585.0), Vec2::new(465.0, 485.0))
-            .len,
+            .unwrap()
+            .length,
         427.27
     );
 }
@@ -11340,7 +12472,8 @@ fn aurora_merged_rrngdpichi() {
     assert_delta!(
         aurora
             .path(Vec2::new(261.0, 413.0), Vec2::new(650.0, 445.0))
-            .len,
+            .unwrap()
+            .length,
         424.059
     );
 }
@@ -11350,7 +12483,8 @@ fn aurora_merged_padkuhwfgr() {
     assert_delta!(
         aurora
             .path(Vec2::new(155.0, 652.0), Vec2::new(580.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         434.844
     );
 }
@@ -11360,7 +12494,8 @@ fn aurora_merged_yxgipnybpp() {
     assert_delta!(
         aurora
             .path(Vec2::new(484.0, 321.0), Vec2::new(719.0, 249.0))
-            .len,
+            .unwrap()
+            .length,
         427.143
     );
 }
@@ -11370,7 +12505,8 @@ fn aurora_merged_ymssbovfpc() {
     assert_delta!(
         aurora
             .path(Vec2::new(288.0, 589.0), Vec2::new(581.0, 526.0))
-            .len,
+            .unwrap()
+            .length,
         427.611
     );
 }
@@ -11380,7 +12516,8 @@ fn aurora_merged_rqgvwvgmjt() {
     assert_delta!(
         aurora
             .path(Vec2::new(142.0, 166.0), Vec2::new(384.0, 301.0))
-            .len,
+            .unwrap()
+            .length,
         423.228
     );
 }
@@ -11390,7 +12527,8 @@ fn aurora_merged_tfxzvmnkhu() {
     assert_delta!(
         aurora
             .path(Vec2::new(447.0, 149.0), Vec2::new(586.0, 464.0))
-            .len,
+            .unwrap()
+            .length,
         429.709
     );
 }
@@ -11400,7 +12538,8 @@ fn aurora_merged_xotjvqosnd() {
     assert_delta!(
         aurora
             .path(Vec2::new(847.0, 160.0), Vec2::new(461.0, 73.0))
-            .len,
+            .unwrap()
+            .length,
         423.783
     );
 }
@@ -11410,7 +12549,8 @@ fn aurora_merged_yjfaiswknq() {
     assert_delta!(
         aurora
             .path(Vec2::new(757.0, 410.0), Vec2::new(508.0, 168.0))
-            .len,
+            .unwrap()
+            .length,
         425.9
     );
 }
@@ -11420,7 +12560,8 @@ fn aurora_merged_rgjoahlljx() {
     assert_delta!(
         aurora
             .path(Vec2::new(729.0, 82.0), Vec2::new(662.0, 264.0))
-            .len,
+            .unwrap()
+            .length,
         426.236
     );
 }
@@ -11430,7 +12571,8 @@ fn aurora_merged_ehoqevmbbf() {
     assert_delta!(
         aurora
             .path(Vec2::new(726.0, 232.0), Vec2::new(326.0, 91.0))
-            .len,
+            .unwrap()
+            .length,
         428.791
     );
 }
@@ -11440,7 +12582,8 @@ fn aurora_merged_vnenugnsfq() {
     assert_delta!(
         aurora
             .path(Vec2::new(108.0, 291.0), Vec2::new(163.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         432.743
     );
 }
@@ -11450,7 +12593,8 @@ fn aurora_merged_mamuvvlzky() {
     assert_delta!(
         aurora
             .path(Vec2::new(570.0, 401.0), Vec2::new(754.0, 517.0))
-            .len,
+            .unwrap()
+            .length,
         428.601
     );
 }
@@ -11460,7 +12604,8 @@ fn aurora_merged_uzwpylmwbe() {
     assert_delta!(
         aurora
             .path(Vec2::new(313.0, 622.0), Vec2::new(352.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         433.174
     );
 }
@@ -11470,7 +12615,8 @@ fn aurora_merged_ltdqvnyivg() {
     assert_delta!(
         aurora
             .path(Vec2::new(549.0, 603.0), Vec2::new(960.0, 573.0))
-            .len,
+            .unwrap()
+            .length,
         434.068
     );
 }
@@ -11480,7 +12626,8 @@ fn aurora_merged_tmyssubfjc() {
     assert_delta!(
         aurora
             .path(Vec2::new(587.0, 334.0), Vec2::new(1002.0, 363.0))
-            .len,
+            .unwrap()
+            .length,
         434.586
     );
 }
@@ -11490,7 +12637,8 @@ fn aurora_merged_xscnoizoym() {
     assert_delta!(
         aurora
             .path(Vec2::new(471.0, 499.0), Vec2::new(127.0, 277.0))
-            .len,
+            .unwrap()
+            .length,
         437.855
     );
 }
@@ -11500,7 +12648,8 @@ fn aurora_merged_wmcenwqjqs() {
     assert_delta!(
         aurora
             .path(Vec2::new(190.0, 509.0), Vec2::new(498.0, 360.0))
-            .len,
+            .unwrap()
+            .length,
         431.204
     );
 }
@@ -11510,7 +12659,8 @@ fn aurora_merged_kvjbdpbyvo() {
     assert_delta!(
         aurora
             .path(Vec2::new(731.0, 276.0), Vec2::new(414.0, 281.0))
-            .len,
+            .unwrap()
+            .length,
         429.956
     );
 }
@@ -11520,7 +12670,8 @@ fn aurora_merged_gwyrpaatue() {
     assert_delta!(
         aurora
             .path(Vec2::new(634.0, 341.0), Vec2::new(297.0, 171.0))
-            .len,
+            .unwrap()
+            .length,
         441.632
     );
 }
@@ -11530,7 +12681,8 @@ fn aurora_merged_uwjjbcjngp() {
     assert_delta!(
         aurora
             .path(Vec2::new(408.0, 704.0), Vec2::new(68.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         440.138
     );
 }
@@ -11540,7 +12692,8 @@ fn aurora_merged_fywunxsrcq() {
     assert_delta!(
         aurora
             .path(Vec2::new(307.0, 321.0), Vec2::new(457.0, 63.0))
-            .len,
+            .unwrap()
+            .length,
         438.653
     );
 }
@@ -11550,7 +12703,8 @@ fn aurora_merged_imkweurdlv() {
     assert_delta!(
         aurora
             .path(Vec2::new(745.0, 279.0), Vec2::new(590.0, 274.0))
-            .len,
+            .unwrap()
+            .length,
         434.65
     );
 }
@@ -11560,7 +12714,8 @@ fn aurora_merged_kpbizwscoc() {
     assert_delta!(
         aurora
             .path(Vec2::new(322.0, 499.0), Vec2::new(510.0, 344.0))
-            .len,
+            .unwrap()
+            .length,
         439.298
     );
 }
@@ -11570,7 +12725,8 @@ fn aurora_merged_ryjdajvpxr() {
     assert_delta!(
         aurora
             .path(Vec2::new(382.0, 457.0), Vec2::new(609.0, 685.0))
-            .len,
+            .unwrap()
+            .length,
         437.802
     );
 }
@@ -11580,7 +12736,8 @@ fn aurora_merged_xwwmkadldz() {
     assert_delta!(
         aurora
             .path(Vec2::new(249.0, 224.0), Vec2::new(234.0, 416.0))
-            .len,
+            .unwrap()
+            .length,
         433.503
     );
 }
@@ -11590,7 +12747,8 @@ fn aurora_merged_mmauxwtwjy() {
     assert_delta!(
         aurora
             .path(Vec2::new(106.0, 363.0), Vec2::new(138.0, 690.0))
-            .len,
+            .unwrap()
+            .length,
         439.785
     );
 }
@@ -11600,7 +12758,8 @@ fn aurora_merged_execfcdpda() {
     assert_delta!(
         aurora
             .path(Vec2::new(225.0, 50.0), Vec2::new(639.0, 144.0))
-            .len,
+            .unwrap()
+            .length,
         434.946
     );
 }
@@ -11610,7 +12769,8 @@ fn aurora_merged_nytwpfthyk() {
     assert_delta!(
         aurora
             .path(Vec2::new(455.0, 561.0), Vec2::new(734.0, 676.0))
-            .len,
+            .unwrap()
+            .length,
         439.071
     );
 }
@@ -11620,7 +12780,8 @@ fn aurora_merged_udhqpuezeb() {
     assert_delta!(
         aurora
             .path(Vec2::new(743.0, 423.0), Vec2::new(618.0, 724.0))
-            .len,
+            .unwrap()
+            .length,
         440.014
     );
 }
@@ -11630,7 +12791,8 @@ fn aurora_merged_uitfsgirza() {
     assert_delta!(
         aurora
             .path(Vec2::new(251.0, 216.0), Vec2::new(537.0, 357.0))
-            .len,
+            .unwrap()
+            .length,
         447.117
     );
 }
@@ -11640,7 +12802,8 @@ fn aurora_merged_ngjpewhmqz() {
     assert_delta!(
         aurora
             .path(Vec2::new(593.0, 331.0), Vec2::new(918.0, 552.0))
-            .len,
+            .unwrap()
+            .length,
         434.761
     );
 }
@@ -11650,7 +12813,8 @@ fn aurora_merged_xwaggirdxt() {
     assert_delta!(
         aurora
             .path(Vec2::new(271.0, 43.0), Vec2::new(684.0, 179.0))
-            .len,
+            .unwrap()
+            .length,
         440.584
     );
 }
@@ -11660,7 +12824,8 @@ fn aurora_merged_fzlvmftgcr() {
     assert_delta!(
         aurora
             .path(Vec2::new(370.0, 331.0), Vec2::new(656.0, 456.0))
-            .len,
+            .unwrap()
+            .length,
         434.808
     );
 }
@@ -11670,7 +12835,8 @@ fn aurora_merged_pipzmdplyw() {
     assert_delta!(
         aurora
             .path(Vec2::new(64.0, 673.0), Vec2::new(398.0, 700.0))
-            .len,
+            .unwrap()
+            .length,
         446.771
     );
 }
@@ -11680,7 +12846,8 @@ fn aurora_merged_jddxskpmsx() {
     assert_delta!(
         aurora
             .path(Vec2::new(113.0, 389.0), Vec2::new(539.0, 322.0))
-            .len,
+            .unwrap()
+            .length,
         440.949
     );
 }
@@ -11690,7 +12857,8 @@ fn aurora_merged_zuelqwstsl() {
     assert_delta!(
         aurora
             .path(Vec2::new(456.0, 307.0), Vec2::new(780.0, 204.0))
-            .len,
+            .unwrap()
+            .length,
         446.48
     );
 }
@@ -11700,7 +12868,8 @@ fn aurora_merged_wzlhkixsuc() {
     assert_delta!(
         aurora
             .path(Vec2::new(34.0, 312.0), Vec2::new(445.0, 200.0))
-            .len,
+            .unwrap()
+            .length,
         442.506
     );
 }
@@ -11710,7 +12879,8 @@ fn aurora_merged_lxffhbwhql() {
     assert_delta!(
         aurora
             .path(Vec2::new(344.0, 317.0), Vec2::new(683.0, 207.0))
-            .len,
+            .unwrap()
+            .length,
         436.972
     );
 }
@@ -11720,7 +12890,8 @@ fn aurora_merged_gdsabvysir() {
     assert_delta!(
         aurora
             .path(Vec2::new(584.0, 156.0), Vec2::new(147.0, 195.0))
-            .len,
+            .unwrap()
+            .length,
         456.86
     );
 }
@@ -11730,7 +12901,8 @@ fn aurora_merged_cmygkypemm() {
     assert_delta!(
         aurora
             .path(Vec2::new(650.0, 97.0), Vec2::new(511.0, 427.0))
-            .len,
+            .unwrap()
+            .length,
         440.539
     );
 }
@@ -11740,7 +12912,8 @@ fn aurora_merged_iotfwlkyfk() {
     assert_delta!(
         aurora
             .path(Vec2::new(225.0, 124.0), Vec2::new(534.0, 293.0))
-            .len,
+            .unwrap()
+            .length,
         442.192
     );
 }
@@ -11750,7 +12923,8 @@ fn aurora_merged_ogimayqhdi() {
     assert_delta!(
         aurora
             .path(Vec2::new(767.0, 656.0), Vec2::new(922.0, 356.0))
-            .len,
+            .unwrap()
+            .length,
         447.14
     );
 }
@@ -11760,7 +12934,8 @@ fn aurora_merged_towtiiwfkz() {
     assert_delta!(
         aurora
             .path(Vec2::new(17.0, 510.0), Vec2::new(393.0, 696.0))
-            .len,
+            .unwrap()
+            .length,
         440.979
     );
 }
@@ -11770,7 +12945,8 @@ fn aurora_merged_jpogwazgem() {
     assert_delta!(
         aurora
             .path(Vec2::new(410.0, 197.0), Vec2::new(850.0, 134.0))
-            .len,
+            .unwrap()
+            .length,
         455.242
     );
 }
@@ -11780,7 +12956,8 @@ fn aurora_merged_aqgheystkt() {
     assert_delta!(
         aurora
             .path(Vec2::new(461.0, 398.0), Vec2::new(365.0, 79.0))
-            .len,
+            .unwrap()
+            .length,
         441.681
     );
 }
@@ -11790,7 +12967,8 @@ fn aurora_merged_eonmoyovbr() {
     assert_delta!(
         aurora
             .path(Vec2::new(588.0, 579.0), Vec2::new(827.0, 409.0))
-            .len,
+            .unwrap()
+            .length,
         444.749
     );
 }
@@ -11800,7 +12978,8 @@ fn aurora_merged_antjlwqzwh() {
     assert_delta!(
         aurora
             .path(Vec2::new(372.0, 300.0), Vec2::new(73.0, 177.0))
-            .len,
+            .unwrap()
+            .length,
         437.185
     );
 }
@@ -11810,7 +12989,8 @@ fn aurora_merged_sfuvwzirme() {
     assert_delta!(
         aurora
             .path(Vec2::new(671.0, 273.0), Vec2::new(279.0, 85.0))
-            .len,
+            .unwrap()
+            .length,
         442.336
     );
 }
@@ -11820,7 +13000,8 @@ fn aurora_merged_viisielfwq() {
     assert_delta!(
         aurora
             .path(Vec2::new(324.0, 748.0), Vec2::new(666.0, 708.0))
-            .len,
+            .unwrap()
+            .length,
         446.15
     );
 }
@@ -11830,7 +13011,8 @@ fn aurora_merged_amkxdyxorh() {
     assert_delta!(
         aurora
             .path(Vec2::new(853.0, 299.0), Vec2::new(557.0, 517.0))
-            .len,
+            .unwrap()
+            .length,
         447.985
     );
 }
@@ -11840,7 +13022,8 @@ fn aurora_merged_kitjyvbfez() {
     assert_delta!(
         aurora
             .path(Vec2::new(101.0, 442.0), Vec2::new(381.0, 547.0))
-            .len,
+            .unwrap()
+            .length,
         444.246
     );
 }
@@ -11850,7 +13033,8 @@ fn aurora_merged_gpxhmsncxs() {
     assert_delta!(
         aurora
             .path(Vec2::new(563.0, 550.0), Vec2::new(124.0, 509.0))
-            .len,
+            .unwrap()
+            .length,
         450.851
     );
 }
@@ -11860,7 +13044,8 @@ fn aurora_merged_gyrpjvjuri() {
     assert_delta!(
         aurora
             .path(Vec2::new(74.0, 560.0), Vec2::new(137.0, 240.0))
-            .len,
+            .unwrap()
+            .length,
         448.51
     );
 }
@@ -11870,7 +13055,8 @@ fn aurora_merged_atgjxwnjqm() {
     assert_delta!(
         aurora
             .path(Vec2::new(94.0, 424.0), Vec2::new(502.0, 514.0))
-            .len,
+            .unwrap()
+            .length,
         445.108
     );
 }
@@ -11880,7 +13066,8 @@ fn aurora_merged_bgprzlbtii() {
     assert_delta!(
         aurora
             .path(Vec2::new(641.0, 559.0), Vec2::new(246.0, 664.0))
-            .len,
+            .unwrap()
+            .length,
         456.713
     );
 }
@@ -11890,7 +13077,8 @@ fn aurora_merged_blixfivbin() {
     assert_delta!(
         aurora
             .path(Vec2::new(132.0, 435.0), Vec2::new(540.0, 276.0))
-            .len,
+            .unwrap()
+            .length,
         446.555
     );
 }
@@ -11900,7 +13088,8 @@ fn aurora_merged_ayyfbwljcq() {
     assert_delta!(
         aurora
             .path(Vec2::new(693.0, 216.0), Vec2::new(515.0, 387.0))
-            .len,
+            .unwrap()
+            .length,
         446.361
     );
 }
@@ -11910,7 +13099,8 @@ fn aurora_merged_okuxndcgrb() {
     assert_delta!(
         aurora
             .path(Vec2::new(892.0, 442.0), Vec2::new(464.0, 478.0))
-            .len,
+            .unwrap()
+            .length,
         445.846
     );
 }
@@ -11920,7 +13110,8 @@ fn aurora_merged_lhzuoehspo() {
     assert_delta!(
         aurora
             .path(Vec2::new(148.0, 716.0), Vec2::new(101.0, 370.0))
-            .len,
+            .unwrap()
+            .length,
         458.984
     );
 }
@@ -11930,7 +13121,8 @@ fn aurora_merged_mkaaegmxui() {
     assert_delta!(
         aurora
             .path(Vec2::new(433.0, 405.0), Vec2::new(559.0, 142.0))
-            .len,
+            .unwrap()
+            .length,
         448.283
     );
 }
@@ -11940,7 +13132,8 @@ fn aurora_merged_rcsesivqus() {
     assert_delta!(
         aurora
             .path(Vec2::new(252.0, 632.0), Vec2::new(131.0, 293.0))
-            .len,
+            .unwrap()
+            .length,
         458.671
     );
 }
@@ -11950,7 +13143,8 @@ fn aurora_merged_ejffaaedrn() {
     assert_delta!(
         aurora
             .path(Vec2::new(980.0, 369.0), Vec2::new(593.0, 546.0))
-            .len,
+            .unwrap()
+            .length,
         455.998
     );
 }
@@ -11960,7 +13154,8 @@ fn aurora_merged_mklmmpqhnx() {
     assert_delta!(
         aurora
             .path(Vec2::new(566.0, 404.0), Vec2::new(941.0, 459.0))
-            .len,
+            .unwrap()
+            .length,
         447.871
     );
 }
@@ -11970,7 +13165,8 @@ fn aurora_merged_czkdfeolpt() {
     assert_delta!(
         aurora
             .path(Vec2::new(989.0, 356.0), Vec2::new(653.0, 612.0))
-            .len,
+            .unwrap()
+            .length,
         454.895
     );
 }
@@ -11980,7 +13176,8 @@ fn aurora_merged_mpflyluguk() {
     assert_delta!(
         aurora
             .path(Vec2::new(1018.0, 612.0), Vec2::new(664.0, 367.0))
-            .len,
+            .unwrap()
+            .length,
         449.968
     );
 }
@@ -11990,7 +13187,8 @@ fn aurora_merged_jggbdawcsm() {
     assert_delta!(
         aurora
             .path(Vec2::new(641.0, 411.0), Vec2::new(421.0, 538.0))
-            .len,
+            .unwrap()
+            .length,
         452.05
     );
 }
@@ -12000,7 +13198,8 @@ fn aurora_merged_nsdywjrlvx() {
     assert_delta!(
         aurora
             .path(Vec2::new(696.0, 315.0), Vec2::new(308.0, 359.0))
-            .len,
+            .unwrap()
+            .length,
         456.803
     );
 }
@@ -12010,7 +13209,8 @@ fn aurora_merged_rdjwdyrekh() {
     assert_delta!(
         aurora
             .path(Vec2::new(489.0, 329.0), Vec2::new(644.0, 516.0))
-            .len,
+            .unwrap()
+            .length,
         454.117
     );
 }
@@ -12020,7 +13220,8 @@ fn aurora_merged_aswtrkpjad() {
     assert_delta!(
         aurora
             .path(Vec2::new(527.0, 329.0), Vec2::new(785.0, 278.0))
-            .len,
+            .unwrap()
+            .length,
         459.407
     );
 }
@@ -12030,7 +13231,8 @@ fn aurora_merged_nabkeurzqc() {
     assert_delta!(
         aurora
             .path(Vec2::new(908.0, 300.0), Vec2::new(690.0, 594.0))
-            .len,
+            .unwrap()
+            .length,
         457.837
     );
 }
@@ -12040,7 +13242,8 @@ fn aurora_merged_lqrfnkkrkj() {
     assert_delta!(
         aurora
             .path(Vec2::new(320.0, 143.0), Vec2::new(764.0, 200.0))
-            .len,
+            .unwrap()
+            .length,
         457.929
     );
 }
@@ -12050,7 +13253,8 @@ fn aurora_merged_xrjkhqiqog() {
     assert_delta!(
         aurora
             .path(Vec2::new(190.0, 225.0), Vec2::new(558.0, 252.0))
-            .len,
+            .unwrap()
+            .length,
         464.633
     );
 }
@@ -12060,7 +13264,8 @@ fn aurora_merged_lxpinzsbsf() {
     assert_delta!(
         aurora
             .path(Vec2::new(132.0, 300.0), Vec2::new(377.0, 611.0))
-            .len,
+            .unwrap()
+            .length,
         464.107
     );
 }
@@ -12070,7 +13275,8 @@ fn aurora_merged_pdfdupwcic() {
     assert_delta!(
         aurora
             .path(Vec2::new(574.0, 434.0), Vec2::new(354.0, 210.0))
-            .len,
+            .unwrap()
+            .length,
         459.375
     );
 }
@@ -12080,7 +13286,8 @@ fn aurora_merged_wnryglwpgi() {
     assert_delta!(
         aurora
             .path(Vec2::new(366.0, 71.0), Vec2::new(746.0, 312.0))
-            .len,
+            .unwrap()
+            .length,
         453.473
     );
 }
@@ -12090,7 +13297,8 @@ fn aurora_merged_hmwccphqek() {
     assert_delta!(
         aurora
             .path(Vec2::new(363.0, 538.0), Vec2::new(332.0, 619.0))
-            .len,
+            .unwrap()
+            .length,
         450.005
     );
 }
@@ -12100,7 +13308,8 @@ fn aurora_merged_smgoisvzen() {
     assert_delta!(
         aurora
             .path(Vec2::new(115.0, 386.0), Vec2::new(528.0, 462.0))
-            .len,
+            .unwrap()
+            .length,
         453.153
     );
 }
@@ -12110,7 +13319,8 @@ fn aurora_merged_snjwtmyuxh() {
     assert_delta!(
         aurora
             .path(Vec2::new(318.0, 50.0), Vec2::new(608.0, 318.0))
-            .len,
+            .unwrap()
+            .length,
         453.569
     );
 }
@@ -12120,7 +13330,8 @@ fn aurora_merged_thqpclmryc() {
     assert_delta!(
         aurora
             .path(Vec2::new(585.0, 295.0), Vec2::new(745.0, 92.0))
-            .len,
+            .unwrap()
+            .length,
         451.598
     );
 }
@@ -12130,7 +13341,8 @@ fn aurora_merged_clngokmcce() {
     assert_delta!(
         aurora
             .path(Vec2::new(730.0, 152.0), Vec2::new(275.0, 218.0))
-            .len,
+            .unwrap()
+            .length,
         469.235
     );
 }
@@ -12140,7 +13352,8 @@ fn aurora_merged_ogexjbpexa() {
     assert_delta!(
         aurora
             .path(Vec2::new(549.0, 318.0), Vec2::new(518.0, 523.0))
-            .len,
+            .unwrap()
+            .length,
         459.476
     );
 }
@@ -12150,7 +13363,8 @@ fn aurora_merged_xwwbqkkzxp() {
     assert_delta!(
         aurora
             .path(Vec2::new(793.0, 335.0), Vec2::new(911.0, 613.0))
-            .len,
+            .unwrap()
+            .length,
         460.876
     );
 }
@@ -12160,7 +13374,8 @@ fn aurora_merged_tdqsvhrgac() {
     assert_delta!(
         aurora
             .path(Vec2::new(296.0, 396.0), Vec2::new(273.0, 84.0))
-            .len,
+            .unwrap()
+            .length,
         458.677
     );
 }
@@ -12170,7 +13385,8 @@ fn aurora_merged_vmnnqzqftn() {
     assert_delta!(
         aurora
             .path(Vec2::new(316.0, 234.0), Vec2::new(773.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         476.46
     );
 }
@@ -12180,7 +13396,8 @@ fn aurora_merged_mlhlbvokea() {
     assert_delta!(
         aurora
             .path(Vec2::new(179.0, 169.0), Vec2::new(434.0, 263.0))
-            .len,
+            .unwrap()
+            .length,
         458.648
     );
 }
@@ -12190,7 +13407,8 @@ fn aurora_merged_dutwdakzst() {
     assert_delta!(
         aurora
             .path(Vec2::new(545.0, 266.0), Vec2::new(241.0, 473.0))
-            .len,
+            .unwrap()
+            .length,
         453.32
     );
 }
@@ -12200,7 +13418,8 @@ fn aurora_merged_kvhbktcble() {
     assert_delta!(
         aurora
             .path(Vec2::new(339.0, 337.0), Vec2::new(689.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         457.375
     );
 }
@@ -12210,7 +13429,8 @@ fn aurora_merged_ietwlelspu() {
     assert_delta!(
         aurora
             .path(Vec2::new(264.0, 536.0), Vec2::new(699.0, 431.0))
-            .len,
+            .unwrap()
+            .length,
         457.561
     );
 }
@@ -12220,7 +13440,8 @@ fn aurora_merged_jveoeqvgea() {
     assert_delta!(
         aurora
             .path(Vec2::new(384.0, 386.0), Vec2::new(272.0, 82.0))
-            .len,
+            .unwrap()
+            .length,
         461.096
     );
 }
@@ -12230,7 +13451,8 @@ fn aurora_merged_pkujrrbfum() {
     assert_delta!(
         aurora
             .path(Vec2::new(633.0, 503.0), Vec2::new(303.0, 665.0))
-            .len,
+            .unwrap()
+            .length,
         465.27
     );
 }
@@ -12240,7 +13462,8 @@ fn aurora_merged_lbhaaggicf() {
     assert_delta!(
         aurora
             .path(Vec2::new(671.0, 695.0), Vec2::new(656.0, 377.0))
-            .len,
+            .unwrap()
+            .length,
         469.023
     );
 }
@@ -12250,7 +13473,8 @@ fn aurora_merged_erijiuddem() {
     assert_delta!(
         aurora
             .path(Vec2::new(784.0, 111.0), Vec2::new(678.0, 323.0))
-            .len,
+            .unwrap()
+            .length,
         461.64
     );
 }
@@ -12260,7 +13484,8 @@ fn aurora_merged_mcfaacapxi() {
     assert_delta!(
         aurora
             .path(Vec2::new(141.0, 306.0), Vec2::new(383.0, 538.0))
-            .len,
+            .unwrap()
+            .length,
         467.381
     );
 }
@@ -12270,7 +13495,8 @@ fn aurora_merged_nfkcdfhkec() {
     assert_delta!(
         aurora
             .path(Vec2::new(504.0, 630.0), Vec2::new(622.0, 432.0))
-            .len,
+            .unwrap()
+            .length,
         461.923
     );
 }
@@ -12280,7 +13506,8 @@ fn aurora_merged_vgyedzwigv() {
     assert_delta!(
         aurora
             .path(Vec2::new(243.0, 668.0), Vec2::new(312.0, 320.0))
-            .len,
+            .unwrap()
+            .length,
         471.454
     );
 }
@@ -12290,7 +13517,8 @@ fn aurora_merged_qlhvemqexy() {
     assert_delta!(
         aurora
             .path(Vec2::new(799.0, 97.0), Vec2::new(703.0, 370.0))
-            .len,
+            .unwrap()
+            .length,
         463.419
     );
 }
@@ -12300,7 +13528,8 @@ fn aurora_merged_uyqywkwidl() {
     assert_delta!(
         aurora
             .path(Vec2::new(72.0, 335.0), Vec2::new(388.0, 97.0))
-            .len,
+            .unwrap()
+            .length,
         461.089
     );
 }
@@ -12310,7 +13539,8 @@ fn aurora_merged_gutxwcmtyb() {
     assert_delta!(
         aurora
             .path(Vec2::new(400.0, 221.0), Vec2::new(458.0, 418.0))
-            .len,
+            .unwrap()
+            .length,
         459.115
     );
 }
@@ -12320,7 +13550,8 @@ fn aurora_merged_tevkcsgvsh() {
     assert_delta!(
         aurora
             .path(Vec2::new(451.0, 512.0), Vec2::new(905.0, 473.0))
-            .len,
+            .unwrap()
+            .length,
         467.006
     );
 }
@@ -12330,7 +13561,8 @@ fn aurora_merged_cpjqoxpxtl() {
     assert_delta!(
         aurora
             .path(Vec2::new(215.0, 460.0), Vec2::new(364.0, 204.0))
-            .len,
+            .unwrap()
+            .length,
         465.092
     );
 }
@@ -12340,7 +13572,8 @@ fn aurora_merged_snwmwquamq() {
     assert_delta!(
         aurora
             .path(Vec2::new(660.0, 623.0), Vec2::new(654.0, 349.0))
-            .len,
+            .unwrap()
+            .length,
         463.335
     );
 }
@@ -12350,7 +13583,8 @@ fn aurora_merged_flyfycnfda() {
     assert_delta!(
         aurora
             .path(Vec2::new(9.0, 371.0), Vec2::new(417.0, 186.0))
-            .len,
+            .unwrap()
+            .length,
         459.064
     );
 }
@@ -12360,7 +13594,8 @@ fn aurora_merged_dpudeaatmo() {
     assert_delta!(
         aurora
             .path(Vec2::new(227.0, 604.0), Vec2::new(389.0, 363.0))
-            .len,
+            .unwrap()
+            .length,
         467.833
     );
 }
@@ -12370,7 +13605,8 @@ fn aurora_merged_axhphjecdg() {
     assert_delta!(
         aurora
             .path(Vec2::new(283.0, 671.0), Vec2::new(533.0, 496.0))
-            .len,
+            .unwrap()
+            .length,
         471.053
     );
 }
@@ -12380,7 +13616,8 @@ fn aurora_merged_jqwohxaybj() {
     assert_delta!(
         aurora
             .path(Vec2::new(477.0, 644.0), Vec2::new(902.0, 484.0))
-            .len,
+            .unwrap()
+            .length,
         466.233
     );
 }
@@ -12390,7 +13627,8 @@ fn aurora_merged_fhnoxirchy() {
     assert_delta!(
         aurora
             .path(Vec2::new(541.0, 379.0), Vec2::new(240.0, 484.0))
-            .len,
+            .unwrap()
+            .length,
         464.909
     );
 }
@@ -12400,7 +13638,8 @@ fn aurora_merged_nhhhvusobt() {
     assert_delta!(
         aurora
             .path(Vec2::new(213.0, 459.0), Vec2::new(341.0, 187.0))
-            .len,
+            .unwrap()
+            .length,
         465.939
     );
 }
@@ -12410,7 +13649,8 @@ fn aurora_merged_remupxeqwd() {
     assert_delta!(
         aurora
             .path(Vec2::new(823.0, 675.0), Vec2::new(375.0, 713.0))
-            .len,
+            .unwrap()
+            .length,
         463.853
     );
 }
@@ -12420,7 +13660,8 @@ fn aurora_merged_nbrddcdppn() {
     assert_delta!(
         aurora
             .path(Vec2::new(981.0, 415.0), Vec2::new(670.0, 652.0))
-            .len,
+            .unwrap()
+            .length,
         470.458
     );
 }
@@ -12430,7 +13671,8 @@ fn aurora_merged_mvlehvusuh() {
     assert_delta!(
         aurora
             .path(Vec2::new(689.0, 536.0), Vec2::new(949.0, 275.0))
-            .len,
+            .unwrap()
+            .length,
         465.79
     );
 }
@@ -12440,7 +13682,8 @@ fn aurora_merged_hfxltvlgdm() {
     assert_delta!(
         aurora
             .path(Vec2::new(756.0, 235.0), Vec2::new(516.0, 357.0))
-            .len,
+            .unwrap()
+            .length,
         469.38
     );
 }
@@ -12450,7 +13693,8 @@ fn aurora_merged_bkdnfdnuwt() {
     assert_delta!(
         aurora
             .path(Vec2::new(23.0, 544.0), Vec2::new(194.0, 254.0))
-            .len,
+            .unwrap()
+            .length,
         470.662
     );
 }
@@ -12460,7 +13704,8 @@ fn aurora_merged_hnphhcepzp() {
     assert_delta!(
         aurora
             .path(Vec2::new(739.0, 574.0), Vec2::new(818.0, 282.0))
-            .len,
+            .unwrap()
+            .length,
         474.274
     );
 }
@@ -12470,7 +13715,8 @@ fn aurora_merged_jahatpzbir() {
     assert_delta!(
         aurora
             .path(Vec2::new(653.0, 113.0), Vec2::new(215.0, 57.0))
-            .len,
+            .unwrap()
+            .length,
         465.554
     );
 }
@@ -12480,7 +13726,8 @@ fn aurora_merged_tnmyauqrgn() {
     assert_delta!(
         aurora
             .path(Vec2::new(639.0, 147.0), Vec2::new(639.0, 427.0))
-            .len,
+            .unwrap()
+            .length,
         466.703
     );
 }
@@ -12490,7 +13737,8 @@ fn aurora_merged_axufswntyf() {
     assert_delta!(
         aurora
             .path(Vec2::new(478.0, 52.0), Vec2::new(557.0, 403.0))
-            .len,
+            .unwrap()
+            .length,
         473.214
     );
 }
@@ -12500,7 +13748,8 @@ fn aurora_merged_pxporhjgwz() {
     assert_delta!(
         aurora
             .path(Vec2::new(808.0, 194.0), Vec2::new(683.0, 452.0))
-            .len,
+            .unwrap()
+            .length,
         471.055
     );
 }
@@ -12510,7 +13759,8 @@ fn aurora_merged_kqnlwcptyy() {
     assert_delta!(
         aurora
             .path(Vec2::new(264.0, 239.0), Vec2::new(671.0, 297.0))
-            .len,
+            .unwrap()
+            .length,
         471.527
     );
 }
@@ -12520,7 +13770,8 @@ fn aurora_merged_xffzxuhloa() {
     assert_delta!(
         aurora
             .path(Vec2::new(454.0, 477.0), Vec2::new(594.0, 223.0))
-            .len,
+            .unwrap()
+            .length,
         475.617
     );
 }
@@ -12530,7 +13781,8 @@ fn aurora_merged_iiqiajnrme() {
     assert_delta!(
         aurora
             .path(Vec2::new(589.0, 319.0), Vec2::new(508.0, 595.0))
-            .len,
+            .unwrap()
+            .length,
         472.897
     );
 }
@@ -12540,7 +13792,8 @@ fn aurora_merged_gbiufwtdeg() {
     assert_delta!(
         aurora
             .path(Vec2::new(948.0, 393.0), Vec2::new(571.0, 420.0))
-            .len,
+            .unwrap()
+            .length,
         472.307
     );
 }
@@ -12550,7 +13803,8 @@ fn aurora_merged_etzosujwri() {
     assert_delta!(
         aurora
             .path(Vec2::new(838.0, 94.0), Vec2::new(507.0, 283.0))
-            .len,
+            .unwrap()
+            .length,
         472.239
     );
 }
@@ -12560,7 +13814,8 @@ fn aurora_merged_aaestycumg() {
     assert_delta!(
         aurora
             .path(Vec2::new(729.0, 278.0), Vec2::new(310.0, 81.0))
-            .len,
+            .unwrap()
+            .length,
         470.131
     );
 }
@@ -12570,7 +13825,8 @@ fn aurora_merged_jjgjuhxmqf() {
     assert_delta!(
         aurora
             .path(Vec2::new(741.0, 56.0), Vec2::new(297.0, 33.0))
-            .len,
+            .unwrap()
+            .length,
         469.718
     );
 }
@@ -12580,7 +13836,8 @@ fn aurora_merged_bdbcbpetsa() {
     assert_delta!(
         aurora
             .path(Vec2::new(431.0, 634.0), Vec2::new(34.0, 384.0))
-            .len,
+            .unwrap()
+            .length,
         478.876
     );
 }
@@ -12590,7 +13847,8 @@ fn aurora_merged_gbsxotnrou() {
     assert_delta!(
         aurora
             .path(Vec2::new(432.0, 427.0), Vec2::new(635.0, 708.0))
-            .len,
+            .unwrap()
+            .length,
         476.123
     );
 }
@@ -12600,7 +13858,8 @@ fn aurora_merged_woptmgkrsq() {
     assert_delta!(
         aurora
             .path(Vec2::new(793.0, 515.0), Vec2::new(320.0, 572.0))
-            .len,
+            .unwrap()
+            .length,
         487.151
     );
 }
@@ -12610,7 +13869,8 @@ fn aurora_merged_dfcbyndfpu() {
     assert_delta!(
         aurora
             .path(Vec2::new(376.0, 529.0), Vec2::new(309.0, 682.0))
-            .len,
+            .unwrap()
+            .length,
         470.566
     );
 }
@@ -12620,7 +13880,8 @@ fn aurora_merged_urjvvbzwix() {
     assert_delta!(
         aurora
             .path(Vec2::new(414.0, 609.0), Vec2::new(61.0, 437.0))
-            .len,
+            .unwrap()
+            .length,
         476.724
     );
 }
@@ -12630,7 +13891,8 @@ fn aurora_merged_ziughywstv() {
     assert_delta!(
         aurora
             .path(Vec2::new(960.0, 650.0), Vec2::new(623.0, 410.0))
-            .len,
+            .unwrap()
+            .length,
         482.714
     );
 }
@@ -12640,7 +13902,8 @@ fn aurora_merged_lozazicsuj() {
     assert_delta!(
         aurora
             .path(Vec2::new(147.0, 346.0), Vec2::new(374.0, 651.0))
-            .len,
+            .unwrap()
+            .length,
         481.703
     );
 }
@@ -12650,7 +13913,8 @@ fn aurora_merged_chfpenyzte() {
     assert_delta!(
         aurora
             .path(Vec2::new(415.0, 435.0), Vec2::new(681.0, 422.0))
-            .len,
+            .unwrap()
+            .length,
         471.401
     );
 }
@@ -12660,7 +13924,8 @@ fn aurora_merged_ivhmybtqrs() {
     assert_delta!(
         aurora
             .path(Vec2::new(740.0, 419.0), Vec2::new(290.0, 528.0))
-            .len,
+            .unwrap()
+            .length,
         472.62
     );
 }
@@ -12670,7 +13935,8 @@ fn aurora_merged_cwaenqxdqg() {
     assert_delta!(
         aurora
             .path(Vec2::new(545.0, 23.0), Vec2::new(99.0, 150.0))
-            .len,
+            .unwrap()
+            .length,
         473.543
     );
 }
@@ -12680,7 +13946,8 @@ fn aurora_merged_wbevqknuma() {
     assert_delta!(
         aurora
             .path(Vec2::new(234.0, 361.0), Vec2::new(528.0, 622.0))
-            .len,
+            .unwrap()
+            .length,
         484.101
     );
 }
@@ -12690,7 +13957,8 @@ fn aurora_merged_jcehzrwkmf() {
     assert_delta!(
         aurora
             .path(Vec2::new(152.0, 590.0), Vec2::new(600.0, 619.0))
-            .len,
+            .unwrap()
+            .length,
         480.639
     );
 }
@@ -12700,7 +13968,8 @@ fn aurora_merged_pxsfmlmtbl() {
     assert_delta!(
         aurora
             .path(Vec2::new(96.0, 117.0), Vec2::new(542.0, 212.0))
-            .len,
+            .unwrap()
+            .length,
         483.633
     );
 }
@@ -12710,7 +13979,8 @@ fn aurora_merged_vurfcpioxb() {
     assert_delta!(
         aurora
             .path(Vec2::new(416.0, 419.0), Vec2::new(769.0, 362.0))
-            .len,
+            .unwrap()
+            .length,
         477.74
     );
 }
@@ -12720,7 +13990,8 @@ fn aurora_merged_yxbtzaduap() {
     assert_delta!(
         aurora
             .path(Vec2::new(953.0, 562.0), Vec2::new(524.0, 708.0))
-            .len,
+            .unwrap()
+            .length,
         479.178
     );
 }
@@ -12730,7 +14001,8 @@ fn aurora_merged_spcslvkcxe() {
     assert_delta!(
         aurora
             .path(Vec2::new(30.0, 477.0), Vec2::new(497.0, 516.0))
-            .len,
+            .unwrap()
+            .length,
         485.753
     );
 }
@@ -12740,7 +14012,8 @@ fn aurora_merged_encpyjihts() {
     assert_delta!(
         aurora
             .path(Vec2::new(603.0, 549.0), Vec2::new(481.0, 332.0))
-            .len,
+            .unwrap()
+            .length,
         483.533
     );
 }
@@ -12750,7 +14023,8 @@ fn aurora_merged_jlhjlzaedg() {
     assert_delta!(
         aurora
             .path(Vec2::new(33.0, 583.0), Vec2::new(348.0, 383.0))
-            .len,
+            .unwrap()
+            .length,
         476.255
     );
 }
@@ -12760,7 +14034,8 @@ fn aurora_merged_bubklelemd() {
     assert_delta!(
         aurora
             .path(Vec2::new(179.0, 173.0), Vec2::new(655.0, 113.0))
-            .len,
+            .unwrap()
+            .length,
         490.491
     );
 }
@@ -12770,7 +14045,8 @@ fn aurora_merged_szuqvacgwp() {
     assert_delta!(
         aurora
             .path(Vec2::new(932.0, 156.0), Vec2::new(682.0, 450.0))
-            .len,
+            .unwrap()
+            .length,
         485.575
     );
 }
@@ -12780,7 +14056,8 @@ fn aurora_merged_ymrznubiha() {
     assert_delta!(
         aurora
             .path(Vec2::new(485.0, 446.0), Vec2::new(904.0, 665.0))
-            .len,
+            .unwrap()
+            .length,
         482.32
     );
 }
@@ -12790,7 +14067,8 @@ fn aurora_merged_oixrptrilg() {
     assert_delta!(
         aurora
             .path(Vec2::new(147.0, 105.0), Vec2::new(32.0, 430.0))
-            .len,
+            .unwrap()
+            .length,
         480.632
     );
 }
@@ -12800,7 +14078,8 @@ fn aurora_merged_dtovkepjpp() {
     assert_delta!(
         aurora
             .path(Vec2::new(376.0, 575.0), Vec2::new(806.0, 717.0))
-            .len,
+            .unwrap()
+            .length,
         477.084
     );
 }
@@ -12810,7 +14089,8 @@ fn aurora_merged_tqmggsekph() {
     assert_delta!(
         aurora
             .path(Vec2::new(482.0, 581.0), Vec2::new(55.0, 671.0))
-            .len,
+            .unwrap()
+            .length,
         483.528
     );
 }
@@ -12820,7 +14100,8 @@ fn aurora_merged_ghcupqynbi() {
     assert_delta!(
         aurora
             .path(Vec2::new(657.0, 575.0), Vec2::new(490.0, 374.0))
-            .len,
+            .unwrap()
+            .length,
         487.415
     );
 }
@@ -12830,7 +14111,8 @@ fn aurora_merged_kbmfzsbatn() {
     assert_delta!(
         aurora
             .path(Vec2::new(1011.0, 311.0), Vec2::new(926.0, 649.0))
-            .len,
+            .unwrap()
+            .length,
         488.482
     );
 }
@@ -12840,7 +14122,8 @@ fn aurora_merged_ptairquxtc() {
     assert_delta!(
         aurora
             .path(Vec2::new(502.0, 388.0), Vec2::new(731.0, 242.0))
-            .len,
+            .unwrap()
+            .length,
         481.328
     );
 }
@@ -12850,7 +14133,8 @@ fn aurora_merged_nvhunhkriw() {
     assert_delta!(
         aurora
             .path(Vec2::new(474.0, 558.0), Vec2::new(38.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         482.414
     );
 }
@@ -12860,7 +14144,8 @@ fn aurora_merged_rkewbwlyjn() {
     assert_delta!(
         aurora
             .path(Vec2::new(609.0, 653.0), Vec2::new(974.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         480.578
     );
 }
@@ -12870,7 +14155,8 @@ fn aurora_merged_vreohvfpnq() {
     assert_delta!(
         aurora
             .path(Vec2::new(759.0, 552.0), Vec2::new(315.0, 370.0))
-            .len,
+            .unwrap()
+            .length,
         482.398
     );
 }
@@ -12880,7 +14166,8 @@ fn aurora_merged_gikgeeufvu() {
     assert_delta!(
         aurora
             .path(Vec2::new(806.0, 92.0), Vec2::new(935.0, 413.0))
-            .len,
+            .unwrap()
+            .length,
         490.011
     );
 }
@@ -12890,7 +14177,8 @@ fn aurora_merged_qsjcmfaszt() {
     assert_delta!(
         aurora
             .path(Vec2::new(548.0, 428.0), Vec2::new(983.0, 361.0))
-            .len,
+            .unwrap()
+            .length,
         492.026
     );
 }
@@ -12900,7 +14188,8 @@ fn aurora_merged_febjanries() {
     assert_delta!(
         aurora
             .path(Vec2::new(696.0, 705.0), Vec2::new(282.0, 668.0))
-            .len,
+            .unwrap()
+            .length,
         485.222
     );
 }
@@ -12910,7 +14199,8 @@ fn aurora_merged_yfsfsmvydo() {
     assert_delta!(
         aurora
             .path(Vec2::new(745.0, 251.0), Vec2::new(708.0, 401.0))
-            .len,
+            .unwrap()
+            .length,
         484.553
     );
 }
@@ -12920,7 +14210,8 @@ fn aurora_merged_chjqoeuhwo() {
     assert_delta!(
         aurora
             .path(Vec2::new(456.0, 242.0), Vec2::new(79.0, 469.0))
-            .len,
+            .unwrap()
+            .length,
         494.778
     );
 }
@@ -12930,7 +14221,8 @@ fn aurora_merged_nwjbxemtsd() {
     assert_delta!(
         aurora
             .path(Vec2::new(381.0, 224.0), Vec2::new(794.0, 207.0))
-            .len,
+            .unwrap()
+            .length,
         492.921
     );
 }
@@ -12940,7 +14232,8 @@ fn aurora_merged_wvdglvxfwk() {
     assert_delta!(
         aurora
             .path(Vec2::new(63.0, 334.0), Vec2::new(167.0, 734.0))
-            .len,
+            .unwrap()
+            .length,
         492.445
     );
 }
@@ -12950,7 +14243,8 @@ fn aurora_merged_qyewdriuxv() {
     assert_delta!(
         aurora
             .path(Vec2::new(570.0, 698.0), Vec2::new(333.0, 468.0))
-            .len,
+            .unwrap()
+            .length,
         492.232
     );
 }
@@ -12960,7 +14254,8 @@ fn aurora_merged_doikuzwdmz() {
     assert_delta!(
         aurora
             .path(Vec2::new(411.0, 583.0), Vec2::new(877.0, 688.0))
-            .len,
+            .unwrap()
+            .length,
         485.689
     );
 }
@@ -12970,7 +14265,8 @@ fn aurora_merged_iwdevautpq() {
     assert_delta!(
         aurora
             .path(Vec2::new(489.0, 600.0), Vec2::new(478.0, 318.0))
-            .len,
+            .unwrap()
+            .length,
         491.786
     );
 }
@@ -12980,7 +14276,8 @@ fn aurora_merged_rczmzaetnh() {
     assert_delta!(
         aurora
             .path(Vec2::new(243.0, 423.0), Vec2::new(577.0, 204.0))
-            .len,
+            .unwrap()
+            .length,
         491.426
     );
 }
@@ -12990,7 +14287,8 @@ fn aurora_merged_ebvvnbrsgb() {
     assert_delta!(
         aurora
             .path(Vec2::new(609.0, 644.0), Vec2::new(883.0, 363.0))
-            .len,
+            .unwrap()
+            .length,
         487.707
     );
 }
@@ -13000,7 +14298,8 @@ fn aurora_merged_doxednzgfo() {
     assert_delta!(
         aurora
             .path(Vec2::new(925.0, 594.0), Vec2::new(463.0, 447.0))
-            .len,
+            .unwrap()
+            .length,
         487.106
     );
 }
@@ -13010,7 +14309,8 @@ fn aurora_merged_ssxkntnsxs() {
     assert_delta!(
         aurora
             .path(Vec2::new(203.0, 181.0), Vec2::new(681.0, 85.0))
-            .len,
+            .unwrap()
+            .length,
         500.275
     );
 }
@@ -13020,7 +14320,8 @@ fn aurora_merged_bsjtvkdlxn() {
     assert_delta!(
         aurora
             .path(Vec2::new(693.0, 533.0), Vec2::new(875.0, 267.0))
-            .len,
+            .unwrap()
+            .length,
         491.335
     );
 }
@@ -13030,7 +14331,8 @@ fn aurora_merged_lkgekvlfxj() {
     assert_delta!(
         aurora
             .path(Vec2::new(197.0, 305.0), Vec2::new(43.0, 665.0))
-            .len,
+            .unwrap()
+            .length,
         499.197
     );
 }
@@ -13040,7 +14342,8 @@ fn aurora_merged_woavgbpsnj() {
     assert_delta!(
         aurora
             .path(Vec2::new(441.0, 203.0), Vec2::new(205.0, 442.0))
-            .len,
+            .unwrap()
+            .length,
         492.786
     );
 }
@@ -13050,7 +14353,8 @@ fn aurora_merged_frfxlzodmz() {
     assert_delta!(
         aurora
             .path(Vec2::new(768.0, 166.0), Vec2::new(727.0, 402.0))
-            .len,
+            .unwrap()
+            .length,
         488.639
     );
 }
@@ -13060,7 +14364,8 @@ fn aurora_merged_ngoneftscq() {
     assert_delta!(
         aurora
             .path(Vec2::new(193.0, 179.0), Vec2::new(548.0, 342.0))
-            .len,
+            .unwrap()
+            .length,
         497.748
     );
 }
@@ -13070,7 +14375,8 @@ fn aurora_merged_pyybxrtfbt() {
     assert_delta!(
         aurora
             .path(Vec2::new(429.0, 146.0), Vec2::new(716.0, 422.0))
-            .len,
+            .unwrap()
+            .length,
         489.641
     );
 }
@@ -13080,7 +14386,8 @@ fn aurora_merged_kuyhilgnal() {
     assert_delta!(
         aurora
             .path(Vec2::new(470.0, 687.0), Vec2::new(28.0, 540.0))
-            .len,
+            .unwrap()
+            .length,
         485.16
     );
 }
@@ -13090,7 +14397,8 @@ fn aurora_merged_ityygmyili() {
     assert_delta!(
         aurora
             .path(Vec2::new(485.0, 644.0), Vec2::new(644.0, 347.0))
-            .len,
+            .unwrap()
+            .length,
         494.053
     );
 }
@@ -13100,7 +14408,8 @@ fn aurora_merged_ehsjdoyfzk() {
     assert_delta!(
         aurora
             .path(Vec2::new(83.0, 317.0), Vec2::new(311.0, 641.0))
-            .len,
+            .unwrap()
+            .length,
         499.216
     );
 }
@@ -13110,7 +14419,8 @@ fn aurora_merged_tzlcrmkmzr() {
     assert_delta!(
         aurora
             .path(Vec2::new(37.0, 651.0), Vec2::new(491.0, 486.0))
-            .len,
+            .unwrap()
+            .length,
         496.928
     );
 }
@@ -13120,7 +14430,8 @@ fn aurora_merged_zkpzpqpola() {
     assert_delta!(
         aurora
             .path(Vec2::new(594.0, 723.0), Vec2::new(420.0, 473.0))
-            .len,
+            .unwrap()
+            .length,
         492.653
     );
 }
@@ -13130,7 +14441,8 @@ fn aurora_merged_gzwejwovbv() {
     assert_delta!(
         aurora
             .path(Vec2::new(415.0, 599.0), Vec2::new(913.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         508.97
     );
 }
@@ -13140,7 +14452,8 @@ fn aurora_merged_snojvlqume() {
     assert_delta!(
         aurora
             .path(Vec2::new(505.0, 355.0), Vec2::new(519.0, 583.0))
-            .len,
+            .unwrap()
+            .length,
         500.307
     );
 }
@@ -13150,7 +14463,8 @@ fn aurora_merged_lwelfvtwdo() {
     assert_delta!(
         aurora
             .path(Vec2::new(999.0, 438.0), Vec2::new(753.0, 122.0))
-            .len,
+            .unwrap()
+            .length,
         494.758
     );
 }
@@ -13160,7 +14474,8 @@ fn aurora_merged_hfdtbcmoeo() {
     assert_delta!(
         aurora
             .path(Vec2::new(127.0, 306.0), Vec2::new(604.0, 262.0))
-            .len,
+            .unwrap()
+            .length,
         494.298
     );
 }
@@ -13170,7 +14485,8 @@ fn aurora_merged_vtvmvlmbkf() {
     assert_delta!(
         aurora
             .path(Vec2::new(585.0, 574.0), Vec2::new(941.0, 433.0))
-            .len,
+            .unwrap()
+            .length,
         499.593
     );
 }
@@ -13180,7 +14496,8 @@ fn aurora_merged_kocfqpifxn() {
     assert_delta!(
         aurora
             .path(Vec2::new(548.0, 430.0), Vec2::new(127.0, 439.0))
-            .len,
+            .unwrap()
+            .length,
         495.496
     );
 }
@@ -13190,7 +14507,8 @@ fn aurora_merged_rpvkjtoncj() {
     assert_delta!(
         aurora
             .path(Vec2::new(707.0, 694.0), Vec2::new(263.0, 741.0))
-            .len,
+            .unwrap()
+            .length,
         493.97
     );
 }
@@ -13200,7 +14518,8 @@ fn aurora_merged_jmlngbvlky() {
     assert_delta!(
         aurora
             .path(Vec2::new(284.0, 72.0), Vec2::new(759.0, 80.0))
-            .len,
+            .unwrap()
+            .length,
         493.851
     );
 }
@@ -13210,7 +14529,8 @@ fn aurora_merged_nxmzvsnpbc() {
     assert_delta!(
         aurora
             .path(Vec2::new(564.0, 571.0), Vec2::new(155.0, 353.0))
-            .len,
+            .unwrap()
+            .length,
         511.745
     );
 }
@@ -13220,7 +14540,8 @@ fn aurora_merged_bozbprakrd() {
     assert_delta!(
         aurora
             .path(Vec2::new(332.0, 221.0), Vec2::new(803.0, 283.0))
-            .len,
+            .unwrap()
+            .length,
         500.716
     );
 }
@@ -13230,7 +14551,8 @@ fn aurora_merged_nfryvienmd() {
     assert_delta!(
         aurora
             .path(Vec2::new(441.0, 472.0), Vec2::new(428.0, 197.0))
-            .len,
+            .unwrap()
+            .length,
         505.727
     );
 }
@@ -13240,7 +14562,8 @@ fn aurora_merged_gyamrpttii() {
     assert_delta!(
         aurora
             .path(Vec2::new(441.0, 80.0), Vec2::new(141.0, 402.0))
-            .len,
+            .unwrap()
+            .length,
         499.754
     );
 }
@@ -13250,7 +14573,8 @@ fn aurora_merged_fmddoiffcs() {
     assert_delta!(
         aurora
             .path(Vec2::new(601.0, 278.0), Vec2::new(870.0, 155.0))
-            .len,
+            .unwrap()
+            .length,
         495.758
     );
 }
@@ -13260,7 +14584,8 @@ fn aurora_merged_lebmmatlvu() {
     assert_delta!(
         aurora
             .path(Vec2::new(353.0, 293.0), Vec2::new(561.0, 463.0))
-            .len,
+            .unwrap()
+            .length,
         503.222
     );
 }
@@ -13270,7 +14595,8 @@ fn aurora_merged_dlodlueyza() {
     assert_delta!(
         aurora
             .path(Vec2::new(157.0, 150.0), Vec2::new(666.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         515.258
     );
 }
@@ -13280,7 +14606,8 @@ fn aurora_merged_ptfkabhmil() {
     assert_delta!(
         aurora
             .path(Vec2::new(326.0, 516.0), Vec2::new(310.0, 228.0))
-            .len,
+            .unwrap()
+            .length,
         502.646
     );
 }
@@ -13290,7 +14617,8 @@ fn aurora_merged_zuqzzdjnhn() {
     assert_delta!(
         aurora
             .path(Vec2::new(643.0, 672.0), Vec2::new(760.0, 399.0))
-            .len,
+            .unwrap()
+            .length,
         502.887
     );
 }
@@ -13300,7 +14628,8 @@ fn aurora_merged_quqvrmsetf() {
     assert_delta!(
         aurora
             .path(Vec2::new(630.0, 342.0), Vec2::new(239.0, 247.0))
-            .len,
+            .unwrap()
+            .length,
         503.551
     );
 }
@@ -13310,7 +14639,8 @@ fn aurora_merged_gtzjwlnlvv() {
     assert_delta!(
         aurora
             .path(Vec2::new(611.0, 281.0), Vec2::new(199.0, 161.0))
-            .len,
+            .unwrap()
+            .length,
         503.642
     );
 }
@@ -13320,7 +14650,8 @@ fn aurora_merged_jyrdtjpuyz() {
     assert_delta!(
         aurora
             .path(Vec2::new(626.0, 390.0), Vec2::new(754.0, 228.0))
-            .len,
+            .unwrap()
+            .length,
         500.934
     );
 }
@@ -13330,7 +14661,8 @@ fn aurora_merged_sqzaxdzaio() {
     assert_delta!(
         aurora
             .path(Vec2::new(573.0, 165.0), Vec2::new(103.0, 292.0))
-            .len,
+            .unwrap()
+            .length,
         511.339
     );
 }
@@ -13340,7 +14672,8 @@ fn aurora_merged_pckgvbjxjw() {
     assert_delta!(
         aurora
             .path(Vec2::new(120.0, 386.0), Vec2::new(580.0, 427.0))
-            .len,
+            .unwrap()
+            .length,
         498.937
     );
 }
@@ -13350,7 +14683,8 @@ fn aurora_merged_xdoaxuljxc() {
     assert_delta!(
         aurora
             .path(Vec2::new(981.0, 419.0), Vec2::new(547.0, 485.0))
-            .len,
+            .unwrap()
+            .length,
         500.841
     );
 }
@@ -13360,7 +14694,8 @@ fn aurora_merged_vohccfhoiv() {
     assert_delta!(
         aurora
             .path(Vec2::new(660.0, 215.0), Vec2::new(185.0, 76.0))
-            .len,
+            .unwrap()
+            .length,
         499.544
     );
 }
@@ -13370,7 +14705,8 @@ fn aurora_merged_eufnaikinb() {
     assert_delta!(
         aurora
             .path(Vec2::new(269.0, 261.0), Vec2::new(650.0, 360.0))
-            .len,
+            .unwrap()
+            .length,
         502.568
     );
 }
@@ -13380,7 +14716,8 @@ fn aurora_merged_kfybndkuap() {
     assert_delta!(
         aurora
             .path(Vec2::new(236.0, 218.0), Vec2::new(745.0, 172.0))
-            .len,
+            .unwrap()
+            .length,
         522.283
     );
 }
@@ -13390,7 +14727,8 @@ fn aurora_merged_fvqcifenti() {
     assert_delta!(
         aurora
             .path(Vec2::new(392.0, 518.0), Vec2::new(510.0, 193.0))
-            .len,
+            .unwrap()
+            .length,
         507.167
     );
 }
@@ -13400,7 +14738,8 @@ fn aurora_merged_rpiasbqdrr() {
     assert_delta!(
         aurora
             .path(Vec2::new(454.0, 534.0), Vec2::new(581.0, 294.0))
-            .len,
+            .unwrap()
+            .length,
         509.588
     );
 }
@@ -13410,7 +14749,8 @@ fn aurora_merged_pqmxfsemed() {
     assert_delta!(
         aurora
             .path(Vec2::new(126.0, 268.0), Vec2::new(122.0, 645.0))
-            .len,
+            .unwrap()
+            .length,
         510.925
     );
 }
@@ -13420,7 +14760,8 @@ fn aurora_merged_xoamhykqfx() {
     assert_delta!(
         aurora
             .path(Vec2::new(280.0, 623.0), Vec2::new(122.0, 245.0))
-            .len,
+            .unwrap()
+            .length,
         512.137
     );
 }
@@ -13430,7 +14771,8 @@ fn aurora_merged_tsuqddgjox() {
     assert_delta!(
         aurora
             .path(Vec2::new(167.0, 708.0), Vec2::new(35.0, 309.0))
-            .len,
+            .unwrap()
+            .length,
         505.972
     );
 }
@@ -13440,7 +14782,8 @@ fn aurora_merged_ufhiposogv() {
     assert_delta!(
         aurora
             .path(Vec2::new(108.0, 156.0), Vec2::new(420.0, 273.0))
-            .len,
+            .unwrap()
+            .length,
         500.906
     );
 }
@@ -13450,7 +14793,8 @@ fn aurora_merged_zsybcpihge() {
     assert_delta!(
         aurora
             .path(Vec2::new(764.0, 507.0), Vec2::new(462.0, 296.0))
-            .len,
+            .unwrap()
+            .length,
         504.778
     );
 }
@@ -13460,7 +14804,8 @@ fn aurora_merged_dvsgonyhvn() {
     assert_delta!(
         aurora
             .path(Vec2::new(861.0, 388.0), Vec2::new(600.0, 104.0))
-            .len,
+            .unwrap()
+            .length,
         505.278
     );
 }
@@ -13470,7 +14815,8 @@ fn aurora_merged_cfjaawlzcl() {
     assert_delta!(
         aurora
             .path(Vec2::new(497.0, 549.0), Vec2::new(555.0, 430.0))
-            .len,
+            .unwrap()
+            .length,
         509.249
     );
 }
@@ -13480,7 +14826,8 @@ fn aurora_merged_dmmlzgfrfb() {
     assert_delta!(
         aurora
             .path(Vec2::new(324.0, 654.0), Vec2::new(272.0, 349.0))
-            .len,
+            .unwrap()
+            .length,
         511.787
     );
 }
@@ -13490,7 +14837,8 @@ fn aurora_merged_gowhadidnu() {
     assert_delta!(
         aurora
             .path(Vec2::new(505.0, 317.0), Vec2::new(227.0, 560.0))
-            .len,
+            .unwrap()
+            .length,
         507.114
     );
 }
@@ -13500,7 +14848,8 @@ fn aurora_merged_mdfiscjuvn() {
     assert_delta!(
         aurora
             .path(Vec2::new(748.0, 149.0), Vec2::new(887.0, 481.0))
-            .len,
+            .unwrap()
+            .length,
         508.815
     );
 }
@@ -13510,7 +14859,8 @@ fn aurora_merged_qawexqmjik() {
     assert_delta!(
         aurora
             .path(Vec2::new(433.0, 312.0), Vec2::new(70.0, 189.0))
-            .len,
+            .unwrap()
+            .length,
         503.959
     );
 }
@@ -13520,7 +14870,8 @@ fn aurora_merged_dqjvofkpri() {
     assert_delta!(
         aurora
             .path(Vec2::new(594.0, 208.0), Vec2::new(707.0, 426.0))
-            .len,
+            .unwrap()
+            .length,
         510.3
     );
 }
@@ -13530,7 +14881,8 @@ fn aurora_merged_lbvzhvslmf() {
     assert_delta!(
         aurora
             .path(Vec2::new(764.0, 201.0), Vec2::new(546.0, 414.0))
-            .len,
+            .unwrap()
+            .length,
         510.129
     );
 }
@@ -13540,7 +14892,8 @@ fn aurora_merged_bzlxllphny() {
     assert_delta!(
         aurora
             .path(Vec2::new(645.0, 168.0), Vec2::new(228.0, 352.0))
-            .len,
+            .unwrap()
+            .length,
         514.682
     );
 }
@@ -13550,7 +14903,8 @@ fn aurora_merged_bhzlmfadix() {
     assert_delta!(
         aurora
             .path(Vec2::new(220.0, 415.0), Vec2::new(167.0, 121.0))
-            .len,
+            .unwrap()
+            .length,
         517.634
     );
 }
@@ -13560,7 +14914,8 @@ fn aurora_merged_vazddvfphl() {
     assert_delta!(
         aurora
             .path(Vec2::new(353.0, 458.0), Vec2::new(616.0, 443.0))
-            .len,
+            .unwrap()
+            .length,
         514.181
     );
 }
@@ -13570,7 +14925,8 @@ fn aurora_merged_jwgxoegapc() {
     assert_delta!(
         aurora
             .path(Vec2::new(826.0, 292.0), Vec2::new(696.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         515.78
     );
 }
@@ -13580,7 +14936,8 @@ fn aurora_merged_joynawzppy() {
     assert_delta!(
         aurora
             .path(Vec2::new(520.0, 638.0), Vec2::new(452.0, 267.0))
-            .len,
+            .unwrap()
+            .length,
         518.081
     );
 }
@@ -13590,7 +14947,8 @@ fn aurora_merged_lerrdkdwqy() {
     assert_delta!(
         aurora
             .path(Vec2::new(903.0, 381.0), Vec2::new(614.0, 671.0))
-            .len,
+            .unwrap()
+            .length,
         512.421
     );
 }
@@ -13600,7 +14958,8 @@ fn aurora_merged_txiwtgywbx() {
     assert_delta!(
         aurora
             .path(Vec2::new(569.0, 394.0), Vec2::new(769.0, 275.0))
-            .len,
+            .unwrap()
+            .length,
         506.105
     );
 }
@@ -13610,7 +14969,8 @@ fn aurora_merged_tlaseckjfa() {
     assert_delta!(
         aurora
             .path(Vec2::new(862.0, 269.0), Vec2::new(506.0, 516.0))
-            .len,
+            .unwrap()
+            .length,
         514.74
     );
 }
@@ -13620,7 +14980,8 @@ fn aurora_merged_bplpjgbjvc() {
     assert_delta!(
         aurora
             .path(Vec2::new(286.0, 205.0), Vec2::new(651.0, 369.0))
-            .len,
+            .unwrap()
+            .length,
         521.171
     );
 }
@@ -13630,7 +14991,8 @@ fn aurora_merged_segmbjvcyf() {
     assert_delta!(
         aurora
             .path(Vec2::new(988.0, 586.0), Vec2::new(806.0, 321.0))
-            .len,
+            .unwrap()
+            .length,
         510.488
     );
 }
@@ -13640,7 +15002,8 @@ fn aurora_merged_gbnugpxqcg() {
     assert_delta!(
         aurora
             .path(Vec2::new(742.0, 103.0), Vec2::new(709.0, 397.0))
-            .len,
+            .unwrap()
+            .length,
         515.466
     );
 }
@@ -13650,7 +15013,8 @@ fn aurora_merged_ojevuparab() {
     assert_delta!(
         aurora
             .path(Vec2::new(975.0, 466.0), Vec2::new(486.0, 413.0))
-            .len,
+            .unwrap()
+            .length,
         513.562
     );
 }
@@ -13660,7 +15024,8 @@ fn aurora_merged_whqpuawwsw() {
     assert_delta!(
         aurora
             .path(Vec2::new(798.0, 325.0), Vec2::new(358.0, 365.0))
-            .len,
+            .unwrap()
+            .length,
         516.42
     );
 }
@@ -13670,7 +15035,8 @@ fn aurora_merged_xhjszvjley() {
     assert_delta!(
         aurora
             .path(Vec2::new(506.0, 660.0), Vec2::new(25.0, 534.0))
-            .len,
+            .unwrap()
+            .length,
         511.684
     );
 }
@@ -13680,7 +15046,8 @@ fn aurora_merged_zxmvvpewad() {
     assert_delta!(
         aurora
             .path(Vec2::new(863.0, 431.0), Vec2::new(388.0, 343.0))
-            .len,
+            .unwrap()
+            .length,
         510.944
     );
 }
@@ -13690,7 +15057,8 @@ fn aurora_merged_dchokuenqv() {
     assert_delta!(
         aurora
             .path(Vec2::new(162.0, 476.0), Vec2::new(548.0, 701.0))
-            .len,
+            .unwrap()
+            .length,
         510.9
     );
 }
@@ -13700,7 +15068,8 @@ fn aurora_merged_tpvktjkokj() {
     assert_delta!(
         aurora
             .path(Vec2::new(546.0, 656.0), Vec2::new(867.0, 394.0))
-            .len,
+            .unwrap()
+            .length,
         518.093
     );
 }
@@ -13710,7 +15079,8 @@ fn aurora_merged_gdsboyyjnl() {
     assert_delta!(
         aurora
             .path(Vec2::new(426.0, 133.0), Vec2::new(227.0, 413.0))
-            .len,
+            .unwrap()
+            .length,
         511.548
     );
 }
@@ -13720,7 +15090,8 @@ fn aurora_merged_jnxfksdxmk() {
     assert_delta!(
         aurora
             .path(Vec2::new(371.0, 604.0), Vec2::new(637.0, 405.0))
-            .len,
+            .unwrap()
+            .length,
         516.361
     );
 }
@@ -13730,7 +15101,8 @@ fn aurora_merged_jpftbwxwuh() {
     assert_delta!(
         aurora
             .path(Vec2::new(196.0, 664.0), Vec2::new(658.0, 608.0))
-            .len,
+            .unwrap()
+            .length,
         527.336
     );
 }
@@ -13740,7 +15112,8 @@ fn aurora_merged_ywozuzzngq() {
     assert_delta!(
         aurora
             .path(Vec2::new(305.0, 547.0), Vec2::new(341.0, 273.0))
-            .len,
+            .unwrap()
+            .length,
         526.123
     );
 }
@@ -13750,7 +15123,8 @@ fn aurora_merged_glqxqdspza() {
     assert_delta!(
         aurora
             .path(Vec2::new(106.0, 190.0), Vec2::new(237.0, 474.0))
-            .len,
+            .unwrap()
+            .length,
         518.445
     );
 }
@@ -13760,7 +15134,8 @@ fn aurora_merged_dicclfvmea() {
     assert_delta!(
         aurora
             .path(Vec2::new(151.0, 301.0), Vec2::new(255.0, 712.0))
-            .len,
+            .unwrap()
+            .length,
         524.833
     );
 }
@@ -13770,7 +15145,8 @@ fn aurora_merged_lglrlehxmb() {
     assert_delta!(
         aurora
             .path(Vec2::new(639.0, 409.0), Vec2::new(698.0, 114.0))
-            .len,
+            .unwrap()
+            .length,
         516.397
     );
 }
@@ -13780,7 +15156,8 @@ fn aurora_merged_futftzymiy() {
     assert_delta!(
         aurora
             .path(Vec2::new(336.0, 587.0), Vec2::new(498.0, 394.0))
-            .len,
+            .unwrap()
+            .length,
         523.083
     );
 }
@@ -13790,7 +15167,8 @@ fn aurora_merged_rfxgfnprup() {
     assert_delta!(
         aurora
             .path(Vec2::new(552.0, 331.0), Vec2::new(231.0, 533.0))
-            .len,
+            .unwrap()
+            .length,
         523.221
     );
 }
@@ -13800,7 +15178,8 @@ fn aurora_merged_kcmsfoboas() {
     assert_delta!(
         aurora
             .path(Vec2::new(333.0, 196.0), Vec2::new(847.0, 150.0))
-            .len,
+            .unwrap()
+            .length,
         528.238
     );
 }
@@ -13810,7 +15189,8 @@ fn aurora_merged_vzqgaxnvbj() {
     assert_delta!(
         aurora
             .path(Vec2::new(572.0, 19.0), Vec2::new(895.0, 289.0))
-            .len,
+            .unwrap()
+            .length,
         519.295
     );
 }
@@ -13820,7 +15200,8 @@ fn aurora_merged_tfemtzxgol() {
     assert_delta!(
         aurora
             .path(Vec2::new(454.0, 335.0), Vec2::new(782.0, 78.0))
-            .len,
+            .unwrap()
+            .length,
         517.51
     );
 }
@@ -13830,7 +15211,8 @@ fn aurora_merged_ywzlxwcysb() {
     assert_delta!(
         aurora
             .path(Vec2::new(23.0, 483.0), Vec2::new(359.0, 533.0))
-            .len,
+            .unwrap()
+            .length,
         525.71
     );
 }
@@ -13840,7 +15222,8 @@ fn aurora_merged_yxxwrehctu() {
     assert_delta!(
         aurora
             .path(Vec2::new(807.0, 450.0), Vec2::new(391.0, 639.0))
-            .len,
+            .unwrap()
+            .length,
         528.322
     );
 }
@@ -13850,7 +15233,8 @@ fn aurora_merged_xmojihqhjx() {
     assert_delta!(
         aurora
             .path(Vec2::new(446.0, 380.0), Vec2::new(830.0, 189.0))
-            .len,
+            .unwrap()
+            .length,
         524.155
     );
 }
@@ -13860,7 +15244,8 @@ fn aurora_merged_poohvkifbh() {
     assert_delta!(
         aurora
             .path(Vec2::new(630.0, 604.0), Vec2::new(520.0, 344.0))
-            .len,
+            .unwrap()
+            .length,
         522.982
     );
 }
@@ -13870,7 +15255,8 @@ fn aurora_merged_tjzbryhxhp() {
     assert_delta!(
         aurora
             .path(Vec2::new(705.0, 305.0), Vec2::new(217.0, 149.0))
-            .len,
+            .unwrap()
+            .length,
         524.068
     );
 }
@@ -13880,7 +15266,8 @@ fn aurora_merged_xibegcygyd() {
     assert_delta!(
         aurora
             .path(Vec2::new(665.0, 313.0), Vec2::new(151.0, 262.0))
-            .len,
+            .unwrap()
+            .length,
         528.171
     );
 }
@@ -13890,7 +15277,8 @@ fn aurora_merged_xcmqimtkvx() {
     assert_delta!(
         aurora
             .path(Vec2::new(583.0, 648.0), Vec2::new(968.0, 433.0))
-            .len,
+            .unwrap()
+            .length,
         522.613
     );
 }
@@ -13900,7 +15288,8 @@ fn aurora_merged_qbrenxzcgp() {
     assert_delta!(
         aurora
             .path(Vec2::new(529.0, 355.0), Vec2::new(50.0, 466.0))
-            .len,
+            .unwrap()
+            .length,
         520.719
     );
 }
@@ -13910,7 +15299,8 @@ fn aurora_merged_zytdbsawle() {
     assert_delta!(
         aurora
             .path(Vec2::new(862.0, 413.0), Vec2::new(520.0, 615.0))
-            .len,
+            .unwrap()
+            .length,
         522.422
     );
 }
@@ -13920,7 +15310,8 @@ fn aurora_merged_saxenrnuqe() {
     assert_delta!(
         aurora
             .path(Vec2::new(518.0, 388.0), Vec2::new(38.0, 196.0))
-            .len,
+            .unwrap()
+            .length,
         524.49
     );
 }
@@ -13930,7 +15321,8 @@ fn aurora_merged_zkijnswnzd() {
     assert_delta!(
         aurora
             .path(Vec2::new(783.0, 277.0), Vec2::new(298.0, 99.0))
-            .len,
+            .unwrap()
+            .length,
         526.083
     );
 }
@@ -13940,7 +15332,8 @@ fn aurora_merged_goybubqfge() {
     assert_delta!(
         aurora
             .path(Vec2::new(616.0, 737.0), Vec2::new(369.0, 492.0))
-            .len,
+            .unwrap()
+            .length,
         526.081
     );
 }
@@ -13950,7 +15343,8 @@ fn aurora_merged_yetugvgjmy() {
     assert_delta!(
         aurora
             .path(Vec2::new(324.0, 610.0), Vec2::new(789.0, 694.0))
-            .len,
+            .unwrap()
+            .length,
         523.457
     );
 }
@@ -13960,7 +15354,8 @@ fn aurora_merged_pfqhxnchhf() {
     assert_delta!(
         aurora
             .path(Vec2::new(143.0, 192.0), Vec2::new(250.0, 590.0))
-            .len,
+            .unwrap()
+            .length,
         530.199
     );
 }
@@ -13970,7 +15365,8 @@ fn aurora_merged_piwpksqhpb() {
     assert_delta!(
         aurora
             .path(Vec2::new(415.0, 404.0), Vec2::new(92.0, 177.0))
-            .len,
+            .unwrap()
+            .length,
         522.84
     );
 }
@@ -13980,7 +15376,8 @@ fn aurora_merged_vnpdgubkwe() {
     assert_delta!(
         aurora
             .path(Vec2::new(288.0, 673.0), Vec2::new(653.0, 453.0))
-            .len,
+            .unwrap()
+            .length,
         531.232
     );
 }
@@ -13990,7 +15387,8 @@ fn aurora_merged_fbmpnqhpaf() {
     assert_delta!(
         aurora
             .path(Vec2::new(480.0, 606.0), Vec2::new(517.0, 338.0))
-            .len,
+            .unwrap()
+            .length,
         534.49
     );
 }
@@ -14000,7 +15398,8 @@ fn aurora_merged_lhjzsexjyo() {
     assert_delta!(
         aurora
             .path(Vec2::new(123.0, 310.0), Vec2::new(542.0, 576.0))
-            .len,
+            .unwrap()
+            .length,
         536.104
     );
 }
@@ -14010,7 +15409,8 @@ fn aurora_merged_vhdmsppssc() {
     assert_delta!(
         aurora
             .path(Vec2::new(830.0, 169.0), Vec2::new(299.0, 163.0))
-            .len,
+            .unwrap()
+            .length,
         541.875
     );
 }
@@ -14020,7 +15420,8 @@ fn aurora_merged_utenjbnfux() {
     assert_delta!(
         aurora
             .path(Vec2::new(307.0, 617.0), Vec2::new(404.0, 364.0))
-            .len,
+            .unwrap()
+            .length,
         530.291
     );
 }
@@ -14030,7 +15431,8 @@ fn aurora_merged_pubsdouypa() {
     assert_delta!(
         aurora
             .path(Vec2::new(908.0, 577.0), Vec2::new(384.0, 533.0))
-            .len,
+            .unwrap()
+            .length,
         534.947
     );
 }
@@ -14040,7 +15442,8 @@ fn aurora_merged_plahwauxma() {
     assert_delta!(
         aurora
             .path(Vec2::new(673.0, 346.0), Vec2::new(702.0, 58.0))
-            .len,
+            .unwrap()
+            .length,
         528.087
     );
 }
@@ -14050,7 +15453,8 @@ fn aurora_merged_wqtlmdwbtc() {
     assert_delta!(
         aurora
             .path(Vec2::new(241.0, 262.0), Vec2::new(243.0, 642.0))
-            .len,
+            .unwrap()
+            .length,
         532.829
     );
 }
@@ -14060,7 +15464,8 @@ fn aurora_merged_rduomsiuid() {
     assert_delta!(
         aurora
             .path(Vec2::new(521.0, 469.0), Vec2::new(31.0, 308.0))
-            .len,
+            .unwrap()
+            .length,
         534.416
     );
 }
@@ -14070,7 +15475,8 @@ fn aurora_merged_bqgtzclymz() {
     assert_delta!(
         aurora
             .path(Vec2::new(441.0, 429.0), Vec2::new(822.0, 277.0))
-            .len,
+            .unwrap()
+            .length,
         526.544
     );
 }
@@ -14080,7 +15486,8 @@ fn aurora_merged_doymvxmcde() {
     assert_delta!(
         aurora
             .path(Vec2::new(288.0, 733.0), Vec2::new(759.0, 513.0))
-            .len,
+            .unwrap()
+            .length,
         539.269
     );
 }
@@ -14090,7 +15497,8 @@ fn aurora_merged_oowgjcaxhy() {
     assert_delta!(
         aurora
             .path(Vec2::new(586.0, 461.0), Vec2::new(344.0, 291.0))
-            .len,
+            .unwrap()
+            .length,
         528.907
     );
 }
@@ -14100,7 +15508,8 @@ fn aurora_merged_qkjfjpxjcf() {
     assert_delta!(
         aurora
             .path(Vec2::new(132.0, 247.0), Vec2::new(645.0, 351.0))
-            .len,
+            .unwrap()
+            .length,
         534.687
     );
 }
@@ -14110,7 +15519,8 @@ fn aurora_merged_tjroaubipo() {
     assert_delta!(
         aurora
             .path(Vec2::new(443.0, 75.0), Vec2::new(811.0, 401.0))
-            .len,
+            .unwrap()
+            .length,
         531.169
     );
 }
@@ -14120,7 +15530,8 @@ fn aurora_merged_dgycmjxqjj() {
     assert_delta!(
         aurora
             .path(Vec2::new(502.0, 414.0), Vec2::new(1002.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         529.984
     );
 }
@@ -14130,7 +15541,8 @@ fn aurora_merged_ppbhzmksgx() {
     assert_delta!(
         aurora
             .path(Vec2::new(863.0, 284.0), Vec2::new(766.0, 690.0))
-            .len,
+            .unwrap()
+            .length,
         545.17
     );
 }
@@ -14140,7 +15552,8 @@ fn aurora_merged_nnaenbubdt() {
     assert_delta!(
         aurora
             .path(Vec2::new(704.0, 421.0), Vec2::new(228.0, 360.0))
-            .len,
+            .unwrap()
+            .length,
         527.835
     );
 }
@@ -14150,7 +15563,8 @@ fn aurora_merged_caorbrwxhx() {
     assert_delta!(
         aurora
             .path(Vec2::new(733.0, 598.0), Vec2::new(224.0, 541.0))
-            .len,
+            .unwrap()
+            .length,
         534.313
     );
 }
@@ -14160,7 +15574,8 @@ fn aurora_merged_iuxqjufqug() {
     assert_delta!(
         aurora
             .path(Vec2::new(770.0, 225.0), Vec2::new(792.0, 542.0))
-            .len,
+            .unwrap()
+            .length,
         537.68
     );
 }
@@ -14170,7 +15585,8 @@ fn aurora_merged_kzeacpsijl() {
     assert_delta!(
         aurora
             .path(Vec2::new(868.0, 361.0), Vec2::new(408.0, 136.0))
-            .len,
+            .unwrap()
+            .length,
         537.724
     );
 }
@@ -14180,7 +15596,8 @@ fn aurora_merged_aefmphhcrn() {
     assert_delta!(
         aurora
             .path(Vec2::new(610.0, 435.0), Vec2::new(660.0, 71.0))
-            .len,
+            .unwrap()
+            .length,
         535.392
     );
 }
@@ -14190,7 +15607,8 @@ fn aurora_merged_lletjhtwae() {
     assert_delta!(
         aurora
             .path(Vec2::new(354.0, 461.0), Vec2::new(401.0, 153.0))
-            .len,
+            .unwrap()
+            .length,
         536.449
     );
 }
@@ -14200,7 +15618,8 @@ fn aurora_merged_binoxyfhjq() {
     assert_delta!(
         aurora
             .path(Vec2::new(514.0, 445.0), Vec2::new(1009.0, 621.0))
-            .len,
+            .unwrap()
+            .length,
         528.697
     );
 }
@@ -14210,7 +15629,8 @@ fn aurora_merged_rlqbjkjuaf() {
     assert_delta!(
         aurora
             .path(Vec2::new(834.0, 630.0), Vec2::new(550.0, 283.0))
-            .len,
+            .unwrap()
+            .length,
         530.87
     );
 }
@@ -14220,7 +15640,8 @@ fn aurora_merged_ywyeulyguv() {
     assert_delta!(
         aurora
             .path(Vec2::new(245.0, 295.0), Vec2::new(52.0, 634.0))
-            .len,
+            .unwrap()
+            .length,
         539.564
     );
 }
@@ -14230,7 +15651,8 @@ fn aurora_merged_zzctlmlinw() {
     assert_delta!(
         aurora
             .path(Vec2::new(396.0, 100.0), Vec2::new(137.0, 484.0))
-            .len,
+            .unwrap()
+            .length,
         539.577
     );
 }
@@ -14240,7 +15662,8 @@ fn aurora_merged_jjpdyeeklr() {
     assert_delta!(
         aurora
             .path(Vec2::new(418.0, 347.0), Vec2::new(216.0, 658.0))
-            .len,
+            .unwrap()
+            .length,
         541.428
     );
 }
@@ -14250,7 +15673,8 @@ fn aurora_merged_xnmftwfodc() {
     assert_delta!(
         aurora
             .path(Vec2::new(685.0, 359.0), Vec2::new(280.0, 539.0))
-            .len,
+            .unwrap()
+            .length,
         536.787
     );
 }
@@ -14260,7 +15684,8 @@ fn aurora_merged_onhwrzswcu() {
     assert_delta!(
         aurora
             .path(Vec2::new(229.0, 290.0), Vec2::new(555.0, 674.0))
-            .len,
+            .unwrap()
+            .length,
         548.793
     );
 }
@@ -14270,7 +15695,8 @@ fn aurora_merged_ynzxjjehne() {
     assert_delta!(
         aurora
             .path(Vec2::new(421.0, 135.0), Vec2::new(75.0, 488.0))
-            .len,
+            .unwrap()
+            .length,
         533.52
     );
 }
@@ -14280,7 +15706,8 @@ fn aurora_merged_lndtsaqcgf() {
     assert_delta!(
         aurora
             .path(Vec2::new(679.0, 703.0), Vec2::new(212.0, 639.0))
-            .len,
+            .unwrap()
+            .length,
         543.561
     );
 }
@@ -14290,7 +15717,8 @@ fn aurora_merged_jbsjjbedcb() {
     assert_delta!(
         aurora
             .path(Vec2::new(477.0, 203.0), Vec2::new(944.0, 390.0))
-            .len,
+            .unwrap()
+            .length,
         532.576
     );
 }
@@ -14300,7 +15728,8 @@ fn aurora_merged_urfoehtcqi() {
     assert_delta!(
         aurora
             .path(Vec2::new(57.0, 154.0), Vec2::new(592.0, 192.0))
-            .len,
+            .unwrap()
+            .length,
         548.47
     );
 }
@@ -14310,7 +15739,8 @@ fn aurora_merged_xxmbxdghyb() {
     assert_delta!(
         aurora
             .path(Vec2::new(315.0, 635.0), Vec2::new(396.0, 358.0))
-            .len,
+            .unwrap()
+            .length,
         536.34
     );
 }
@@ -14320,7 +15750,8 @@ fn aurora_merged_ekeipobqoz() {
     assert_delta!(
         aurora
             .path(Vec2::new(36.0, 362.0), Vec2::new(369.0, 524.0))
-            .len,
+            .unwrap()
+            .length,
         546.326
     );
 }
@@ -14330,7 +15761,8 @@ fn aurora_merged_hvkktnzrbq() {
     assert_delta!(
         aurora
             .path(Vec2::new(277.0, 507.0), Vec2::new(577.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         540.861
     );
 }
@@ -14340,7 +15772,8 @@ fn aurora_merged_sssueclcln() {
     assert_delta!(
         aurora
             .path(Vec2::new(907.0, 585.0), Vec2::new(396.0, 680.0))
-            .len,
+            .unwrap()
+            .length,
         548.847
     );
 }
@@ -14350,7 +15783,8 @@ fn aurora_merged_kamgsfhewt() {
     assert_delta!(
         aurora
             .path(Vec2::new(116.0, 400.0), Vec2::new(491.0, 663.0))
-            .len,
+            .unwrap()
+            .length,
         535.653
     );
 }
@@ -14360,7 +15794,8 @@ fn aurora_merged_kiowtchpuu() {
     assert_delta!(
         aurora
             .path(Vec2::new(43.0, 383.0), Vec2::new(421.0, 673.0))
-            .len,
+            .unwrap()
+            .length,
         540.353
     );
 }
@@ -14370,7 +15805,8 @@ fn aurora_merged_zepxhmnmdn() {
     assert_delta!(
         aurora
             .path(Vec2::new(643.0, 294.0), Vec2::new(476.0, 636.0))
-            .len,
+            .unwrap()
+            .length,
         540.244
     );
 }
@@ -14380,7 +15816,8 @@ fn aurora_merged_sgsuphvpae() {
     assert_delta!(
         aurora
             .path(Vec2::new(916.0, 624.0), Vec2::new(589.0, 269.0))
-            .len,
+            .unwrap()
+            .length,
         541.102
     );
 }
@@ -14390,7 +15827,8 @@ fn aurora_merged_hvwpzrpqep() {
     assert_delta!(
         aurora
             .path(Vec2::new(248.0, 482.0), Vec2::new(376.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         541.162
     );
 }
@@ -14400,7 +15838,8 @@ fn aurora_merged_dstexhbhlg() {
     assert_delta!(
         aurora
             .path(Vec2::new(426.0, 518.0), Vec2::new(835.0, 378.0))
-            .len,
+            .unwrap()
+            .length,
         544.14
     );
 }
@@ -14410,7 +15849,8 @@ fn aurora_merged_ouiwlagrgi() {
     assert_delta!(
         aurora
             .path(Vec2::new(504.0, 265.0), Vec2::new(733.0, 565.0))
-            .len,
+            .unwrap()
+            .length,
         540.685
     );
 }
@@ -14420,7 +15860,8 @@ fn aurora_merged_qrvlsiefba() {
     assert_delta!(
         aurora
             .path(Vec2::new(17.0, 390.0), Vec2::new(555.0, 326.0))
-            .len,
+            .unwrap()
+            .length,
         550.582
     );
 }
@@ -14430,7 +15871,8 @@ fn aurora_merged_ghqcyrdxrx() {
     assert_delta!(
         aurora
             .path(Vec2::new(11.0, 321.0), Vec2::new(329.0, 690.0))
-            .len,
+            .unwrap()
+            .length,
         552.94
     );
 }
@@ -14440,7 +15882,8 @@ fn aurora_merged_jqtenfbsla() {
     assert_delta!(
         aurora
             .path(Vec2::new(207.0, 712.0), Vec2::new(126.0, 295.0))
-            .len,
+            .unwrap()
+            .length,
         556.698
     );
 }
@@ -14450,7 +15893,8 @@ fn aurora_merged_iyituhsjum() {
     assert_delta!(
         aurora
             .path(Vec2::new(440.0, 685.0), Vec2::new(951.0, 575.0))
-            .len,
+            .unwrap()
+            .length,
         550.166
     );
 }
@@ -14460,7 +15904,8 @@ fn aurora_merged_tvxivgmgay() {
     assert_delta!(
         aurora
             .path(Vec2::new(95.0, 534.0), Vec2::new(348.0, 738.0))
-            .len,
+            .unwrap()
+            .length,
         537.337
     );
 }
@@ -14470,7 +15915,8 @@ fn aurora_merged_ccatqoukvj() {
     assert_delta!(
         aurora
             .path(Vec2::new(950.0, 565.0), Vec2::new(417.0, 471.0))
-            .len,
+            .unwrap()
+            .length,
         546.343
     );
 }
@@ -14480,7 +15926,8 @@ fn aurora_merged_dvredemlcl() {
     assert_delta!(
         aurora
             .path(Vec2::new(786.0, 395.0), Vec2::new(318.0, 376.0))
-            .len,
+            .unwrap()
+            .length,
         539.337
     );
 }
@@ -14490,7 +15937,8 @@ fn aurora_merged_gvtucuicyf() {
     assert_delta!(
         aurora
             .path(Vec2::new(947.0, 285.0), Vec2::new(845.0, 702.0))
-            .len,
+            .unwrap()
+            .length,
         544.114
     );
 }
@@ -14500,7 +15948,8 @@ fn aurora_merged_xjsfyhjlzg() {
     assert_delta!(
         aurora
             .path(Vec2::new(457.0, 618.0), Vec2::new(630.0, 293.0))
-            .len,
+            .unwrap()
+            .length,
         545.544
     );
 }
@@ -14510,7 +15959,8 @@ fn aurora_merged_bnyogggabg() {
     assert_delta!(
         aurora
             .path(Vec2::new(324.0, 554.0), Vec2::new(571.0, 262.0))
-            .len,
+            .unwrap()
+            .length,
         546.455
     );
 }
@@ -14520,7 +15970,8 @@ fn aurora_merged_keazaipzyd() {
     assert_delta!(
         aurora
             .path(Vec2::new(378.0, 370.0), Vec2::new(692.0, 575.0))
-            .len,
+            .unwrap()
+            .length,
         546.046
     );
 }
@@ -14530,7 +15981,8 @@ fn aurora_merged_ypogkeismt() {
     assert_delta!(
         aurora
             .path(Vec2::new(354.0, 360.0), Vec2::new(752.0, 138.0))
-            .len,
+            .unwrap()
+            .length,
         547.526
     );
 }
@@ -14540,7 +15992,8 @@ fn aurora_merged_zjgljpdczv() {
     assert_delta!(
         aurora
             .path(Vec2::new(359.0, 510.0), Vec2::new(16.0, 580.0))
-            .len,
+            .unwrap()
+            .length,
         550.431
     );
 }
@@ -14550,7 +16003,8 @@ fn aurora_merged_xaillzkaak() {
     assert_delta!(
         aurora
             .path(Vec2::new(694.0, 273.0), Vec2::new(1011.0, 600.0))
-            .len,
+            .unwrap()
+            .length,
         552.206
     );
 }
@@ -14560,7 +16014,8 @@ fn aurora_merged_sornxmxxec() {
     assert_delta!(
         aurora
             .path(Vec2::new(255.0, 228.0), Vec2::new(573.0, 427.0))
-            .len,
+            .unwrap()
+            .length,
         554.65
     );
 }
@@ -14570,7 +16025,8 @@ fn aurora_merged_pmkwdgleyl() {
     assert_delta!(
         aurora
             .path(Vec2::new(933.0, 616.0), Vec2::new(643.0, 254.0))
-            .len,
+            .unwrap()
+            .length,
         556.515
     );
 }
@@ -14580,7 +16036,8 @@ fn aurora_merged_ruaguvjkdq() {
     assert_delta!(
         aurora
             .path(Vec2::new(771.0, 503.0), Vec2::new(270.0, 643.0))
-            .len,
+            .unwrap()
+            .length,
         563.121
     );
 }
@@ -14590,7 +16047,8 @@ fn aurora_merged_djmdatpwkv() {
     assert_delta!(
         aurora
             .path(Vec2::new(16.0, 463.0), Vec2::new(437.0, 161.0))
-            .len,
+            .unwrap()
+            .length,
         546.851
     );
 }
@@ -14600,7 +16058,8 @@ fn aurora_merged_guztwjoisj() {
     assert_delta!(
         aurora
             .path(Vec2::new(929.0, 354.0), Vec2::new(610.0, 667.0))
-            .len,
+            .unwrap()
+            .length,
         552.821
     );
 }
@@ -14610,7 +16069,8 @@ fn aurora_merged_apvrgwtdvw() {
     assert_delta!(
         aurora
             .path(Vec2::new(277.0, 250.0), Vec2::new(780.0, 299.0))
-            .len,
+            .unwrap()
+            .length,
         547.361
     );
 }
@@ -14620,7 +16080,8 @@ fn aurora_merged_horhandonr() {
     assert_delta!(
         aurora
             .path(Vec2::new(816.0, 275.0), Vec2::new(425.0, 543.0))
-            .len,
+            .unwrap()
+            .length,
         557.816
     );
 }
@@ -14630,7 +16091,8 @@ fn aurora_merged_bbrterupwe() {
     assert_delta!(
         aurora
             .path(Vec2::new(346.0, 176.0), Vec2::new(853.0, 315.0))
-            .len,
+            .unwrap()
+            .length,
         546.587
     );
 }
@@ -14640,7 +16102,8 @@ fn aurora_merged_hxccfqvltf() {
     assert_delta!(
         aurora
             .path(Vec2::new(207.0, 315.0), Vec2::new(154.0, 729.0))
-            .len,
+            .unwrap()
+            .length,
         557.65
     );
 }
@@ -14650,7 +16113,8 @@ fn aurora_merged_cxwjbknifv() {
     assert_delta!(
         aurora
             .path(Vec2::new(1010.0, 446.0), Vec2::new(473.0, 469.0))
-            .len,
+            .unwrap()
+            .length,
         554.594
     );
 }
@@ -14660,7 +16124,8 @@ fn aurora_merged_gbxhpdjonw() {
     assert_delta!(
         aurora
             .path(Vec2::new(397.0, 499.0), Vec2::new(60.0, 216.0))
-            .len,
+            .unwrap()
+            .length,
         552.321
     );
 }
@@ -14670,7 +16135,8 @@ fn aurora_merged_rwexvabqgm() {
     assert_delta!(
         aurora
             .path(Vec2::new(178.0, 410.0), Vec2::new(677.0, 403.0))
-            .len,
+            .unwrap()
+            .length,
         548.615
     );
 }
@@ -14680,7 +16146,8 @@ fn aurora_merged_cnxqxpfyrx() {
     assert_delta!(
         aurora
             .path(Vec2::new(905.0, 425.0), Vec2::new(567.0, 123.0))
-            .len,
+            .unwrap()
+            .length,
         552.717
     );
 }
@@ -14690,7 +16157,8 @@ fn aurora_merged_mehnvbuuqk() {
     assert_delta!(
         aurora
             .path(Vec2::new(155.0, 529.0), Vec2::new(35.0, 152.0))
-            .len,
+            .unwrap()
+            .length,
         554.842
     );
 }
@@ -14700,7 +16168,8 @@ fn aurora_merged_lgfvzzcnsg() {
     assert_delta!(
         aurora
             .path(Vec2::new(885.0, 398.0), Vec2::new(481.0, 628.0))
-            .len,
+            .unwrap()
+            .length,
         555.473
     );
 }
@@ -14710,7 +16179,8 @@ fn aurora_merged_jveitwlcnc() {
     assert_delta!(
         aurora
             .path(Vec2::new(6.0, 334.0), Vec2::new(241.0, 730.0))
-            .len,
+            .unwrap()
+            .length,
         561.718
     );
 }
@@ -14720,7 +16190,8 @@ fn aurora_merged_jtfbriuuen() {
     assert_delta!(
         aurora
             .path(Vec2::new(529.0, 37.0), Vec2::new(911.0, 300.0))
-            .len,
+            .unwrap()
+            .length,
         551.075
     );
 }
@@ -14730,7 +16201,8 @@ fn aurora_merged_wfjytoqvbn() {
     assert_delta!(
         aurora
             .path(Vec2::new(23.0, 478.0), Vec2::new(577.0, 477.0))
-            .len,
+            .unwrap()
+            .length,
         564.11
     );
 }
@@ -14740,7 +16212,8 @@ fn aurora_merged_gwaexsetak() {
     assert_delta!(
         aurora
             .path(Vec2::new(471.0, 387.0), Vec2::new(271.0, 609.0))
-            .len,
+            .unwrap()
+            .length,
         558.753
     );
 }
@@ -14750,7 +16223,8 @@ fn aurora_merged_jgdddldqoe() {
     assert_delta!(
         aurora
             .path(Vec2::new(35.0, 665.0), Vec2::new(122.0, 234.0))
-            .len,
+            .unwrap()
+            .length,
         564.869
     );
 }
@@ -14760,7 +16234,8 @@ fn aurora_merged_ofmjgnpahs() {
     assert_delta!(
         aurora
             .path(Vec2::new(727.0, 551.0), Vec2::new(817.0, 197.0))
-            .len,
+            .unwrap()
+            .length,
         561.595
     );
 }
@@ -14770,7 +16245,8 @@ fn aurora_merged_waptshlgpf() {
     assert_delta!(
         aurora
             .path(Vec2::new(858.0, 502.0), Vec2::new(739.0, 263.0))
-            .len,
+            .unwrap()
+            .length,
         559.491
     );
 }
@@ -14780,7 +16256,8 @@ fn aurora_merged_qqcowxghyn() {
     assert_delta!(
         aurora
             .path(Vec2::new(742.0, 701.0), Vec2::new(952.0, 309.0))
-            .len,
+            .unwrap()
+            .length,
         564.684
     );
 }
@@ -14790,7 +16267,8 @@ fn aurora_merged_jtahcameji() {
     assert_delta!(
         aurora
             .path(Vec2::new(262.0, 234.0), Vec2::new(789.0, 290.0))
-            .len,
+            .unwrap()
+            .length,
         556.218
     );
 }
@@ -14800,7 +16278,8 @@ fn aurora_merged_pfmticgmaq() {
     assert_delta!(
         aurora
             .path(Vec2::new(249.0, 42.0), Vec2::new(731.0, 300.0))
-            .len,
+            .unwrap()
+            .length,
         553.291
     );
 }
@@ -14810,7 +16289,8 @@ fn aurora_merged_mcfiqclhqd() {
     assert_delta!(
         aurora
             .path(Vec2::new(768.0, 684.0), Vec2::new(345.0, 472.0))
-            .len,
+            .unwrap()
+            .length,
         555.376
     );
 }
@@ -14820,7 +16300,8 @@ fn aurora_merged_jsdhufhtzp() {
     assert_delta!(
         aurora
             .path(Vec2::new(445.0, 68.0), Vec2::new(11.0, 321.0))
-            .len,
+            .unwrap()
+            .length,
         559.391
     );
 }
@@ -14830,7 +16311,8 @@ fn aurora_merged_ytrurmyxhn() {
     assert_delta!(
         aurora
             .path(Vec2::new(949.0, 273.0), Vec2::new(421.0, 130.0))
-            .len,
+            .unwrap()
+            .length,
         558.092
     );
 }
@@ -14840,7 +16322,8 @@ fn aurora_merged_amosavobuf() {
     assert_delta!(
         aurora
             .path(Vec2::new(890.0, 356.0), Vec2::new(594.0, 711.0))
-            .len,
+            .unwrap()
+            .length,
         561.182
     );
 }
@@ -14850,7 +16333,8 @@ fn aurora_merged_scvcczktrn() {
     assert_delta!(
         aurora
             .path(Vec2::new(574.0, 635.0), Vec2::new(259.0, 253.0))
-            .len,
+            .unwrap()
+            .length,
         569.436
     );
 }
@@ -14860,7 +16344,8 @@ fn aurora_merged_vlfsblxlat() {
     assert_delta!(
         aurora
             .path(Vec2::new(287.0, 121.0), Vec2::new(829.0, 180.0))
-            .len,
+            .unwrap()
+            .length,
         563.879
     );
 }
@@ -14870,7 +16355,8 @@ fn aurora_merged_dmhgaupzsf() {
     assert_delta!(
         aurora
             .path(Vec2::new(721.0, 279.0), Vec2::new(830.0, 517.0))
-            .len,
+            .unwrap()
+            .length,
         559.339
     );
 }
@@ -14880,7 +16366,8 @@ fn aurora_merged_ycnblspwdz() {
     assert_delta!(
         aurora
             .path(Vec2::new(801.0, 636.0), Vec2::new(271.0, 645.0))
-            .len,
+            .unwrap()
+            .length,
         566.869
     );
 }
@@ -14890,7 +16377,8 @@ fn aurora_merged_sdoktwrrjv() {
     assert_delta!(
         aurora
             .path(Vec2::new(678.0, 703.0), Vec2::new(937.0, 295.0))
-            .len,
+            .unwrap()
+            .length,
         561.242
     );
 }
@@ -14900,7 +16388,8 @@ fn aurora_merged_jzsbojxxvm() {
     assert_delta!(
         aurora
             .path(Vec2::new(851.0, 222.0), Vec2::new(912.0, 615.0))
-            .len,
+            .unwrap()
+            .length,
         562.728
     );
 }
@@ -14910,7 +16399,8 @@ fn aurora_merged_cejgptksix() {
     assert_delta!(
         aurora
             .path(Vec2::new(772.0, 195.0), Vec2::new(217.0, 202.0))
-            .len,
+            .unwrap()
+            .length,
         574.995
     );
 }
@@ -14920,7 +16410,8 @@ fn aurora_merged_lpudtxedrm() {
     assert_delta!(
         aurora
             .path(Vec2::new(473.0, 228.0), Vec2::new(934.0, 462.0))
-            .len,
+            .unwrap()
+            .length,
         560.844
     );
 }
@@ -14930,7 +16421,8 @@ fn aurora_merged_rbyiuhtcen() {
     assert_delta!(
         aurora
             .path(Vec2::new(560.0, 645.0), Vec2::new(16.0, 589.0))
-            .len,
+            .unwrap()
+            .length,
         571.298
     );
 }
@@ -14940,7 +16432,8 @@ fn aurora_merged_ikarfblqed() {
     assert_delta!(
         aurora
             .path(Vec2::new(585.0, 671.0), Vec2::new(444.0, 302.0))
-            .len,
+            .unwrap()
+            .length,
         567.969
     );
 }
@@ -14950,7 +16443,8 @@ fn aurora_merged_bykjlezxkt() {
     assert_delta!(
         aurora
             .path(Vec2::new(730.0, 396.0), Vec2::new(330.0, 235.0))
-            .len,
+            .unwrap()
+            .length,
         563.182
     );
 }
@@ -14960,7 +16454,8 @@ fn aurora_merged_znjqrdrhab() {
     assert_delta!(
         aurora
             .path(Vec2::new(94.0, 380.0), Vec2::new(626.0, 389.0))
-            .len,
+            .unwrap()
+            .length,
         563.028
     );
 }
@@ -14970,7 +16465,8 @@ fn aurora_merged_eeqpdyjufp() {
     assert_delta!(
         aurora
             .path(Vec2::new(441.0, 465.0), Vec2::new(893.0, 378.0))
-            .len,
+            .unwrap()
+            .length,
         569.485
     );
 }
@@ -14980,7 +16476,8 @@ fn aurora_merged_uuogluejdh() {
     assert_delta!(
         aurora
             .path(Vec2::new(421.0, 626.0), Vec2::new(303.0, 254.0))
-            .len,
+            .unwrap()
+            .length,
         567.494
     );
 }
@@ -14990,7 +16487,8 @@ fn aurora_merged_mfldzxblrx() {
     assert_delta!(
         aurora
             .path(Vec2::new(361.0, 221.0), Vec2::new(209.0, 533.0))
-            .len,
+            .unwrap()
+            .length,
         561.595
     );
 }
@@ -15000,7 +16498,8 @@ fn aurora_merged_ekhoonwryp() {
     assert_delta!(
         aurora
             .path(Vec2::new(230.0, 212.0), Vec2::new(323.0, 527.0))
-            .len,
+            .unwrap()
+            .length,
         565.73
     );
 }
@@ -15010,7 +16509,8 @@ fn aurora_merged_lpemdrngms() {
     assert_delta!(
         aurora
             .path(Vec2::new(9.0, 476.0), Vec2::new(213.0, 61.0))
-            .len,
+            .unwrap()
+            .length,
         567.751
     );
 }
@@ -15020,7 +16520,8 @@ fn aurora_merged_vxuywmoknh() {
     assert_delta!(
         aurora
             .path(Vec2::new(916.0, 280.0), Vec2::new(407.0, 93.0))
-            .len,
+            .unwrap()
+            .length,
         563.881
     );
 }
@@ -15030,7 +16531,8 @@ fn aurora_merged_dzdlotinnd() {
     assert_delta!(
         aurora
             .path(Vec2::new(475.0, 642.0), Vec2::new(498.0, 395.0))
-            .len,
+            .unwrap()
+            .length,
         573.881
     );
 }
@@ -15040,7 +16542,8 @@ fn aurora_merged_pprebozafw() {
     assert_delta!(
         aurora
             .path(Vec2::new(668.0, 259.0), Vec2::new(868.0, 694.0))
-            .len,
+            .unwrap()
+            .length,
         573.343
     );
 }
@@ -15050,7 +16553,8 @@ fn aurora_merged_xixvdciqlw() {
     assert_delta!(
         aurora
             .path(Vec2::new(551.0, 578.0), Vec2::new(919.0, 264.0))
-            .len,
+            .unwrap()
+            .length,
         568.176
     );
 }
@@ -15060,7 +16564,8 @@ fn aurora_merged_brkhcjpflk() {
     assert_delta!(
         aurora
             .path(Vec2::new(725.0, 586.0), Vec2::new(199.0, 588.0))
-            .len,
+            .unwrap()
+            .length,
         567.395
     );
 }
@@ -15070,7 +16575,8 @@ fn aurora_merged_avvhhskxzj() {
     assert_delta!(
         aurora
             .path(Vec2::new(680.0, 434.0), Vec2::new(355.0, 205.0))
-            .len,
+            .unwrap()
+            .length,
         570.267
     );
 }
@@ -15080,7 +16586,8 @@ fn aurora_merged_cpijykclck() {
     assert_delta!(
         aurora
             .path(Vec2::new(772.0, 353.0), Vec2::new(640.0, 691.0))
-            .len,
+            .unwrap()
+            .length,
         571.901
     );
 }
@@ -15090,7 +16597,8 @@ fn aurora_merged_txfhmwnzgy() {
     assert_delta!(
         aurora
             .path(Vec2::new(584.0, 657.0), Vec2::new(51.0, 503.0))
-            .len,
+            .unwrap()
+            .length,
         566.313
     );
 }
@@ -15100,7 +16608,8 @@ fn aurora_merged_leojexzuyc() {
     assert_delta!(
         aurora
             .path(Vec2::new(39.0, 426.0), Vec2::new(561.0, 265.0))
-            .len,
+            .unwrap()
+            .length,
         568.842
     );
 }
@@ -15110,7 +16619,8 @@ fn aurora_merged_kyyueaamzh() {
     assert_delta!(
         aurora
             .path(Vec2::new(678.0, 72.0), Vec2::new(1013.0, 427.0))
-            .len,
+            .unwrap()
+            .length,
         573.34
     );
 }
@@ -15120,7 +16630,8 @@ fn aurora_merged_ujeddlutqf() {
     assert_delta!(
         aurora
             .path(Vec2::new(17.0, 450.0), Vec2::new(512.0, 418.0))
-            .len,
+            .unwrap()
+            .length,
         574.169
     );
 }
@@ -15130,7 +16641,8 @@ fn aurora_merged_didssvjtol() {
     assert_delta!(
         aurora
             .path(Vec2::new(263.0, 502.0), Vec2::new(799.0, 654.0))
-            .len,
+            .unwrap()
+            .length,
         570.491
     );
 }
@@ -15140,7 +16652,8 @@ fn aurora_merged_txeuadwgek() {
     assert_delta!(
         aurora
             .path(Vec2::new(245.0, 355.0), Vec2::new(793.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         576.308
     );
 }
@@ -15150,7 +16663,8 @@ fn aurora_merged_fzksqqhuvc() {
     assert_delta!(
         aurora
             .path(Vec2::new(193.0, 232.0), Vec2::new(739.0, 241.0))
-            .len,
+            .unwrap()
+            .length,
         574.394
     );
 }
@@ -15160,7 +16674,8 @@ fn aurora_merged_cjltqvmeqf() {
     assert_delta!(
         aurora
             .path(Vec2::new(944.0, 573.0), Vec2::new(508.0, 279.0))
-            .len,
+            .unwrap()
+            .length,
         566.158
     );
 }
@@ -15170,7 +16685,8 @@ fn aurora_merged_hxhrkvrjke() {
     assert_delta!(
         aurora
             .path(Vec2::new(21.0, 320.0), Vec2::new(563.0, 389.0))
-            .len,
+            .unwrap()
+            .length,
         573.278
     );
 }
@@ -15180,7 +16696,8 @@ fn aurora_merged_pdgwzthtgw() {
     assert_delta!(
         aurora
             .path(Vec2::new(454.0, 420.0), Vec2::new(653.0, 193.0))
-            .len,
+            .unwrap()
+            .length,
         565.703
     );
 }
@@ -15190,7 +16707,8 @@ fn aurora_merged_cfnhnvayiw() {
     assert_delta!(
         aurora
             .path(Vec2::new(503.0, 246.0), Vec2::new(711.0, 563.0))
-            .len,
+            .unwrap()
+            .length,
         570.109
     );
 }
@@ -15200,7 +16718,8 @@ fn aurora_merged_gpcsrgamsf() {
     assert_delta!(
         aurora
             .path(Vec2::new(582.0, 588.0), Vec2::new(48.0, 561.0))
-            .len,
+            .unwrap()
+            .length,
         574.379
     );
 }
@@ -15210,7 +16729,8 @@ fn aurora_merged_vfwruwtnmy() {
     assert_delta!(
         aurora
             .path(Vec2::new(12.0, 404.0), Vec2::new(435.0, 109.0))
-            .len,
+            .unwrap()
+            .length,
         571.821
     );
 }
@@ -15220,7 +16740,8 @@ fn aurora_merged_adcszjemvi() {
     assert_delta!(
         aurora
             .path(Vec2::new(452.0, 336.0), Vec2::new(168.0, 88.0))
-            .len,
+            .unwrap()
+            .length,
         572.912
     );
 }
@@ -15230,7 +16751,8 @@ fn aurora_merged_bcgftmcwtr() {
     assert_delta!(
         aurora
             .path(Vec2::new(605.0, 643.0), Vec2::new(186.0, 408.0))
-            .len,
+            .unwrap()
+            .length,
         571.507
     );
 }
@@ -15240,7 +16762,8 @@ fn aurora_merged_nmdsgyxhte() {
     assert_delta!(
         aurora
             .path(Vec2::new(86.0, 134.0), Vec2::new(634.0, 50.0))
-            .len,
+            .unwrap()
+            .length,
         572.338
     );
 }
@@ -15250,7 +16773,8 @@ fn aurora_merged_anepxribyu() {
     assert_delta!(
         aurora
             .path(Vec2::new(482.0, 296.0), Vec2::new(751.0, 593.0))
-            .len,
+            .unwrap()
+            .length,
         571.192
     );
 }
@@ -15260,7 +16784,8 @@ fn aurora_merged_ptvjfuovyh() {
     assert_delta!(
         aurora
             .path(Vec2::new(812.0, 279.0), Vec2::new(400.0, 544.0))
-            .len,
+            .unwrap()
+            .length,
         579.393
     );
 }
@@ -15270,7 +16795,8 @@ fn aurora_merged_mjokehtvxr() {
     assert_delta!(
         aurora
             .path(Vec2::new(720.0, 413.0), Vec2::new(311.0, 598.0))
-            .len,
+            .unwrap()
+            .length,
         573.382
     );
 }
@@ -15280,7 +16806,8 @@ fn aurora_merged_qbmfxqwjmw() {
     assert_delta!(
         aurora
             .path(Vec2::new(828.0, 212.0), Vec2::new(299.0, 241.0))
-            .len,
+            .unwrap()
+            .length,
         579.497
     );
 }
@@ -15290,7 +16817,8 @@ fn aurora_merged_kexfkvpatx() {
     assert_delta!(
         aurora
             .path(Vec2::new(117.0, 326.0), Vec2::new(628.0, 226.0))
-            .len,
+            .unwrap()
+            .length,
         580.356
     );
 }
@@ -15300,7 +16828,8 @@ fn aurora_merged_ehjyadocpy() {
     assert_delta!(
         aurora
             .path(Vec2::new(249.0, 203.0), Vec2::new(303.0, 543.0))
-            .len,
+            .unwrap()
+            .length,
         577.132
     );
 }
@@ -15310,7 +16839,8 @@ fn aurora_merged_qjyknlskrt() {
     assert_delta!(
         aurora
             .path(Vec2::new(430.0, 455.0), Vec2::new(887.0, 403.0))
-            .len,
+            .unwrap()
+            .length,
         575.539
     );
 }
@@ -15320,7 +16850,8 @@ fn aurora_merged_vfbmvnadrt() {
     assert_delta!(
         aurora
             .path(Vec2::new(685.0, 416.0), Vec2::new(313.0, 474.0))
-            .len,
+            .unwrap()
+            .length,
         572.599
     );
 }
@@ -15330,7 +16861,8 @@ fn aurora_merged_wktqbgcbvz() {
     assert_delta!(
         aurora
             .path(Vec2::new(512.0, 573.0), Vec2::new(392.0, 272.0))
-            .len,
+            .unwrap()
+            .length,
         590.156
     );
 }
@@ -15340,7 +16872,8 @@ fn aurora_merged_xsgogfklza() {
     assert_delta!(
         aurora
             .path(Vec2::new(145.0, 647.0), Vec2::new(692.0, 578.0))
-            .len,
+            .unwrap()
+            .length,
         593.825
     );
 }
@@ -15350,7 +16883,8 @@ fn aurora_merged_twgbaxceig() {
     assert_delta!(
         aurora
             .path(Vec2::new(933.0, 141.0), Vec2::new(604.0, 489.0))
-            .len,
+            .unwrap()
+            .length,
         579.788
     );
 }
@@ -15360,7 +16894,8 @@ fn aurora_merged_srwkgeuytd() {
     assert_delta!(
         aurora
             .path(Vec2::new(581.0, 642.0), Vec2::new(883.0, 262.0))
-            .len,
+            .unwrap()
+            .length,
         577.465
     );
 }
@@ -15370,7 +16905,8 @@ fn aurora_merged_hggutubbpl() {
     assert_delta!(
         aurora
             .path(Vec2::new(587.0, 460.0), Vec2::new(702.0, 76.0))
-            .len,
+            .unwrap()
+            .length,
         572.758
     );
 }
@@ -15380,7 +16916,8 @@ fn aurora_merged_ryakqhnhpi() {
     assert_delta!(
         aurora
             .path(Vec2::new(81.0, 215.0), Vec2::new(614.0, 379.0))
-            .len,
+            .unwrap()
+            .length,
         575.757
     );
 }
@@ -15390,7 +16927,8 @@ fn aurora_merged_verrkjowcw() {
     assert_delta!(
         aurora
             .path(Vec2::new(315.0, 53.0), Vec2::new(153.0, 513.0))
-            .len,
+            .unwrap()
+            .length,
         580.12
     );
 }
@@ -15400,7 +16938,8 @@ fn aurora_merged_xgmbdgyqsk() {
     assert_delta!(
         aurora
             .path(Vec2::new(612.0, 421.0), Vec2::new(1014.0, 398.0))
-            .len,
+            .unwrap()
+            .length,
         572.609
     );
 }
@@ -15410,7 +16949,8 @@ fn aurora_merged_scurynmfza() {
     assert_delta!(
         aurora
             .path(Vec2::new(835.0, 605.0), Vec2::new(276.0, 634.0))
-            .len,
+            .unwrap()
+            .length,
         590.835
     );
 }
@@ -15420,7 +16960,8 @@ fn aurora_merged_dnqoehbotx() {
     assert_delta!(
         aurora
             .path(Vec2::new(458.0, 449.0), Vec2::new(975.0, 404.0))
-            .len,
+            .unwrap()
+            .length,
         578.789
     );
 }
@@ -15430,7 +16971,8 @@ fn aurora_merged_zvmbggmjds() {
     assert_delta!(
         aurora
             .path(Vec2::new(701.0, 592.0), Vec2::new(419.0, 382.0))
-            .len,
+            .unwrap()
+            .length,
         576.842
     );
 }
@@ -15440,7 +16982,8 @@ fn aurora_merged_weuljcblei() {
     assert_delta!(
         aurora
             .path(Vec2::new(355.0, 168.0), Vec2::new(684.0, 451.0))
-            .len,
+            .unwrap()
+            .length,
         583.349
     );
 }
@@ -15450,7 +16993,8 @@ fn aurora_merged_mpdcnhixwp() {
     assert_delta!(
         aurora
             .path(Vec2::new(678.0, 449.0), Vec2::new(805.0, 89.0))
-            .len,
+            .unwrap()
+            .length,
         585.723
     );
 }
@@ -15460,7 +17004,8 @@ fn aurora_merged_rwpifzcvph() {
     assert_delta!(
         aurora
             .path(Vec2::new(256.0, 633.0), Vec2::new(303.0, 290.0))
-            .len,
+            .unwrap()
+            .length,
         583.831
     );
 }
@@ -15470,7 +17015,8 @@ fn aurora_merged_lftpesbcbr() {
     assert_delta!(
         aurora
             .path(Vec2::new(345.0, 553.0), Vec2::new(615.0, 323.0))
-            .len,
+            .unwrap()
+            .length,
         586.466
     );
 }
@@ -15480,7 +17026,8 @@ fn aurora_merged_uprjswozem() {
     assert_delta!(
         aurora
             .path(Vec2::new(153.0, 150.0), Vec2::new(728.0, 54.0))
-            .len,
+            .unwrap()
+            .length,
         595.294
     );
 }
@@ -15490,7 +17037,8 @@ fn aurora_merged_bfzdwogncl() {
     assert_delta!(
         aurora
             .path(Vec2::new(506.0, 373.0), Vec2::new(556.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         578.543
     );
 }
@@ -15500,7 +17048,8 @@ fn aurora_merged_uadnkfkmhn() {
     assert_delta!(
         aurora
             .path(Vec2::new(531.0, 289.0), Vec2::new(971.0, 594.0))
-            .len,
+            .unwrap()
+            .length,
         575.598
     );
 }
@@ -15510,7 +17059,8 @@ fn aurora_merged_adysyvkeln() {
     assert_delta!(
         aurora
             .path(Vec2::new(591.0, 119.0), Vec2::new(808.0, 441.0))
-            .len,
+            .unwrap()
+            .length,
         578.632
     );
 }
@@ -15520,7 +17070,8 @@ fn aurora_merged_bsigebokei() {
     assert_delta!(
         aurora
             .path(Vec2::new(651.0, 426.0), Vec2::new(765.0, 77.0))
-            .len,
+            .unwrap()
+            .length,
         584.352
     );
 }
@@ -15530,7 +17081,8 @@ fn aurora_merged_kgfmvamnrg() {
     assert_delta!(
         aurora
             .path(Vec2::new(136.0, 233.0), Vec2::new(646.0, 68.0))
-            .len,
+            .unwrap()
+            .length,
         586.74
     );
 }
@@ -15540,7 +17092,8 @@ fn aurora_merged_ofqqrptgpv() {
     assert_delta!(
         aurora
             .path(Vec2::new(362.0, 218.0), Vec2::new(552.0, 566.0))
-            .len,
+            .unwrap()
+            .length,
         594.669
     );
 }
@@ -15550,7 +17103,8 @@ fn aurora_merged_jelbqukqpq() {
     assert_delta!(
         aurora
             .path(Vec2::new(248.0, 79.0), Vec2::new(644.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         584.427
     );
 }
@@ -15560,7 +17114,8 @@ fn aurora_merged_lexknwvksq() {
     assert_delta!(
         aurora
             .path(Vec2::new(68.0, 349.0), Vec2::new(632.0, 293.0))
-            .len,
+            .unwrap()
+            .length,
         585.535
     );
 }
@@ -15570,7 +17125,8 @@ fn aurora_merged_dnkadyoaho() {
     assert_delta!(
         aurora
             .path(Vec2::new(649.0, 140.0), Vec2::new(472.0, 425.0))
-            .len,
+            .unwrap()
+            .length,
         581.048
     );
 }
@@ -15580,7 +17136,8 @@ fn aurora_merged_cdqywliqom() {
     assert_delta!(
         aurora
             .path(Vec2::new(797.0, 297.0), Vec2::new(275.0, 68.0))
-            .len,
+            .unwrap()
+            .length,
         585.36
     );
 }
@@ -15590,7 +17147,8 @@ fn aurora_merged_vhvzqelzrz() {
     assert_delta!(
         aurora
             .path(Vec2::new(89.0, 418.0), Vec2::new(655.0, 319.0))
-            .len,
+            .unwrap()
+            .length,
         590.762
     );
 }
@@ -15600,7 +17158,8 @@ fn aurora_merged_pblfngvffp() {
     assert_delta!(
         aurora
             .path(Vec2::new(112.0, 151.0), Vec2::new(610.0, 293.0))
-            .len,
+            .unwrap()
+            .length,
         595.009
     );
 }
@@ -15610,7 +17169,8 @@ fn aurora_merged_sdrhyvfkez() {
     assert_delta!(
         aurora
             .path(Vec2::new(158.0, 312.0), Vec2::new(461.0, 660.0))
-            .len,
+            .unwrap()
+            .length,
         585.628
     );
 }
@@ -15620,7 +17180,8 @@ fn aurora_merged_kazezynquq() {
     assert_delta!(
         aurora
             .path(Vec2::new(676.0, 598.0), Vec2::new(464.0, 260.0))
-            .len,
+            .unwrap()
+            .length,
         590.072
     );
 }
@@ -15630,7 +17191,8 @@ fn aurora_merged_mnpvxhuyry() {
     assert_delta!(
         aurora
             .path(Vec2::new(263.0, 350.0), Vec2::new(836.0, 319.0))
-            .len,
+            .unwrap()
+            .length,
         592.106
     );
 }
@@ -15640,7 +17202,8 @@ fn aurora_merged_xxofgubxts() {
     assert_delta!(
         aurora
             .path(Vec2::new(565.0, 493.0), Vec2::new(745.0, 213.0))
-            .len,
+            .unwrap()
+            .length,
         589.114
     );
 }
@@ -15650,7 +17213,8 @@ fn aurora_merged_nkfjbapxlp() {
     assert_delta!(
         aurora
             .path(Vec2::new(222.0, 366.0), Vec2::new(685.0, 84.0))
-            .len,
+            .unwrap()
+            .length,
         581.74
     );
 }
@@ -15660,7 +17224,8 @@ fn aurora_merged_njdhneavhb() {
     assert_delta!(
         aurora
             .path(Vec2::new(497.0, 646.0), Vec2::new(952.0, 420.0))
-            .len,
+            .unwrap()
+            .length,
         589.055
     );
 }
@@ -15670,7 +17235,8 @@ fn aurora_merged_pgjlkmwozu() {
     assert_delta!(
         aurora
             .path(Vec2::new(414.0, 436.0), Vec2::new(685.0, 117.0))
-            .len,
+            .unwrap()
+            .length,
         588.387
     );
 }
@@ -15680,7 +17246,8 @@ fn aurora_merged_qpohsnqosy() {
     assert_delta!(
         aurora
             .path(Vec2::new(612.0, 230.0), Vec2::new(673.0, 630.0))
-            .len,
+            .unwrap()
+            .length,
         591.951
     );
 }
@@ -15690,7 +17257,8 @@ fn aurora_merged_vrjrgfwilv() {
     assert_delta!(
         aurora
             .path(Vec2::new(240.0, 678.0), Vec2::new(458.0, 291.0))
-            .len,
+            .unwrap()
+            .length,
         594.041
     );
 }
@@ -15700,7 +17268,8 @@ fn aurora_merged_vgvhfgpxmg() {
     assert_delta!(
         aurora
             .path(Vec2::new(244.0, 485.0), Vec2::new(810.0, 443.0))
-            .len,
+            .unwrap()
+            .length,
         587.47
     );
 }
@@ -15710,7 +17279,8 @@ fn aurora_merged_zbmqolcrdw() {
     assert_delta!(
         aurora
             .path(Vec2::new(518.0, 167.0), Vec2::new(64.0, 477.0))
-            .len,
+            .unwrap()
+            .length,
         587.684
     );
 }
@@ -15720,7 +17290,8 @@ fn aurora_merged_nbqqdxtqeq() {
     assert_delta!(
         aurora
             .path(Vec2::new(231.0, 427.0), Vec2::new(690.0, 669.0))
-            .len,
+            .unwrap()
+            .length,
         592.132
     );
 }
@@ -15730,7 +17301,8 @@ fn aurora_merged_rwkpmdzhks() {
     assert_delta!(
         aurora
             .path(Vec2::new(211.0, 235.0), Vec2::new(715.0, 350.0))
-            .len,
+            .unwrap()
+            .length,
         594.601
     );
 }
@@ -15740,7 +17312,8 @@ fn aurora_merged_psyvopsnhm() {
     assert_delta!(
         aurora
             .path(Vec2::new(855.0, 521.0), Vec2::new(317.0, 328.0))
-            .len,
+            .unwrap()
+            .length,
         594.65
     );
 }
@@ -15750,7 +17323,8 @@ fn aurora_merged_nbepzgioqj() {
     assert_delta!(
         aurora
             .path(Vec2::new(638.0, 612.0), Vec2::new(454.0, 284.0))
-            .len,
+            .unwrap()
+            .length,
         595.112
     );
 }
@@ -15760,7 +17334,8 @@ fn aurora_merged_cdrhieeqda() {
     assert_delta!(
         aurora
             .path(Vec2::new(324.0, 468.0), Vec2::new(897.0, 571.0))
-            .len,
+            .unwrap()
+            .length,
         593.818
     );
 }
@@ -15770,7 +17345,8 @@ fn aurora_merged_oqktjwgwrv() {
     assert_delta!(
         aurora
             .path(Vec2::new(392.0, 637.0), Vec2::new(231.0, 291.0))
-            .len,
+            .unwrap()
+            .length,
         593.518
     );
 }
@@ -15780,7 +17356,8 @@ fn aurora_merged_yasgyvpife() {
     assert_delta!(
         aurora
             .path(Vec2::new(236.0, 419.0), Vec2::new(790.0, 422.0))
-            .len,
+            .unwrap()
+            .length,
         590.363
     );
 }
@@ -15790,7 +17367,8 @@ fn aurora_merged_rspbwjhfxw() {
     assert_delta!(
         aurora
             .path(Vec2::new(451.0, 507.0), Vec2::new(987.0, 406.0))
-            .len,
+            .unwrap()
+            .length,
         595.91
     );
 }
@@ -15800,7 +17378,8 @@ fn aurora_merged_mgofbmbcpb() {
     assert_delta!(
         aurora
             .path(Vec2::new(409.0, 382.0), Vec2::new(784.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         596.678
     );
 }
@@ -15810,7 +17389,8 @@ fn aurora_merged_wmtcuxzcyq() {
     assert_delta!(
         aurora
             .path(Vec2::new(40.0, 473.0), Vec2::new(379.0, 93.0))
-            .len,
+            .unwrap()
+            .length,
         593.616
     );
 }
@@ -15820,7 +17400,8 @@ fn aurora_merged_xzkgmkrqna() {
     assert_delta!(
         aurora
             .path(Vec2::new(275.0, 530.0), Vec2::new(626.0, 294.0))
-            .len,
+            .unwrap()
+            .length,
         600.581
     );
 }
@@ -15830,7 +17411,8 @@ fn aurora_merged_ummoalamou() {
     assert_delta!(
         aurora
             .path(Vec2::new(627.0, 589.0), Vec2::new(179.0, 405.0))
-            .len,
+            .unwrap()
+            .length,
         599.901
     );
 }
@@ -15840,7 +17422,8 @@ fn aurora_merged_einaeigonu() {
     assert_delta!(
         aurora
             .path(Vec2::new(299.0, 152.0), Vec2::new(906.0, 145.0))
-            .len,
+            .unwrap()
+            .length,
         613.826
     );
 }
@@ -15850,7 +17433,8 @@ fn aurora_merged_txgosoydvs() {
     assert_delta!(
         aurora
             .path(Vec2::new(356.0, 166.0), Vec2::new(661.0, 441.0))
-            .len,
+            .unwrap()
+            .length,
         595.041
     );
 }
@@ -15860,7 +17444,8 @@ fn aurora_merged_ymenrovsbf() {
     assert_delta!(
         aurora
             .path(Vec2::new(129.0, 538.0), Vec2::new(527.0, 276.0))
-            .len,
+            .unwrap()
+            .length,
         596.105
     );
 }
@@ -15870,7 +17455,8 @@ fn aurora_merged_ksuoujvyeb() {
     assert_delta!(
         aurora
             .path(Vec2::new(413.0, 419.0), Vec2::new(868.0, 297.0))
-            .len,
+            .unwrap()
+            .length,
         593.492
     );
 }
@@ -15880,7 +17466,8 @@ fn aurora_merged_sgpqphwdta() {
     assert_delta!(
         aurora
             .path(Vec2::new(334.0, 459.0), Vec2::new(793.0, 286.0))
-            .len,
+            .unwrap()
+            .length,
         600.659
     );
 }
@@ -15890,7 +17477,8 @@ fn aurora_merged_lnvoydkqzx() {
     assert_delta!(
         aurora
             .path(Vec2::new(554.0, 714.0), Vec2::new(9.0, 541.0))
-            .len,
+            .unwrap()
+            .length,
         590.835
     );
 }
@@ -15900,7 +17488,8 @@ fn aurora_merged_rqvpmeiyok() {
     assert_delta!(
         aurora
             .path(Vec2::new(642.0, 516.0), Vec2::new(806.0, 185.0))
-            .len,
+            .unwrap()
+            .length,
         596.485
     );
 }
@@ -15910,7 +17499,8 @@ fn aurora_merged_gseehvusye() {
     assert_delta!(
         aurora
             .path(Vec2::new(162.0, 376.0), Vec2::new(634.0, 234.0))
-            .len,
+            .unwrap()
+            .length,
         594.587
     );
 }
@@ -15920,7 +17510,8 @@ fn aurora_merged_zfszmprocq() {
     assert_delta!(
         aurora
             .path(Vec2::new(459.0, 590.0), Vec2::new(985.0, 365.0))
-            .len,
+            .unwrap()
+            .length,
         603.568
     );
 }
@@ -15930,7 +17521,8 @@ fn aurora_merged_tjnhrzzibe() {
     assert_delta!(
         aurora
             .path(Vec2::new(297.0, 158.0), Vec2::new(737.0, 404.0))
-            .len,
+            .unwrap()
+            .length,
         601.47
     );
 }
@@ -15940,7 +17532,8 @@ fn aurora_merged_stnmzenqcc() {
     assert_delta!(
         aurora
             .path(Vec2::new(477.0, 225.0), Vec2::new(35.0, 543.0))
-            .len,
+            .unwrap()
+            .length,
         607.805
     );
 }
@@ -15950,7 +17543,8 @@ fn aurora_merged_qfobzjxeew() {
     assert_delta!(
         aurora
             .path(Vec2::new(504.0, 319.0), Vec2::new(118.0, 593.0))
-            .len,
+            .unwrap()
+            .length,
         602.211
     );
 }
@@ -15960,7 +17554,8 @@ fn aurora_merged_vgafnpehzn() {
     assert_delta!(
         aurora
             .path(Vec2::new(902.0, 540.0), Vec2::new(357.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         598.287
     );
 }
@@ -15970,7 +17565,8 @@ fn aurora_merged_hpqsbnzozi() {
     assert_delta!(
         aurora
             .path(Vec2::new(827.0, 678.0), Vec2::new(460.0, 383.0))
-            .len,
+            .unwrap()
+            .length,
         605.301
     );
 }
@@ -15980,7 +17576,8 @@ fn aurora_merged_qyukdwiysm() {
     assert_delta!(
         aurora
             .path(Vec2::new(412.0, 453.0), Vec2::new(692.0, 150.0))
-            .len,
+            .unwrap()
+            .length,
         604.084
     );
 }
@@ -15990,7 +17587,8 @@ fn aurora_merged_jmuurimyok() {
     assert_delta!(
         aurora
             .path(Vec2::new(855.0, 236.0), Vec2::new(586.0, 606.0))
-            .len,
+            .unwrap()
+            .length,
         603.812
     );
 }
@@ -16000,7 +17598,8 @@ fn aurora_merged_ymmblqpkvf() {
     assert_delta!(
         aurora
             .path(Vec2::new(233.0, 323.0), Vec2::new(422.0, 650.0))
-            .len,
+            .unwrap()
+            .length,
         598.005
     );
 }
@@ -16010,7 +17609,8 @@ fn aurora_merged_mtyuvygvcq() {
     assert_delta!(
         aurora
             .path(Vec2::new(906.0, 161.0), Vec2::new(753.0, 566.0))
-            .len,
+            .unwrap()
+            .length,
         603.828
     );
 }
@@ -16020,7 +17620,8 @@ fn aurora_merged_ozuskvdbfg() {
     assert_delta!(
         aurora
             .path(Vec2::new(468.0, 584.0), Vec2::new(280.0, 199.0))
-            .len,
+            .unwrap()
+            .length,
         614.314
     );
 }
@@ -16030,7 +17631,8 @@ fn aurora_merged_lytshcuond() {
     assert_delta!(
         aurora
             .path(Vec2::new(120.0, 698.0), Vec2::new(424.0, 298.0))
-            .len,
+            .unwrap()
+            .length,
         610.808
     );
 }
@@ -16040,7 +17642,8 @@ fn aurora_merged_rjmttineah() {
     assert_delta!(
         aurora
             .path(Vec2::new(962.0, 389.0), Vec2::new(427.0, 191.0))
-            .len,
+            .unwrap()
+            .length,
         599.377
     );
 }
@@ -16050,7 +17653,8 @@ fn aurora_merged_qlsulfhvht() {
     assert_delta!(
         aurora
             .path(Vec2::new(512.0, 170.0), Vec2::new(480.0, 595.0))
-            .len,
+            .unwrap()
+            .length,
         607.774
     );
 }
@@ -16060,7 +17664,8 @@ fn aurora_merged_kjjxfemtdu() {
     assert_delta!(
         aurora
             .path(Vec2::new(611.0, 658.0), Vec2::new(494.0, 282.0))
-            .len,
+            .unwrap()
+            .length,
         604.497
     );
 }
@@ -16070,7 +17675,8 @@ fn aurora_merged_nxzrwbmujr() {
     assert_delta!(
         aurora
             .path(Vec2::new(782.0, 221.0), Vec2::new(203.0, 68.0))
-            .len,
+            .unwrap()
+            .length,
         603.645
     );
 }
@@ -16080,7 +17686,8 @@ fn aurora_merged_iivigfgtmj() {
     assert_delta!(
         aurora
             .path(Vec2::new(911.0, 345.0), Vec2::new(564.0, 698.0))
-            .len,
+            .unwrap()
+            .length,
         603.986
     );
 }
@@ -16090,7 +17697,8 @@ fn aurora_merged_mhtrzuxtls() {
     assert_delta!(
         aurora
             .path(Vec2::new(352.0, 267.0), Vec2::new(506.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         613.012
     );
 }
@@ -16100,7 +17708,8 @@ fn aurora_merged_yaonfmegrw() {
     assert_delta!(
         aurora
             .path(Vec2::new(265.0, 408.0), Vec2::new(793.0, 622.0))
-            .len,
+            .unwrap()
+            .length,
         599.604
     );
 }
@@ -16110,7 +17719,8 @@ fn aurora_merged_pzxyeddpvg() {
     assert_delta!(
         aurora
             .path(Vec2::new(705.0, 538.0), Vec2::new(176.0, 410.0))
-            .len,
+            .unwrap()
+            .length,
         599.187
     );
 }
@@ -16120,7 +17730,8 @@ fn aurora_merged_iockckfssv() {
     assert_delta!(
         aurora
             .path(Vec2::new(548.0, 454.0), Vec2::new(32.0, 490.0))
-            .len,
+            .unwrap()
+            .length,
         610.232
     );
 }
@@ -16130,7 +17741,8 @@ fn aurora_merged_ljckcwvobn() {
     assert_delta!(
         aurora
             .path(Vec2::new(572.0, 131.0), Vec2::new(522.0, 519.0))
-            .len,
+            .unwrap()
+            .length,
         612.35
     );
 }
@@ -16140,7 +17752,8 @@ fn aurora_merged_nkcahbyeww() {
     assert_delta!(
         aurora
             .path(Vec2::new(708.0, 631.0), Vec2::new(139.0, 727.0))
-            .len,
+            .unwrap()
+            .length,
         616.802
     );
 }
@@ -16150,7 +17763,8 @@ fn aurora_merged_ezlprellwa() {
     assert_delta!(
         aurora
             .path(Vec2::new(580.0, 412.0), Vec2::new(173.0, 182.0))
-            .len,
+            .unwrap()
+            .length,
         605.375
     );
 }
@@ -16160,7 +17774,8 @@ fn aurora_merged_pfkzidzcbs() {
     assert_delta!(
         aurora
             .path(Vec2::new(622.0, 246.0), Vec2::new(694.0, 672.0))
-            .len,
+            .unwrap()
+            .length,
         613.922
     );
 }
@@ -16170,7 +17785,8 @@ fn aurora_merged_prjgokvskd() {
     assert_delta!(
         aurora
             .path(Vec2::new(899.0, 313.0), Vec2::new(366.0, 67.0))
-            .len,
+            .unwrap()
+            .length,
         607.405
     );
 }
@@ -16180,7 +17796,8 @@ fn aurora_merged_ezvzcrqrli() {
     assert_delta!(
         aurora
             .path(Vec2::new(391.0, 234.0), Vec2::new(210.0, 552.0))
-            .len,
+            .unwrap()
+            .length,
         606.426
     );
 }
@@ -16190,7 +17807,8 @@ fn aurora_merged_ojythaaxex() {
     assert_delta!(
         aurora
             .path(Vec2::new(736.0, 318.0), Vec2::new(148.0, 391.0))
-            .len,
+            .unwrap()
+            .length,
         612.109
     );
 }
@@ -16200,7 +17818,8 @@ fn aurora_merged_wvwdvwqbxs() {
     assert_delta!(
         aurora
             .path(Vec2::new(222.0, 472.0), Vec2::new(803.0, 563.0))
-            .len,
+            .unwrap()
+            .length,
         608.266
     );
 }
@@ -16210,7 +17829,8 @@ fn aurora_merged_qdkcpxxmdx() {
     assert_delta!(
         aurora
             .path(Vec2::new(415.0, 668.0), Vec2::new(55.0, 317.0))
-            .len,
+            .unwrap()
+            .length,
         610.401
     );
 }
@@ -16220,7 +17840,8 @@ fn aurora_merged_auqpllvwij() {
     assert_delta!(
         aurora
             .path(Vec2::new(358.0, 266.0), Vec2::new(873.0, 423.0))
-            .len,
+            .unwrap()
+            .length,
         612.259
     );
 }
@@ -16230,7 +17851,8 @@ fn aurora_merged_jzquqobagk() {
     assert_delta!(
         aurora
             .path(Vec2::new(46.0, 398.0), Vec2::new(649.0, 323.0))
-            .len,
+            .unwrap()
+            .length,
         620.905
     );
 }
@@ -16240,7 +17862,8 @@ fn aurora_merged_aastdfvrjl() {
     assert_delta!(
         aurora
             .path(Vec2::new(110.0, 513.0), Vec2::new(705.0, 564.0))
-            .len,
+            .unwrap()
+            .length,
         616.64
     );
 }
@@ -16250,7 +17873,8 @@ fn aurora_merged_qnodcqmxvh() {
     assert_delta!(
         aurora
             .path(Vec2::new(203.0, 268.0), Vec2::new(766.0, 249.0))
-            .len,
+            .unwrap()
+            .length,
         613.793
     );
 }
@@ -16260,7 +17884,8 @@ fn aurora_merged_ybtpjtqqjm() {
     assert_delta!(
         aurora
             .path(Vec2::new(641.0, 655.0), Vec2::new(42.0, 668.0))
-            .len,
+            .unwrap()
+            .length,
         619.047
     );
 }
@@ -16270,7 +17895,8 @@ fn aurora_merged_vgutrnaosc() {
     assert_delta!(
         aurora
             .path(Vec2::new(252.0, 405.0), Vec2::new(826.0, 285.0))
-            .len,
+            .unwrap()
+            .length,
         620.896
     );
 }
@@ -16280,7 +17906,8 @@ fn aurora_merged_zbifmkhupk() {
     assert_delta!(
         aurora
             .path(Vec2::new(692.0, 189.0), Vec2::new(217.0, 416.0))
-            .len,
+            .unwrap()
+            .length,
         613.451
     );
 }
@@ -16290,7 +17917,8 @@ fn aurora_merged_kwtwiimlys() {
     assert_delta!(
         aurora
             .path(Vec2::new(308.0, 294.0), Vec2::new(265.0, 657.0))
-            .len,
+            .unwrap()
+            .length,
         614.687
     );
 }
@@ -16300,7 +17928,8 @@ fn aurora_merged_yydkyezlbn() {
     assert_delta!(
         aurora
             .path(Vec2::new(676.0, 699.0), Vec2::new(885.0, 252.0))
-            .len,
+            .unwrap()
+            .length,
         616.443
     );
 }
@@ -16310,7 +17939,8 @@ fn aurora_merged_lzcbygneas() {
     assert_delta!(
         aurora
             .path(Vec2::new(722.0, 428.0), Vec2::new(295.0, 150.0))
-            .len,
+            .unwrap()
+            .length,
         609.251
     );
 }
@@ -16320,7 +17950,8 @@ fn aurora_merged_dvaowhbegk() {
     assert_delta!(
         aurora
             .path(Vec2::new(795.0, 103.0), Vec2::new(196.0, 229.0))
-            .len,
+            .unwrap()
+            .length,
         618.207
     );
 }
@@ -16330,7 +17961,8 @@ fn aurora_merged_ygorndpikv() {
     assert_delta!(
         aurora
             .path(Vec2::new(513.0, 614.0), Vec2::new(560.0, 218.0))
-            .len,
+            .unwrap()
+            .length,
         620.518
     );
 }
@@ -16340,7 +17972,8 @@ fn aurora_merged_eqzdsodhtt() {
     assert_delta!(
         aurora
             .path(Vec2::new(668.0, 601.0), Vec2::new(177.0, 283.0))
-            .len,
+            .unwrap()
+            .length,
         611.961
     );
 }
@@ -16350,7 +17983,8 @@ fn aurora_merged_pyawkazfit() {
     assert_delta!(
         aurora
             .path(Vec2::new(894.0, 469.0), Vec2::new(453.0, 121.0))
-            .len,
+            .unwrap()
+            .length,
         615.485
     );
 }
@@ -16360,7 +17994,8 @@ fn aurora_merged_rnpdifikvi() {
     assert_delta!(
         aurora
             .path(Vec2::new(627.0, 166.0), Vec2::new(420.0, 515.0))
-            .len,
+            .unwrap()
+            .length,
         620.628
     );
 }
@@ -16370,7 +18005,8 @@ fn aurora_merged_ipejpzzstx() {
     assert_delta!(
         aurora
             .path(Vec2::new(665.0, 271.0), Vec2::new(235.0, 512.0))
-            .len,
+            .unwrap()
+            .length,
         621.887
     );
 }
@@ -16380,7 +18016,8 @@ fn aurora_merged_mqbueqapia() {
     assert_delta!(
         aurora
             .path(Vec2::new(142.0, 272.0), Vec2::new(662.0, 564.0))
-            .len,
+            .unwrap()
+            .length,
         613.323
     );
 }
@@ -16390,7 +18027,8 @@ fn aurora_merged_uugayuthyh() {
     assert_delta!(
         aurora
             .path(Vec2::new(793.0, 624.0), Vec2::new(394.0, 300.0))
-            .len,
+            .unwrap()
+            .length,
         612.886
     );
 }
@@ -16400,7 +18038,8 @@ fn aurora_merged_tjrdtbbdzj() {
     assert_delta!(
         aurora
             .path(Vec2::new(282.0, 344.0), Vec2::new(888.0, 274.0))
-            .len,
+            .unwrap()
+            .length,
         626.291
     );
 }
@@ -16410,7 +18049,8 @@ fn aurora_merged_urorrejfqe() {
     assert_delta!(
         aurora
             .path(Vec2::new(974.0, 283.0), Vec2::new(595.0, 666.0))
-            .len,
+            .unwrap()
+            .length,
         618.25
     );
 }
@@ -16420,7 +18060,8 @@ fn aurora_merged_gbixevkxdw() {
     assert_delta!(
         aurora
             .path(Vec2::new(725.0, 140.0), Vec2::new(210.0, 368.0))
-            .len,
+            .unwrap()
+            .length,
         618.698
     );
 }
@@ -16430,7 +18071,8 @@ fn aurora_merged_jqvshovfci() {
     assert_delta!(
         aurora
             .path(Vec2::new(511.0, 661.0), Vec2::new(526.0, 277.0))
-            .len,
+            .unwrap()
+            .length,
         619.247
     );
 }
@@ -16440,7 +18082,8 @@ fn aurora_merged_lovuvyrpgr() {
     assert_delta!(
         aurora
             .path(Vec2::new(450.0, 596.0), Vec2::new(882.0, 252.0))
-            .len,
+            .unwrap()
+            .length,
         629.061
     );
 }
@@ -16450,7 +18093,8 @@ fn aurora_merged_sthlexgkqd() {
     assert_delta!(
         aurora
             .path(Vec2::new(511.0, 341.0), Vec2::new(890.0, 667.0))
-            .len,
+            .unwrap()
+            .length,
         619.387
     );
 }
@@ -16460,7 +18104,8 @@ fn aurora_merged_dphtmkkfjw() {
     assert_delta!(
         aurora
             .path(Vec2::new(442.0, 316.0), Vec2::new(686.0, 634.0))
-            .len,
+            .unwrap()
+            .length,
         625.555
     );
 }
@@ -16470,7 +18115,8 @@ fn aurora_merged_mtqdvrxacq() {
     assert_delta!(
         aurora
             .path(Vec2::new(8.0, 375.0), Vec2::new(550.0, 652.0))
-            .len,
+            .unwrap()
+            .length,
         615.799
     );
 }
@@ -16480,7 +18126,8 @@ fn aurora_merged_jgvcwebewm() {
     assert_delta!(
         aurora
             .path(Vec2::new(814.0, 420.0), Vec2::new(308.0, 268.0))
-            .len,
+            .unwrap()
+            .length,
         621.068
     );
 }
@@ -16490,7 +18137,8 @@ fn aurora_merged_bfacwhmlqm() {
     assert_delta!(
         aurora
             .path(Vec2::new(363.0, 115.0), Vec2::new(659.0, 456.0))
-            .len,
+            .unwrap()
+            .length,
         622.082
     );
 }
@@ -16500,7 +18148,8 @@ fn aurora_merged_jrtqntgvxk() {
     assert_delta!(
         aurora
             .path(Vec2::new(794.0, 409.0), Vec2::new(318.0, 487.0))
-            .len,
+            .unwrap()
+            .length,
         617.266
     );
 }
@@ -16510,7 +18159,8 @@ fn aurora_merged_xybcvpzafe() {
     assert_delta!(
         aurora
             .path(Vec2::new(419.0, 391.0), Vec2::new(866.0, 132.0))
-            .len,
+            .unwrap()
+            .length,
         629.989
     );
 }
@@ -16520,7 +18170,8 @@ fn aurora_merged_ekjmzotuai() {
     assert_delta!(
         aurora
             .path(Vec2::new(131.0, 116.0), Vec2::new(730.0, 60.0))
-            .len,
+            .unwrap()
+            .length,
         623.167
     );
 }
@@ -16530,7 +18181,8 @@ fn aurora_merged_pjctmueznu() {
     assert_delta!(
         aurora
             .path(Vec2::new(640.0, 665.0), Vec2::new(877.0, 255.0))
-            .len,
+            .unwrap()
+            .length,
         625.475
     );
 }
@@ -16540,7 +18192,8 @@ fn aurora_merged_axsedoksms() {
     assert_delta!(
         aurora
             .path(Vec2::new(578.0, 434.0), Vec2::new(16.0, 187.0))
-            .len,
+            .unwrap()
+            .length,
         623.406
     );
 }
@@ -16550,7 +18203,8 @@ fn aurora_merged_nyeppoemru() {
     assert_delta!(
         aurora
             .path(Vec2::new(234.0, 220.0), Vec2::new(836.0, 258.0))
-            .len,
+            .unwrap()
+            .length,
         633.422
     );
 }
@@ -16560,7 +18214,8 @@ fn aurora_merged_jpkqbtxtwh() {
     assert_delta!(
         aurora
             .path(Vec2::new(587.0, 661.0), Vec2::new(939.0, 265.0))
-            .len,
+            .unwrap()
+            .length,
         623.862
     );
 }
@@ -16570,7 +18225,8 @@ fn aurora_merged_vdocbqmqov() {
     assert_delta!(
         aurora
             .path(Vec2::new(609.0, 453.0), Vec2::new(615.0, 742.0))
-            .len,
+            .unwrap()
+            .length,
         633.342
     );
 }
@@ -16580,7 +18236,8 @@ fn aurora_merged_trpqpbayfc() {
     assert_delta!(
         aurora
             .path(Vec2::new(131.0, 571.0), Vec2::new(316.0, 151.0))
-            .len,
+            .unwrap()
+            .length,
         628.187
     );
 }
@@ -16590,7 +18247,8 @@ fn aurora_merged_pjtntaqyud() {
     assert_delta!(
         aurora
             .path(Vec2::new(210.0, 143.0), Vec2::new(598.0, 424.0))
-            .len,
+            .unwrap()
+            .length,
         624.858
     );
 }
@@ -16600,7 +18258,8 @@ fn aurora_merged_okygrajcct() {
     assert_delta!(
         aurora
             .path(Vec2::new(476.0, 253.0), Vec2::new(312.0, 667.0))
-            .len,
+            .unwrap()
+            .length,
         625.925
     );
 }
@@ -16610,7 +18269,8 @@ fn aurora_merged_hilmasundy() {
     assert_delta!(
         aurora
             .path(Vec2::new(317.0, 156.0), Vec2::new(90.0, 555.0))
-            .len,
+            .unwrap()
+            .length,
         626.77
     );
 }
@@ -16620,7 +18280,8 @@ fn aurora_merged_qmagjvqvhq() {
     assert_delta!(
         aurora
             .path(Vec2::new(257.0, 494.0), Vec2::new(747.0, 317.0))
-            .len,
+            .unwrap()
+            .length,
         628.169
     );
 }
@@ -16630,7 +18291,8 @@ fn aurora_merged_shedsfajhe() {
     assert_delta!(
         aurora
             .path(Vec2::new(726.0, 614.0), Vec2::new(134.0, 606.0))
-            .len,
+            .unwrap()
+            .length,
         632.218
     );
 }
@@ -16640,7 +18302,8 @@ fn aurora_merged_twmzfvzsoj() {
     assert_delta!(
         aurora
             .path(Vec2::new(850.0, 303.0), Vec2::new(261.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         635.639
     );
 }
@@ -16650,7 +18313,8 @@ fn aurora_merged_woptbzluxo() {
     assert_delta!(
         aurora
             .path(Vec2::new(744.0, 366.0), Vec2::new(245.0, 474.0))
-            .len,
+            .unwrap()
+            .length,
         625.91
     );
 }
@@ -16660,7 +18324,8 @@ fn aurora_merged_zisxudgaxu() {
     assert_delta!(
         aurora
             .path(Vec2::new(171.0, 310.0), Vec2::new(726.0, 554.0))
-            .len,
+            .unwrap()
+            .length,
         624.069
     );
 }
@@ -16670,7 +18335,8 @@ fn aurora_merged_fvfdvadkim() {
     assert_delta!(
         aurora
             .path(Vec2::new(366.0, 293.0), Vec2::new(843.0, 592.0))
-            .len,
+            .unwrap()
+            .length,
         624.303
     );
 }
@@ -16680,7 +18346,8 @@ fn aurora_merged_anvoninovf() {
     assert_delta!(
         aurora
             .path(Vec2::new(866.0, 373.0), Vec2::new(457.0, 660.0))
-            .len,
+            .unwrap()
+            .length,
         633.782
     );
 }
@@ -16690,7 +18357,8 @@ fn aurora_merged_jajnoqrvyq() {
     assert_delta!(
         aurora
             .path(Vec2::new(706.0, 104.0), Vec2::new(85.0, 123.0))
-            .len,
+            .unwrap()
+            .length,
         643.778
     );
 }
@@ -16700,7 +18368,8 @@ fn aurora_merged_ubpafaqbpt() {
     assert_delta!(
         aurora
             .path(Vec2::new(901.0, 552.0), Vec2::new(285.0, 513.0))
-            .len,
+            .unwrap()
+            .length,
         631.642
     );
 }
@@ -16710,7 +18379,8 @@ fn aurora_merged_mxahekdahn() {
     assert_delta!(
         aurora
             .path(Vec2::new(29.0, 538.0), Vec2::new(558.0, 415.0))
-            .len,
+            .unwrap()
+            .length,
         629.094
     );
 }
@@ -16720,7 +18390,8 @@ fn aurora_merged_rfgyedgwij() {
     assert_delta!(
         aurora
             .path(Vec2::new(375.0, 194.0), Vec2::new(448.0, 590.0))
-            .len,
+            .unwrap()
+            .length,
         642.373
     );
 }
@@ -16730,7 +18401,8 @@ fn aurora_merged_zvzjjcwuyw() {
     assert_delta!(
         aurora
             .path(Vec2::new(256.0, 496.0), Vec2::new(675.0, 412.0))
-            .len,
+            .unwrap()
+            .length,
         622.852
     );
 }
@@ -16740,7 +18412,8 @@ fn aurora_merged_chpbgehnpn() {
     assert_delta!(
         aurora
             .path(Vec2::new(651.0, 111.0), Vec2::new(858.0, 488.0))
-            .len,
+            .unwrap()
+            .length,
         629.438
     );
 }
@@ -16750,7 +18423,8 @@ fn aurora_merged_pahelphhjn() {
     assert_delta!(
         aurora
             .path(Vec2::new(429.0, 551.0), Vec2::new(248.0, 134.0))
-            .len,
+            .unwrap()
+            .length,
         642.785
     );
 }
@@ -16760,7 +18434,8 @@ fn aurora_merged_aqeqihswtq() {
     assert_delta!(
         aurora
             .path(Vec2::new(206.0, 138.0), Vec2::new(271.0, 582.0))
-            .len,
+            .unwrap()
+            .length,
         633.297
     );
 }
@@ -16770,7 +18445,8 @@ fn aurora_merged_mqvvmnfiss() {
     assert_delta!(
         aurora
             .path(Vec2::new(714.0, 173.0), Vec2::new(68.0, 138.0))
-            .len,
+            .unwrap()
+            .length,
         654.47
     );
 }
@@ -16780,7 +18456,8 @@ fn aurora_merged_isaspxyouw() {
     assert_delta!(
         aurora
             .path(Vec2::new(903.0, 594.0), Vec2::new(537.0, 196.0))
-            .len,
+            .unwrap()
+            .length,
         632.631
     );
 }
@@ -16790,7 +18467,8 @@ fn aurora_merged_mqdmpykewl() {
     assert_delta!(
         aurora
             .path(Vec2::new(638.0, 561.0), Vec2::new(66.0, 489.0))
-            .len,
+            .unwrap()
+            .length,
         635.457
     );
 }
@@ -16800,7 +18478,8 @@ fn aurora_merged_pzrtgzqlbu() {
     assert_delta!(
         aurora
             .path(Vec2::new(845.0, 289.0), Vec2::new(634.0, 739.0))
-            .len,
+            .unwrap()
+            .length,
         641.438
     );
 }
@@ -16810,7 +18489,8 @@ fn aurora_merged_ztkmotbyqb() {
     assert_delta!(
         aurora
             .path(Vec2::new(624.0, 519.0), Vec2::new(37.0, 399.0))
-            .len,
+            .unwrap()
+            .length,
         629.169
     );
 }
@@ -16820,7 +18500,8 @@ fn aurora_merged_fispsytdpm() {
     assert_delta!(
         aurora
             .path(Vec2::new(228.0, 586.0), Vec2::new(387.0, 237.0))
-            .len,
+            .unwrap()
+            .length,
         631.991
     );
 }
@@ -16830,7 +18511,8 @@ fn aurora_merged_wdiewfmbmz() {
     assert_delta!(
         aurora
             .path(Vec2::new(148.0, 488.0), Vec2::new(767.0, 420.0))
-            .len,
+            .unwrap()
+            .length,
         638.24
     );
 }
@@ -16840,7 +18522,8 @@ fn aurora_merged_gpgqtijhjr() {
     assert_delta!(
         aurora
             .path(Vec2::new(474.0, 303.0), Vec2::new(207.0, 700.0))
-            .len,
+            .unwrap()
+            .length,
         643.417
     );
 }
@@ -16850,7 +18533,8 @@ fn aurora_merged_vnzlhnlfpy() {
     assert_delta!(
         aurora
             .path(Vec2::new(20.0, 403.0), Vec2::new(624.0, 473.0))
-            .len,
+            .unwrap()
+            .length,
         635.691
     );
 }
@@ -16860,7 +18544,8 @@ fn aurora_merged_oulfhlgqpi() {
     assert_delta!(
         aurora
             .path(Vec2::new(279.0, 291.0), Vec2::new(638.0, 601.0))
-            .len,
+            .unwrap()
+            .length,
         629.479
     );
 }
@@ -16870,7 +18555,8 @@ fn aurora_merged_ahbqoccjtd() {
     assert_delta!(
         aurora
             .path(Vec2::new(127.0, 488.0), Vec2::new(715.0, 390.0))
-            .len,
+            .unwrap()
+            .length,
         639.701
     );
 }
@@ -16880,7 +18566,8 @@ fn aurora_merged_pudjgimkbm() {
     assert_delta!(
         aurora
             .path(Vec2::new(764.0, 364.0), Vec2::new(251.0, 56.0))
-            .len,
+            .unwrap()
+            .length,
         631.746
     );
 }
@@ -16890,7 +18577,8 @@ fn aurora_merged_yozhnnyrdy() {
     assert_delta!(
         aurora
             .path(Vec2::new(484.0, 399.0), Vec2::new(702.0, 702.0))
-            .len,
+            .unwrap()
+            .length,
         639.465
     );
 }
@@ -16900,7 +18588,8 @@ fn aurora_merged_qljcueqbbi() {
     assert_delta!(
         aurora
             .path(Vec2::new(876.0, 296.0), Vec2::new(275.0, 389.0))
-            .len,
+            .unwrap()
+            .length,
         642.142
     );
 }
@@ -16910,7 +18599,8 @@ fn aurora_merged_rkdsokbpvy() {
     assert_delta!(
         aurora
             .path(Vec2::new(112.0, 521.0), Vec2::new(481.0, 212.0))
-            .len,
+            .unwrap()
+            .length,
         642.266
     );
 }
@@ -16920,7 +18610,8 @@ fn aurora_merged_habhwagmjl() {
     assert_delta!(
         aurora
             .path(Vec2::new(316.0, 676.0), Vec2::new(847.0, 516.0))
-            .len,
+            .unwrap()
+            .length,
         640.527
     );
 }
@@ -16930,7 +18621,8 @@ fn aurora_merged_dblbxsyide() {
     assert_delta!(
         aurora
             .path(Vec2::new(126.0, 361.0), Vec2::new(702.0, 168.0))
-            .len,
+            .unwrap()
+            .length,
         653.175
     );
 }
@@ -16940,7 +18632,8 @@ fn aurora_merged_gvobtdbvic() {
     assert_delta!(
         aurora
             .path(Vec2::new(383.0, 632.0), Vec2::new(279.0, 250.0))
-            .len,
+            .unwrap()
+            .length,
         636.415
     );
 }
@@ -16950,7 +18643,8 @@ fn aurora_merged_jagepkvntc() {
     assert_delta!(
         aurora
             .path(Vec2::new(238.0, 716.0), Vec2::new(821.0, 495.0))
-            .len,
+            .unwrap()
+            .length,
         648.683
     );
 }
@@ -16960,7 +18654,8 @@ fn aurora_merged_dimgnzwmsc() {
     assert_delta!(
         aurora
             .path(Vec2::new(629.0, 591.0), Vec2::new(5.0, 648.0))
-            .len,
+            .unwrap()
+            .length,
         661.471
     );
 }
@@ -16970,7 +18665,8 @@ fn aurora_merged_oamxnhncex() {
     assert_delta!(
         aurora
             .path(Vec2::new(303.0, 263.0), Vec2::new(109.0, 669.0))
-            .len,
+            .unwrap()
+            .length,
         645.588
     );
 }
@@ -16980,7 +18676,8 @@ fn aurora_merged_nzhoxykymx() {
     assert_delta!(
         aurora
             .path(Vec2::new(837.0, 100.0), Vec2::new(304.0, 324.0))
-            .len,
+            .unwrap()
+            .length,
         634.713
     );
 }
@@ -16990,7 +18687,8 @@ fn aurora_merged_cijfllwouu() {
     assert_delta!(
         aurora
             .path(Vec2::new(350.0, 454.0), Vec2::new(930.0, 654.0))
-            .len,
+            .unwrap()
+            .length,
         635.923
     );
 }
@@ -17000,7 +18698,8 @@ fn aurora_merged_xkweeppylr() {
     assert_delta!(
         aurora
             .path(Vec2::new(51.0, 521.0), Vec2::new(620.0, 339.0))
-            .len,
+            .unwrap()
+            .length,
         645.499
     );
 }
@@ -17010,7 +18709,8 @@ fn aurora_merged_qvtnsmvjjk() {
     assert_delta!(
         aurora
             .path(Vec2::new(712.0, 187.0), Vec2::new(157.0, 358.0))
-            .len,
+            .unwrap()
+            .length,
         647.49
     );
 }
@@ -17020,7 +18720,8 @@ fn aurora_merged_pgnoyauvzm() {
     assert_delta!(
         aurora
             .path(Vec2::new(557.0, 691.0), Vec2::new(548.0, 452.0))
-            .len,
+            .unwrap()
+            .length,
         643.226
     );
 }
@@ -17030,7 +18731,8 @@ fn aurora_merged_bgnxivgrxk() {
     assert_delta!(
         aurora
             .path(Vec2::new(169.0, 150.0), Vec2::new(784.0, 313.0))
-            .len,
+            .unwrap()
+            .length,
         645.478
     );
 }
@@ -17040,7 +18742,8 @@ fn aurora_merged_rgpakqdwfz() {
     assert_delta!(
         aurora
             .path(Vec2::new(111.0, 439.0), Vec2::new(608.0, 678.0))
-            .len,
+            .unwrap()
+            .length,
         635.395
     );
 }
@@ -17050,7 +18753,8 @@ fn aurora_merged_lrijhexmcq() {
     assert_delta!(
         aurora
             .path(Vec2::new(286.0, 85.0), Vec2::new(230.0, 524.0))
-            .len,
+            .unwrap()
+            .length,
         648.844
     );
 }
@@ -17060,7 +18764,8 @@ fn aurora_merged_sjdilwnsnf() {
     assert_delta!(
         aurora
             .path(Vec2::new(991.0, 444.0), Vec2::new(446.0, 422.0))
-            .len,
+            .unwrap()
+            .length,
         639.1
     );
 }
@@ -17070,7 +18775,8 @@ fn aurora_merged_mayowcqipu() {
     assert_delta!(
         aurora
             .path(Vec2::new(501.0, 210.0), Vec2::new(1020.0, 442.0))
-            .len,
+            .unwrap()
+            .length,
         639.91
     );
 }
@@ -17080,7 +18786,8 @@ fn aurora_merged_ywwvzecrgk() {
     assert_delta!(
         aurora
             .path(Vec2::new(909.0, 245.0), Vec2::new(309.0, 372.0))
-            .len,
+            .unwrap()
+            .length,
         646.55
     );
 }
@@ -17090,7 +18797,8 @@ fn aurora_merged_pmytqidxgq() {
     assert_delta!(
         aurora
             .path(Vec2::new(302.0, 163.0), Vec2::new(621.0, 498.0))
-            .len,
+            .unwrap()
+            .length,
         636.542
     );
 }
@@ -17100,7 +18808,8 @@ fn aurora_merged_uozsfwzxel() {
     assert_delta!(
         aurora
             .path(Vec2::new(96.0, 182.0), Vec2::new(494.0, 488.0))
-            .len,
+            .unwrap()
+            .length,
         643.572
     );
 }
@@ -17110,7 +18819,8 @@ fn aurora_merged_mhlftnlwyl() {
     assert_delta!(
         aurora
             .path(Vec2::new(783.0, 228.0), Vec2::new(152.0, 217.0))
-            .len,
+            .unwrap()
+            .length,
         655.307
     );
 }
@@ -17120,7 +18830,8 @@ fn aurora_merged_teoyiuauld() {
     assert_delta!(
         aurora
             .path(Vec2::new(819.0, 155.0), Vec2::new(386.0, 386.0))
-            .len,
+            .unwrap()
+            .length,
         653.198
     );
 }
@@ -17130,7 +18841,8 @@ fn aurora_merged_emqoboqjbe() {
     assert_delta!(
         aurora
             .path(Vec2::new(413.0, 333.0), Vec2::new(668.0, 671.0))
-            .len,
+            .unwrap()
+            .length,
         647.926
     );
 }
@@ -17140,7 +18852,8 @@ fn aurora_merged_esfuzckece() {
     assert_delta!(
         aurora
             .path(Vec2::new(617.0, 501.0), Vec2::new(393.0, 248.0))
-            .len,
+            .unwrap()
+            .length,
         641.224
     );
 }
@@ -17150,7 +18863,8 @@ fn aurora_merged_npalzrsafx() {
     assert_delta!(
         aurora
             .path(Vec2::new(564.0, 548.0), Vec2::new(221.0, 231.0))
-            .len,
+            .unwrap()
+            .length,
         650.782
     );
 }
@@ -17160,7 +18874,8 @@ fn aurora_merged_budblzerql() {
     assert_delta!(
         aurora
             .path(Vec2::new(232.0, 228.0), Vec2::new(575.0, 554.0))
-            .len,
+            .unwrap()
+            .length,
         652.04
     );
 }
@@ -17170,7 +18885,8 @@ fn aurora_merged_ashopdfwgb() {
     assert_delta!(
         aurora
             .path(Vec2::new(558.0, 259.0), Vec2::new(283.0, 612.0))
-            .len,
+            .unwrap()
+            .length,
         644.766
     );
 }
@@ -17180,7 +18896,8 @@ fn aurora_merged_plrootjuzo() {
     assert_delta!(
         aurora
             .path(Vec2::new(377.0, 133.0), Vec2::new(321.0, 525.0))
-            .len,
+            .unwrap()
+            .length,
         651.082
     );
 }
@@ -17190,7 +18907,8 @@ fn aurora_merged_uahevfjfhy() {
     assert_delta!(
         aurora
             .path(Vec2::new(331.0, 266.0), Vec2::new(694.0, 554.0))
-            .len,
+            .unwrap()
+            .length,
         641.774
     );
 }
@@ -17200,7 +18918,8 @@ fn aurora_merged_uhzxdoylth() {
     assert_delta!(
         aurora
             .path(Vec2::new(274.0, 587.0), Vec2::new(598.0, 267.0))
-            .len,
+            .unwrap()
+            .length,
         648.238
     );
 }
@@ -17210,7 +18929,8 @@ fn aurora_merged_zxlwexopts() {
     assert_delta!(
         aurora
             .path(Vec2::new(769.0, 326.0), Vec2::new(143.0, 248.0))
-            .len,
+            .unwrap()
+            .length,
         650.506
     );
 }
@@ -17220,7 +18940,8 @@ fn aurora_merged_xivrcgfjwa() {
     assert_delta!(
         aurora
             .path(Vec2::new(608.0, 673.0), Vec2::new(12.0, 496.0))
-            .len,
+            .unwrap()
+            .length,
         642.854
     );
 }
@@ -17230,7 +18951,8 @@ fn aurora_merged_boxlajmbkp() {
     assert_delta!(
         aurora
             .path(Vec2::new(663.0, 650.0), Vec2::new(24.0, 678.0))
-            .len,
+            .unwrap()
+            .length,
         659.428
     );
 }
@@ -17240,7 +18962,8 @@ fn aurora_merged_asynadgaas() {
     assert_delta!(
         aurora
             .path(Vec2::new(879.0, 303.0), Vec2::new(274.0, 124.0))
-            .len,
+            .unwrap()
+            .length,
         643.704
     );
 }
@@ -17250,7 +18973,8 @@ fn aurora_merged_ctqrkkeywl() {
     assert_delta!(
         aurora
             .path(Vec2::new(345.0, 230.0), Vec2::new(61.0, 637.0))
-            .len,
+            .unwrap()
+            .length,
         653.937
     );
 }
@@ -17260,7 +18984,8 @@ fn aurora_merged_ablxpyxxzm() {
     assert_delta!(
         aurora
             .path(Vec2::new(124.0, 549.0), Vec2::new(439.0, 184.0))
-            .len,
+            .unwrap()
+            .length,
         646.148
     );
 }
@@ -17270,7 +18995,8 @@ fn aurora_merged_zlaltoeqvb() {
     assert_delta!(
         aurora
             .path(Vec2::new(858.0, 434.0), Vec2::new(346.0, 487.0))
-            .len,
+            .unwrap()
+            .length,
         648.679
     );
 }
@@ -17280,7 +19006,8 @@ fn aurora_merged_jdawjfgsip() {
     assert_delta!(
         aurora
             .path(Vec2::new(339.0, 164.0), Vec2::new(603.0, 532.0))
-            .len,
+            .unwrap()
+            .length,
         646.767
     );
 }
@@ -17290,7 +19017,8 @@ fn aurora_merged_mnmcxqlbpv() {
     assert_delta!(
         aurora
             .path(Vec2::new(750.0, 696.0), Vec2::new(226.0, 681.0))
-            .len,
+            .unwrap()
+            .length,
         649.555
     );
 }
@@ -17300,7 +19028,8 @@ fn aurora_merged_kluejvkxtf() {
     assert_delta!(
         aurora
             .path(Vec2::new(815.0, 693.0), Vec2::new(473.0, 340.0))
-            .len,
+            .unwrap()
+            .length,
         651.111
     );
 }
@@ -17310,7 +19039,8 @@ fn aurora_merged_plobhsusxn() {
     assert_delta!(
         aurora
             .path(Vec2::new(854.0, 143.0), Vec2::new(574.0, 493.0))
-            .len,
+            .unwrap()
+            .length,
         650.665
     );
 }
@@ -17320,7 +19050,8 @@ fn aurora_merged_bzicxjzvzc() {
     assert_delta!(
         aurora
             .path(Vec2::new(577.0, 591.0), Vec2::new(475.0, 172.0))
-            .len,
+            .unwrap()
+            .length,
         654.576
     );
 }
@@ -17330,7 +19061,8 @@ fn aurora_merged_esmoveactu() {
     assert_delta!(
         aurora
             .path(Vec2::new(646.0, 304.0), Vec2::new(26.0, 188.0))
-            .len,
+            .unwrap()
+            .length,
         655.421
     );
 }
@@ -17340,7 +19072,8 @@ fn aurora_merged_yqhmzehnse() {
     assert_delta!(
         aurora
             .path(Vec2::new(274.0, 235.0), Vec2::new(880.0, 235.0))
-            .len,
+            .unwrap()
+            .length,
         655.593
     );
 }
@@ -17350,7 +19083,8 @@ fn aurora_merged_hayhylrahz() {
     assert_delta!(
         aurora
             .path(Vec2::new(333.0, 467.0), Vec2::new(207.0, 73.0))
-            .len,
+            .unwrap()
+            .length,
         653.804
     );
 }
@@ -17360,7 +19094,8 @@ fn aurora_merged_biuoyxtlwx() {
     assert_delta!(
         aurora
             .path(Vec2::new(154.0, 369.0), Vec2::new(757.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         651.763
     );
 }
@@ -17370,7 +19105,8 @@ fn aurora_merged_ejhoaiawdb() {
     assert_delta!(
         aurora
             .path(Vec2::new(768.0, 284.0), Vec2::new(711.0, 607.0))
-            .len,
+            .unwrap()
+            .length,
         656.174
     );
 }
@@ -17380,7 +19116,8 @@ fn aurora_merged_xqxyfpqdvl() {
     assert_delta!(
         aurora
             .path(Vec2::new(858.0, 273.0), Vec2::new(408.0, 618.0))
-            .len,
+            .unwrap()
+            .length,
         656.619
     );
 }
@@ -17390,7 +19127,8 @@ fn aurora_merged_jqnadfwlsn() {
     assert_delta!(
         aurora
             .path(Vec2::new(960.0, 551.0), Vec2::new(626.0, 202.0))
-            .len,
+            .unwrap()
+            .length,
         656.165
     );
 }
@@ -17400,7 +19138,8 @@ fn aurora_merged_vikkdyucby() {
     assert_delta!(
         aurora
             .path(Vec2::new(289.0, 122.0), Vec2::new(522.0, 569.0))
-            .len,
+            .unwrap()
+            .length,
         656.577
     );
 }
@@ -17410,7 +19149,8 @@ fn aurora_merged_ltjdqpreon() {
     assert_delta!(
         aurora
             .path(Vec2::new(66.0, 206.0), Vec2::new(354.0, 662.0))
-            .len,
+            .unwrap()
+            .length,
         661.249
     );
 }
@@ -17420,7 +19160,8 @@ fn aurora_merged_ahiehvlies() {
     assert_delta!(
         aurora
             .path(Vec2::new(121.0, 192.0), Vec2::new(549.0, 473.0))
-            .len,
+            .unwrap()
+            .length,
         649.779
     );
 }
@@ -17430,7 +19171,8 @@ fn aurora_merged_uuabmqbilr() {
     assert_delta!(
         aurora
             .path(Vec2::new(324.0, 148.0), Vec2::new(924.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         658.641
     );
 }
@@ -17440,7 +19182,8 @@ fn aurora_merged_osxsrgyzye() {
     assert_delta!(
         aurora
             .path(Vec2::new(557.0, 548.0), Vec2::new(263.0, 133.0))
-            .len,
+            .unwrap()
+            .length,
         664.913
     );
 }
@@ -17450,7 +19193,8 @@ fn aurora_merged_vuagreccvz() {
     assert_delta!(
         aurora
             .path(Vec2::new(250.0, 223.0), Vec2::new(882.0, 311.0))
-            .len,
+            .unwrap()
+            .length,
         660.583
     );
 }
@@ -17460,7 +19204,8 @@ fn aurora_merged_ycwdwrklix() {
     assert_delta!(
         aurora
             .path(Vec2::new(343.0, 110.0), Vec2::new(520.0, 519.0))
-            .len,
+            .unwrap()
+            .length,
         663.48
     );
 }
@@ -17470,7 +19215,8 @@ fn aurora_merged_ojuyamsyyq() {
     assert_delta!(
         aurora
             .path(Vec2::new(896.0, 364.0), Vec2::new(299.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         668.357
     );
 }
@@ -17480,7 +19226,8 @@ fn aurora_merged_jfiwmoiydt() {
     assert_delta!(
         aurora
             .path(Vec2::new(403.0, 648.0), Vec2::new(466.0, 353.0))
-            .len,
+            .unwrap()
+            .length,
         656.348
     );
 }
@@ -17490,7 +19237,8 @@ fn aurora_merged_xflmdvxaaz() {
     assert_delta!(
         aurora
             .path(Vec2::new(898.0, 368.0), Vec2::new(288.0, 182.0))
-            .len,
+            .unwrap()
+            .length,
         665.376
     );
 }
@@ -17500,7 +19248,8 @@ fn aurora_merged_awwhqgnigh() {
     assert_delta!(
         aurora
             .path(Vec2::new(805.0, 505.0), Vec2::new(645.0, 146.0))
-            .len,
+            .unwrap()
+            .length,
         655.025
     );
 }
@@ -17510,7 +19259,8 @@ fn aurora_merged_bxocowsaoa() {
     assert_delta!(
         aurora
             .path(Vec2::new(25.0, 358.0), Vec2::new(630.0, 171.0))
-            .len,
+            .unwrap()
+            .length,
         660.694
     );
 }
@@ -17520,7 +19270,8 @@ fn aurora_merged_tufpbknmxi() {
     assert_delta!(
         aurora
             .path(Vec2::new(401.0, 230.0), Vec2::new(196.0, 593.0))
-            .len,
+            .unwrap()
+            .length,
         660.711
     );
 }
@@ -17530,7 +19281,8 @@ fn aurora_merged_wtwjcltmtj() {
     assert_delta!(
         aurora
             .path(Vec2::new(391.0, 713.0), Vec2::new(297.0, 367.0))
-            .len,
+            .unwrap()
+            .length,
         668.91
     );
 }
@@ -17540,7 +19292,8 @@ fn aurora_merged_grcnzwjrfj() {
     assert_delta!(
         aurora
             .path(Vec2::new(345.0, 191.0), Vec2::new(953.0, 347.0))
-            .len,
+            .unwrap()
+            .length,
         653.09
     );
 }
@@ -17550,7 +19303,8 @@ fn aurora_merged_dsewlsubxh() {
     assert_delta!(
         aurora
             .path(Vec2::new(780.0, 327.0), Vec2::new(368.0, 671.0))
-            .len,
+            .unwrap()
+            .length,
         669.915
     );
 }
@@ -17560,7 +19314,8 @@ fn aurora_merged_meeancjjun() {
     assert_delta!(
         aurora
             .path(Vec2::new(680.0, 599.0), Vec2::new(41.0, 626.0))
-            .len,
+            .unwrap()
+            .length,
         678.015
     );
 }
@@ -17570,7 +19325,8 @@ fn aurora_merged_nkjadvywjc() {
     assert_delta!(
         aurora
             .path(Vec2::new(944.0, 657.0), Vec2::new(300.0, 624.0))
-            .len,
+            .unwrap()
+            .length,
         665.041
     );
 }
@@ -17580,7 +19336,8 @@ fn aurora_merged_ukbouhnxko() {
     assert_delta!(
         aurora
             .path(Vec2::new(391.0, 430.0), Vec2::new(740.0, 248.0))
-            .len,
+            .unwrap()
+            .length,
         659.051
     );
 }
@@ -17590,7 +19347,8 @@ fn aurora_merged_cmoqzinfyj() {
     assert_delta!(
         aurora
             .path(Vec2::new(206.0, 151.0), Vec2::new(850.0, 182.0))
-            .len,
+            .unwrap()
+            .length,
         671.16
     );
 }
@@ -17600,7 +19358,8 @@ fn aurora_merged_stikwhhlig() {
     assert_delta!(
         aurora
             .path(Vec2::new(304.0, 575.0), Vec2::new(959.0, 638.0))
-            .len,
+            .unwrap()
+            .length,
         671.046
     );
 }
@@ -17610,7 +19369,8 @@ fn aurora_merged_iptognnmbt() {
     assert_delta!(
         aurora
             .path(Vec2::new(190.0, 359.0), Vec2::new(717.0, 45.0))
-            .len,
+            .unwrap()
+            .length,
         657.756
     );
 }
@@ -17620,7 +19380,8 @@ fn aurora_merged_xtflgepydw() {
     assert_delta!(
         aurora
             .path(Vec2::new(513.0, 311.0), Vec2::new(239.0, 698.0))
-            .len,
+            .unwrap()
+            .length,
         668.062
     );
 }
@@ -17630,7 +19391,8 @@ fn aurora_merged_ergksvwaxy() {
     assert_delta!(
         aurora
             .path(Vec2::new(487.0, 399.0), Vec2::new(218.0, 697.0))
-            .len,
+            .unwrap()
+            .length,
         672.813
     );
 }
@@ -17640,7 +19402,8 @@ fn aurora_merged_zpklhtiuin() {
     assert_delta!(
         aurora
             .path(Vec2::new(32.0, 182.0), Vec2::new(664.0, 310.0))
-            .len,
+            .unwrap()
+            .length,
         668.572
     );
 }
@@ -17650,7 +19413,8 @@ fn aurora_merged_rqfyooogcw() {
     assert_delta!(
         aurora
             .path(Vec2::new(162.0, 446.0), Vec2::new(773.0, 622.0))
-            .len,
+            .unwrap()
+            .length,
         661.114
     );
 }
@@ -17660,7 +19424,8 @@ fn aurora_merged_kecsrnfoub() {
     assert_delta!(
         aurora
             .path(Vec2::new(260.0, 200.0), Vec2::new(901.0, 312.0))
-            .len,
+            .unwrap()
+            .length,
         667.948
     );
 }
@@ -17670,7 +19435,8 @@ fn aurora_merged_exypljwodv() {
     assert_delta!(
         aurora
             .path(Vec2::new(222.0, 568.0), Vec2::new(225.0, 81.0))
-            .len,
+            .unwrap()
+            .length,
         666.445
     );
 }
@@ -17680,7 +19446,8 @@ fn aurora_merged_kturtqhxsj() {
     assert_delta!(
         aurora
             .path(Vec2::new(202.0, 205.0), Vec2::new(278.0, 663.0))
-            .len,
+            .unwrap()
+            .length,
         668.332
     );
 }
@@ -17690,7 +19457,8 @@ fn aurora_merged_mluetmcssc() {
     assert_delta!(
         aurora
             .path(Vec2::new(414.0, 608.0), Vec2::new(400.0, 241.0))
-            .len,
+            .unwrap()
+            .length,
         667.676
     );
 }
@@ -17700,7 +19468,8 @@ fn aurora_merged_nyaylyectj() {
     assert_delta!(
         aurora
             .path(Vec2::new(176.0, 169.0), Vec2::new(750.0, 344.0))
-            .len,
+            .unwrap()
+            .length,
         666.794
     );
 }
@@ -17710,7 +19479,8 @@ fn aurora_merged_ajykmhsjtq() {
     assert_delta!(
         aurora
             .path(Vec2::new(734.0, 212.0), Vec2::new(103.0, 123.0))
-            .len,
+            .unwrap()
+            .length,
         659.807
     );
 }
@@ -17720,7 +19490,8 @@ fn aurora_merged_cgzaygnbgm() {
     assert_delta!(
         aurora
             .path(Vec2::new(770.0, 564.0), Vec2::new(842.0, 124.0))
-            .len,
+            .unwrap()
+            .length,
         673.305
     );
 }
@@ -17730,7 +19501,8 @@ fn aurora_merged_hmhbdfxoeb() {
     assert_delta!(
         aurora
             .path(Vec2::new(618.0, 540.0), Vec2::new(853.0, 151.0))
-            .len,
+            .unwrap()
+            .length,
         667.329
     );
 }
@@ -17740,7 +19512,8 @@ fn aurora_merged_nicydlmesx() {
     assert_delta!(
         aurora
             .path(Vec2::new(286.0, 89.0), Vec2::new(415.0, 544.0))
-            .len,
+            .unwrap()
+            .length,
         672.039
     );
 }
@@ -17750,7 +19523,8 @@ fn aurora_merged_fanadfcoys() {
     assert_delta!(
         aurora
             .path(Vec2::new(174.0, 293.0), Vec2::new(642.0, 657.0))
-            .len,
+            .unwrap()
+            .length,
         671.255
     );
 }
@@ -17760,7 +19534,8 @@ fn aurora_merged_jarugefkpf() {
     assert_delta!(
         aurora
             .path(Vec2::new(387.0, 439.0), Vec2::new(932.0, 340.0))
-            .len,
+            .unwrap()
+            .length,
         670.096
     );
 }
@@ -17770,7 +19545,8 @@ fn aurora_merged_aluvipddvs() {
     assert_delta!(
         aurora
             .path(Vec2::new(730.0, 654.0), Vec2::new(198.0, 282.0))
-            .len,
+            .unwrap()
+            .length,
         666.629
     );
 }
@@ -17780,7 +19556,8 @@ fn aurora_merged_wkqwvgtxns() {
     assert_delta!(
         aurora
             .path(Vec2::new(879.0, 424.0), Vec2::new(283.0, 172.0))
-            .len,
+            .unwrap()
+            .length,
         670.186
     );
 }
@@ -17790,7 +19567,8 @@ fn aurora_merged_hxbdvwavjr() {
     assert_delta!(
         aurora
             .path(Vec2::new(463.0, 390.0), Vec2::new(47.0, 655.0))
-            .len,
+            .unwrap()
+            .length,
         676.792
     );
 }
@@ -17800,7 +19578,8 @@ fn aurora_merged_zcpxfwsnhl() {
     assert_delta!(
         aurora
             .path(Vec2::new(345.0, 672.0), Vec2::new(696.0, 395.0))
-            .len,
+            .unwrap()
+            .length,
         671.079
     );
 }
@@ -17810,7 +19589,8 @@ fn aurora_merged_saxpovkhrh() {
     assert_delta!(
         aurora
             .path(Vec2::new(423.0, 464.0), Vec2::new(1014.0, 331.0))
-            .len,
+            .unwrap()
+            .length,
         675.96
     );
 }
@@ -17820,7 +19600,8 @@ fn aurora_merged_ahnfsmhskl() {
     assert_delta!(
         aurora
             .path(Vec2::new(402.0, 139.0), Vec2::new(1009.0, 375.0))
-            .len,
+            .unwrap()
+            .length,
         673.38
     );
 }
@@ -17830,7 +19611,8 @@ fn aurora_merged_sqlfkzgtmm() {
     assert_delta!(
         aurora
             .path(Vec2::new(189.0, 622.0), Vec2::new(349.0, 179.0))
-            .len,
+            .unwrap()
+            .length,
         672.533
     );
 }
@@ -17840,7 +19622,8 @@ fn aurora_merged_kjhoonfjpb() {
     assert_delta!(
         aurora
             .path(Vec2::new(27.0, 581.0), Vec2::new(266.0, 193.0))
-            .len,
+            .unwrap()
+            .length,
         671.221
     );
 }
@@ -17850,7 +19633,8 @@ fn aurora_merged_tojhmxjlnz() {
     assert_delta!(
         aurora
             .path(Vec2::new(798.0, 615.0), Vec2::new(228.0, 398.0))
-            .len,
+            .unwrap()
+            .length,
         675.316
     );
 }
@@ -17860,7 +19644,8 @@ fn aurora_merged_lsmvffbaop() {
     assert_delta!(
         aurora
             .path(Vec2::new(776.0, 671.0), Vec2::new(470.0, 303.0))
-            .len,
+            .unwrap()
+            .length,
         670.519
     );
 }
@@ -17870,7 +19655,8 @@ fn aurora_merged_vfxjfrphgm() {
     assert_delta!(
         aurora
             .path(Vec2::new(39.0, 541.0), Vec2::new(608.0, 381.0))
-            .len,
+            .unwrap()
+            .length,
         672.232
     );
 }
@@ -17880,7 +19666,8 @@ fn aurora_merged_nrapkauxci() {
     assert_delta!(
         aurora
             .path(Vec2::new(683.0, 613.0), Vec2::new(53.0, 491.0))
-            .len,
+            .unwrap()
+            .length,
         673.844
     );
 }
@@ -17890,7 +19677,8 @@ fn aurora_merged_sjczanleiq() {
     assert_delta!(
         aurora
             .path(Vec2::new(134.0, 503.0), Vec2::new(658.0, 719.0))
-            .len,
+            .unwrap()
+            .length,
         668.871
     );
 }
@@ -17900,7 +19688,8 @@ fn aurora_merged_limivsreep() {
     assert_delta!(
         aurora
             .path(Vec2::new(454.0, 268.0), Vec2::new(770.0, 640.0))
-            .len,
+            .unwrap()
+            .length,
         670.215
     );
 }
@@ -17910,7 +19699,8 @@ fn aurora_merged_fvvmeykumq() {
     assert_delta!(
         aurora
             .path(Vec2::new(511.0, 202.0), Vec2::new(156.0, 640.0))
-            .len,
+            .unwrap()
+            .length,
         677.233
     );
 }
@@ -17920,7 +19710,8 @@ fn aurora_merged_momorwjntm() {
     assert_delta!(
         aurora
             .path(Vec2::new(866.0, 173.0), Vec2::new(475.0, 581.0))
-            .len,
+            .unwrap()
+            .length,
         682.586
     );
 }
@@ -17930,7 +19721,8 @@ fn aurora_merged_ymsoksihyy() {
     assert_delta!(
         aurora
             .path(Vec2::new(811.0, 185.0), Vec2::new(935.0, 588.0))
-            .len,
+            .unwrap()
+            .length,
         677.211
     );
 }
@@ -17940,7 +19732,8 @@ fn aurora_merged_ftwcjmbcfa() {
     assert_delta!(
         aurora
             .path(Vec2::new(792.0, 145.0), Vec2::new(810.0, 605.0))
-            .len,
+            .unwrap()
+            .length,
         680.471
     );
 }
@@ -17950,7 +19743,8 @@ fn aurora_merged_vdumadvvsm() {
     assert_delta!(
         aurora
             .path(Vec2::new(232.0, 698.0), Vec2::new(740.0, 401.0))
-            .len,
+            .unwrap()
+            .length,
         676.492
     );
 }
@@ -17960,7 +19754,8 @@ fn aurora_merged_jesqyhqexd() {
     assert_delta!(
         aurora
             .path(Vec2::new(902.0, 444.0), Vec2::new(307.0, 734.0))
-            .len,
+            .unwrap()
+            .length,
         681.434
     );
 }
@@ -17970,7 +19765,8 @@ fn aurora_merged_nhqdypwysk() {
     assert_delta!(
         aurora
             .path(Vec2::new(527.0, 562.0), Vec2::new(317.0, 92.0))
-            .len,
+            .unwrap()
+            .length,
         683.475
     );
 }
@@ -17980,7 +19776,8 @@ fn aurora_merged_mbkgpjglbg() {
     assert_delta!(
         aurora
             .path(Vec2::new(679.0, 711.0), Vec2::new(501.0, 290.0))
-            .len,
+            .unwrap()
+            .length,
         678.346
     );
 }
@@ -17990,7 +19787,8 @@ fn aurora_merged_upyexayfay() {
     assert_delta!(
         aurora
             .path(Vec2::new(507.0, 395.0), Vec2::new(283.0, 692.0))
-            .len,
+            .unwrap()
+            .length,
         676.487
     );
 }
@@ -18000,7 +19798,8 @@ fn aurora_merged_khvuzeoyhu() {
     assert_delta!(
         aurora
             .path(Vec2::new(523.0, 155.0), Vec2::new(137.0, 546.0))
-            .len,
+            .unwrap()
+            .length,
         676.999
     );
 }
@@ -18010,7 +19809,8 @@ fn aurora_merged_qovvugyxia() {
     assert_delta!(
         aurora
             .path(Vec2::new(936.0, 345.0), Vec2::new(372.0, 475.0))
-            .len,
+            .unwrap()
+            .length,
         683.141
     );
 }
@@ -18020,7 +19820,8 @@ fn aurora_merged_kjpllgpkub() {
     assert_delta!(
         aurora
             .path(Vec2::new(806.0, 501.0), Vec2::new(618.0, 102.0))
-            .len,
+            .unwrap()
+            .length,
         676.816
     );
 }
@@ -18030,7 +19831,8 @@ fn aurora_merged_nndxgqgack() {
     assert_delta!(
         aurora
             .path(Vec2::new(564.0, 179.0), Vec2::new(730.0, 513.0))
-            .len,
+            .unwrap()
+            .length,
         672.945
     );
 }
@@ -18040,7 +19842,8 @@ fn aurora_merged_cahbxztaro() {
     assert_delta!(
         aurora
             .path(Vec2::new(765.0, 690.0), Vec2::new(204.0, 510.0))
-            .len,
+            .unwrap()
+            .length,
         677.596
     );
 }
@@ -18050,7 +19853,8 @@ fn aurora_merged_ohdslbnoyt() {
     assert_delta!(
         aurora
             .path(Vec2::new(828.0, 178.0), Vec2::new(151.0, 176.0))
-            .len,
+            .unwrap()
+            .length,
         695.05
     );
 }
@@ -18060,7 +19864,8 @@ fn aurora_merged_yqybwpkpjp() {
     assert_delta!(
         aurora
             .path(Vec2::new(96.0, 231.0), Vec2::new(593.0, 610.0))
-            .len,
+            .unwrap()
+            .length,
         685.515
     );
 }
@@ -18070,7 +19875,8 @@ fn aurora_merged_qkaiqvebwu() {
     assert_delta!(
         aurora
             .path(Vec2::new(256.0, 198.0), Vec2::new(159.0, 648.0))
-            .len,
+            .unwrap()
+            .length,
         682.829
     );
 }
@@ -18080,7 +19886,8 @@ fn aurora_merged_vkofvlidep() {
     assert_delta!(
         aurora
             .path(Vec2::new(644.0, 451.0), Vec2::new(246.0, 181.0))
-            .len,
+            .unwrap()
+            .length,
         676.794
     );
 }
@@ -18090,7 +19897,8 @@ fn aurora_merged_drdmtgamyu() {
     assert_delta!(
         aurora
             .path(Vec2::new(647.0, 232.0), Vec2::new(37.0, 349.0))
-            .len,
+            .unwrap()
+            .length,
         681.545
     );
 }
@@ -18100,7 +19908,8 @@ fn aurora_merged_dbevwxrlka() {
     assert_delta!(
         aurora
             .path(Vec2::new(286.0, 141.0), Vec2::new(145.0, 601.0))
-            .len,
+            .unwrap()
+            .length,
         677.933
     );
 }
@@ -18110,7 +19919,8 @@ fn aurora_merged_mxndbnlrra() {
     assert_delta!(
         aurora
             .path(Vec2::new(636.0, 252.0), Vec2::new(256.0, 568.0))
-            .len,
+            .unwrap()
+            .length,
         679.307
     );
 }
@@ -18120,7 +19930,8 @@ fn aurora_merged_lggxgofdzn() {
     assert_delta!(
         aurora
             .path(Vec2::new(330.0, 235.0), Vec2::new(623.0, 608.0))
-            .len,
+            .unwrap()
+            .length,
         686.662
     );
 }
@@ -18130,7 +19941,8 @@ fn aurora_merged_zsxdevqgir() {
     assert_delta!(
         aurora
             .path(Vec2::new(414.0, 702.0), Vec2::new(890.0, 359.0))
-            .len,
+            .unwrap()
+            .length,
         690.577
     );
 }
@@ -18140,7 +19952,8 @@ fn aurora_merged_ldazgphidf() {
     assert_delta!(
         aurora
             .path(Vec2::new(169.0, 556.0), Vec2::new(827.0, 613.0))
-            .len,
+            .unwrap()
+            .length,
         683.494
     );
 }
@@ -18150,7 +19963,8 @@ fn aurora_merged_khzcjbkyqc() {
     assert_delta!(
         aurora
             .path(Vec2::new(310.0, 522.0), Vec2::new(913.0, 413.0))
-            .len,
+            .unwrap()
+            .length,
         680.118
     );
 }
@@ -18160,7 +19974,8 @@ fn aurora_merged_kgbxczdpgo() {
     assert_delta!(
         aurora
             .path(Vec2::new(1001.0, 336.0), Vec2::new(405.0, 489.0))
-            .len,
+            .unwrap()
+            .length,
         684.693
     );
 }
@@ -18170,7 +19985,8 @@ fn aurora_merged_olertzjkhf() {
     assert_delta!(
         aurora
             .path(Vec2::new(63.0, 537.0), Vec2::new(652.0, 339.0))
-            .len,
+            .unwrap()
+            .length,
         692.85
     );
 }
@@ -18180,7 +19996,8 @@ fn aurora_merged_xqghcehfws() {
     assert_delta!(
         aurora
             .path(Vec2::new(936.0, 662.0), Vec2::new(268.0, 617.0))
-            .len,
+            .unwrap()
+            .length,
         689.424
     );
 }
@@ -18190,7 +20007,8 @@ fn aurora_merged_qbvacqblqk() {
     assert_delta!(
         aurora
             .path(Vec2::new(631.0, 638.0), Vec2::new(338.0, 286.0))
-            .len,
+            .unwrap()
+            .length,
         689.769
     );
 }
@@ -18200,7 +20018,8 @@ fn aurora_merged_xpnsktjrpo() {
     assert_delta!(
         aurora
             .path(Vec2::new(134.0, 571.0), Vec2::new(213.0, 59.0))
-            .len,
+            .unwrap()
+            .length,
         681.562
     );
 }
@@ -18210,7 +20029,8 @@ fn aurora_merged_vdrxfswcba() {
     assert_delta!(
         aurora
             .path(Vec2::new(176.0, 660.0), Vec2::new(541.0, 202.0))
-            .len,
+            .unwrap()
+            .length,
         686.274
     );
 }
@@ -18220,7 +20040,8 @@ fn aurora_merged_knvvabphqz() {
     assert_delta!(
         aurora
             .path(Vec2::new(942.0, 627.0), Vec2::new(326.0, 340.0))
-            .len,
+            .unwrap()
+            .length,
         684.397
     );
 }
@@ -18230,7 +20051,8 @@ fn aurora_merged_aduqdwlghi() {
     assert_delta!(
         aurora
             .path(Vec2::new(27.0, 180.0), Vec2::new(213.0, 678.0))
-            .len,
+            .unwrap()
+            .length,
         697.061
     );
 }
@@ -18240,7 +20062,8 @@ fn aurora_merged_vbszinayyj() {
     assert_delta!(
         aurora
             .path(Vec2::new(700.0, 249.0), Vec2::new(46.0, 162.0))
-            .len,
+            .unwrap()
+            .length,
         699.122
     );
 }
@@ -18250,7 +20073,8 @@ fn aurora_merged_dlmbdlkcnd() {
     assert_delta!(
         aurora
             .path(Vec2::new(825.0, 109.0), Vec2::new(132.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         702.454
     );
 }
@@ -18260,7 +20084,8 @@ fn aurora_merged_zqwmiebhvj() {
     assert_delta!(
         aurora
             .path(Vec2::new(528.0, 714.0), Vec2::new(173.0, 289.0))
-            .len,
+            .unwrap()
+            .length,
         694.684
     );
 }
@@ -18270,7 +20095,8 @@ fn aurora_merged_pkesibcsvz() {
     assert_delta!(
         aurora
             .path(Vec2::new(491.0, 613.0), Vec2::new(21.0, 188.0))
-            .len,
+            .unwrap()
+            .length,
         694.214
     );
 }
@@ -18280,7 +20106,8 @@ fn aurora_merged_gskmistyph() {
     assert_delta!(
         aurora
             .path(Vec2::new(505.0, 656.0), Vec2::new(132.0, 231.0))
-            .len,
+            .unwrap()
+            .length,
         697.758
     );
 }
@@ -18290,7 +20117,8 @@ fn aurora_merged_cjwrtaolml() {
     assert_delta!(
         aurora
             .path(Vec2::new(803.0, 686.0), Vec2::new(232.0, 424.0))
-            .len,
+            .unwrap()
+            .length,
         683.383
     );
 }
@@ -18300,7 +20128,8 @@ fn aurora_merged_osequihhnn() {
     assert_delta!(
         aurora
             .path(Vec2::new(996.0, 412.0), Vec2::new(363.0, 510.0))
-            .len,
+            .unwrap()
+            .length,
         694.416
     );
 }
@@ -18310,7 +20139,8 @@ fn aurora_merged_jjnwthffyz() {
     assert_delta!(
         aurora
             .path(Vec2::new(57.0, 138.0), Vec2::new(127.0, 629.0))
-            .len,
+            .unwrap()
+            .length,
         694.438
     );
 }
@@ -18320,7 +20150,8 @@ fn aurora_merged_olwgnivgbv() {
     assert_delta!(
         aurora
             .path(Vec2::new(689.0, 256.0), Vec2::new(528.0, 457.0))
-            .len,
+            .unwrap()
+            .length,
         687.42
     );
 }
@@ -18330,7 +20161,8 @@ fn aurora_merged_gonhguelhi() {
     assert_delta!(
         aurora
             .path(Vec2::new(319.0, 620.0), Vec2::new(356.0, 228.0))
-            .len,
+            .unwrap()
+            .length,
         690.749
     );
 }
@@ -18340,7 +20172,8 @@ fn aurora_merged_zrjgslzaod() {
     assert_delta!(
         aurora
             .path(Vec2::new(487.0, 581.0), Vec2::new(148.0, 157.0))
-            .len,
+            .unwrap()
+            .length,
         696.203
     );
 }
@@ -18350,7 +20183,8 @@ fn aurora_merged_tbldhvgljg() {
     assert_delta!(
         aurora
             .path(Vec2::new(435.0, 636.0), Vec2::new(398.0, 212.0))
-            .len,
+            .unwrap()
+            .length,
         696.656
     );
 }
@@ -18360,7 +20194,8 @@ fn aurora_merged_zhbblbrhqc() {
     assert_delta!(
         aurora
             .path(Vec2::new(801.0, 372.0), Vec2::new(183.0, 112.0))
-            .len,
+            .unwrap()
+            .length,
         692.669
     );
 }
@@ -18370,7 +20205,8 @@ fn aurora_merged_udbbcjzhda() {
     assert_delta!(
         aurora
             .path(Vec2::new(321.0, 232.0), Vec2::new(637.0, 601.0))
-            .len,
+            .unwrap()
+            .length,
         684.886
     );
 }
@@ -18380,7 +20216,8 @@ fn aurora_merged_tyvcpqhiml() {
     assert_delta!(
         aurora
             .path(Vec2::new(1018.0, 422.0), Vec2::new(424.0, 145.0))
-            .len,
+            .unwrap()
+            .length,
         688.184
     );
 }
@@ -18390,7 +20227,8 @@ fn aurora_merged_zcqzhlrlkl() {
     assert_delta!(
         aurora
             .path(Vec2::new(767.0, 603.0), Vec2::new(141.0, 431.0))
-            .len,
+            .unwrap()
+            .length,
         695.197
     );
 }
@@ -18400,7 +20238,8 @@ fn aurora_merged_hqjvspmeym() {
     assert_delta!(
         aurora
             .path(Vec2::new(902.0, 321.0), Vec2::new(243.0, 188.0))
-            .len,
+            .unwrap()
+            .length,
         691.174
     );
 }
@@ -18410,7 +20249,8 @@ fn aurora_merged_syrkhcauja() {
     assert_delta!(
         aurora
             .path(Vec2::new(264.0, 701.0), Vec2::new(171.0, 238.0))
-            .len,
+            .unwrap()
+            .length,
         691.11
     );
 }
@@ -18420,7 +20260,8 @@ fn aurora_merged_hbccnikcel() {
     assert_delta!(
         aurora
             .path(Vec2::new(643.0, 690.0), Vec2::new(85.0, 551.0))
-            .len,
+            .unwrap()
+            .length,
         694.865
     );
 }
@@ -18430,7 +20271,8 @@ fn aurora_merged_jpzkrjuxkh() {
     assert_delta!(
         aurora
             .path(Vec2::new(725.0, 222.0), Vec2::new(839.0, 621.0))
-            .len,
+            .unwrap()
+            .length,
         695.528
     );
 }
@@ -18440,7 +20282,8 @@ fn aurora_merged_ukzfjsxjkc() {
     assert_delta!(
         aurora
             .path(Vec2::new(747.0, 94.0), Vec2::new(171.0, 364.0))
-            .len,
+            .unwrap()
+            .length,
         688.49
     );
 }
@@ -18450,7 +20293,8 @@ fn aurora_merged_jewxbdvoig() {
     assert_delta!(
         aurora
             .path(Vec2::new(83.0, 184.0), Vec2::new(579.0, 443.0))
-            .len,
+            .unwrap()
+            .length,
         692.901
     );
 }
@@ -18460,7 +20304,8 @@ fn aurora_merged_qqurbbcuho() {
     assert_delta!(
         aurora
             .path(Vec2::new(738.0, 78.0), Vec2::new(433.0, 470.0))
-            .len,
+            .unwrap()
+            .length,
         692.834
     );
 }
@@ -18470,7 +20315,8 @@ fn aurora_merged_lfdqvtolkn() {
     assert_delta!(
         aurora
             .path(Vec2::new(282.0, 521.0), Vec2::new(636.0, 120.0))
-            .len,
+            .unwrap()
+            .length,
         693.04
     );
 }
@@ -18480,7 +20326,8 @@ fn aurora_merged_oipfjnrgfz() {
     assert_delta!(
         aurora
             .path(Vec2::new(656.0, 455.0), Vec2::new(0.0, 571.0))
-            .len,
+            .unwrap()
+            .length,
         690.596
     );
 }
@@ -18490,7 +20337,8 @@ fn aurora_merged_hjuhfbccrs() {
     assert_delta!(
         aurora
             .path(Vec2::new(18.0, 194.0), Vec2::new(586.0, 576.0))
-            .len,
+            .unwrap()
+            .length,
         699.407
     );
 }
@@ -18500,7 +20348,8 @@ fn aurora_merged_lwfrdfkilu() {
     assert_delta!(
         aurora
             .path(Vec2::new(597.0, 32.0), Vec2::new(907.0, 493.0))
-            .len,
+            .unwrap()
+            .length,
         697.264
     );
 }
@@ -18510,7 +20359,8 @@ fn aurora_merged_jlpbrkhedq() {
     assert_delta!(
         aurora
             .path(Vec2::new(32.0, 561.0), Vec2::new(668.0, 620.0))
-            .len,
+            .unwrap()
+            .length,
         695.396
     );
 }
@@ -18520,7 +20370,8 @@ fn aurora_merged_tyggfkckti() {
     assert_delta!(
         aurora
             .path(Vec2::new(124.0, 316.0), Vec2::new(763.0, 555.0))
-            .len,
+            .unwrap()
+            .length,
         698.124
     );
 }
@@ -18530,7 +20381,8 @@ fn aurora_merged_yrqmvrzvbg() {
     assert_delta!(
         aurora
             .path(Vec2::new(385.0, 727.0), Vec2::new(657.0, 304.0))
-            .len,
+            .unwrap()
+            .length,
         692.112
     );
 }
@@ -18540,7 +20392,8 @@ fn aurora_merged_bmsebqpdxb() {
     assert_delta!(
         aurora
             .path(Vec2::new(91.0, 573.0), Vec2::new(569.0, 398.0))
-            .len,
+            .unwrap()
+            .length,
         695.415
     );
 }
@@ -18550,7 +20403,8 @@ fn aurora_merged_bnzgutzrgk() {
     assert_delta!(
         aurora
             .path(Vec2::new(682.0, 677.0), Vec2::new(60.0, 554.0))
-            .len,
+            .unwrap()
+            .length,
         698.146
     );
 }
@@ -18560,7 +20414,8 @@ fn aurora_merged_hhoxcbmvex() {
     assert_delta!(
         aurora
             .path(Vec2::new(967.0, 353.0), Vec2::new(421.0, 708.0))
-            .len,
+            .unwrap()
+            .length,
         703.533
     );
 }
@@ -18570,7 +20425,8 @@ fn aurora_merged_ifbnfxtgou() {
     assert_delta!(
         aurora
             .path(Vec2::new(428.0, 658.0), Vec2::new(516.0, 351.0))
-            .len,
+            .unwrap()
+            .length,
         696.039
     );
 }
@@ -18580,7 +20436,8 @@ fn aurora_merged_gqgtyxvxaj() {
     assert_delta!(
         aurora
             .path(Vec2::new(142.0, 504.0), Vec2::new(821.0, 549.0))
-            .len,
+            .unwrap()
+            .length,
         700.64
     );
 }
@@ -18590,7 +20447,8 @@ fn aurora_merged_zzidgqyyrf() {
     assert_delta!(
         aurora
             .path(Vec2::new(176.0, 699.0), Vec2::new(846.0, 689.0))
-            .len,
+            .unwrap()
+            .length,
         700.941
     );
 }
@@ -18600,7 +20458,8 @@ fn aurora_merged_pivmhcpboj() {
     assert_delta!(
         aurora
             .path(Vec2::new(146.0, 650.0), Vec2::new(135.0, 141.0))
-            .len,
+            .unwrap()
+            .length,
         703.551
     );
 }
@@ -18610,7 +20469,8 @@ fn aurora_merged_najrskuemu() {
     assert_delta!(
         aurora
             .path(Vec2::new(684.0, 696.0), Vec2::new(483.0, 239.0))
-            .len,
+            .unwrap()
+            .length,
         702.649
     );
 }
@@ -18620,7 +20480,8 @@ fn aurora_merged_tudtydfncg() {
     assert_delta!(
         aurora
             .path(Vec2::new(461.0, 468.0), Vec2::new(724.0, 252.0))
-            .len,
+            .unwrap()
+            .length,
         699.606
     );
 }
@@ -18630,7 +20491,8 @@ fn aurora_merged_qsvoeduubd() {
     assert_delta!(
         aurora
             .path(Vec2::new(228.0, 587.0), Vec2::new(287.0, 89.0))
-            .len,
+            .unwrap()
+            .length,
         707.808
     );
 }
@@ -18640,7 +20502,8 @@ fn aurora_merged_taxipdpcwa() {
     assert_delta!(
         aurora
             .path(Vec2::new(321.0, 344.0), Vec2::new(1014.0, 316.0))
-            .len,
+            .unwrap()
+            .length,
         712.769
     );
 }
@@ -18650,7 +20513,8 @@ fn aurora_merged_ijjeacwofj() {
     assert_delta!(
         aurora
             .path(Vec2::new(623.0, 329.0), Vec2::new(313.0, 605.0))
-            .len,
+            .unwrap()
+            .length,
         710.605
     );
 }
@@ -18660,7 +20524,8 @@ fn aurora_merged_lorfoipguy() {
     assert_delta!(
         aurora
             .path(Vec2::new(428.0, 397.0), Vec2::new(663.0, 706.0))
-            .len,
+            .unwrap()
+            .length,
         713.81
     );
 }
@@ -18670,7 +20535,8 @@ fn aurora_merged_iwyhgueioi() {
     assert_delta!(
         aurora
             .path(Vec2::new(518.0, 260.0), Vec2::new(71.0, 657.0))
-            .len,
+            .unwrap()
+            .length,
         705.892
     );
 }
@@ -18680,7 +20546,8 @@ fn aurora_merged_ntuqlppdbb() {
     assert_delta!(
         aurora
             .path(Vec2::new(977.0, 438.0), Vec2::new(398.0, 130.0))
-            .len,
+            .unwrap()
+            .length,
         702.47
     );
 }
@@ -18690,7 +20557,8 @@ fn aurora_merged_vnxdolthoj() {
     assert_delta!(
         aurora
             .path(Vec2::new(162.0, 673.0), Vec2::new(197.0, 136.0))
-            .len,
+            .unwrap()
+            .length,
         708.689
     );
 }
@@ -18700,7 +20568,8 @@ fn aurora_merged_yiagefkgsw() {
     assert_delta!(
         aurora
             .path(Vec2::new(138.0, 682.0), Vec2::new(156.0, 161.0))
-            .len,
+            .unwrap()
+            .length,
         707.073
     );
 }
@@ -18710,7 +20579,8 @@ fn aurora_merged_aztxeynysx() {
     assert_delta!(
         aurora
             .path(Vec2::new(978.0, 398.0), Vec2::new(329.0, 347.0))
-            .len,
+            .unwrap()
+            .length,
         701.174
     );
 }
@@ -18720,7 +20590,8 @@ fn aurora_merged_htjouaiigl() {
     assert_delta!(
         aurora
             .path(Vec2::new(147.0, 658.0), Vec2::new(798.0, 479.0))
-            .len,
+            .unwrap()
+            .length,
         722.778
     );
 }
@@ -18730,7 +20601,8 @@ fn aurora_merged_pafeewdysn() {
     assert_delta!(
         aurora
             .path(Vec2::new(723.0, 59.0), Vec2::new(825.0, 517.0))
-            .len,
+            .unwrap()
+            .length,
         704.514
     );
 }
@@ -18740,7 +20612,8 @@ fn aurora_merged_ygisthhslq() {
     assert_delta!(
         aurora
             .path(Vec2::new(101.0, 331.0), Vec2::new(749.0, 537.0))
-            .len,
+            .unwrap()
+            .length,
         703.759
     );
 }
@@ -18750,7 +20623,8 @@ fn aurora_merged_drttmhogmw() {
     assert_delta!(
         aurora
             .path(Vec2::new(564.0, 599.0), Vec2::new(400.0, 176.0))
-            .len,
+            .unwrap()
+            .length,
         712.55
     );
 }
@@ -18760,7 +20634,8 @@ fn aurora_merged_ciyetpjeer() {
     assert_delta!(
         aurora
             .path(Vec2::new(422.0, 617.0), Vec2::new(438.0, 221.0))
-            .len,
+            .unwrap()
+            .length,
         712.313
     );
 }
@@ -18770,7 +20645,8 @@ fn aurora_merged_rfcfkraimm() {
     assert_delta!(
         aurora
             .path(Vec2::new(752.0, 609.0), Vec2::new(486.0, 146.0))
-            .len,
+            .unwrap()
+            .length,
         706.424
     );
 }
@@ -18780,7 +20656,8 @@ fn aurora_merged_xpfunzhuyi() {
     assert_delta!(
         aurora
             .path(Vec2::new(64.0, 150.0), Vec2::new(625.0, 386.0))
-            .len,
+            .unwrap()
+            .length,
         700.56
     );
 }
@@ -18790,7 +20667,8 @@ fn aurora_merged_ndgvvkmrtr() {
     assert_delta!(
         aurora
             .path(Vec2::new(208.0, 490.0), Vec2::new(695.0, 220.0))
-            .len,
+            .unwrap()
+            .length,
         700.359
     );
 }
@@ -18800,7 +20678,8 @@ fn aurora_merged_todboulgai() {
     assert_delta!(
         aurora
             .path(Vec2::new(397.0, 209.0), Vec2::new(278.0, 636.0))
-            .len,
+            .unwrap()
+            .length,
         704.343
     );
 }
@@ -18810,7 +20689,8 @@ fn aurora_merged_wjfjwhriet() {
     assert_delta!(
         aurora
             .path(Vec2::new(862.0, 576.0), Vec2::new(645.0, 193.0))
-            .len,
+            .unwrap()
+            .length,
         712.266
     );
 }
@@ -18820,7 +20700,8 @@ fn aurora_merged_ueaddmuisj() {
     assert_delta!(
         aurora
             .path(Vec2::new(552.0, 557.0), Vec2::new(803.0, 136.0))
-            .len,
+            .unwrap()
+            .length,
         712.013
     );
 }
@@ -18830,7 +20711,8 @@ fn aurora_merged_mkuiilrwqk() {
     assert_delta!(
         aurora
             .path(Vec2::new(447.0, 399.0), Vec2::new(323.0, 716.0))
-            .len,
+            .unwrap()
+            .length,
         717.968
     );
 }
@@ -18840,7 +20722,8 @@ fn aurora_merged_kpysteiexy() {
     assert_delta!(
         aurora
             .path(Vec2::new(75.0, 290.0), Vec2::new(740.0, 238.0))
-            .len,
+            .unwrap()
+            .length,
         716.383
     );
 }
@@ -18850,7 +20733,8 @@ fn aurora_merged_dinffheutn() {
     assert_delta!(
         aurora
             .path(Vec2::new(309.0, 191.0), Vec2::new(595.0, 654.0))
-            .len,
+            .unwrap()
+            .length,
         715.922
     );
 }
@@ -18860,7 +20744,8 @@ fn aurora_merged_kjjxsvqfqc() {
     assert_delta!(
         aurora
             .path(Vec2::new(126.0, 559.0), Vec2::new(243.0, 26.0))
-            .len,
+            .unwrap()
+            .length,
         707.503
     );
 }
@@ -18870,7 +20755,8 @@ fn aurora_merged_flazljsoec() {
     assert_delta!(
         aurora
             .path(Vec2::new(202.0, 584.0), Vec2::new(439.0, 148.0))
-            .len,
+            .unwrap()
+            .length,
         711.178
     );
 }
@@ -18880,7 +20766,8 @@ fn aurora_merged_rzfynxdocu() {
     assert_delta!(
         aurora
             .path(Vec2::new(766.0, 209.0), Vec2::new(204.0, 433.0))
-            .len,
+            .unwrap()
+            .length,
         708.887
     );
 }
@@ -18890,7 +20777,8 @@ fn aurora_merged_lnsmqxcaqb() {
     assert_delta!(
         aurora
             .path(Vec2::new(262.0, 314.0), Vec2::new(891.0, 623.0))
-            .len,
+            .unwrap()
+            .length,
         704.644
     );
 }
@@ -18900,7 +20788,8 @@ fn aurora_merged_dqxywhsnwo() {
     assert_delta!(
         aurora
             .path(Vec2::new(330.0, 50.0), Vec2::new(298.0, 538.0))
-            .len,
+            .unwrap()
+            .length,
         713.444
     );
 }
@@ -18910,7 +20799,8 @@ fn aurora_merged_oiktqstspp() {
     assert_delta!(
         aurora
             .path(Vec2::new(145.0, 400.0), Vec2::new(723.0, 99.0))
-            .len,
+            .unwrap()
+            .length,
         699.759
     );
 }
@@ -18920,7 +20810,8 @@ fn aurora_merged_ojkkupccbb() {
     assert_delta!(
         aurora
             .path(Vec2::new(422.0, 233.0), Vec2::new(841.0, 467.0))
-            .len,
+            .unwrap()
+            .length,
         710.718
     );
 }
@@ -18930,7 +20821,8 @@ fn aurora_merged_ducsucdkox() {
     assert_delta!(
         aurora
             .path(Vec2::new(206.0, 585.0), Vec2::new(272.0, 67.0))
-            .len,
+            .unwrap()
+            .length,
         722.026
     );
 }
@@ -18940,7 +20832,8 @@ fn aurora_merged_bsqsejzflv() {
     assert_delta!(
         aurora
             .path(Vec2::new(660.0, 536.0), Vec2::new(750.0, 265.0))
-            .len,
+            .unwrap()
+            .length,
         716.548
     );
 }
@@ -18950,7 +20843,8 @@ fn aurora_merged_uaucaoohmw() {
     assert_delta!(
         aurora
             .path(Vec2::new(844.0, 205.0), Vec2::new(378.0, 544.0))
-            .len,
+            .unwrap()
+            .length,
         714.032
     );
 }
@@ -18960,7 +20854,8 @@ fn aurora_merged_mvaaqxabii() {
     assert_delta!(
         aurora
             .path(Vec2::new(761.0, 423.0), Vec2::new(178.0, 676.0))
-            .len,
+            .unwrap()
+            .length,
         712.05
     );
 }
@@ -18970,7 +20865,8 @@ fn aurora_merged_axvljwwczl() {
     assert_delta!(
         aurora
             .path(Vec2::new(642.0, 430.0), Vec2::new(207.0, 569.0))
-            .len,
+            .unwrap()
+            .length,
         709.976
     );
 }
@@ -18980,7 +20876,8 @@ fn aurora_merged_whxxjnwqma() {
     assert_delta!(
         aurora
             .path(Vec2::new(217.0, 438.0), Vec2::new(849.0, 392.0))
-            .len,
+            .unwrap()
+            .length,
         715.351
     );
 }
@@ -18990,7 +20887,8 @@ fn aurora_merged_alwnlukekg() {
     assert_delta!(
         aurora
             .path(Vec2::new(848.0, 561.0), Vec2::new(805.0, 77.0))
-            .len,
+            .unwrap()
+            .length,
         715.403
     );
 }
@@ -19000,7 +20898,8 @@ fn aurora_merged_pzakbqijyz() {
     assert_delta!(
         aurora
             .path(Vec2::new(347.0, 181.0), Vec2::new(564.0, 646.0))
-            .len,
+            .unwrap()
+            .length,
         716.683
     );
 }
@@ -19010,7 +20909,8 @@ fn aurora_merged_uxluumqkwb() {
     assert_delta!(
         aurora
             .path(Vec2::new(385.0, 634.0), Vec2::new(606.0, 266.0))
-            .len,
+            .unwrap()
+            .length,
         714.728
     );
 }
@@ -19020,7 +20920,8 @@ fn aurora_merged_xiafdujuyi() {
     assert_delta!(
         aurora
             .path(Vec2::new(826.0, 181.0), Vec2::new(142.0, 265.0))
-            .len,
+            .unwrap()
+            .length,
         728.65
     );
 }
@@ -19030,7 +20931,8 @@ fn aurora_merged_uxgdrsfhhg() {
     assert_delta!(
         aurora
             .path(Vec2::new(153.0, 487.0), Vec2::new(791.0, 346.0))
-            .len,
+            .unwrap()
+            .length,
         723.459
     );
 }
@@ -19040,7 +20942,8 @@ fn aurora_merged_jcctgtytge() {
     assert_delta!(
         aurora
             .path(Vec2::new(828.0, 619.0), Vec2::new(142.0, 558.0))
-            .len,
+            .unwrap()
+            .length,
         715.737
     );
 }
@@ -19050,7 +20953,8 @@ fn aurora_merged_vxxlhvclww() {
     assert_delta!(
         aurora
             .path(Vec2::new(748.0, 604.0), Vec2::new(504.0, 212.0))
-            .len,
+            .unwrap()
+            .length,
         712.14
     );
 }
@@ -19060,7 +20964,8 @@ fn aurora_merged_rpdrjsmmev() {
     assert_delta!(
         aurora
             .path(Vec2::new(818.0, 551.0), Vec2::new(766.0, 64.0))
-            .len,
+            .unwrap()
+            .length,
         720.59
     );
 }
@@ -19070,7 +20975,8 @@ fn aurora_merged_tnxiuhekrn() {
     assert_delta!(
         aurora
             .path(Vec2::new(142.0, 436.0), Vec2::new(729.0, 132.0))
-            .len,
+            .unwrap()
+            .length,
         717.587
     );
 }
@@ -19080,7 +20986,8 @@ fn aurora_merged_wlejvdoopp() {
     assert_delta!(
         aurora
             .path(Vec2::new(447.0, 80.0), Vec2::new(807.0, 532.0))
-            .len,
+            .unwrap()
+            .length,
         715.198
     );
 }
@@ -19090,7 +20997,8 @@ fn aurora_merged_zjscenvvrf() {
     assert_delta!(
         aurora
             .path(Vec2::new(825.0, 583.0), Vec2::new(746.0, 100.0))
-            .len,
+            .unwrap()
+            .length,
         723.068
     );
 }
@@ -19100,7 +21008,8 @@ fn aurora_merged_rvqyfupzoa() {
     assert_delta!(
         aurora
             .path(Vec2::new(746.0, 122.0), Vec2::new(887.0, 571.0))
-            .len,
+            .unwrap()
+            .length,
         717.993
     );
 }
@@ -19110,7 +21019,8 @@ fn aurora_merged_mmlmwkeizw() {
     assert_delta!(
         aurora
             .path(Vec2::new(680.0, 640.0), Vec2::new(887.0, 164.0))
-            .len,
+            .unwrap()
+            .length,
         724.58
     );
 }
@@ -19120,7 +21030,8 @@ fn aurora_merged_tadjvxdani() {
     assert_delta!(
         aurora
             .path(Vec2::new(184.0, 86.0), Vec2::new(818.0, 380.0))
-            .len,
+            .unwrap()
+            .length,
         716.259
     );
 }
@@ -19130,7 +21041,8 @@ fn aurora_merged_pybbistqdo() {
     assert_delta!(
         aurora
             .path(Vec2::new(888.0, 398.0), Vec2::new(205.0, 343.0))
-            .len,
+            .unwrap()
+            .length,
         721.585
     );
 }
@@ -19140,7 +21052,8 @@ fn aurora_merged_mnfqwvpyxa() {
     assert_delta!(
         aurora
             .path(Vec2::new(960.0, 409.0), Vec2::new(369.0, 92.0))
-            .len,
+            .unwrap()
+            .length,
         715.224
     );
 }
@@ -19150,7 +21063,8 @@ fn aurora_merged_etlhkgwbec() {
     assert_delta!(
         aurora
             .path(Vec2::new(871.0, 244.0), Vec2::new(180.0, 320.0))
-            .len,
+            .unwrap()
+            .length,
         724.339
     );
 }
@@ -19160,7 +21074,8 @@ fn aurora_merged_cxtbjwxvft() {
     assert_delta!(
         aurora
             .path(Vec2::new(139.0, 704.0), Vec2::new(335.0, 214.0))
-            .len,
+            .unwrap()
+            .length,
         721.547
     );
 }
@@ -19170,7 +21085,8 @@ fn aurora_merged_aeingufepi() {
     assert_delta!(
         aurora
             .path(Vec2::new(759.0, 152.0), Vec2::new(70.0, 307.0))
-            .len,
+            .unwrap()
+            .length,
         733.942
     );
 }
@@ -19180,7 +21096,8 @@ fn aurora_merged_fefqdtgzhr() {
     assert_delta!(
         aurora
             .path(Vec2::new(43.0, 579.0), Vec2::new(665.0, 696.0))
-            .len,
+            .unwrap()
+            .length,
         726.932
     );
 }
@@ -19190,7 +21107,8 @@ fn aurora_merged_vvyxtgfrms() {
     assert_delta!(
         aurora
             .path(Vec2::new(584.0, 201.0), Vec2::new(433.0, 611.0))
-            .len,
+            .unwrap()
+            .length,
         726.876
     );
 }
@@ -19200,7 +21118,8 @@ fn aurora_merged_wuwgpgxfac() {
     assert_delta!(
         aurora
             .path(Vec2::new(76.0, 616.0), Vec2::new(120.0, 119.0))
-            .len,
+            .unwrap()
+            .length,
         723.932
     );
 }
@@ -19210,7 +21129,8 @@ fn aurora_merged_nbuffasxyp() {
     assert_delta!(
         aurora
             .path(Vec2::new(790.0, 203.0), Vec2::new(757.0, 683.0))
-            .len,
+            .unwrap()
+            .length,
         724.515
     );
 }
@@ -19220,7 +21140,8 @@ fn aurora_merged_sohftoaenc() {
     assert_delta!(
         aurora
             .path(Vec2::new(370.0, 691.0), Vec2::new(826.0, 431.0))
-            .len,
+            .unwrap()
+            .length,
         733.655
     );
 }
@@ -19230,7 +21151,8 @@ fn aurora_merged_jepejbscza() {
     assert_delta!(
         aurora
             .path(Vec2::new(800.0, 299.0), Vec2::new(96.0, 426.0))
-            .len,
+            .unwrap()
+            .length,
         732.144
     );
 }
@@ -19240,7 +21162,8 @@ fn aurora_merged_bnlmircdli() {
     assert_delta!(
         aurora
             .path(Vec2::new(75.0, 432.0), Vec2::new(566.0, 697.0))
-            .len,
+            .unwrap()
+            .length,
         719.148
     );
 }
@@ -19250,7 +21173,8 @@ fn aurora_merged_kxheynvkot() {
     assert_delta!(
         aurora
             .path(Vec2::new(906.0, 127.0), Vec2::new(270.0, 304.0))
-            .len,
+            .unwrap()
+            .length,
         730.597
     );
 }
@@ -19260,7 +21184,8 @@ fn aurora_merged_ljtiqnsxbj() {
     assert_delta!(
         aurora
             .path(Vec2::new(347.0, 141.0), Vec2::new(195.0, 639.0))
-            .len,
+            .unwrap()
+            .length,
         724.611
     );
 }
@@ -19270,7 +21195,8 @@ fn aurora_merged_wklbtpzajg() {
     assert_delta!(
         aurora
             .path(Vec2::new(20.0, 524.0), Vec2::new(717.0, 626.0))
-            .len,
+            .unwrap()
+            .length,
         727.536
     );
 }
@@ -19280,7 +21206,8 @@ fn aurora_merged_epohyyifai() {
     assert_delta!(
         aurora
             .path(Vec2::new(190.0, 282.0), Vec2::new(821.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         723.315
     );
 }
@@ -19290,7 +21217,8 @@ fn aurora_merged_cfekwkyyvb() {
     assert_delta!(
         aurora
             .path(Vec2::new(657.0, 409.0), Vec2::new(57.0, 538.0))
-            .len,
+            .unwrap()
+            .length,
         722.147
     );
 }
@@ -19300,7 +21228,8 @@ fn aurora_merged_dfjrcmdkza() {
     assert_delta!(
         aurora
             .path(Vec2::new(466.0, 498.0), Vec2::new(734.0, 243.0))
-            .len,
+            .unwrap()
+            .length,
         726.36
     );
 }
@@ -19310,7 +21239,8 @@ fn aurora_merged_xnvhyypvrs() {
     assert_delta!(
         aurora
             .path(Vec2::new(974.0, 400.0), Vec2::new(326.0, 186.0))
-            .len,
+            .unwrap()
+            .length,
         717.958
     );
 }
@@ -19320,7 +21250,8 @@ fn aurora_merged_nwntjytttt() {
     assert_delta!(
         aurora
             .path(Vec2::new(123.0, 601.0), Vec2::new(827.0, 603.0))
-            .len,
+            .unwrap()
+            .length,
         741.317
     );
 }
@@ -19330,7 +21261,8 @@ fn aurora_merged_nweyehgzps() {
     assert_delta!(
         aurora
             .path(Vec2::new(86.0, 125.0), Vec2::new(481.0, 565.0))
-            .len,
+            .unwrap()
+            .length,
         731.59
     );
 }
@@ -19340,7 +21272,8 @@ fn aurora_merged_hsbojnfque() {
     assert_delta!(
         aurora
             .path(Vec2::new(790.0, 156.0), Vec2::new(899.0, 620.0))
-            .len,
+            .unwrap()
+            .length,
         731.447
     );
 }
@@ -19350,7 +21283,8 @@ fn aurora_merged_ypiapqkwtz() {
     assert_delta!(
         aurora
             .path(Vec2::new(746.0, 234.0), Vec2::new(867.0, 619.0))
-            .len,
+            .unwrap()
+            .length,
         733.36
     );
 }
@@ -19360,7 +21294,8 @@ fn aurora_merged_bumkxmsker() {
     assert_delta!(
         aurora
             .path(Vec2::new(143.0, 439.0), Vec2::new(741.0, 140.0))
-            .len,
+            .unwrap()
+            .length,
         727.75
     );
 }
@@ -19370,7 +21305,8 @@ fn aurora_merged_ywwuyqdslh() {
     assert_delta!(
         aurora
             .path(Vec2::new(604.0, 105.0), Vec2::new(844.0, 557.0))
-            .len,
+            .unwrap()
+            .length,
         729.482
     );
 }
@@ -19380,7 +21316,8 @@ fn aurora_merged_pnbpkpdfnb() {
     assert_delta!(
         aurora
             .path(Vec2::new(195.0, 575.0), Vec2::new(585.0, 117.0))
-            .len,
+            .unwrap()
+            .length,
         730.345
     );
 }
@@ -19390,7 +21327,8 @@ fn aurora_merged_nrctrnlkmb() {
     assert_delta!(
         aurora
             .path(Vec2::new(732.0, 82.0), Vec2::new(772.0, 562.0))
-            .len,
+            .unwrap()
+            .length,
         734.128
     );
 }
@@ -19400,7 +21338,8 @@ fn aurora_merged_apaxlgistb() {
     assert_delta!(
         aurora
             .path(Vec2::new(760.0, 702.0), Vec2::new(133.0, 701.0))
-            .len,
+            .unwrap()
+            .length,
         736.195
     );
 }
@@ -19410,7 +21349,8 @@ fn aurora_merged_kqncqbwfef() {
     assert_delta!(
         aurora
             .path(Vec2::new(688.0, 219.0), Vec2::new(132.0, 485.0))
-            .len,
+            .unwrap()
+            .length,
         723.859
     );
 }
@@ -19420,7 +21360,8 @@ fn aurora_merged_luxvldnmwl() {
     assert_delta!(
         aurora
             .path(Vec2::new(322.0, 66.0), Vec2::new(609.0, 510.0))
-            .len,
+            .unwrap()
+            .length,
         731.034
     );
 }
@@ -19430,7 +21371,8 @@ fn aurora_merged_rarxmknloh() {
     assert_delta!(
         aurora
             .path(Vec2::new(483.0, 504.0), Vec2::new(719.0, 247.0))
-            .len,
+            .unwrap()
+            .length,
         734.021
     );
 }
@@ -19440,7 +21382,8 @@ fn aurora_merged_hmcjzybwzi() {
     assert_delta!(
         aurora
             .path(Vec2::new(61.0, 658.0), Vec2::new(296.0, 156.0))
-            .len,
+            .unwrap()
+            .length,
         735.773
     );
 }
@@ -19450,7 +21393,8 @@ fn aurora_merged_lbiucgidsw() {
     assert_delta!(
         aurora
             .path(Vec2::new(876.0, 572.0), Vec2::new(630.0, 184.0))
-            .len,
+            .unwrap()
+            .length,
         734.392
     );
 }
@@ -19460,7 +21404,8 @@ fn aurora_merged_cqfptpauib() {
     assert_delta!(
         aurora
             .path(Vec2::new(403.0, 157.0), Vec2::new(824.0, 588.0))
-            .len,
+            .unwrap()
+            .length,
         734.08
     );
 }
@@ -19470,7 +21415,8 @@ fn aurora_merged_iwypkzaspb() {
     assert_delta!(
         aurora
             .path(Vec2::new(611.0, 725.0), Vec2::new(483.0, 327.0))
-            .len,
+            .unwrap()
+            .length,
         744.141
     );
 }
@@ -19480,7 +21426,8 @@ fn aurora_merged_iubpvownbh() {
     assert_delta!(
         aurora
             .path(Vec2::new(783.0, 537.0), Vec2::new(359.0, 212.0))
-            .len,
+            .unwrap()
+            .length,
         734.291
     );
 }
@@ -19490,7 +21437,8 @@ fn aurora_merged_ulmmckvedy() {
     assert_delta!(
         aurora
             .path(Vec2::new(709.0, 187.0), Vec2::new(126.0, 478.0))
-            .len,
+            .unwrap()
+            .length,
         735.059
     );
 }
@@ -19500,7 +21448,8 @@ fn aurora_merged_ewyminzgfs() {
     assert_delta!(
         aurora
             .path(Vec2::new(43.0, 595.0), Vec2::new(413.0, 151.0))
-            .len,
+            .unwrap()
+            .length,
         733.207
     );
 }
@@ -19510,7 +21459,8 @@ fn aurora_merged_kzwfxnwyuh() {
     assert_delta!(
         aurora
             .path(Vec2::new(46.0, 649.0), Vec2::new(268.0, 160.0))
-            .len,
+            .unwrap()
+            .length,
         735.498
     );
 }
@@ -19520,7 +21470,8 @@ fn aurora_merged_nnavqtnobf() {
     assert_delta!(
         aurora
             .path(Vec2::new(589.0, 417.0), Vec2::new(393.0, 659.0))
-            .len,
+            .unwrap()
+            .length,
         734.069
     );
 }
@@ -19530,7 +21481,8 @@ fn aurora_merged_vfgpyvlcvc() {
     assert_delta!(
         aurora
             .path(Vec2::new(310.0, 653.0), Vec2::new(296.0, 168.0))
-            .len,
+            .unwrap()
+            .length,
         738.114
     );
 }
@@ -19540,7 +21492,8 @@ fn aurora_merged_mvtsaycajn() {
     assert_delta!(
         aurora
             .path(Vec2::new(836.0, 104.0), Vec2::new(838.0, 627.0))
-            .len,
+            .unwrap()
+            .length,
         738.484
     );
 }
@@ -19550,7 +21503,8 @@ fn aurora_merged_pqsomedyfg() {
     assert_delta!(
         aurora
             .path(Vec2::new(123.0, 549.0), Vec2::new(624.0, 439.0))
-            .len,
+            .unwrap()
+            .length,
         737.617
     );
 }
@@ -19560,7 +21514,8 @@ fn aurora_merged_orrzcbwhxo() {
     assert_delta!(
         aurora
             .path(Vec2::new(472.0, 663.0), Vec2::new(78.0, 222.0))
-            .len,
+            .unwrap()
+            .length,
         733.605
     );
 }
@@ -19570,7 +21525,8 @@ fn aurora_merged_wdrskrreas() {
     assert_delta!(
         aurora
             .path(Vec2::new(303.0, 488.0), Vec2::new(886.0, 258.0))
-            .len,
+            .unwrap()
+            .length,
         732.206
     );
 }
@@ -19580,7 +21536,8 @@ fn aurora_merged_kvwclbpsag() {
     assert_delta!(
         aurora
             .path(Vec2::new(300.0, 206.0), Vec2::new(820.0, 503.0))
-            .len,
+            .unwrap()
+            .length,
         737.31
     );
 }
@@ -19590,7 +21547,8 @@ fn aurora_merged_bfmzdlucmz() {
     assert_delta!(
         aurora
             .path(Vec2::new(782.0, 58.0), Vec2::new(997.0, 577.0))
-            .len,
+            .unwrap()
+            .length,
         735.945
     );
 }
@@ -19600,7 +21558,8 @@ fn aurora_merged_dthpvuucxa() {
     assert_delta!(
         aurora
             .path(Vec2::new(863.0, 531.0), Vec2::new(722.0, 58.0))
-            .len,
+            .unwrap()
+            .length,
         739.436
     );
 }
@@ -19610,7 +21569,8 @@ fn aurora_merged_iomtuiehzv() {
     assert_delta!(
         aurora
             .path(Vec2::new(864.0, 111.0), Vec2::new(927.0, 569.0))
-            .len,
+            .unwrap()
+            .length,
         738.587
     );
 }
@@ -19620,7 +21580,8 @@ fn aurora_merged_nvpgkulajf() {
     assert_delta!(
         aurora
             .path(Vec2::new(742.0, 70.0), Vec2::new(505.0, 444.0))
-            .len,
+            .unwrap()
+            .length,
         732.529
     );
 }
@@ -19630,7 +21591,8 @@ fn aurora_merged_qaottlnprl() {
     assert_delta!(
         aurora
             .path(Vec2::new(13.0, 351.0), Vec2::new(714.0, 346.0))
-            .len,
+            .unwrap()
+            .length,
         739.577
     );
 }
@@ -19640,7 +21602,8 @@ fn aurora_merged_zdfihxislt() {
     assert_delta!(
         aurora
             .path(Vec2::new(24.0, 378.0), Vec2::new(690.0, 599.0))
-            .len,
+            .unwrap()
+            .length,
         736.535
     );
 }
@@ -19650,7 +21613,8 @@ fn aurora_merged_lyccbwplml() {
     assert_delta!(
         aurora
             .path(Vec2::new(756.0, 498.0), Vec2::new(670.0, 106.0))
-            .len,
+            .unwrap()
+            .length,
         743.014
     );
 }
@@ -19660,7 +21624,8 @@ fn aurora_merged_xhrmoawagb() {
     assert_delta!(
         aurora
             .path(Vec2::new(163.0, 125.0), Vec2::new(619.0, 516.0))
-            .len,
+            .unwrap()
+            .length,
         735.239
     );
 }
@@ -19670,7 +21635,8 @@ fn aurora_merged_xamtxwjqrp() {
     assert_delta!(
         aurora
             .path(Vec2::new(874.0, 501.0), Vec2::new(195.0, 651.0))
-            .len,
+            .unwrap()
+            .length,
         752.015
     );
 }
@@ -19680,7 +21646,8 @@ fn aurora_merged_yoxqjkzbgk() {
     assert_delta!(
         aurora
             .path(Vec2::new(69.0, 450.0), Vec2::new(656.0, 75.0))
-            .len,
+            .unwrap()
+            .length,
         735.656
     );
 }
@@ -19690,7 +21657,8 @@ fn aurora_merged_rxdtyojshp() {
     assert_delta!(
         aurora
             .path(Vec2::new(807.0, 685.0), Vec2::new(130.0, 469.0))
-            .len,
+            .unwrap()
+            .length,
         734.49
     );
 }
@@ -19700,7 +21668,8 @@ fn aurora_merged_rixrmmnyfd() {
     assert_delta!(
         aurora
             .path(Vec2::new(878.0, 525.0), Vec2::new(434.0, 74.0))
-            .len,
+            .unwrap()
+            .length,
         737.183
     );
 }
@@ -19710,7 +21679,8 @@ fn aurora_merged_lisecnqwli() {
     assert_delta!(
         aurora
             .path(Vec2::new(846.0, 154.0), Vec2::new(120.0, 246.0))
-            .len,
+            .unwrap()
+            .length,
         764.437
     );
 }
@@ -19720,7 +21690,8 @@ fn aurora_merged_uiitfglnwh() {
     assert_delta!(
         aurora
             .path(Vec2::new(524.0, 269.0), Vec2::new(584.0, 720.0))
-            .len,
+            .unwrap()
+            .length,
         746.733
     );
 }
@@ -19730,7 +21701,8 @@ fn aurora_merged_fbyudbujis() {
     assert_delta!(
         aurora
             .path(Vec2::new(61.0, 569.0), Vec2::new(591.0, 395.0))
-            .len,
+            .unwrap()
+            .length,
         743.949
     );
 }
@@ -19740,7 +21712,8 @@ fn aurora_merged_jgujbdpnsl() {
     assert_delta!(
         aurora
             .path(Vec2::new(142.0, 714.0), Vec2::new(864.0, 634.0))
-            .len,
+            .unwrap()
+            .length,
         751.243
     );
 }
@@ -19750,7 +21723,8 @@ fn aurora_merged_jngxgdecjh() {
     assert_delta!(
         aurora
             .path(Vec2::new(567.0, 662.0), Vec2::new(351.0, 159.0))
-            .len,
+            .unwrap()
+            .length,
         748.816
     );
 }
@@ -19760,7 +21734,8 @@ fn aurora_merged_efjdcsshsf() {
     assert_delta!(
         aurora
             .path(Vec2::new(121.0, 122.0), Vec2::new(823.0, 246.0))
-            .len,
+            .unwrap()
+            .length,
         739.884
     );
 }
@@ -19770,7 +21745,8 @@ fn aurora_merged_sjawjccbay() {
     assert_delta!(
         aurora
             .path(Vec2::new(97.0, 144.0), Vec2::new(615.0, 435.0))
-            .len,
+            .unwrap()
+            .length,
         747.803
     );
 }
@@ -19780,7 +21756,8 @@ fn aurora_merged_hvngxonpkt() {
     assert_delta!(
         aurora
             .path(Vec2::new(162.0, 207.0), Vec2::new(717.0, 567.0))
-            .len,
+            .unwrap()
+            .length,
         735.83
     );
 }
@@ -19790,7 +21767,8 @@ fn aurora_merged_nmbbkfnagu() {
     assert_delta!(
         aurora
             .path(Vec2::new(703.0, 142.0), Vec2::new(928.0, 582.0))
-            .len,
+            .unwrap()
+            .length,
         742.786
     );
 }
@@ -19800,7 +21778,8 @@ fn aurora_merged_lxnrnhuqln() {
     assert_delta!(
         aurora
             .path(Vec2::new(910.0, 522.0), Vec2::new(393.0, 89.0))
-            .len,
+            .unwrap()
+            .length,
         741.367
     );
 }
@@ -19810,7 +21789,8 @@ fn aurora_merged_myfpyatrza() {
     assert_delta!(
         aurora
             .path(Vec2::new(749.0, 234.0), Vec2::new(63.0, 325.0))
-            .len,
+            .unwrap()
+            .length,
         743.953
     );
 }
@@ -19820,7 +21800,8 @@ fn aurora_merged_fllfvfgrmv() {
     assert_delta!(
         aurora
             .path(Vec2::new(747.0, 424.0), Vec2::new(35.0, 538.0))
-            .len,
+            .unwrap()
+            .length,
         740.238
     );
 }
@@ -19830,7 +21811,8 @@ fn aurora_merged_nyhmlfkxsb() {
     assert_delta!(
         aurora
             .path(Vec2::new(293.0, 647.0), Vec2::new(547.0, 153.0))
-            .len,
+            .unwrap()
+            .length,
         748.603
     );
 }
@@ -19840,7 +21822,8 @@ fn aurora_merged_gxbesossom() {
     assert_delta!(
         aurora
             .path(Vec2::new(290.0, 148.0), Vec2::new(984.0, 366.0))
-            .len,
+            .unwrap()
+            .length,
         742.861
     );
 }
@@ -19850,7 +21833,8 @@ fn aurora_merged_obmsilmhis() {
     assert_delta!(
         aurora
             .path(Vec2::new(935.0, 630.0), Vec2::new(219.0, 691.0))
-            .len,
+            .unwrap()
+            .length,
         751.093
     );
 }
@@ -19860,7 +21844,8 @@ fn aurora_merged_ptwwqypinu() {
     assert_delta!(
         aurora
             .path(Vec2::new(863.0, 432.0), Vec2::new(177.0, 314.0))
-            .len,
+            .unwrap()
+            .length,
         739.758
     );
 }
@@ -19870,7 +21855,8 @@ fn aurora_merged_pmlotncczl() {
     assert_delta!(
         aurora
             .path(Vec2::new(38.0, 632.0), Vec2::new(748.0, 716.0))
-            .len,
+            .unwrap()
+            .length,
         759.416
     );
 }
@@ -19880,7 +21866,8 @@ fn aurora_merged_yzoeuxauvp() {
     assert_delta!(
         aurora
             .path(Vec2::new(289.0, 151.0), Vec2::new(933.0, 474.0))
-            .len,
+            .unwrap()
+            .length,
         743.734
     );
 }
@@ -19890,7 +21877,8 @@ fn aurora_merged_sxkcpuzymv() {
     assert_delta!(
         aurora
             .path(Vec2::new(343.0, 179.0), Vec2::new(688.0, 590.0))
-            .len,
+            .unwrap()
+            .length,
         743.15
     );
 }
@@ -19900,7 +21888,8 @@ fn aurora_merged_lvceaiuiqm() {
     assert_delta!(
         aurora
             .path(Vec2::new(57.0, 634.0), Vec2::new(414.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         748.88
     );
 }
@@ -19910,7 +21899,8 @@ fn aurora_merged_jtsmufaksv() {
     assert_delta!(
         aurora
             .path(Vec2::new(751.0, 355.0), Vec2::new(134.0, 521.0))
-            .len,
+            .unwrap()
+            .length,
         746.126
     );
 }
@@ -19920,7 +21910,8 @@ fn aurora_merged_rxajrqxyci() {
     assert_delta!(
         aurora
             .path(Vec2::new(96.0, 481.0), Vec2::new(787.0, 347.0))
-            .len,
+            .unwrap()
+            .length,
         760.282
     );
 }
@@ -19930,7 +21921,8 @@ fn aurora_merged_kbzpjylkyl() {
     assert_delta!(
         aurora
             .path(Vec2::new(816.0, 491.0), Vec2::new(88.0, 482.0))
-            .len,
+            .unwrap()
+            .length,
         753.376
     );
 }
@@ -19940,7 +21932,8 @@ fn aurora_merged_kcnviuokpv() {
     assert_delta!(
         aurora
             .path(Vec2::new(823.0, 161.0), Vec2::new(518.0, 617.0))
-            .len,
+            .unwrap()
+            .length,
         752.396
     );
 }
@@ -19950,7 +21943,8 @@ fn aurora_merged_zvhpsrkzns() {
     assert_delta!(
         aurora
             .path(Vec2::new(1.0, 657.0), Vec2::new(207.0, 118.0))
-            .len,
+            .unwrap()
+            .length,
         754.04
     );
 }
@@ -19960,7 +21954,8 @@ fn aurora_merged_zineixfqil() {
     assert_delta!(
         aurora
             .path(Vec2::new(63.0, 665.0), Vec2::new(313.0, 137.0))
-            .len,
+            .unwrap()
+            .length,
         756.231
     );
 }
@@ -19970,7 +21965,8 @@ fn aurora_merged_vanswcculg() {
     assert_delta!(
         aurora
             .path(Vec2::new(666.0, 85.0), Vec2::new(39.0, 427.0))
-            .len,
+            .unwrap()
+            .length,
         750.919
     );
 }
@@ -19980,7 +21976,8 @@ fn aurora_merged_pxdinzesds() {
     assert_delta!(
         aurora
             .path(Vec2::new(279.0, 641.0), Vec2::new(766.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         755.911
     );
 }
@@ -19990,7 +21987,8 @@ fn aurora_merged_yyybkjujoz() {
     assert_delta!(
         aurora
             .path(Vec2::new(561.0, 636.0), Vec2::new(812.0, 144.0))
-            .len,
+            .unwrap()
+            .length,
         752.731
     );
 }
@@ -20000,7 +21998,8 @@ fn aurora_merged_nspuqybmts() {
     assert_delta!(
         aurora
             .path(Vec2::new(833.0, 493.0), Vec2::new(168.0, 454.0))
-            .len,
+            .unwrap()
+            .length,
         747.262
     );
 }
@@ -20010,7 +22009,8 @@ fn aurora_merged_pzknlnzmlk() {
     assert_delta!(
         aurora
             .path(Vec2::new(674.0, 379.0), Vec2::new(77.0, 551.0))
-            .len,
+            .unwrap()
+            .length,
         750.534
     );
 }
@@ -20020,7 +22020,8 @@ fn aurora_merged_ywsuupbwhf() {
     assert_delta!(
         aurora
             .path(Vec2::new(856.0, 459.0), Vec2::new(119.0, 546.0))
-            .len,
+            .unwrap()
+            .length,
         762.504
     );
 }
@@ -20030,7 +22031,8 @@ fn aurora_merged_rcregfqmmm() {
     assert_delta!(
         aurora
             .path(Vec2::new(935.0, 598.0), Vec2::new(214.0, 469.0))
-            .len,
+            .unwrap()
+            .length,
         753.018
     );
 }
@@ -20040,7 +22042,8 @@ fn aurora_merged_fuehyczvwq() {
     assert_delta!(
         aurora
             .path(Vec2::new(669.0, 522.0), Vec2::new(153.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         746.721
     );
 }
@@ -20050,7 +22053,8 @@ fn aurora_merged_crwiqfjfpj() {
     assert_delta!(
         aurora
             .path(Vec2::new(201.0, 344.0), Vec2::new(952.0, 306.0))
-            .len,
+            .unwrap()
+            .length,
         764.864
     );
 }
@@ -20060,7 +22064,8 @@ fn aurora_merged_upvjjtvhnm() {
     assert_delta!(
         aurora
             .path(Vec2::new(61.0, 163.0), Vec2::new(654.0, 460.0))
-            .len,
+            .unwrap()
+            .length,
         746.031
     );
 }
@@ -20070,7 +22075,8 @@ fn aurora_merged_fjzcokftpe() {
     assert_delta!(
         aurora
             .path(Vec2::new(442.0, 694.0), Vec2::new(923.0, 267.0))
-            .len,
+            .unwrap()
+            .length,
         757.996
     );
 }
@@ -20080,7 +22086,8 @@ fn aurora_merged_thdynyfpyt() {
     assert_delta!(
         aurora
             .path(Vec2::new(448.0, 151.0), Vec2::new(262.0, 637.0))
-            .len,
+            .unwrap()
+            .length,
         755.258
     );
 }
@@ -20090,7 +22097,8 @@ fn aurora_merged_iqpskbmald() {
     assert_delta!(
         aurora
             .path(Vec2::new(849.0, 513.0), Vec2::new(115.0, 580.0))
-            .len,
+            .unwrap()
+            .length,
         758.004
     );
 }
@@ -20100,7 +22108,8 @@ fn aurora_merged_eyfmljdyem() {
     assert_delta!(
         aurora
             .path(Vec2::new(400.0, 226.0), Vec2::new(37.0, 675.0))
-            .len,
+            .unwrap()
+            .length,
         760.259
     );
 }
@@ -20110,7 +22119,8 @@ fn aurora_merged_yqiloyvjed() {
     assert_delta!(
         aurora
             .path(Vec2::new(259.0, 184.0), Vec2::new(324.0, 688.0))
-            .len,
+            .unwrap()
+            .length,
         757.819
     );
 }
@@ -20120,7 +22130,8 @@ fn aurora_merged_hmgpjgqyfc() {
     assert_delta!(
         aurora
             .path(Vec2::new(88.0, 427.0), Vec2::new(721.0, 128.0))
-            .len,
+            .unwrap()
+            .length,
         754.697
     );
 }
@@ -20130,7 +22141,8 @@ fn aurora_merged_qmqjbdbtnk() {
     assert_delta!(
         aurora
             .path(Vec2::new(692.0, 615.0), Vec2::new(850.0, 132.0))
-            .len,
+            .unwrap()
+            .length,
         764.572
     );
 }
@@ -20140,7 +22152,8 @@ fn aurora_merged_bseccvhwza() {
     assert_delta!(
         aurora
             .path(Vec2::new(171.0, 664.0), Vec2::new(638.0, 293.0))
-            .len,
+            .unwrap()
+            .length,
         761.036
     );
 }
@@ -20150,7 +22163,8 @@ fn aurora_merged_wwqebbogmo() {
     assert_delta!(
         aurora
             .path(Vec2::new(869.0, 345.0), Vec2::new(154.0, 206.0))
-            .len,
+            .unwrap()
+            .length,
         770.079
     );
 }
@@ -20160,7 +22174,8 @@ fn aurora_merged_mvstpynvam() {
     assert_delta!(
         aurora
             .path(Vec2::new(854.0, 155.0), Vec2::new(465.0, 429.0))
-            .len,
+            .unwrap()
+            .length,
         756.429
     );
 }
@@ -20170,7 +22185,8 @@ fn aurora_merged_ndgqnjlekh() {
     assert_delta!(
         aurora
             .path(Vec2::new(45.0, 187.0), Vec2::new(796.0, 193.0))
-            .len,
+            .unwrap()
+            .length,
         776.824
     );
 }
@@ -20180,7 +22196,8 @@ fn aurora_merged_nplqlmgshc() {
     assert_delta!(
         aurora
             .path(Vec2::new(834.0, 712.0), Vec2::new(139.0, 569.0))
-            .len,
+            .unwrap()
+            .length,
         752.973
     );
 }
@@ -20190,7 +22207,8 @@ fn aurora_merged_ugpkjtjgco() {
     assert_delta!(
         aurora
             .path(Vec2::new(209.0, 76.0), Vec2::new(500.0, 585.0))
-            .len,
+            .unwrap()
+            .length,
         764.763
     );
 }
@@ -20200,7 +22218,8 @@ fn aurora_merged_xlgtkmiszf() {
     assert_delta!(
         aurora
             .path(Vec2::new(167.0, 290.0), Vec2::new(873.0, 183.0))
-            .len,
+            .unwrap()
+            .length,
         763.988
     );
 }
@@ -20210,7 +22229,8 @@ fn aurora_merged_rmkqbgsdhu() {
     assert_delta!(
         aurora
             .path(Vec2::new(359.0, 282.0), Vec2::new(812.0, 554.0))
-            .len,
+            .unwrap()
+            .length,
         757.016
     );
 }
@@ -20220,7 +22240,8 @@ fn aurora_merged_obaxjxuwgq() {
     assert_delta!(
         aurora
             .path(Vec2::new(361.0, 145.0), Vec2::new(170.0, 681.0))
-            .len,
+            .unwrap()
+            .length,
         768.188
     );
 }
@@ -20230,7 +22251,8 @@ fn aurora_merged_rvuphyojjr() {
     assert_delta!(
         aurora
             .path(Vec2::new(915.0, 288.0), Vec2::new(182.0, 162.0))
-            .len,
+            .unwrap()
+            .length,
         763.705
     );
 }
@@ -20240,7 +22262,8 @@ fn aurora_merged_lzyydojdlf() {
     assert_delta!(
         aurora
             .path(Vec2::new(743.0, 162.0), Vec2::new(909.0, 640.0))
-            .len,
+            .unwrap()
+            .length,
         762.428
     );
 }
@@ -20250,7 +22273,8 @@ fn aurora_merged_kqgmyqboqy() {
     assert_delta!(
         aurora
             .path(Vec2::new(568.0, 663.0), Vec2::new(558.0, 190.0))
-            .len,
+            .unwrap()
+            .length,
         765.991
     );
 }
@@ -20260,7 +22284,8 @@ fn aurora_merged_rwvrxaofgf() {
     assert_delta!(
         aurora
             .path(Vec2::new(411.0, 637.0), Vec2::new(991.0, 301.0))
-            .len,
+            .unwrap()
+            .length,
         769.401
     );
 }
@@ -20270,7 +22295,8 @@ fn aurora_merged_cwfemenwrq() {
     assert_delta!(
         aurora
             .path(Vec2::new(859.0, 258.0), Vec2::new(116.0, 282.0))
-            .len,
+            .unwrap()
+            .length,
         769.241
     );
 }
@@ -20280,7 +22306,8 @@ fn aurora_merged_xuwutsssng() {
     assert_delta!(
         aurora
             .path(Vec2::new(632.0, 216.0), Vec2::new(845.0, 638.0))
-            .len,
+            .unwrap()
+            .length,
         771.128
     );
 }
@@ -20290,7 +22317,8 @@ fn aurora_merged_hozlupkkcb() {
     assert_delta!(
         aurora
             .path(Vec2::new(410.0, 190.0), Vec2::new(833.0, 636.0))
-            .len,
+            .unwrap()
+            .length,
         762.815
     );
 }
@@ -20300,7 +22328,8 @@ fn aurora_merged_wwhcrzjnkz() {
     assert_delta!(
         aurora
             .path(Vec2::new(627.0, 588.0), Vec2::new(365.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         758.877
     );
 }
@@ -20310,7 +22339,8 @@ fn aurora_merged_zeiwacpown() {
     assert_delta!(
         aurora
             .path(Vec2::new(862.0, 418.0), Vec2::new(151.0, 284.0))
-            .len,
+            .unwrap()
+            .length,
         756.604
     );
 }
@@ -20320,7 +22350,8 @@ fn aurora_merged_xvdvvwyjvn() {
     assert_delta!(
         aurora
             .path(Vec2::new(368.0, 494.0), Vec2::new(765.0, 67.0))
-            .len,
+            .unwrap()
+            .length,
         764.23
     );
 }
@@ -20330,7 +22361,8 @@ fn aurora_merged_evbiboargw() {
     assert_delta!(
         aurora
             .path(Vec2::new(882.0, 532.0), Vec2::new(366.0, 262.0))
-            .len,
+            .unwrap()
+            .length,
         763.192
     );
 }
@@ -20340,7 +22372,8 @@ fn aurora_merged_xqyvlznfar() {
     assert_delta!(
         aurora
             .path(Vec2::new(142.0, 501.0), Vec2::new(753.0, 162.0))
-            .len,
+            .unwrap()
+            .length,
         780.337
     );
 }
@@ -20350,7 +22383,8 @@ fn aurora_merged_dxsvtvkpeb() {
     assert_delta!(
         aurora
             .path(Vec2::new(494.0, 508.0), Vec2::new(740.0, 82.0))
-            .len,
+            .unwrap()
+            .length,
         762.84
     );
 }
@@ -20360,7 +22394,8 @@ fn aurora_merged_yshfkvcozt() {
     assert_delta!(
         aurora
             .path(Vec2::new(378.0, 694.0), Vec2::new(322.0, 201.0))
-            .len,
+            .unwrap()
+            .length,
         771.95
     );
 }
@@ -20370,7 +22405,8 @@ fn aurora_merged_wrucxftaik() {
     assert_delta!(
         aurora
             .path(Vec2::new(406.0, 610.0), Vec2::new(458.0, 67.0))
-            .len,
+            .unwrap()
+            .length,
         776.348
     );
 }
@@ -20380,7 +22416,8 @@ fn aurora_merged_jlzflcaqte() {
     assert_delta!(
         aurora
             .path(Vec2::new(696.0, 76.0), Vec2::new(815.0, 597.0))
-            .len,
+            .unwrap()
+            .length,
         774.397
     );
 }
@@ -20390,7 +22427,8 @@ fn aurora_merged_trbhrehech() {
     assert_delta!(
         aurora
             .path(Vec2::new(417.0, 239.0), Vec2::new(547.0, 682.0))
-            .len,
+            .unwrap()
+            .length,
         770.817
     );
 }
@@ -20400,7 +22438,8 @@ fn aurora_merged_iuontdxlaa() {
     assert_delta!(
         aurora
             .path(Vec2::new(280.0, 575.0), Vec2::new(277.0, 30.0))
-            .len,
+            .unwrap()
+            .length,
         769.487
     );
 }
@@ -20410,7 +22449,8 @@ fn aurora_merged_qcksecmgat() {
     assert_delta!(
         aurora
             .path(Vec2::new(201.0, 377.0), Vec2::new(838.0, 702.0))
-            .len,
+            .unwrap()
+            .length,
         765.708
     );
 }
@@ -20420,7 +22460,8 @@ fn aurora_merged_enhabpvyve() {
     assert_delta!(
         aurora
             .path(Vec2::new(773.0, 655.0), Vec2::new(522.0, 155.0))
-            .len,
+            .unwrap()
+            .length,
         768.509
     );
 }
@@ -20430,7 +22471,8 @@ fn aurora_merged_pimwmldpuc() {
     assert_delta!(
         aurora
             .path(Vec2::new(801.0, 433.0), Vec2::new(68.0, 370.0))
-            .len,
+            .unwrap()
+            .length,
         771.243
     );
 }
@@ -20440,7 +22482,8 @@ fn aurora_merged_zaszdiimqo() {
     assert_delta!(
         aurora
             .path(Vec2::new(907.0, 538.0), Vec2::new(164.0, 511.0))
-            .len,
+            .unwrap()
+            .length,
         769.993
     );
 }
@@ -20450,7 +22493,8 @@ fn aurora_merged_zgnhbxiihn() {
     assert_delta!(
         aurora
             .path(Vec2::new(779.0, 624.0), Vec2::new(585.0, 207.0))
-            .len,
+            .unwrap()
+            .length,
         768.016
     );
 }
@@ -20460,7 +22504,8 @@ fn aurora_merged_xfudkrktfu() {
     assert_delta!(
         aurora
             .path(Vec2::new(289.0, 746.0), Vec2::new(704.0, 279.0))
-            .len,
+            .unwrap()
+            .length,
         780.097
     );
 }
@@ -20470,7 +22515,8 @@ fn aurora_merged_jxnhaizmgd() {
     assert_delta!(
         aurora
             .path(Vec2::new(465.0, 584.0), Vec2::new(647.0, 71.0))
-            .len,
+            .unwrap()
+            .length,
         776.097
     );
 }
@@ -20480,7 +22526,8 @@ fn aurora_merged_qfcdmomnhv() {
     assert_delta!(
         aurora
             .path(Vec2::new(223.0, 397.0), Vec2::new(955.0, 367.0))
-            .len,
+            .unwrap()
+            .length,
         785.554
     );
 }
@@ -20490,7 +22537,8 @@ fn aurora_merged_cekusjjkbt() {
     assert_delta!(
         aurora
             .path(Vec2::new(726.0, 187.0), Vec2::new(473.0, 592.0))
-            .len,
+            .unwrap()
+            .length,
         770.797
     );
 }
@@ -20500,7 +22548,8 @@ fn aurora_merged_rvedekxkov() {
     assert_delta!(
         aurora
             .path(Vec2::new(697.0, 318.0), Vec2::new(252.0, 636.0))
-            .len,
+            .unwrap()
+            .length,
         784.393
     );
 }
@@ -20510,7 +22559,8 @@ fn aurora_merged_gyvkopiwyu() {
     assert_delta!(
         aurora
             .path(Vec2::new(224.0, 120.0), Vec2::new(100.0, 694.0))
-            .len,
+            .unwrap()
+            .length,
         771.919
     );
 }
@@ -20520,7 +22570,8 @@ fn aurora_merged_qqaqxmylwk() {
     assert_delta!(
         aurora
             .path(Vec2::new(466.0, 632.0), Vec2::new(140.0, 130.0))
-            .len,
+            .unwrap()
+            .length,
         777.416
     );
 }
@@ -20530,7 +22581,8 @@ fn aurora_merged_eliyvvvmjg() {
     assert_delta!(
         aurora
             .path(Vec2::new(237.0, 140.0), Vec2::new(361.0, 671.0))
-            .len,
+            .unwrap()
+            .length,
         780.241
     );
 }
@@ -20540,7 +22592,8 @@ fn aurora_merged_bqidjhskmf() {
     assert_delta!(
         aurora
             .path(Vec2::new(970.0, 348.0), Vec2::new(359.0, 741.0))
-            .len,
+            .unwrap()
+            .length,
         776.86
     );
 }
@@ -20550,7 +22603,8 @@ fn aurora_merged_ruyyghlysi() {
     assert_delta!(
         aurora
             .path(Vec2::new(150.0, 263.0), Vec2::new(905.0, 331.0))
-            .len,
+            .unwrap()
+            .length,
         783.426
     );
 }
@@ -20560,7 +22614,8 @@ fn aurora_merged_tgpvbpjtei() {
     assert_delta!(
         aurora
             .path(Vec2::new(856.0, 680.0), Vec2::new(187.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         774.501
     );
 }
@@ -20570,7 +22625,8 @@ fn aurora_merged_dhintbrnld() {
     assert_delta!(
         aurora
             .path(Vec2::new(116.0, 422.0), Vec2::new(733.0, 267.0))
-            .len,
+            .unwrap()
+            .length,
         763.463
     );
 }
@@ -20580,7 +22636,8 @@ fn aurora_merged_mholohngcc() {
     assert_delta!(
         aurora
             .path(Vec2::new(334.0, 224.0), Vec2::new(918.0, 529.0))
-            .len,
+            .unwrap()
+            .length,
         773.184
     );
 }
@@ -20590,7 +22647,8 @@ fn aurora_merged_culdosbgrj() {
     assert_delta!(
         aurora
             .path(Vec2::new(906.0, 316.0), Vec2::new(276.0, 553.0))
-            .len,
+            .unwrap()
+            .length,
         772.252
     );
 }
@@ -20600,7 +22658,8 @@ fn aurora_merged_sgwxwuclva() {
     assert_delta!(
         aurora
             .path(Vec2::new(15.0, 477.0), Vec2::new(651.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         775.985
     );
 }
@@ -20610,7 +22669,8 @@ fn aurora_merged_cwtvdgbstj() {
     assert_delta!(
         aurora
             .path(Vec2::new(431.0, 606.0), Vec2::new(101.0, 114.0))
-            .len,
+            .unwrap()
+            .length,
         779.39
     );
 }
@@ -20620,7 +22680,8 @@ fn aurora_merged_tedfgdboqb() {
     assert_delta!(
         aurora
             .path(Vec2::new(169.0, 296.0), Vec2::new(876.0, 584.0))
-            .len,
+            .unwrap()
+            .length,
         772.223
     );
 }
@@ -20630,7 +22691,8 @@ fn aurora_merged_hlgvonvhhp() {
     assert_delta!(
         aurora
             .path(Vec2::new(630.0, 103.0), Vec2::new(611.0, 589.0))
-            .len,
+            .unwrap()
+            .length,
         773.523
     );
 }
@@ -20640,7 +22702,8 @@ fn aurora_merged_zyosimufob() {
     assert_delta!(
         aurora
             .path(Vec2::new(65.0, 494.0), Vec2::new(757.0, 371.0))
-            .len,
+            .unwrap()
+            .length,
         773.633
     );
 }
@@ -20650,7 +22713,8 @@ fn aurora_merged_pngvjcxrex() {
     assert_delta!(
         aurora
             .path(Vec2::new(125.0, 134.0), Vec2::new(590.0, 596.0))
-            .len,
+            .unwrap()
+            .length,
         784.664
     );
 }
@@ -20660,7 +22724,8 @@ fn aurora_merged_avwaenztha() {
     assert_delta!(
         aurora
             .path(Vec2::new(563.0, 553.0), Vec2::new(927.0, 130.0))
-            .len,
+            .unwrap()
+            .length,
         778.087
     );
 }
@@ -20670,7 +22735,8 @@ fn aurora_merged_njjuzjguzq() {
     assert_delta!(
         aurora
             .path(Vec2::new(109.0, 510.0), Vec2::new(849.0, 689.0))
-            .len,
+            .unwrap()
+            .length,
         773.372
     );
 }
@@ -20680,7 +22746,8 @@ fn aurora_merged_njzxpeuafl() {
     assert_delta!(
         aurora
             .path(Vec2::new(193.0, 536.0), Vec2::new(674.0, 129.0))
-            .len,
+            .unwrap()
+            .length,
         773.548
     );
 }
@@ -20690,7 +22757,8 @@ fn aurora_merged_usltobsvyu() {
     assert_delta!(
         aurora
             .path(Vec2::new(212.0, 691.0), Vec2::new(606.0, 407.0))
-            .len,
+            .unwrap()
+            .length,
         783.267
     );
 }
@@ -20700,7 +22768,8 @@ fn aurora_merged_dyzuatdcfv() {
     assert_delta!(
         aurora
             .path(Vec2::new(27.0, 391.0), Vec2::new(749.0, 499.0))
-            .len,
+            .unwrap()
+            .length,
         775.272
     );
 }
@@ -20710,7 +22779,8 @@ fn aurora_merged_iosavpwewd() {
     assert_delta!(
         aurora
             .path(Vec2::new(89.0, 505.0), Vec2::new(783.0, 703.0))
-            .len,
+            .unwrap()
+            .length,
         773.531
     );
 }
@@ -20720,7 +22790,8 @@ fn aurora_merged_reefxwerui() {
     assert_delta!(
         aurora
             .path(Vec2::new(163.0, 703.0), Vec2::new(586.0, 420.0))
-            .len,
+            .unwrap()
+            .length,
         778.91
     );
 }
@@ -20730,7 +22801,8 @@ fn aurora_merged_aehtqzblmp() {
     assert_delta!(
         aurora
             .path(Vec2::new(726.0, 686.0), Vec2::new(811.0, 179.0))
-            .len,
+            .unwrap()
+            .length,
         786.745
     );
 }
@@ -20740,7 +22812,8 @@ fn aurora_merged_swzcizbmjp() {
     assert_delta!(
         aurora
             .path(Vec2::new(336.0, 665.0), Vec2::new(608.0, 406.0))
-            .len,
+            .unwrap()
+            .length,
         782.168
     );
 }
@@ -20750,7 +22823,8 @@ fn aurora_merged_njklfnlias() {
     assert_delta!(
         aurora
             .path(Vec2::new(937.0, 644.0), Vec2::new(207.0, 460.0))
-            .len,
+            .unwrap()
+            .length,
         781.285
     );
 }
@@ -20760,7 +22834,8 @@ fn aurora_merged_vfjgkrktzx() {
     assert_delta!(
         aurora
             .path(Vec2::new(636.0, 53.0), Vec2::new(310.0, 574.0))
-            .len,
+            .unwrap()
+            .length,
         782.684
     );
 }
@@ -20770,7 +22845,8 @@ fn aurora_merged_ybzlwjjlqp() {
     assert_delta!(
         aurora
             .path(Vec2::new(764.0, 235.0), Vec2::new(301.0, 476.0))
-            .len,
+            .unwrap()
+            .length,
         777.682
     );
 }
@@ -20780,7 +22856,8 @@ fn aurora_merged_stssytinkn() {
     assert_delta!(
         aurora
             .path(Vec2::new(571.0, 549.0), Vec2::new(195.0, 74.0))
-            .len,
+            .unwrap()
+            .length,
         784.066
     );
 }
@@ -20790,7 +22867,8 @@ fn aurora_merged_trkgtvzbaw() {
     assert_delta!(
         aurora
             .path(Vec2::new(126.0, 228.0), Vec2::new(828.0, 478.0))
-            .len,
+            .unwrap()
+            .length,
         777.353
     );
 }
@@ -20800,7 +22878,8 @@ fn aurora_merged_tnlhkasczn() {
     assert_delta!(
         aurora
             .path(Vec2::new(248.0, 557.0), Vec2::new(912.0, 425.0))
-            .len,
+            .unwrap()
+            .length,
         783.548
     );
 }
@@ -20810,7 +22889,8 @@ fn aurora_merged_sdnhhkwuyx() {
     assert_delta!(
         aurora
             .path(Vec2::new(502.0, 139.0), Vec2::new(354.0, 641.0))
-            .len,
+            .unwrap()
+            .length,
         782.584
     );
 }
@@ -20820,7 +22900,8 @@ fn aurora_merged_jmkgaoyney() {
     assert_delta!(
         aurora
             .path(Vec2::new(829.0, 100.0), Vec2::new(523.0, 586.0))
-            .len,
+            .unwrap()
+            .length,
         786.654
     );
 }
@@ -20830,7 +22911,8 @@ fn aurora_merged_ngrvvqsvyx() {
     assert_delta!(
         aurora
             .path(Vec2::new(643.0, 136.0), Vec2::new(508.0, 636.0))
-            .len,
+            .unwrap()
+            .length,
         787.74
     );
 }
@@ -20840,7 +22922,8 @@ fn aurora_merged_wivxxxdegg() {
     assert_delta!(
         aurora
             .path(Vec2::new(732.0, 607.0), Vec2::new(394.0, 197.0))
-            .len,
+            .unwrap()
+            .length,
         785.399
     );
 }
@@ -20850,7 +22933,8 @@ fn aurora_merged_umerqjgpaz() {
     assert_delta!(
         aurora
             .path(Vec2::new(163.0, 388.0), Vec2::new(878.0, 494.0))
-            .len,
+            .unwrap()
+            .length,
         778.183
     );
 }
@@ -20860,7 +22944,8 @@ fn aurora_merged_eihsnulbpt() {
     assert_delta!(
         aurora
             .path(Vec2::new(190.0, 69.0), Vec2::new(156.0, 647.0))
-            .len,
+            .unwrap()
+            .length,
         785.474
     );
 }
@@ -20870,7 +22955,8 @@ fn aurora_merged_ezltgzmvfk() {
     assert_delta!(
         aurora
             .path(Vec2::new(742.0, 318.0), Vec2::new(101.0, 509.0))
-            .len,
+            .unwrap()
+            .length,
         785.202
     );
 }
@@ -20880,7 +22966,8 @@ fn aurora_merged_rtluzvriqa() {
     assert_delta!(
         aurora
             .path(Vec2::new(61.0, 164.0), Vec2::new(703.0, 414.0))
-            .len,
+            .unwrap()
+            .length,
         776.055
     );
 }
@@ -20890,7 +22977,8 @@ fn aurora_merged_kicvzapgns() {
     assert_delta!(
         aurora
             .path(Vec2::new(266.0, 210.0), Vec2::new(763.0, 496.0))
-            .len,
+            .unwrap()
+            .length,
         777.107
     );
 }
@@ -20900,7 +22988,8 @@ fn aurora_merged_wubangtdkn() {
     assert_delta!(
         aurora
             .path(Vec2::new(389.0, 704.0), Vec2::new(303.0, 307.0))
-            .len,
+            .unwrap()
+            .length,
         796.234
     );
 }
@@ -20910,7 +22999,8 @@ fn aurora_merged_umnbcaxzld() {
     assert_delta!(
         aurora
             .path(Vec2::new(56.0, 477.0), Vec2::new(819.0, 446.0))
-            .len,
+            .unwrap()
+            .length,
         786.195
     );
 }
@@ -20920,7 +23010,8 @@ fn aurora_merged_tqeemnrlvi() {
     assert_delta!(
         aurora
             .path(Vec2::new(860.0, 107.0), Vec2::new(472.0, 459.0))
-            .len,
+            .unwrap()
+            .length,
         787.235
     );
 }
@@ -20930,7 +23021,8 @@ fn aurora_merged_hcitjmzqmy() {
     assert_delta!(
         aurora
             .path(Vec2::new(389.0, 478.0), Vec2::new(830.0, 108.0))
-            .len,
+            .unwrap()
+            .length,
         791.234
     );
 }
@@ -20940,7 +23032,8 @@ fn aurora_merged_ttsjqsqolb() {
     assert_delta!(
         aurora
             .path(Vec2::new(462.0, 175.0), Vec2::new(824.0, 716.0))
-            .len,
+            .unwrap()
+            .length,
         793.267
     );
 }
@@ -20950,7 +23043,8 @@ fn aurora_merged_ejdnlxyvcr() {
     assert_delta!(
         aurora
             .path(Vec2::new(322.0, 51.0), Vec2::new(599.0, 592.0))
-            .len,
+            .unwrap()
+            .length,
         794.362
     );
 }
@@ -20960,7 +23054,8 @@ fn aurora_merged_wspjyiupic() {
     assert_delta!(
         aurora
             .path(Vec2::new(554.0, 594.0), Vec2::new(751.0, 107.0))
-            .len,
+            .unwrap()
+            .length,
         791.632
     );
 }
@@ -20970,7 +23065,8 @@ fn aurora_merged_jtoooqgvby() {
     assert_delta!(
         aurora
             .path(Vec2::new(739.0, 67.0), Vec2::new(39.0, 372.0))
-            .len,
+            .unwrap()
+            .length,
         784.99
     );
 }
@@ -20980,7 +23076,8 @@ fn aurora_merged_ihiktaowlp() {
     assert_delta!(
         aurora
             .path(Vec2::new(186.0, 575.0), Vec2::new(816.0, 367.0))
-            .len,
+            .unwrap()
+            .length,
         790.847
     );
 }
@@ -20990,7 +23087,8 @@ fn aurora_merged_umtvjedanl() {
     assert_delta!(
         aurora
             .path(Vec2::new(267.0, 17.0), Vec2::new(967.0, 315.0))
-            .len,
+            .unwrap()
+            .length,
         784.347
     );
 }
@@ -21000,7 +23098,8 @@ fn aurora_merged_lmegoviydo() {
     assert_delta!(
         aurora
             .path(Vec2::new(598.0, 160.0), Vec2::new(900.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         788.498
     );
 }
@@ -21010,7 +23109,8 @@ fn aurora_merged_flwbnlmwfv() {
     assert_delta!(
         aurora
             .path(Vec2::new(745.0, 178.0), Vec2::new(653.0, 651.0))
-            .len,
+            .unwrap()
+            .length,
         790.096
     );
 }
@@ -21020,7 +23120,8 @@ fn aurora_merged_mzigqfmepu() {
     assert_delta!(
         aurora
             .path(Vec2::new(44.0, 685.0), Vec2::new(247.0, 85.0))
-            .len,
+            .unwrap()
+            .length,
         798.323
     );
 }
@@ -21030,7 +23131,8 @@ fn aurora_merged_vkgzzllqcr() {
     assert_delta!(
         aurora
             .path(Vec2::new(241.0, 629.0), Vec2::new(601.0, 146.0))
-            .len,
+            .unwrap()
+            .length,
         793.24
     );
 }
@@ -21040,7 +23142,8 @@ fn aurora_merged_vfwcpjnvda() {
     assert_delta!(
         aurora
             .path(Vec2::new(842.0, 176.0), Vec2::new(88.0, 318.0))
-            .len,
+            .unwrap()
+            .length,
         806.381
     );
 }
@@ -21050,7 +23153,8 @@ fn aurora_merged_denbbqpwff() {
     assert_delta!(
         aurora
             .path(Vec2::new(479.0, 239.0), Vec2::new(591.0, 726.0))
-            .len,
+            .unwrap()
+            .length,
         796.617
     );
 }
@@ -21060,7 +23164,8 @@ fn aurora_merged_zujbupmetg() {
     assert_delta!(
         aurora
             .path(Vec2::new(24.0, 456.0), Vec2::new(724.0, 561.0))
-            .len,
+            .unwrap()
+            .length,
         789.647
     );
 }
@@ -21070,7 +23175,8 @@ fn aurora_merged_zbyaiohufx() {
     assert_delta!(
         aurora
             .path(Vec2::new(318.0, 156.0), Vec2::new(403.0, 631.0))
-            .len,
+            .unwrap()
+            .length,
         791.8
     );
 }
@@ -21080,7 +23186,8 @@ fn aurora_merged_tftaplrboc() {
     assert_delta!(
         aurora
             .path(Vec2::new(655.0, 135.0), Vec2::new(788.0, 625.0))
-            .len,
+            .unwrap()
+            .length,
         788.659
     );
 }
@@ -21090,7 +23197,8 @@ fn aurora_merged_tlmxkadyng() {
     assert_delta!(
         aurora
             .path(Vec2::new(738.0, 52.0), Vec2::new(827.0, 609.0))
-            .len,
+            .unwrap()
+            .length,
         794.599
     );
 }
@@ -21100,7 +23208,8 @@ fn aurora_merged_sxlrrlvvzm() {
     assert_delta!(
         aurora
             .path(Vec2::new(703.0, 104.0), Vec2::new(67.0, 475.0))
-            .len,
+            .unwrap()
+            .length,
         784.015
     );
 }
@@ -21110,7 +23219,8 @@ fn aurora_merged_cewyacrfhz() {
     assert_delta!(
         aurora
             .path(Vec2::new(910.0, 259.0), Vec2::new(136.0, 178.0))
-            .len,
+            .unwrap()
+            .length,
         799.261
     );
 }
@@ -21120,7 +23230,8 @@ fn aurora_merged_sovysztkcg() {
     assert_delta!(
         aurora
             .path(Vec2::new(81.0, 398.0), Vec2::new(728.0, 53.0))
-            .len,
+            .unwrap()
+            .length,
         791.277
     );
 }
@@ -21130,7 +23241,8 @@ fn aurora_merged_pgbckyoaxl() {
     assert_delta!(
         aurora
             .path(Vec2::new(226.0, 473.0), Vec2::new(953.0, 394.0))
-            .len,
+            .unwrap()
+            .length,
         793.963
     );
 }
@@ -21140,7 +23252,8 @@ fn aurora_merged_hkslfkuzow() {
     assert_delta!(
         aurora
             .path(Vec2::new(524.0, 630.0), Vec2::new(710.0, 146.0))
-            .len,
+            .unwrap()
+            .length,
         797.845
     );
 }
@@ -21150,7 +23263,8 @@ fn aurora_merged_pykohahdcn() {
     assert_delta!(
         aurora
             .path(Vec2::new(635.0, 605.0), Vec2::new(418.0, 244.0))
-            .len,
+            .unwrap()
+            .length,
         787.687
     );
 }
@@ -21160,7 +23274,8 @@ fn aurora_merged_wopfsvfsci() {
     assert_delta!(
         aurora
             .path(Vec2::new(128.0, 450.0), Vec2::new(785.0, 183.0))
-            .len,
+            .unwrap()
+            .length,
         798.318
     );
 }
@@ -21170,7 +23285,8 @@ fn aurora_merged_okcjvvalqm() {
     assert_delta!(
         aurora
             .path(Vec2::new(921.0, 421.0), Vec2::new(164.0, 353.0))
-            .len,
+            .unwrap()
+            .length,
         800.321
     );
 }
@@ -21180,7 +23296,8 @@ fn aurora_merged_bjoqarnnbw() {
     assert_delta!(
         aurora
             .path(Vec2::new(713.0, 671.0), Vec2::new(676.0, 250.0))
-            .len,
+            .unwrap()
+            .length,
         797.463
     );
 }
@@ -21190,7 +23307,8 @@ fn aurora_merged_dzodgounku() {
     assert_delta!(
         aurora
             .path(Vec2::new(391.0, 193.0), Vec2::new(478.0, 673.0))
-            .len,
+            .unwrap()
+            .length,
         804.09
     );
 }
@@ -21200,7 +23318,8 @@ fn aurora_merged_ovcdtqytyb() {
     assert_delta!(
         aurora
             .path(Vec2::new(1005.0, 595.0), Vec2::new(701.0, 154.0))
-            .len,
+            .unwrap()
+            .length,
         792.776
     );
 }
@@ -21210,7 +23329,8 @@ fn aurora_merged_tbbwosognb() {
     assert_delta!(
         aurora
             .path(Vec2::new(120.0, 150.0), Vec2::new(547.0, 600.0))
-            .len,
+            .unwrap()
+            .length,
         801.565
     );
 }
@@ -21220,7 +23340,8 @@ fn aurora_merged_bkolfwdxyg() {
     assert_delta!(
         aurora
             .path(Vec2::new(109.0, 326.0), Vec2::new(844.0, 440.0))
-            .len,
+            .unwrap()
+            .length,
         796.331
     );
 }
@@ -21230,7 +23351,8 @@ fn aurora_merged_ixgrgcxqpb() {
     assert_delta!(
         aurora
             .path(Vec2::new(709.0, 629.0), Vec2::new(832.0, 84.0))
-            .len,
+            .unwrap()
+            .length,
         803.879
     );
 }
@@ -21240,7 +23362,8 @@ fn aurora_merged_iblgvvubyx() {
     assert_delta!(
         aurora
             .path(Vec2::new(200.0, 180.0), Vec2::new(453.0, 681.0))
-            .len,
+            .unwrap()
+            .length,
         798.43
     );
 }
@@ -21250,7 +23373,8 @@ fn aurora_merged_jqnmjqgjoz() {
     assert_delta!(
         aurora
             .path(Vec2::new(101.0, 165.0), Vec2::new(894.0, 242.0))
-            .len,
+            .unwrap()
+            .length,
         811.021
     );
 }
@@ -21260,7 +23384,8 @@ fn aurora_merged_cukftsqogd() {
     assert_delta!(
         aurora
             .path(Vec2::new(509.0, 215.0), Vec2::new(340.0, 669.0))
-            .len,
+            .unwrap()
+            .length,
         799.511
     );
 }
@@ -21270,7 +23395,8 @@ fn aurora_merged_aopcieneqx() {
     assert_delta!(
         aurora
             .path(Vec2::new(835.0, 318.0), Vec2::new(60.0, 393.0))
-            .len,
+            .unwrap()
+            .length,
         803.981
     );
 }
@@ -21280,7 +23406,8 @@ fn aurora_merged_ogeqmgmanj() {
     assert_delta!(
         aurora
             .path(Vec2::new(73.0, 623.0), Vec2::new(322.0, 46.0))
-            .len,
+            .unwrap()
+            .length,
         807.462
     );
 }
@@ -21290,7 +23417,8 @@ fn aurora_merged_zudrnkfbhx() {
     assert_delta!(
         aurora
             .path(Vec2::new(215.0, 591.0), Vec2::new(990.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         808.599
     );
 }
@@ -21300,7 +23428,8 @@ fn aurora_merged_bmojpkqlqa() {
     assert_delta!(
         aurora
             .path(Vec2::new(316.0, 85.0), Vec2::new(28.0, 631.0))
-            .len,
+            .unwrap()
+            .length,
         804.592
     );
 }
@@ -21310,7 +23439,8 @@ fn aurora_merged_xwkpkxpbwk() {
     assert_delta!(
         aurora
             .path(Vec2::new(180.0, 413.0), Vec2::new(905.0, 471.0))
-            .len,
+            .unwrap()
+            .length,
         795.09
     );
 }
@@ -21320,7 +23450,8 @@ fn aurora_merged_djgalrwjjv() {
     assert_delta!(
         aurora
             .path(Vec2::new(103.0, 443.0), Vec2::new(751.0, 68.0))
-            .len,
+            .unwrap()
+            .length,
         795.031
     );
 }
@@ -21330,7 +23461,8 @@ fn aurora_merged_zxzgqcwhtr() {
     assert_delta!(
         aurora
             .path(Vec2::new(148.0, 385.0), Vec2::new(844.0, 666.0))
-            .len,
+            .unwrap()
+            .length,
         800.41
     );
 }
@@ -21340,7 +23472,8 @@ fn aurora_merged_qwyugqxcdp() {
     assert_delta!(
         aurora
             .path(Vec2::new(884.0, 153.0), Vec2::new(106.0, 311.0))
-            .len,
+            .unwrap()
+            .length,
         822.316
     );
 }
@@ -21350,7 +23483,8 @@ fn aurora_merged_hbyxxnxdwv() {
     assert_delta!(
         aurora
             .path(Vec2::new(732.0, 521.0), Vec2::new(488.0, 51.0))
-            .len,
+            .unwrap()
+            .length,
         801.101
     );
 }
@@ -21360,7 +23494,8 @@ fn aurora_merged_wufuugkfzr() {
     assert_delta!(
         aurora
             .path(Vec2::new(172.0, 652.0), Vec2::new(596.0, 127.0))
-            .len,
+            .unwrap()
+            .length,
         803.854
     );
 }
@@ -21370,7 +23505,8 @@ fn aurora_merged_gikmehczfe() {
     assert_delta!(
         aurora
             .path(Vec2::new(489.0, 209.0), Vec2::new(264.0, 732.0))
-            .len,
+            .unwrap()
+            .length,
         806.518
     );
 }
@@ -21380,7 +23516,8 @@ fn aurora_merged_ljsnqnuipc() {
     assert_delta!(
         aurora
             .path(Vec2::new(330.0, 273.0), Vec2::new(671.0, 717.0))
-            .len,
+            .unwrap()
+            .length,
         809.472
     );
 }
@@ -21390,7 +23527,8 @@ fn aurora_merged_wtlcdpbcmm() {
     assert_delta!(
         aurora
             .path(Vec2::new(771.0, 426.0), Vec2::new(33.0, 664.0))
-            .len,
+            .unwrap()
+            .length,
         801.109
     );
 }
@@ -21400,7 +23538,8 @@ fn aurora_merged_rqqoenygqq() {
     assert_delta!(
         aurora
             .path(Vec2::new(419.0, 222.0), Vec2::new(856.0, 548.0))
-            .len,
+            .unwrap()
+            .length,
         804.135
     );
 }
@@ -21410,7 +23549,8 @@ fn aurora_merged_jhqhxlepjp() {
     assert_delta!(
         aurora
             .path(Vec2::new(312.0, 673.0), Vec2::new(446.0, 158.0))
-            .len,
+            .unwrap()
+            .length,
         808.4
     );
 }
@@ -21420,7 +23560,8 @@ fn aurora_merged_fwdjotfgnt() {
     assert_delta!(
         aurora
             .path(Vec2::new(276.0, 614.0), Vec2::new(367.0, 87.0))
-            .len,
+            .unwrap()
+            .length,
         808.781
     );
 }
@@ -21430,7 +23571,8 @@ fn aurora_merged_hqrphslqfc() {
     assert_delta!(
         aurora
             .path(Vec2::new(222.0, 65.0), Vec2::new(356.0, 621.0))
-            .len,
+            .unwrap()
+            .length,
         805.102
     );
 }
@@ -21440,7 +23582,8 @@ fn aurora_merged_bbgxxexkcf() {
     assert_delta!(
         aurora
             .path(Vec2::new(154.0, 555.0), Vec2::new(794.0, 296.0))
-            .len,
+            .unwrap()
+            .length,
         801.113
     );
 }
@@ -21450,7 +23593,8 @@ fn aurora_merged_snlasrrigg() {
     assert_delta!(
         aurora
             .path(Vec2::new(781.0, 216.0), Vec2::new(349.0, 595.0))
-            .len,
+            .unwrap()
+            .length,
         806.74
     );
 }
@@ -21460,7 +23604,8 @@ fn aurora_merged_ntueekpxto() {
     assert_delta!(
         aurora
             .path(Vec2::new(292.0, 674.0), Vec2::new(234.0, 62.0))
-            .len,
+            .unwrap()
+            .length,
         807.282
     );
 }
@@ -21470,7 +23615,8 @@ fn aurora_merged_aqhfgsblrw() {
     assert_delta!(
         aurora
             .path(Vec2::new(642.0, 714.0), Vec2::new(807.0, 176.0))
-            .len,
+            .unwrap()
+            .length,
         812.637
     );
 }
@@ -21480,7 +23626,8 @@ fn aurora_merged_qyqppwavew() {
     assert_delta!(
         aurora
             .path(Vec2::new(190.0, 523.0), Vec2::new(863.0, 385.0))
-            .len,
+            .unwrap()
+            .length,
         812.721
     );
 }
@@ -21490,7 +23637,8 @@ fn aurora_merged_dugtthssnt() {
     assert_delta!(
         aurora
             .path(Vec2::new(261.0, 316.0), Vec2::new(1006.0, 590.0))
-            .len,
+            .unwrap()
+            .length,
         804.976
     );
 }
@@ -21500,7 +23648,8 @@ fn aurora_merged_jujxliscow() {
     assert_delta!(
         aurora
             .path(Vec2::new(174.0, 241.0), Vec2::new(411.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         805.028
     );
 }
@@ -21510,7 +23659,8 @@ fn aurora_merged_weehxbvumy() {
     assert_delta!(
         aurora
             .path(Vec2::new(800.0, 138.0), Vec2::new(166.0, 499.0))
-            .len,
+            .unwrap()
+            .length,
         811.926
     );
 }
@@ -21520,7 +23670,8 @@ fn aurora_merged_pndjlccukm() {
     assert_delta!(
         aurora
             .path(Vec2::new(569.0, 656.0), Vec2::new(612.0, 197.0))
-            .len,
+            .unwrap()
+            .length,
         808.309
     );
 }
@@ -21530,7 +23681,8 @@ fn aurora_merged_rwrlpaogtu() {
     assert_delta!(
         aurora
             .path(Vec2::new(791.0, 380.0), Vec2::new(318.0, 696.0))
-            .len,
+            .unwrap()
+            .length,
         810.652
     );
 }
@@ -21540,7 +23692,8 @@ fn aurora_merged_mbcvghbdpw() {
     assert_delta!(
         aurora
             .path(Vec2::new(169.0, 188.0), Vec2::new(690.0, 606.0))
-            .len,
+            .unwrap()
+            .length,
         805.863
     );
 }
@@ -21550,7 +23703,8 @@ fn aurora_merged_rpnyghcyhs() {
     assert_delta!(
         aurora
             .path(Vec2::new(192.0, 516.0), Vec2::new(779.0, 126.0))
-            .len,
+            .unwrap()
+            .length,
         809.786
     );
 }
@@ -21560,7 +23714,8 @@ fn aurora_merged_wnsnmyvzcm() {
     assert_delta!(
         aurora
             .path(Vec2::new(807.0, 726.0), Vec2::new(118.0, 396.0))
-            .len,
+            .unwrap()
+            .length,
         808.414
     );
 }
@@ -21570,7 +23725,8 @@ fn aurora_merged_ohrxhecasy() {
     assert_delta!(
         aurora
             .path(Vec2::new(114.0, 422.0), Vec2::new(890.0, 245.0))
-            .len,
+            .unwrap()
+            .length,
         816.325
     );
 }
@@ -21580,7 +23736,8 @@ fn aurora_merged_hpwyjzyyas() {
     assert_delta!(
         aurora
             .path(Vec2::new(402.0, 171.0), Vec2::new(940.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         809.104
     );
 }
@@ -21590,7 +23747,8 @@ fn aurora_merged_punvxcyoov() {
     assert_delta!(
         aurora
             .path(Vec2::new(853.0, 511.0), Vec2::new(293.0, 84.0))
-            .len,
+            .unwrap()
+            .length,
         807.84
     );
 }
@@ -21600,7 +23758,8 @@ fn aurora_merged_ftmtcdeyar() {
     assert_delta!(
         aurora
             .path(Vec2::new(227.0, 155.0), Vec2::new(315.0, 721.0))
-            .len,
+            .unwrap()
+            .length,
         816.37
     );
 }
@@ -21610,7 +23769,8 @@ fn aurora_merged_dxdxmjikfv() {
     assert_delta!(
         aurora
             .path(Vec2::new(24.0, 654.0), Vec2::new(585.0, 387.0))
-            .len,
+            .unwrap()
+            .length,
         809.841
     );
 }
@@ -21620,7 +23780,8 @@ fn aurora_merged_drpcodubkj() {
     assert_delta!(
         aurora
             .path(Vec2::new(899.0, 555.0), Vec2::new(479.0, 52.0))
-            .len,
+            .unwrap()
+            .length,
         817.004
     );
 }
@@ -21630,7 +23791,8 @@ fn aurora_merged_uodhamzyow() {
     assert_delta!(
         aurora
             .path(Vec2::new(767.0, 526.0), Vec2::new(168.0, 238.0))
-            .len,
+            .unwrap()
+            .length,
         809.545
     );
 }
@@ -21640,7 +23802,8 @@ fn aurora_merged_eqdqbtxytm() {
     assert_delta!(
         aurora
             .path(Vec2::new(690.0, 110.0), Vec2::new(369.0, 590.0))
-            .len,
+            .unwrap()
+            .length,
         814.191
     );
 }
@@ -21650,7 +23813,8 @@ fn aurora_merged_jpvdgriurt() {
     assert_delta!(
         aurora
             .path(Vec2::new(333.0, 541.0), Vec2::new(743.0, 251.0))
-            .len,
+            .unwrap()
+            .length,
         812.785
     );
 }
@@ -21660,7 +23824,8 @@ fn aurora_merged_xpvrftszoc() {
     assert_delta!(
         aurora
             .path(Vec2::new(643.0, 131.0), Vec2::new(828.0, 657.0))
-            .len,
+            .unwrap()
+            .length,
         816.101
     );
 }
@@ -21670,7 +23835,8 @@ fn aurora_merged_flpjyswcax() {
     assert_delta!(
         aurora
             .path(Vec2::new(338.0, 746.0), Vec2::new(1019.0, 428.0))
-            .len,
+            .unwrap()
+            .length,
         813.889
     );
 }
@@ -21680,7 +23846,8 @@ fn aurora_merged_haciwikjnc() {
     assert_delta!(
         aurora
             .path(Vec2::new(116.0, 434.0), Vec2::new(872.0, 389.0))
-            .len,
+            .unwrap()
+            .length,
         815.274
     );
 }
@@ -21690,7 +23857,8 @@ fn aurora_merged_cjhxlpsnso() {
     assert_delta!(
         aurora
             .path(Vec2::new(694.0, 690.0), Vec2::new(552.0, 146.0))
-            .len,
+            .unwrap()
+            .length,
         817.379
     );
 }
@@ -21700,7 +23868,8 @@ fn aurora_merged_rrbslpvzhc() {
     assert_delta!(
         aurora
             .path(Vec2::new(2.0, 582.0), Vec2::new(614.0, 200.0))
-            .len,
+            .unwrap()
+            .length,
         811.781
     );
 }
@@ -21710,7 +23879,8 @@ fn aurora_merged_mgijeejosz() {
     assert_delta!(
         aurora
             .path(Vec2::new(863.0, 622.0), Vec2::new(86.0, 468.0))
-            .len,
+            .unwrap()
+            .length,
         817.818
     );
 }
@@ -21720,7 +23890,8 @@ fn aurora_merged_fgiqwqlvkq() {
     assert_delta!(
         aurora
             .path(Vec2::new(965.0, 567.0), Vec2::new(201.0, 357.0))
-            .len,
+            .unwrap()
+            .length,
         818.133
     );
 }
@@ -21730,7 +23901,8 @@ fn aurora_merged_nuobvnuxdq() {
     assert_delta!(
         aurora
             .path(Vec2::new(160.0, 584.0), Vec2::new(828.0, 344.0))
-            .len,
+            .unwrap()
+            .length,
         815.89
     );
 }
@@ -21740,7 +23912,8 @@ fn aurora_merged_wdwbwxssls() {
     assert_delta!(
         aurora
             .path(Vec2::new(95.0, 500.0), Vec2::new(898.0, 577.0))
-            .len,
+            .unwrap()
+            .length,
         824.9
     );
 }
@@ -21750,7 +23923,8 @@ fn aurora_merged_joqmbqspxa() {
     assert_delta!(
         aurora
             .path(Vec2::new(336.0, 516.0), Vec2::new(910.0, 170.0))
-            .len,
+            .unwrap()
+            .length,
         815.916
     );
 }
@@ -21760,7 +23934,8 @@ fn aurora_merged_qxwksggroz() {
     assert_delta!(
         aurora
             .path(Vec2::new(183.0, 417.0), Vec2::new(972.0, 284.0))
-            .len,
+            .unwrap()
+            .length,
         827.715
     );
 }
@@ -21770,7 +23945,8 @@ fn aurora_merged_lvkbyssbmy() {
     assert_delta!(
         aurora
             .path(Vec2::new(310.0, 589.0), Vec2::new(442.0, 64.0))
-            .len,
+            .unwrap()
+            .length,
         819.289
     );
 }
@@ -21780,7 +23956,8 @@ fn aurora_merged_argpytfaql() {
     assert_delta!(
         aurora
             .path(Vec2::new(448.0, 201.0), Vec2::new(663.0, 673.0))
-            .len,
+            .unwrap()
+            .length,
         824.22
     );
 }
@@ -21790,7 +23967,8 @@ fn aurora_merged_qyhrwxkkhl() {
     assert_delta!(
         aurora
             .path(Vec2::new(682.0, 626.0), Vec2::new(220.0, 198.0))
-            .len,
+            .unwrap()
+            .length,
         812.117
     );
 }
@@ -21800,7 +23978,8 @@ fn aurora_merged_eargojsxav() {
     assert_delta!(
         aurora
             .path(Vec2::new(362.0, 239.0), Vec2::new(963.0, 549.0))
-            .len,
+            .unwrap()
+            .length,
         815.571
     );
 }
@@ -21810,7 +23989,8 @@ fn aurora_merged_btmkqysign() {
     assert_delta!(
         aurora
             .path(Vec2::new(27.0, 175.0), Vec2::new(833.0, 200.0))
-            .len,
+            .unwrap()
+            .length,
         830.694
     );
 }
@@ -21820,7 +24000,8 @@ fn aurora_merged_nrjzgvfpoe() {
     assert_delta!(
         aurora
             .path(Vec2::new(840.0, 235.0), Vec2::new(240.0, 524.0))
-            .len,
+            .unwrap()
+            .length,
         819.65
     );
 }
@@ -21830,7 +24011,8 @@ fn aurora_merged_yuetfabqsn() {
     assert_delta!(
         aurora
             .path(Vec2::new(627.0, 147.0), Vec2::new(232.0, 634.0))
-            .len,
+            .unwrap()
+            .length,
         825.337
     );
 }
@@ -21840,7 +24022,8 @@ fn aurora_merged_hlfydfwfkt() {
     assert_delta!(
         aurora
             .path(Vec2::new(584.0, 174.0), Vec2::new(791.0, 688.0))
-            .len,
+            .unwrap()
+            .length,
         824.525
     );
 }
@@ -21850,7 +24033,8 @@ fn aurora_merged_etewnvnjha() {
     assert_delta!(
         aurora
             .path(Vec2::new(598.0, 609.0), Vec2::new(117.0, 176.0))
-            .len,
+            .unwrap()
+            .length,
         826.125
     );
 }
@@ -21860,7 +24044,8 @@ fn aurora_merged_fjfesseatu() {
     assert_delta!(
         aurora
             .path(Vec2::new(731.0, 61.0), Vec2::new(569.0, 593.0))
-            .len,
+            .unwrap()
+            .length,
         827.645
     );
 }
@@ -21870,7 +24055,8 @@ fn aurora_merged_tzgkukbtta() {
     assert_delta!(
         aurora
             .path(Vec2::new(810.0, 577.0), Vec2::new(11.0, 554.0))
-            .len,
+            .unwrap()
+            .length,
         831.355
     );
 }
@@ -21880,7 +24066,8 @@ fn aurora_merged_xzxxicvdfi() {
     assert_delta!(
         aurora
             .path(Vec2::new(435.0, 106.0), Vec2::new(511.0, 652.0))
-            .len,
+            .unwrap()
+            .length,
         834.216
     );
 }
@@ -21890,7 +24077,8 @@ fn aurora_merged_yopwpxvnhb() {
     assert_delta!(
         aurora
             .path(Vec2::new(806.0, 700.0), Vec2::new(327.0, 268.0))
-            .len,
+            .unwrap()
+            .length,
         822.886
     );
 }
@@ -21900,7 +24088,8 @@ fn aurora_merged_naidinrdoh() {
     assert_delta!(
         aurora
             .path(Vec2::new(111.0, 272.0), Vec2::new(781.0, 678.0))
-            .len,
+            .unwrap()
+            .length,
         822.422
     );
 }
@@ -21910,7 +24099,8 @@ fn aurora_merged_fbrhnzfpxf() {
     assert_delta!(
         aurora
             .path(Vec2::new(459.0, 55.0), Vec2::new(561.0, 617.0))
-            .len,
+            .unwrap()
+            .length,
         824.329
     );
 }
@@ -21920,7 +24110,8 @@ fn aurora_merged_bkmnswynhb() {
     assert_delta!(
         aurora
             .path(Vec2::new(766.0, 563.0), Vec2::new(225.0, 235.0))
-            .len,
+            .unwrap()
+            .length,
         821.762
     );
 }
@@ -21930,7 +24121,8 @@ fn aurora_merged_tgwfxobvzg() {
     assert_delta!(
         aurora
             .path(Vec2::new(765.0, 566.0), Vec2::new(58.0, 445.0))
-            .len,
+            .unwrap()
+            .length,
         822.746
     );
 }
@@ -21940,7 +24132,8 @@ fn aurora_merged_ykahssntei() {
     assert_delta!(
         aurora
             .path(Vec2::new(218.0, 494.0), Vec2::new(973.0, 374.0))
-            .len,
+            .unwrap()
+            .length,
         830.965
     );
 }
@@ -21950,7 +24143,8 @@ fn aurora_merged_jxhfqtyouz() {
     assert_delta!(
         aurora
             .path(Vec2::new(258.0, 395.0), Vec2::new(991.0, 434.0))
-            .len,
+            .unwrap()
+            .length,
         826.694
     );
 }
@@ -21960,7 +24154,8 @@ fn aurora_merged_vnfwmxdwjk() {
     assert_delta!(
         aurora
             .path(Vec2::new(4.0, 563.0), Vec2::new(640.0, 122.0))
-            .len,
+            .unwrap()
+            .length,
         824.564
     );
 }
@@ -21970,7 +24165,8 @@ fn aurora_merged_opivlvxlwu() {
     assert_delta!(
         aurora
             .path(Vec2::new(328.0, 108.0), Vec2::new(712.0, 564.0))
-            .len,
+            .unwrap()
+            .length,
         824.613
     );
 }
@@ -21980,7 +24176,8 @@ fn aurora_merged_gaavlizdmk() {
     assert_delta!(
         aurora
             .path(Vec2::new(871.0, 560.0), Vec2::new(68.0, 548.0))
-            .len,
+            .unwrap()
+            .length,
         834.2
     );
 }
@@ -21990,7 +24187,8 @@ fn aurora_merged_mtmjlasgtw() {
     assert_delta!(
         aurora
             .path(Vec2::new(990.0, 416.0), Vec2::new(235.0, 479.0))
-            .len,
+            .unwrap()
+            .length,
         826.094
     );
 }
@@ -22000,7 +24198,8 @@ fn aurora_merged_lwqvilfxmt() {
     assert_delta!(
         aurora
             .path(Vec2::new(673.0, 74.0), Vec2::new(200.0, 589.0))
-            .len,
+            .unwrap()
+            .length,
         827.608
     );
 }
@@ -22010,7 +24209,8 @@ fn aurora_merged_xwlwswnjui() {
     assert_delta!(
         aurora
             .path(Vec2::new(445.0, 183.0), Vec2::new(998.0, 631.0))
-            .len,
+            .unwrap()
+            .length,
         822.71
     );
 }
@@ -22020,7 +24220,8 @@ fn aurora_merged_kjkuhsxwuv() {
     assert_delta!(
         aurora
             .path(Vec2::new(815.0, 411.0), Vec2::new(37.0, 381.0))
-            .len,
+            .unwrap()
+            .length,
         826.113
     );
 }
@@ -22030,7 +24231,8 @@ fn aurora_merged_wxiibnrldy() {
     assert_delta!(
         aurora
             .path(Vec2::new(851.0, 368.0), Vec2::new(275.0, 618.0))
-            .len,
+            .unwrap()
+            .length,
         835.956
     );
 }
@@ -22040,7 +24242,8 @@ fn aurora_merged_fjuqgfofyx() {
     assert_delta!(
         aurora
             .path(Vec2::new(184.0, 671.0), Vec2::new(951.0, 467.0))
-            .len,
+            .unwrap()
+            .length,
         840.312
     );
 }
@@ -22050,7 +24253,8 @@ fn aurora_merged_zepupfxnys() {
     assert_delta!(
         aurora
             .path(Vec2::new(671.0, 245.0), Vec2::new(458.0, 630.0))
-            .len,
+            .unwrap()
+            .length,
         833.314
     );
 }
@@ -22060,7 +24264,8 @@ fn aurora_merged_giqzqjulsg() {
     assert_delta!(
         aurora
             .path(Vec2::new(650.0, 142.0), Vec2::new(550.0, 659.0))
-            .len,
+            .unwrap()
+            .length,
         837.833
     );
 }
@@ -22070,7 +24275,8 @@ fn aurora_merged_wtylnyrsxm() {
     assert_delta!(
         aurora
             .path(Vec2::new(845.0, 234.0), Vec2::new(347.0, 660.0))
-            .len,
+            .unwrap()
+            .length,
         835.072
     );
 }
@@ -22080,7 +24286,8 @@ fn aurora_merged_qeweovntgg() {
     assert_delta!(
         aurora
             .path(Vec2::new(16.0, 406.0), Vec2::new(777.0, 647.0))
-            .len,
+            .unwrap()
+            .length,
         824.615
     );
 }
@@ -22090,7 +24297,8 @@ fn aurora_merged_epubrprban() {
     assert_delta!(
         aurora
             .path(Vec2::new(139.0, 596.0), Vec2::new(919.0, 530.0))
-            .len,
+            .unwrap()
+            .length,
         834.986
     );
 }
@@ -22100,7 +24308,8 @@ fn aurora_merged_dsseyxfkya() {
     assert_delta!(
         aurora
             .path(Vec2::new(130.0, 102.0), Vec2::new(205.0, 683.0))
-            .len,
+            .unwrap()
+            .length,
         836.915
     );
 }
@@ -22110,7 +24319,8 @@ fn aurora_merged_qbkbyavmzj() {
     assert_delta!(
         aurora
             .path(Vec2::new(135.0, 429.0), Vec2::new(941.0, 292.0))
-            .len,
+            .unwrap()
+            .length,
         841.851
     );
 }
@@ -22120,7 +24330,8 @@ fn aurora_merged_sldjbrpokw() {
     assert_delta!(
         aurora
             .path(Vec2::new(44.0, 666.0), Vec2::new(649.0, 338.0))
-            .len,
+            .unwrap()
+            .length,
         848.395
     );
 }
@@ -22130,7 +24341,8 @@ fn aurora_merged_wlafkwbvjk() {
     assert_delta!(
         aurora
             .path(Vec2::new(892.0, 121.0), Vec2::new(593.0, 655.0))
-            .len,
+            .unwrap()
+            .length,
         836.481
     );
 }
@@ -22140,7 +24352,8 @@ fn aurora_merged_ezrozgsnts() {
     assert_delta!(
         aurora
             .path(Vec2::new(891.0, 289.0), Vec2::new(333.0, 714.0))
-            .len,
+            .unwrap()
+            .length,
         835.262
     );
 }
@@ -22150,7 +24363,8 @@ fn aurora_merged_ljkjkmsacb() {
     assert_delta!(
         aurora
             .path(Vec2::new(471.0, 637.0), Vec2::new(856.0, 135.0))
-            .len,
+            .unwrap()
+            .length,
         838.911
     );
 }
@@ -22160,7 +24374,8 @@ fn aurora_merged_spjervnjon() {
     assert_delta!(
         aurora
             .path(Vec2::new(730.0, 261.0), Vec2::new(288.0, 555.0))
-            .len,
+            .unwrap()
+            .length,
         835.407
     );
 }
@@ -22170,7 +24385,8 @@ fn aurora_merged_oteztbocbs() {
     assert_delta!(
         aurora
             .path(Vec2::new(602.0, 656.0), Vec2::new(185.0, 123.0))
-            .len,
+            .unwrap()
+            .length,
         840.842
     );
 }
@@ -22180,7 +24396,8 @@ fn aurora_merged_aulhxuatlq() {
     assert_delta!(
         aurora
             .path(Vec2::new(742.0, 94.0), Vec2::new(502.0, 582.0))
-            .len,
+            .unwrap()
+            .length,
         834.949
     );
 }
@@ -22190,7 +24407,8 @@ fn aurora_merged_iycjazqhyw() {
     assert_delta!(
         aurora
             .path(Vec2::new(775.0, 83.0), Vec2::new(371.0, 513.0))
-            .len,
+            .unwrap()
+            .length,
         833.295
     );
 }
@@ -22200,7 +24418,8 @@ fn aurora_merged_chptfdylfy() {
     assert_delta!(
         aurora
             .path(Vec2::new(97.0, 390.0), Vec2::new(855.0, 136.0))
-            .len,
+            .unwrap()
+            .length,
         849.319
     );
 }
@@ -22210,7 +24429,8 @@ fn aurora_merged_rbpqslkcea() {
     assert_delta!(
         aurora
             .path(Vec2::new(793.0, 723.0), Vec2::new(15.0, 514.0))
-            .len,
+            .unwrap()
+            .length,
         833.775
     );
 }
@@ -22220,7 +24440,8 @@ fn aurora_merged_bfqewblpkx() {
     assert_delta!(
         aurora
             .path(Vec2::new(12.0, 649.0), Vec2::new(623.0, 283.0))
-            .len,
+            .unwrap()
+            .length,
         840.518
     );
 }
@@ -22230,7 +24451,8 @@ fn aurora_merged_qfbrunjyup() {
     assert_delta!(
         aurora
             .path(Vec2::new(388.0, 113.0), Vec2::new(851.0, 646.0))
-            .len,
+            .unwrap()
+            .length,
         835.125
     );
 }
@@ -22240,7 +24462,8 @@ fn aurora_merged_jcfnsdhpxj() {
     assert_delta!(
         aurora
             .path(Vec2::new(704.0, 293.0), Vec2::new(152.0, 672.0))
-            .len,
+            .unwrap()
+            .length,
         845.296
     );
 }
@@ -22250,7 +24473,8 @@ fn aurora_merged_grewhumdbr() {
     assert_delta!(
         aurora
             .path(Vec2::new(153.0, 353.0), Vec2::new(926.0, 611.0))
-            .len,
+            .unwrap()
+            .length,
         838.012
     );
 }
@@ -22260,7 +24484,8 @@ fn aurora_merged_fpgogfcffu() {
     assert_delta!(
         aurora
             .path(Vec2::new(616.0, 173.0), Vec2::new(508.0, 659.0))
-            .len,
+            .unwrap()
+            .length,
         846.701
     );
 }
@@ -22270,7 +24495,8 @@ fn aurora_merged_ceetlimqht() {
     assert_delta!(
         aurora
             .path(Vec2::new(914.0, 478.0), Vec2::new(136.0, 724.0))
-            .len,
+            .unwrap()
+            .length,
         849.666
     );
 }
@@ -22280,7 +24506,8 @@ fn aurora_merged_bcxznhowjj() {
     assert_delta!(
         aurora
             .path(Vec2::new(186.0, 491.0), Vec2::new(824.0, 209.0))
-            .len,
+            .unwrap()
+            .length,
         837.497
     );
 }
@@ -22290,7 +24517,8 @@ fn aurora_merged_fqpypeuqxi() {
     assert_delta!(
         aurora
             .path(Vec2::new(731.0, 249.0), Vec2::new(475.0, 638.0))
-            .len,
+            .unwrap()
+            .length,
         835.744
     );
 }
@@ -22300,7 +24528,8 @@ fn aurora_merged_igxkkiiemz() {
     assert_delta!(
         aurora
             .path(Vec2::new(252.0, 590.0), Vec2::new(684.0, 243.0))
-            .len,
+            .unwrap()
+            .length,
         835.521
     );
 }
@@ -22310,7 +24539,8 @@ fn aurora_merged_ncojylcony() {
     assert_delta!(
         aurora
             .path(Vec2::new(21.0, 534.0), Vec2::new(782.0, 343.0))
-            .len,
+            .unwrap()
+            .length,
         846.53
     );
 }
@@ -22320,7 +24550,8 @@ fn aurora_merged_rgxabzbtkb() {
     assert_delta!(
         aurora
             .path(Vec2::new(160.0, 528.0), Vec2::new(716.0, 151.0))
-            .len,
+            .unwrap()
+            .length,
         842.423
     );
 }
@@ -22330,7 +24561,8 @@ fn aurora_merged_kspdmgnkst() {
     assert_delta!(
         aurora
             .path(Vec2::new(48.0, 433.0), Vec2::new(737.0, 46.0))
-            .len,
+            .unwrap()
+            .length,
         839.675
     );
 }
@@ -22340,7 +24572,8 @@ fn aurora_merged_rnbklwczoy() {
     assert_delta!(
         aurora
             .path(Vec2::new(217.0, 91.0), Vec2::new(951.0, 464.0))
-            .len,
+            .unwrap()
+            .length,
         836.113
     );
 }
@@ -22350,7 +24583,8 @@ fn aurora_merged_hlhzginorw() {
     assert_delta!(
         aurora
             .path(Vec2::new(824.0, 264.0), Vec2::new(370.0, 666.0))
-            .len,
+            .unwrap()
+            .length,
         847.26
     );
 }
@@ -22360,7 +24594,8 @@ fn aurora_merged_tjthmexswj() {
     assert_delta!(
         aurora
             .path(Vec2::new(536.0, 707.0), Vec2::new(366.0, 157.0))
-            .len,
+            .unwrap()
+            .length,
         847.501
     );
 }
@@ -22370,7 +24605,8 @@ fn aurora_merged_yorauvvjlu() {
     assert_delta!(
         aurora
             .path(Vec2::new(85.0, 455.0), Vec2::new(876.0, 244.0))
-            .len,
+            .unwrap()
+            .length,
         845.899
     );
 }
@@ -22380,7 +24616,8 @@ fn aurora_merged_tqodgsewzi() {
     assert_delta!(
         aurora
             .path(Vec2::new(126.0, 702.0), Vec2::new(436.0, 146.0))
-            .len,
+            .unwrap()
+            .length,
         844.3
     );
 }
@@ -22390,7 +24627,8 @@ fn aurora_merged_jukmmnilnl() {
     assert_delta!(
         aurora
             .path(Vec2::new(208.0, 679.0), Vec2::new(788.0, 350.0))
-            .len,
+            .unwrap()
+            .length,
         843.456
     );
 }
@@ -22400,7 +24638,8 @@ fn aurora_merged_vyxwlgcyxf() {
     assert_delta!(
         aurora
             .path(Vec2::new(767.0, 260.0), Vec2::new(13.0, 386.0))
-            .len,
+            .unwrap()
+            .length,
         840.46
     );
 }
@@ -22410,7 +24649,8 @@ fn aurora_merged_vsjucqeqrf() {
     assert_delta!(
         aurora
             .path(Vec2::new(585.0, 148.0), Vec2::new(274.0, 697.0))
-            .len,
+            .unwrap()
+            .length,
         840.362
     );
 }
@@ -22420,7 +24660,8 @@ fn aurora_merged_lbmspiumuv() {
     assert_delta!(
         aurora
             .path(Vec2::new(111.0, 657.0), Vec2::new(263.0, 24.0))
-            .len,
+            .unwrap()
+            .length,
         849.159
     );
 }
@@ -22430,7 +24671,8 @@ fn aurora_merged_ukzqlwtarq() {
     assert_delta!(
         aurora
             .path(Vec2::new(595.0, 681.0), Vec2::new(840.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         846.135
     );
 }
@@ -22440,7 +24682,8 @@ fn aurora_merged_bzpudnrbyc() {
     assert_delta!(
         aurora
             .path(Vec2::new(831.0, 688.0), Vec2::new(610.0, 118.0))
-            .len,
+            .unwrap()
+            .length,
         846.725
     );
 }
@@ -22450,7 +24693,8 @@ fn aurora_merged_ndxmeyzykl() {
     assert_delta!(
         aurora
             .path(Vec2::new(863.0, 220.0), Vec2::new(340.0, 713.0))
-            .len,
+            .unwrap()
+            .length,
         850.467
     );
 }
@@ -22460,7 +24704,8 @@ fn aurora_merged_aaqtarocjq() {
     assert_delta!(
         aurora
             .path(Vec2::new(910.0, 623.0), Vec2::new(164.0, 419.0))
-            .len,
+            .unwrap()
+            .length,
         838.546
     );
 }
@@ -22470,7 +24715,8 @@ fn aurora_merged_aohwwzladw() {
     assert_delta!(
         aurora
             .path(Vec2::new(37.0, 473.0), Vec2::new(849.0, 618.0))
-            .len,
+            .unwrap()
+            .length,
         851.089
     );
 }
@@ -22480,7 +24726,8 @@ fn aurora_merged_expnmmcqje() {
     assert_delta!(
         aurora
             .path(Vec2::new(320.0, 52.0), Vec2::new(706.0, 536.0))
-            .len,
+            .unwrap()
+            .length,
         841.934
     );
 }
@@ -22490,7 +24737,8 @@ fn aurora_merged_cjvrqhfczy() {
     assert_delta!(
         aurora
             .path(Vec2::new(839.0, 273.0), Vec2::new(272.0, 626.0))
-            .len,
+            .unwrap()
+            .length,
         848.35
     );
 }
@@ -22500,7 +24748,8 @@ fn aurora_merged_gzhyleliwq() {
     assert_delta!(
         aurora
             .path(Vec2::new(125.0, 104.0), Vec2::new(527.0, 617.0))
-            .len,
+            .unwrap()
+            .length,
         850.307
     );
 }
@@ -22510,7 +24759,8 @@ fn aurora_merged_shkwhhyyev() {
     assert_delta!(
         aurora
             .path(Vec2::new(26.0, 197.0), Vec2::new(883.0, 143.0))
-            .len,
+            .unwrap()
+            .length,
         872.744
     );
 }
@@ -22520,7 +24770,8 @@ fn aurora_merged_tgsgwkiarc() {
     assert_delta!(
         aurora
             .path(Vec2::new(202.0, 701.0), Vec2::new(941.0, 405.0))
-            .len,
+            .unwrap()
+            .length,
         855.231
     );
 }
@@ -22530,7 +24781,8 @@ fn aurora_merged_hdxwgqchbv() {
     assert_delta!(
         aurora
             .path(Vec2::new(396.0, 662.0), Vec2::new(787.0, 258.0))
-            .len,
+            .unwrap()
+            .length,
         852.654
     );
 }
@@ -22540,7 +24792,8 @@ fn aurora_merged_vksozdhgyp() {
     assert_delta!(
         aurora
             .path(Vec2::new(1001.0, 322.0), Vec2::new(206.0, 106.0))
-            .len,
+            .unwrap()
+            .length,
         844.661
     );
 }
@@ -22550,7 +24803,8 @@ fn aurora_merged_regjvehrnl() {
     assert_delta!(
         aurora
             .path(Vec2::new(561.0, 652.0), Vec2::new(268.0, 50.0))
-            .len,
+            .unwrap()
+            .length,
         853.912
     );
 }
@@ -22560,7 +24814,8 @@ fn aurora_merged_vrlfjzhpkf() {
     assert_delta!(
         aurora
             .path(Vec2::new(600.0, 152.0), Vec2::new(780.0, 686.0))
-            .len,
+            .unwrap()
+            .length,
         849.856
     );
 }
@@ -22570,7 +24825,8 @@ fn aurora_merged_ekkythuijx() {
     assert_delta!(
         aurora
             .path(Vec2::new(179.0, 357.0), Vec2::new(962.0, 599.0))
-            .len,
+            .unwrap()
+            .length,
         846.456
     );
 }
@@ -22580,7 +24836,8 @@ fn aurora_merged_hzcqgymtfr() {
     assert_delta!(
         aurora
             .path(Vec2::new(622.0, 255.0), Vec2::new(136.0, 735.0))
-            .len,
+            .unwrap()
+            .length,
         846.78
     );
 }
@@ -22590,7 +24847,8 @@ fn aurora_merged_eyyjeauteu() {
     assert_delta!(
         aurora
             .path(Vec2::new(851.0, 669.0), Vec2::new(634.0, 117.0))
-            .len,
+            .unwrap()
+            .length,
         848.382
     );
 }
@@ -22600,7 +24858,8 @@ fn aurora_merged_ackfxixlbs() {
     assert_delta!(
         aurora
             .path(Vec2::new(303.0, 50.0), Vec2::new(912.0, 530.0))
-            .len,
+            .unwrap()
+            .length,
         843.874
     );
 }
@@ -22610,7 +24869,8 @@ fn aurora_merged_skmkgdvisf() {
     assert_delta!(
         aurora
             .path(Vec2::new(926.0, 591.0), Vec2::new(376.0, 241.0))
-            .len,
+            .unwrap()
+            .length,
         847.603
     );
 }
@@ -22620,7 +24880,8 @@ fn aurora_merged_pfvvloslpv() {
     assert_delta!(
         aurora
             .path(Vec2::new(872.0, 559.0), Vec2::new(101.0, 226.0))
-            .len,
+            .unwrap()
+            .length,
         848.502
     );
 }
@@ -22630,7 +24891,8 @@ fn aurora_merged_yuaqojsbag() {
     assert_delta!(
         aurora
             .path(Vec2::new(380.0, 79.0), Vec2::new(648.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         853.052
     );
 }
@@ -22640,7 +24902,8 @@ fn aurora_merged_fvfdsgcpwv() {
     assert_delta!(
         aurora
             .path(Vec2::new(982.0, 564.0), Vec2::new(213.0, 345.0))
-            .len,
+            .unwrap()
+            .length,
         848.372
     );
 }
@@ -22650,7 +24913,8 @@ fn aurora_merged_afldheqmfc() {
     assert_delta!(
         aurora
             .path(Vec2::new(35.0, 320.0), Vec2::new(871.0, 318.0))
-            .len,
+            .unwrap()
+            .length,
         859.241
     );
 }
@@ -22660,7 +24924,8 @@ fn aurora_merged_ulowbpobqz() {
     assert_delta!(
         aurora
             .path(Vec2::new(487.0, 47.0), Vec2::new(897.0, 590.0))
-            .len,
+            .unwrap()
+            .length,
         855.591
     );
 }
@@ -22670,7 +24935,8 @@ fn aurora_merged_bhfgjiqhoj() {
     assert_delta!(
         aurora
             .path(Vec2::new(967.0, 360.0), Vec2::new(165.0, 133.0))
-            .len,
+            .unwrap()
+            .length,
         850.887
     );
 }
@@ -22680,7 +24946,8 @@ fn aurora_merged_tllnjqdwhd() {
     assert_delta!(
         aurora
             .path(Vec2::new(445.0, 626.0), Vec2::new(831.0, 122.0))
-            .len,
+            .unwrap()
+            .length,
         852.745
     );
 }
@@ -22690,7 +24957,8 @@ fn aurora_merged_qecsborhkv() {
     assert_delta!(
         aurora
             .path(Vec2::new(217.0, 621.0), Vec2::new(651.0, 112.0))
-            .len,
+            .unwrap()
+            .length,
         852.612
     );
 }
@@ -22700,7 +24968,8 @@ fn aurora_merged_vjsrvnhyra() {
     assert_delta!(
         aurora
             .path(Vec2::new(312.0, 510.0), Vec2::new(810.0, 103.0))
-            .len,
+            .unwrap()
+            .length,
         854.266
     );
 }
@@ -22710,7 +24979,8 @@ fn aurora_merged_yufyvtwcja() {
     assert_delta!(
         aurora
             .path(Vec2::new(82.0, 365.0), Vec2::new(894.0, 423.0))
-            .len,
+            .unwrap()
+            .length,
         857.783
     );
 }
@@ -22720,7 +24990,8 @@ fn aurora_merged_pjezszeakb() {
     assert_delta!(
         aurora
             .path(Vec2::new(915.0, 280.0), Vec2::new(69.0, 324.0))
-            .len,
+            .unwrap()
+            .length,
         865.32
     );
 }
@@ -22730,7 +25001,8 @@ fn aurora_merged_fhxionvuij() {
     assert_delta!(
         aurora
             .path(Vec2::new(877.0, 262.0), Vec2::new(259.0, 575.0))
-            .len,
+            .unwrap()
+            .length,
         852.767
     );
 }
@@ -22740,7 +25012,8 @@ fn aurora_merged_nkykpmxsia() {
     assert_delta!(
         aurora
             .path(Vec2::new(990.0, 291.0), Vec2::new(145.0, 332.0))
-            .len,
+            .unwrap()
+            .length,
         862.848
     );
 }
@@ -22750,7 +25023,8 @@ fn aurora_merged_ckbnowgoba() {
     assert_delta!(
         aurora
             .path(Vec2::new(596.0, 662.0), Vec2::new(106.0, 157.0))
-            .len,
+            .unwrap()
+            .length,
         857.789
     );
 }
@@ -22760,7 +25034,8 @@ fn aurora_merged_uezsnbyzjo() {
     assert_delta!(
         aurora
             .path(Vec2::new(1020.0, 303.0), Vec2::new(279.0, 508.0))
-            .len,
+            .unwrap()
+            .length,
         857.278
     );
 }
@@ -22770,7 +25045,8 @@ fn aurora_merged_lfgkdffvqf() {
     assert_delta!(
         aurora
             .path(Vec2::new(807.0, 100.0), Vec2::new(373.0, 517.0))
-            .len,
+            .unwrap()
+            .length,
         858.409
     );
 }
@@ -22780,7 +25056,8 @@ fn aurora_merged_sigsdauzad() {
     assert_delta!(
         aurora
             .path(Vec2::new(442.0, 658.0), Vec2::new(420.0, 205.0))
-            .len,
+            .unwrap()
+            .length,
         864.418
     );
 }
@@ -22790,7 +25067,8 @@ fn aurora_merged_ijxlfimkab() {
     assert_delta!(
         aurora
             .path(Vec2::new(27.0, 440.0), Vec2::new(844.0, 297.0))
-            .len,
+            .unwrap()
+            .length,
         866.495
     );
 }
@@ -22800,7 +25078,8 @@ fn aurora_merged_uerpmqcmyh() {
     assert_delta!(
         aurora
             .path(Vec2::new(222.0, 586.0), Vec2::new(730.0, 227.0))
-            .len,
+            .unwrap()
+            .length,
         856.371
     );
 }
@@ -22810,7 +25089,8 @@ fn aurora_merged_zomjxasgvv() {
     assert_delta!(
         aurora
             .path(Vec2::new(935.0, 564.0), Vec2::new(105.0, 468.0))
-            .len,
+            .unwrap()
+            .length,
         856.26
     );
 }
@@ -22820,7 +25100,8 @@ fn aurora_merged_ogxquacrwh() {
     assert_delta!(
         aurora
             .path(Vec2::new(33.0, 497.0), Vec2::new(873.0, 608.0))
-            .len,
+            .unwrap()
+            .length,
         870.469
     );
 }
@@ -22830,7 +25111,8 @@ fn aurora_merged_ridsiqviak() {
     assert_delta!(
         aurora
             .path(Vec2::new(873.0, 378.0), Vec2::new(40.0, 379.0))
-            .len,
+            .unwrap()
+            .length,
         868.815
     );
 }
@@ -22840,7 +25122,8 @@ fn aurora_merged_ylcddhhtcn() {
     assert_delta!(
         aurora
             .path(Vec2::new(26.0, 594.0), Vec2::new(678.0, 279.0))
-            .len,
+            .unwrap()
+            .length,
         859.465
     );
 }
@@ -22850,7 +25133,8 @@ fn aurora_merged_ieoppledsx() {
     assert_delta!(
         aurora
             .path(Vec2::new(5.0, 632.0), Vec2::new(645.0, 364.0))
-            .len,
+            .unwrap()
+            .length,
         853.965
     );
 }
@@ -22860,7 +25144,8 @@ fn aurora_merged_iegnkqhijw() {
     assert_delta!(
         aurora
             .path(Vec2::new(717.0, 50.0), Vec2::new(941.0, 607.0))
-            .len,
+            .unwrap()
+            .length,
         862.472
     );
 }
@@ -22870,7 +25155,8 @@ fn aurora_merged_aspbvfcwud() {
     assert_delta!(
         aurora
             .path(Vec2::new(787.0, 107.0), Vec2::new(339.0, 545.0))
-            .len,
+            .unwrap()
+            .length,
         857.178
     );
 }
@@ -22880,7 +25166,8 @@ fn aurora_merged_nfkmodptor() {
     assert_delta!(
         aurora
             .path(Vec2::new(836.0, 654.0), Vec2::new(108.0, 209.0))
-            .len,
+            .unwrap()
+            .length,
         857.599
     );
 }
@@ -22890,7 +25177,8 @@ fn aurora_merged_bhjfjnxgiv() {
     assert_delta!(
         aurora
             .path(Vec2::new(77.0, 170.0), Vec2::new(913.0, 314.0))
-            .len,
+            .unwrap()
+            .length,
         865.426
     );
 }
@@ -22900,7 +25188,8 @@ fn aurora_merged_evzntizmyu() {
     assert_delta!(
         aurora
             .path(Vec2::new(698.0, 675.0), Vec2::new(406.0, 213.0))
-            .len,
+            .unwrap()
+            .length,
         859.011
     );
 }
@@ -22910,7 +25199,8 @@ fn aurora_merged_czzqrumgwn() {
     assert_delta!(
         aurora
             .path(Vec2::new(230.0, 551.0), Vec2::new(973.0, 437.0))
-            .len,
+            .unwrap()
+            .length,
         861.276
     );
 }
@@ -22920,7 +25210,8 @@ fn aurora_merged_jmqozweiqv() {
     assert_delta!(
         aurora
             .path(Vec2::new(336.0, 531.0), Vec2::new(764.0, 79.0))
-            .len,
+            .unwrap()
+            .length,
         861.172
     );
 }
@@ -22930,7 +25221,8 @@ fn aurora_merged_swdowkcvns() {
     assert_delta!(
         aurora
             .path(Vec2::new(693.0, 621.0), Vec2::new(664.0, 87.0))
-            .len,
+            .unwrap()
+            .length,
         863.373
     );
 }
@@ -22940,7 +25232,8 @@ fn aurora_merged_tzwbwqiyfr() {
     assert_delta!(
         aurora
             .path(Vec2::new(794.0, 716.0), Vec2::new(308.0, 238.0))
-            .len,
+            .unwrap()
+            .length,
         862.795
     );
 }
@@ -22950,7 +25243,8 @@ fn aurora_merged_qwkjjqbebl() {
     assert_delta!(
         aurora
             .path(Vec2::new(566.0, 653.0), Vec2::new(661.0, 118.0))
-            .len,
+            .unwrap()
+            .length,
         859.511
     );
 }
@@ -22960,7 +25254,8 @@ fn aurora_merged_vrslqwzssi() {
     assert_delta!(
         aurora
             .path(Vec2::new(348.0, 653.0), Vec2::new(604.0, 109.0))
-            .len,
+            .unwrap()
+            .length,
         863.824
     );
 }
@@ -22970,7 +25265,8 @@ fn aurora_merged_lacibxvkig() {
     assert_delta!(
         aurora
             .path(Vec2::new(903.0, 137.0), Vec2::new(181.0, 450.0))
-            .len,
+            .unwrap()
+            .length,
         870.11
     );
 }
@@ -22980,7 +25276,8 @@ fn aurora_merged_kwqzyfxunu() {
     assert_delta!(
         aurora
             .path(Vec2::new(826.0, 108.0), Vec2::new(466.0, 648.0))
-            .len,
+            .unwrap()
+            .length,
         863.943
     );
 }
@@ -22990,7 +25287,8 @@ fn aurora_merged_eaezvohzds() {
     assert_delta!(
         aurora
             .path(Vec2::new(181.0, 689.0), Vec2::new(777.0, 384.0))
-            .len,
+            .unwrap()
+            .length,
         865.801
     );
 }
@@ -23000,7 +25298,8 @@ fn aurora_merged_vnqqtexpkw() {
     assert_delta!(
         aurora
             .path(Vec2::new(974.0, 404.0), Vec2::new(162.0, 284.0))
-            .len,
+            .unwrap()
+            .length,
         864.012
     );
 }
@@ -23010,7 +25309,8 @@ fn aurora_merged_obtzwhzuiz() {
     assert_delta!(
         aurora
             .path(Vec2::new(351.0, 116.0), Vec2::new(932.0, 595.0))
-            .len,
+            .unwrap()
+            .length,
         864.161
     );
 }
@@ -23020,7 +25320,8 @@ fn aurora_merged_lxfdrguftu() {
     assert_delta!(
         aurora
             .path(Vec2::new(782.0, 83.0), Vec2::new(687.0, 674.0))
-            .len,
+            .unwrap()
+            .length,
         873.644
     );
 }
@@ -23030,7 +25331,8 @@ fn aurora_merged_hkbvzrrclg() {
     assert_delta!(
         aurora
             .path(Vec2::new(642.0, 626.0), Vec2::new(59.0, 183.0))
-            .len,
+            .unwrap()
+            .length,
         870.017
     );
 }
@@ -23040,7 +25342,8 @@ fn aurora_merged_umsfyhqekj() {
     assert_delta!(
         aurora
             .path(Vec2::new(708.0, 83.0), Vec2::new(625.0, 636.0))
-            .len,
+            .unwrap()
+            .length,
         872.761
     );
 }
@@ -23050,7 +25353,8 @@ fn aurora_merged_swukqdcjeq() {
     assert_delta!(
         aurora
             .path(Vec2::new(975.0, 587.0), Vec2::new(124.0, 506.0))
-            .len,
+            .unwrap()
+            .length,
         877.18
     );
 }
@@ -23060,7 +25364,8 @@ fn aurora_merged_xfqkcddiug() {
     assert_delta!(
         aurora
             .path(Vec2::new(681.0, 601.0), Vec2::new(82.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         860.919
     );
 }
@@ -23070,7 +25375,8 @@ fn aurora_merged_tzcxqkipjk() {
     assert_delta!(
         aurora
             .path(Vec2::new(51.0, 398.0), Vec2::new(860.0, 224.0))
-            .len,
+            .unwrap()
+            .length,
         877.405
     );
 }
@@ -23080,7 +25386,8 @@ fn aurora_merged_poishxyunt() {
     assert_delta!(
         aurora
             .path(Vec2::new(158.0, 255.0), Vec2::new(977.0, 464.0))
-            .len,
+            .unwrap()
+            .length,
         867.571
     );
 }
@@ -23090,7 +25397,8 @@ fn aurora_merged_maoyzipmpz() {
     assert_delta!(
         aurora
             .path(Vec2::new(796.0, 93.0), Vec2::new(676.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         871.55
     );
 }
@@ -23100,7 +25408,8 @@ fn aurora_merged_gobymcraid() {
     assert_delta!(
         aurora
             .path(Vec2::new(975.0, 580.0), Vec2::new(122.0, 560.0))
-            .len,
+            .unwrap()
+            .length,
         875.655
     );
 }
@@ -23110,7 +25419,8 @@ fn aurora_merged_dlojrxmzhf() {
     assert_delta!(
         aurora
             .path(Vec2::new(619.0, 173.0), Vec2::new(335.0, 672.0))
-            .len,
+            .unwrap()
+            .length,
         869.388
     );
 }
@@ -23120,7 +25430,8 @@ fn aurora_merged_qmashfpbfr() {
     assert_delta!(
         aurora
             .path(Vec2::new(50.0, 642.0), Vec2::new(599.0, 180.0))
-            .len,
+            .unwrap()
+            .length,
         871.439
     );
 }
@@ -23130,7 +25441,8 @@ fn aurora_merged_qpwcncokfl() {
     assert_delta!(
         aurora
             .path(Vec2::new(663.0, 125.0), Vec2::new(784.0, 679.0))
-            .len,
+            .unwrap()
+            .length,
         875.38
     );
 }
@@ -23140,7 +25452,8 @@ fn aurora_merged_vmtayyybix() {
     assert_delta!(
         aurora
             .path(Vec2::new(345.0, 241.0), Vec2::new(619.0, 737.0))
-            .len,
+            .unwrap()
+            .length,
         879.752
     );
 }
@@ -23150,7 +25463,8 @@ fn aurora_merged_wuafcpyjov() {
     assert_delta!(
         aurora
             .path(Vec2::new(759.0, 172.0), Vec2::new(260.0, 581.0))
-            .len,
+            .unwrap()
+            .length,
         882.386
     );
 }
@@ -23160,7 +25474,8 @@ fn aurora_merged_vujnywdetb() {
     assert_delta!(
         aurora
             .path(Vec2::new(146.0, 651.0), Vec2::new(816.0, 322.0))
-            .len,
+            .unwrap()
+            .length,
         871.7
     );
 }
@@ -23170,7 +25485,8 @@ fn aurora_merged_awkmkiocjz() {
     assert_delta!(
         aurora
             .path(Vec2::new(39.0, 550.0), Vec2::new(709.0, 111.0))
-            .len,
+            .unwrap()
+            .length,
         863.178
     );
 }
@@ -23180,7 +25496,8 @@ fn aurora_merged_djfzutmygt() {
     assert_delta!(
         aurora
             .path(Vec2::new(761.0, 93.0), Vec2::new(241.0, 560.0))
-            .len,
+            .unwrap()
+            .length,
         869.443
     );
 }
@@ -23190,7 +25507,8 @@ fn aurora_merged_ekijimilnl() {
     assert_delta!(
         aurora
             .path(Vec2::new(708.0, 175.0), Vec2::new(33.0, 573.0))
-            .len,
+            .unwrap()
+            .length,
         877.0
     );
 }
@@ -23200,7 +25518,8 @@ fn aurora_merged_tamhztxeyu() {
     assert_delta!(
         aurora
             .path(Vec2::new(746.0, 149.0), Vec2::new(158.0, 540.0))
-            .len,
+            .unwrap()
+            .length,
         874.233
     );
 }
@@ -23210,7 +25529,8 @@ fn aurora_merged_unovkotozd() {
     assert_delta!(
         aurora
             .path(Vec2::new(351.0, 738.0), Vec2::new(350.0, 258.0))
-            .len,
+            .unwrap()
+            .length,
         877.066
     );
 }
@@ -23220,7 +25540,8 @@ fn aurora_merged_iwfxwtpywt() {
     assert_delta!(
         aurora
             .path(Vec2::new(908.0, 584.0), Vec2::new(58.0, 552.0))
-            .len,
+            .unwrap()
+            .length,
         884.749
     );
 }
@@ -23230,7 +25551,8 @@ fn aurora_merged_qflfqtxscf() {
     assert_delta!(
         aurora
             .path(Vec2::new(647.0, 723.0), Vec2::new(868.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         879.643
     );
 }
@@ -23240,7 +25562,8 @@ fn aurora_merged_ynzkscunvm() {
     assert_delta!(
         aurora
             .path(Vec2::new(56.0, 667.0), Vec2::new(598.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         880.736
     );
 }
@@ -23250,7 +25573,8 @@ fn aurora_merged_yathjglwio() {
     assert_delta!(
         aurora
             .path(Vec2::new(130.0, 685.0), Vec2::new(777.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         873.798
     );
 }
@@ -23260,7 +25584,8 @@ fn aurora_merged_xnfylsymeq() {
     assert_delta!(
         aurora
             .path(Vec2::new(20.0, 402.0), Vec2::new(823.0, 645.0))
-            .len,
+            .unwrap()
+            .length,
         872.457
     );
 }
@@ -23270,7 +25595,8 @@ fn aurora_merged_oxlyskhdyu() {
     assert_delta!(
         aurora
             .path(Vec2::new(266.0, 98.0), Vec2::new(796.0, 575.0))
-            .len,
+            .unwrap()
+            .length,
         870.671
     );
 }
@@ -23280,7 +25606,8 @@ fn aurora_merged_vkwhtibhtm() {
     assert_delta!(
         aurora
             .path(Vec2::new(262.0, 582.0), Vec2::new(723.0, 61.0))
-            .len,
+            .unwrap()
+            .length,
         872.43
     );
 }
@@ -23290,7 +25617,8 @@ fn aurora_merged_yrkoibhhai() {
     assert_delta!(
         aurora
             .path(Vec2::new(201.0, 576.0), Vec2::new(582.0, 30.0))
-            .len,
+            .unwrap()
+            .length,
         879.565
     );
 }
@@ -23300,7 +25628,8 @@ fn aurora_merged_puvwjtcsia() {
     assert_delta!(
         aurora
             .path(Vec2::new(703.0, 260.0), Vec2::new(459.0, 672.0))
-            .len,
+            .unwrap()
+            .length,
         875.169
     );
 }
@@ -23310,7 +25639,8 @@ fn aurora_merged_pftzhybuje() {
     assert_delta!(
         aurora
             .path(Vec2::new(189.0, 467.0), Vec2::new(997.0, 399.0))
-            .len,
+            .unwrap()
+            .length,
         873.677
     );
 }
@@ -23320,7 +25650,8 @@ fn aurora_merged_dtgisybkdy() {
     assert_delta!(
         aurora
             .path(Vec2::new(15.0, 352.0), Vec2::new(882.0, 253.0))
-            .len,
+            .unwrap()
+            .length,
         891.072
     );
 }
@@ -23330,7 +25661,8 @@ fn aurora_merged_utgdioksjo() {
     assert_delta!(
         aurora
             .path(Vec2::new(430.0, 224.0), Vec2::new(858.0, 629.0))
-            .len,
+            .unwrap()
+            .length,
         881.87
     );
 }
@@ -23340,7 +25672,8 @@ fn aurora_merged_wkiamzlypj() {
     assert_delta!(
         aurora
             .path(Vec2::new(459.0, 665.0), Vec2::new(314.0, 92.0))
-            .len,
+            .unwrap()
+            .length,
         891.913
     );
 }
@@ -23350,7 +25683,8 @@ fn aurora_merged_lqakjgkvpd() {
     assert_delta!(
         aurora
             .path(Vec2::new(317.0, 620.0), Vec2::new(687.0, 163.0))
-            .len,
+            .unwrap()
+            .length,
         886.015
     );
 }
@@ -23360,7 +25694,8 @@ fn aurora_merged_jqijvmmrvb() {
     assert_delta!(
         aurora
             .path(Vec2::new(358.0, 699.0), Vec2::new(305.0, 93.0))
-            .len,
+            .unwrap()
+            .length,
         883.091
     );
 }
@@ -23370,7 +25705,8 @@ fn aurora_merged_rpcpupdvvr() {
     assert_delta!(
         aurora
             .path(Vec2::new(121.0, 375.0), Vec2::new(991.0, 291.0))
-            .len,
+            .unwrap()
+            .length,
         887.857
     );
 }
@@ -23380,7 +25716,8 @@ fn aurora_merged_kzslumltzq() {
     assert_delta!(
         aurora
             .path(Vec2::new(766.0, 713.0), Vec2::new(787.0, 77.0))
-            .len,
+            .unwrap()
+            .length,
         887.072
     );
 }
@@ -23390,7 +25727,8 @@ fn aurora_merged_rmthpykhiv() {
     assert_delta!(
         aurora
             .path(Vec2::new(605.0, 173.0), Vec2::new(522.0, 708.0))
-            .len,
+            .unwrap()
+            .length,
         885.674
     );
 }
@@ -23400,7 +25738,8 @@ fn aurora_merged_fcxrzgwsmg() {
     assert_delta!(
         aurora
             .path(Vec2::new(23.0, 632.0), Vec2::new(586.0, 161.0))
-            .len,
+            .unwrap()
+            .length,
         875.728
     );
 }
@@ -23410,7 +25749,8 @@ fn aurora_merged_svbqhejwvo() {
     assert_delta!(
         aurora
             .path(Vec2::new(718.0, 91.0), Vec2::new(189.0, 594.0))
-            .len,
+            .unwrap()
+            .length,
         877.376
     );
 }
@@ -23420,7 +25760,8 @@ fn aurora_merged_fcluoorlqa() {
     assert_delta!(
         aurora
             .path(Vec2::new(724.0, 637.0), Vec2::new(174.0, 146.0))
-            .len,
+            .unwrap()
+            .length,
         879.025
     );
 }
@@ -23430,7 +25771,8 @@ fn aurora_merged_oidmahtqie() {
     assert_delta!(
         aurora
             .path(Vec2::new(334.0, 57.0), Vec2::new(251.0, 711.0))
-            .len,
+            .unwrap()
+            .length,
         888.721
     );
 }
@@ -23440,7 +25782,8 @@ fn aurora_merged_fajgqpqufm() {
     assert_delta!(
         aurora
             .path(Vec2::new(136.0, 131.0), Vec2::new(943.0, 391.0))
-            .len,
+            .unwrap()
+            .length,
         879.822
     );
 }
@@ -23450,7 +25793,8 @@ fn aurora_merged_dnsgmczczu() {
     assert_delta!(
         aurora
             .path(Vec2::new(505.0, 663.0), Vec2::new(754.0, 267.0))
-            .len,
+            .unwrap()
+            .length,
         885.578
     );
 }
@@ -23460,7 +25804,8 @@ fn aurora_merged_pesixvdcdl() {
     assert_delta!(
         aurora
             .path(Vec2::new(31.0, 450.0), Vec2::new(821.0, 401.0))
-            .len,
+            .unwrap()
+            .length,
         879.519
     );
 }
@@ -23470,7 +25815,8 @@ fn aurora_merged_sgdcqknguq() {
     assert_delta!(
         aurora
             .path(Vec2::new(13.0, 190.0), Vec2::new(807.0, 544.0))
-            .len,
+            .unwrap()
+            .length,
         876.332
     );
 }
@@ -23480,7 +25826,8 @@ fn aurora_merged_xvjxqclumu() {
     assert_delta!(
         aurora
             .path(Vec2::new(231.0, 679.0), Vec2::new(455.0, 58.0))
-            .len,
+            .unwrap()
+            .length,
         893.715
     );
 }
@@ -23490,7 +25837,8 @@ fn aurora_merged_milprbplao() {
     assert_delta!(
         aurora
             .path(Vec2::new(754.0, 697.0), Vec2::new(609.0, 160.0))
-            .len,
+            .unwrap()
+            .length,
         884.499
     );
 }
@@ -23500,7 +25848,8 @@ fn aurora_merged_glzilivxrn() {
     assert_delta!(
         aurora
             .path(Vec2::new(782.0, 68.0), Vec2::new(481.0, 615.0))
-            .len,
+            .unwrap()
+            .length,
         885.976
     );
 }
@@ -23510,7 +25859,8 @@ fn aurora_merged_amqhfkbqxn() {
     assert_delta!(
         aurora
             .path(Vec2::new(927.0, 334.0), Vec2::new(96.0, 468.0))
-            .len,
+            .unwrap()
+            .length,
         890.27
     );
 }
@@ -23520,7 +25870,8 @@ fn aurora_merged_kmigostwdv() {
     assert_delta!(
         aurora
             .path(Vec2::new(772.0, 215.0), Vec2::new(382.0, 626.0))
-            .len,
+            .unwrap()
+            .length,
         885.467
     );
 }
@@ -23530,7 +25881,8 @@ fn aurora_merged_loboiwaafs() {
     assert_delta!(
         aurora
             .path(Vec2::new(181.0, 527.0), Vec2::new(1023.0, 605.0))
-            .len,
+            .unwrap()
+            .length,
         886.561
     );
 }
@@ -23540,7 +25892,8 @@ fn aurora_merged_wxwwhoxaxy() {
     assert_delta!(
         aurora
             .path(Vec2::new(993.0, 299.0), Vec2::new(290.0, 657.0))
-            .len,
+            .unwrap()
+            .length,
         896.545
     );
 }
@@ -23550,7 +25903,8 @@ fn aurora_merged_vurchgqpit() {
     assert_delta!(
         aurora
             .path(Vec2::new(731.0, 381.0), Vec2::new(4.0, 612.0))
-            .len,
+            .unwrap()
+            .length,
         881.403
     );
 }
@@ -23560,7 +25914,8 @@ fn aurora_merged_akvpgtuvbq() {
     assert_delta!(
         aurora
             .path(Vec2::new(43.0, 178.0), Vec2::new(650.0, 624.0))
-            .len,
+            .unwrap()
+            .length,
         889.061
     );
 }
@@ -23570,7 +25925,8 @@ fn aurora_merged_nwvzdumdfx() {
     assert_delta!(
         aurora
             .path(Vec2::new(807.0, 84.0), Vec2::new(278.0, 533.0))
-            .len,
+            .unwrap()
+            .length,
         882.031
     );
 }
@@ -23580,7 +25936,8 @@ fn aurora_merged_zxctkxfhoe() {
     assert_delta!(
         aurora
             .path(Vec2::new(650.0, 192.0), Vec2::new(365.0, 615.0))
-            .len,
+            .unwrap()
+            .length,
         881.064
     );
 }
@@ -23590,7 +25947,8 @@ fn aurora_merged_arvhiidmec() {
     assert_delta!(
         aurora
             .path(Vec2::new(224.0, 61.0), Vec2::new(619.0, 577.0))
-            .len,
+            .unwrap()
+            .length,
         882.891
     );
 }
@@ -23600,7 +25958,8 @@ fn aurora_merged_olfscfouqy() {
     assert_delta!(
         aurora
             .path(Vec2::new(290.0, 640.0), Vec2::new(986.0, 298.0))
-            .len,
+            .unwrap()
+            .length,
         896.034
     );
 }
@@ -23610,7 +25969,8 @@ fn aurora_merged_ipqzhnqcwx() {
     assert_delta!(
         aurora
             .path(Vec2::new(607.0, 117.0), Vec2::new(1016.0, 613.0))
-            .len,
+            .unwrap()
+            .length,
         879.512
     );
 }
@@ -23620,7 +25980,8 @@ fn aurora_merged_qbticsdeca() {
     assert_delta!(
         aurora
             .path(Vec2::new(98.0, 703.0), Vec2::new(594.0, 180.0))
-            .len,
+            .unwrap()
+            .length,
         890.441
     );
 }
@@ -23630,7 +25991,8 @@ fn aurora_merged_qgbghjhtyg() {
     assert_delta!(
         aurora
             .path(Vec2::new(177.0, 148.0), Vec2::new(383.0, 715.0))
-            .len,
+            .unwrap()
+            .length,
         890.264
     );
 }
@@ -23640,7 +26002,8 @@ fn aurora_merged_bsnxxukpqc() {
     assert_delta!(
         aurora
             .path(Vec2::new(284.0, 730.0), Vec2::new(594.0, 192.0))
-            .len,
+            .unwrap()
+            .length,
         894.09
     );
 }
@@ -23650,7 +26013,8 @@ fn aurora_merged_spkurzamqw() {
     assert_delta!(
         aurora
             .path(Vec2::new(857.0, 324.0), Vec2::new(30.0, 514.0))
-            .len,
+            .unwrap()
+            .length,
         896.472
     );
 }
@@ -23660,7 +26024,8 @@ fn aurora_merged_gkqugoxhue() {
     assert_delta!(
         aurora
             .path(Vec2::new(39.0, 188.0), Vec2::new(912.0, 305.0))
-            .len,
+            .unwrap()
+            .length,
         902.743
     );
 }
@@ -23670,7 +26035,8 @@ fn aurora_merged_vbyiwxollk() {
     assert_delta!(
         aurora
             .path(Vec2::new(397.0, 605.0), Vec2::new(878.0, 152.0))
-            .len,
+            .unwrap()
+            .length,
         888.26
     );
 }
@@ -23680,7 +26046,8 @@ fn aurora_merged_kpjirjsvvy() {
     assert_delta!(
         aurora
             .path(Vec2::new(140.0, 250.0), Vec2::new(1014.0, 297.0))
-            .len,
+            .unwrap()
+            .length,
         898.081
     );
 }
@@ -23690,7 +26057,8 @@ fn aurora_merged_juabubrrqw() {
     assert_delta!(
         aurora
             .path(Vec2::new(607.0, 713.0), Vec2::new(105.0, 213.0))
-            .len,
+            .unwrap()
+            .length,
         893.597
     );
 }
@@ -23700,7 +26068,8 @@ fn aurora_merged_ryofopwtxi() {
     assert_delta!(
         aurora
             .path(Vec2::new(185.0, 634.0), Vec2::new(701.0, 115.0))
-            .len,
+            .unwrap()
+            .length,
         889.437
     );
 }
@@ -23710,7 +26079,8 @@ fn aurora_merged_hvgubouwwk() {
     assert_delta!(
         aurora
             .path(Vec2::new(900.0, 470.0), Vec2::new(36.0, 494.0))
-            .len,
+            .unwrap()
+            .length,
         896.375
     );
 }
@@ -23720,7 +26090,8 @@ fn aurora_merged_snhkbndmmq() {
     assert_delta!(
         aurora
             .path(Vec2::new(984.0, 625.0), Vec2::new(701.0, 67.0))
-            .len,
+            .unwrap()
+            .length,
         893.75
     );
 }
@@ -23730,7 +26101,8 @@ fn aurora_merged_uuecguzweo() {
     assert_delta!(
         aurora
             .path(Vec2::new(244.0, 716.0), Vec2::new(924.0, 330.0))
-            .len,
+            .unwrap()
+            .length,
         901.896
     );
 }
@@ -23740,7 +26112,8 @@ fn aurora_merged_aaoxhytbrk() {
     assert_delta!(
         aurora
             .path(Vec2::new(879.0, 542.0), Vec2::new(19.0, 628.0))
-            .len,
+            .unwrap()
+            .length,
         897.147
     );
 }
@@ -23750,7 +26123,8 @@ fn aurora_merged_hkrdomhjwv() {
     assert_delta!(
         aurora
             .path(Vec2::new(388.0, 264.0), Vec2::new(407.0, 717.0))
-            .len,
+            .unwrap()
+            .length,
         897.799
     );
 }
@@ -23760,7 +26134,8 @@ fn aurora_merged_avwxfmnryq() {
     assert_delta!(
         aurora
             .path(Vec2::new(152.0, 570.0), Vec2::new(894.0, 308.0))
-            .len,
+            .unwrap()
+            .length,
         886.808
     );
 }
@@ -23770,7 +26145,8 @@ fn aurora_merged_kcsfbewpvq() {
     assert_delta!(
         aurora
             .path(Vec2::new(637.0, 690.0), Vec2::new(348.0, 175.0))
-            .len,
+            .unwrap()
+            .length,
         894.243
     );
 }
@@ -23780,7 +26156,8 @@ fn aurora_merged_ygxemnrmbw() {
     assert_delta!(
         aurora
             .path(Vec2::new(946.0, 647.0), Vec2::new(307.0, 268.0))
-            .len,
+            .unwrap()
+            .length,
         888.517
     );
 }
@@ -23790,7 +26167,8 @@ fn aurora_merged_kevvvgczjf() {
     assert_delta!(
         aurora
             .path(Vec2::new(181.0, 695.0), Vec2::new(353.0, 121.0))
-            .len,
+            .unwrap()
+            .length,
         895.829
     );
 }
@@ -23800,7 +26178,8 @@ fn aurora_merged_ajdpycbfzt() {
     assert_delta!(
         aurora
             .path(Vec2::new(106.0, 597.0), Vec2::new(978.0, 623.0))
-            .len,
+            .unwrap()
+            .length,
         903.431
     );
 }
@@ -23810,7 +26189,8 @@ fn aurora_merged_kmenbzvjqt() {
     assert_delta!(
         aurora
             .path(Vec2::new(835.0, 379.0), Vec2::new(148.0, 663.0))
-            .len,
+            .unwrap()
+            .length,
         892.344
     );
 }
@@ -23820,7 +26200,8 @@ fn aurora_merged_cysehndvxx() {
     assert_delta!(
         aurora
             .path(Vec2::new(995.0, 633.0), Vec2::new(180.0, 298.0))
-            .len,
+            .unwrap()
+            .length,
         890.108
     );
 }
@@ -23830,7 +26211,8 @@ fn aurora_merged_wxysmcsqli() {
     assert_delta!(
         aurora
             .path(Vec2::new(763.0, 673.0), Vec2::new(16.0, 439.0))
-            .len,
+            .unwrap()
+            .length,
         893.83
     );
 }
@@ -23840,7 +26222,8 @@ fn aurora_merged_iltprxjvhf() {
     assert_delta!(
         aurora
             .path(Vec2::new(843.0, 368.0), Vec2::new(152.0, 667.0))
-            .len,
+            .unwrap()
+            .length,
         900.312
     );
 }
@@ -23850,7 +26233,8 @@ fn aurora_merged_udwntlvjzt() {
     assert_delta!(
         aurora
             .path(Vec2::new(19.0, 633.0), Vec2::new(739.0, 304.0))
-            .len,
+            .unwrap()
+            .length,
         895.488
     );
 }
@@ -23860,7 +26244,8 @@ fn aurora_merged_vselobxrlh() {
     assert_delta!(
         aurora
             .path(Vec2::new(867.0, 367.0), Vec2::new(192.0, 655.0))
-            .len,
+            .unwrap()
+            .length,
         901.562
     );
 }
@@ -23870,7 +26255,8 @@ fn aurora_merged_agsdhuneir() {
     assert_delta!(
         aurora
             .path(Vec2::new(112.0, 477.0), Vec2::new(984.0, 612.0))
-            .len,
+            .unwrap()
+            .length,
         904.843
     );
 }
@@ -23880,7 +26266,8 @@ fn aurora_merged_lqmqyqathd() {
     assert_delta!(
         aurora
             .path(Vec2::new(78.0, 336.0), Vec2::new(892.0, 620.0))
-            .len,
+            .unwrap()
+            .length,
         891.612
     );
 }
@@ -23890,7 +26277,8 @@ fn aurora_merged_nbguocoehl() {
     assert_delta!(
         aurora
             .path(Vec2::new(952.0, 599.0), Vec2::new(82.0, 531.0))
-            .len,
+            .unwrap()
+            .length,
         901.449
     );
 }
@@ -23900,7 +26288,8 @@ fn aurora_merged_babuykyapb() {
     assert_delta!(
         aurora
             .path(Vec2::new(235.0, 635.0), Vec2::new(624.0, 50.0))
-            .len,
+            .unwrap()
+            .length,
         902.652
     );
 }
@@ -23910,7 +26299,8 @@ fn aurora_merged_iuwdfcrgbh() {
     assert_delta!(
         aurora
             .path(Vec2::new(889.0, 163.0), Vec2::new(358.0, 666.0))
-            .len,
+            .unwrap()
+            .length,
         907.67
     );
 }
@@ -23920,7 +26310,8 @@ fn aurora_merged_ahefemacer() {
     assert_delta!(
         aurora
             .path(Vec2::new(408.0, 685.0), Vec2::new(291.0, 86.0))
-            .len,
+            .unwrap()
+            .length,
         904.762
     );
 }
@@ -23930,7 +26321,8 @@ fn aurora_merged_jddlkansue() {
     assert_delta!(
         aurora
             .path(Vec2::new(649.0, 706.0), Vec2::new(739.0, 107.0))
-            .len,
+            .unwrap()
+            .length,
         903.56
     );
 }
@@ -23940,7 +26332,8 @@ fn aurora_merged_tvcdndsnzs() {
     assert_delta!(
         aurora
             .path(Vec2::new(871.0, 686.0), Vec2::new(376.0, 91.0))
-            .len,
+            .unwrap()
+            .length,
         899.012
     );
 }
@@ -23950,7 +26343,8 @@ fn aurora_merged_arfbnfqluz() {
     assert_delta!(
         aurora
             .path(Vec2::new(42.0, 656.0), Vec2::new(769.0, 380.0))
-            .len,
+            .unwrap()
+            .length,
         896.515
     );
 }
@@ -23960,7 +26354,8 @@ fn aurora_merged_xkuqrinfos() {
     assert_delta!(
         aurora
             .path(Vec2::new(563.0, 695.0), Vec2::new(447.0, 140.0))
-            .len,
+            .unwrap()
+            .length,
         898.006
     );
 }
@@ -23970,7 +26365,8 @@ fn aurora_merged_gvqkuohkoo() {
     assert_delta!(
         aurora
             .path(Vec2::new(219.0, 201.0), Vec2::new(816.0, 601.0))
-            .len,
+            .unwrap()
+            .length,
         897.739
     );
 }
@@ -23980,7 +26376,8 @@ fn aurora_merged_ezynkeifmt() {
     assert_delta!(
         aurora
             .path(Vec2::new(531.0, 713.0), Vec2::new(731.0, 224.0))
-            .len,
+            .unwrap()
+            .length,
         901.315
     );
 }
@@ -23990,7 +26387,8 @@ fn aurora_merged_xqvfyqzcsx() {
     assert_delta!(
         aurora
             .path(Vec2::new(690.0, 140.0), Vec2::new(512.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         898.337
     );
 }
@@ -24000,7 +26398,8 @@ fn aurora_merged_ypzfeinwxr() {
     assert_delta!(
         aurora
             .path(Vec2::new(673.0, 694.0), Vec2::new(758.0, 76.0))
-            .len,
+            .unwrap()
+            .length,
         906.397
     );
 }
@@ -24010,7 +26409,8 @@ fn aurora_merged_ibmacvxkny() {
     assert_delta!(
         aurora
             .path(Vec2::new(930.0, 588.0), Vec2::new(336.0, 56.0))
-            .len,
+            .unwrap()
+            .length,
         899.331
     );
 }
@@ -24020,7 +26420,8 @@ fn aurora_merged_kikvouhegs() {
     assert_delta!(
         aurora
             .path(Vec2::new(185.0, 705.0), Vec2::new(909.0, 374.0))
-            .len,
+            .unwrap()
+            .length,
         916.128
     );
 }
@@ -24030,7 +26431,8 @@ fn aurora_merged_ecbwjynlgg() {
     assert_delta!(
         aurora
             .path(Vec2::new(815.0, 472.0), Vec2::new(108.0, 195.0))
-            .len,
+            .unwrap()
+            .length,
         906.041
     );
 }
@@ -24040,7 +26442,8 @@ fn aurora_merged_wwoxesqgta() {
     assert_delta!(
         aurora
             .path(Vec2::new(722.0, 57.0), Vec2::new(197.0, 609.0))
-            .len,
+            .unwrap()
+            .length,
         904.248
     );
 }
@@ -24050,7 +26453,8 @@ fn aurora_merged_lgwzgcwhdy() {
     assert_delta!(
         aurora
             .path(Vec2::new(33.0, 509.0), Vec2::new(787.0, 199.0))
-            .len,
+            .unwrap()
+            .length,
         907.722
     );
 }
@@ -24060,7 +26464,8 @@ fn aurora_merged_lznoxaytak() {
     assert_delta!(
         aurora
             .path(Vec2::new(36.0, 681.0), Vec2::new(928.0, 608.0))
-            .len,
+            .unwrap()
+            .length,
         925.866
     );
 }
@@ -24070,7 +26475,8 @@ fn aurora_merged_mkevvuezhh() {
     assert_delta!(
         aurora
             .path(Vec2::new(958.0, 603.0), Vec2::new(308.0, 308.0))
-            .len,
+            .unwrap()
+            .length,
         898.636
     );
 }
@@ -24080,7 +26486,8 @@ fn aurora_merged_avanelxoly() {
     assert_delta!(
         aurora
             .path(Vec2::new(859.0, 484.0), Vec2::new(8.0, 359.0))
-            .len,
+            .unwrap()
+            .length,
         906.059
     );
 }
@@ -24090,7 +26497,8 @@ fn aurora_merged_jewbzssibd() {
     assert_delta!(
         aurora
             .path(Vec2::new(713.0, 259.0), Vec2::new(75.0, 496.0))
-            .len,
+            .unwrap()
+            .length,
         897.479
     );
 }
@@ -24100,7 +26508,8 @@ fn aurora_merged_nqqkgbmkca() {
     assert_delta!(
         aurora
             .path(Vec2::new(576.0, 706.0), Vec2::new(743.0, 236.0))
-            .len,
+            .unwrap()
+            .length,
         907.127
     );
 }
@@ -24110,7 +26519,8 @@ fn aurora_merged_ycjmhuhzgn() {
     assert_delta!(
         aurora
             .path(Vec2::new(188.0, 181.0), Vec2::new(341.0, 732.0))
-            .len,
+            .unwrap()
+            .length,
         902.097
     );
 }
@@ -24120,7 +26530,8 @@ fn aurora_merged_bjxngmqcey() {
     assert_delta!(
         aurora
             .path(Vec2::new(36.0, 442.0), Vec2::new(889.0, 252.0))
-            .len,
+            .unwrap()
+            .length,
         918.387
     );
 }
@@ -24130,7 +26541,8 @@ fn aurora_merged_pmbsvwfbcs() {
     assert_delta!(
         aurora
             .path(Vec2::new(924.0, 162.0), Vec2::new(387.0, 641.0))
-            .len,
+            .unwrap()
+            .length,
         910.014
     );
 }
@@ -24140,7 +26552,8 @@ fn aurora_merged_bfwpwtsbym() {
     assert_delta!(
         aurora
             .path(Vec2::new(721.0, 223.0), Vec2::new(273.0, 631.0))
-            .len,
+            .unwrap()
+            .length,
         906.289
     );
 }
@@ -24150,7 +26563,8 @@ fn aurora_merged_sccyfrrbbf() {
     assert_delta!(
         aurora
             .path(Vec2::new(276.0, 270.0), Vec2::new(1008.0, 602.0))
-            .len,
+            .unwrap()
+            .length,
         901.5
     );
 }
@@ -24160,7 +26574,8 @@ fn aurora_merged_bobzulagyy() {
     assert_delta!(
         aurora
             .path(Vec2::new(11.0, 181.0), Vec2::new(821.0, 563.0))
-            .len,
+            .unwrap()
+            .length,
         899.808
     );
 }
@@ -24170,7 +26585,8 @@ fn aurora_merged_ytlhjivrzp() {
     assert_delta!(
         aurora
             .path(Vec2::new(792.0, 598.0), Vec2::new(282.0, 43.0))
-            .len,
+            .unwrap()
+            .length,
         905.102
     );
 }
@@ -24180,7 +26596,8 @@ fn aurora_merged_fcudmsukay() {
     assert_delta!(
         aurora
             .path(Vec2::new(786.0, 259.0), Vec2::new(16.0, 444.0))
-            .len,
+            .unwrap()
+            .length,
         910.057
     );
 }
@@ -24190,7 +26607,8 @@ fn aurora_merged_bgoiiefqko() {
     assert_delta!(
         aurora
             .path(Vec2::new(355.0, 610.0), Vec2::new(676.0, 117.0))
-            .len,
+            .unwrap()
+            .length,
         903.274
     );
 }
@@ -24200,7 +26618,8 @@ fn aurora_merged_holbdaroaw() {
     assert_delta!(
         aurora
             .path(Vec2::new(499.0, 683.0), Vec2::new(772.0, 246.0))
-            .len,
+            .unwrap()
+            .length,
         904.315
     );
 }
@@ -24210,7 +26629,8 @@ fn aurora_merged_yqhgwjkvis() {
     assert_delta!(
         aurora
             .path(Vec2::new(140.0, 541.0), Vec2::new(923.0, 384.0))
-            .len,
+            .unwrap()
+            .length,
         911.702
     );
 }
@@ -24220,7 +26640,8 @@ fn aurora_merged_jalhvquzhv() {
     assert_delta!(
         aurora
             .path(Vec2::new(824.0, 124.0), Vec2::new(270.0, 540.0))
-            .len,
+            .unwrap()
+            .length,
         907.684
     );
 }
@@ -24230,7 +26651,8 @@ fn aurora_merged_ssxrriyevv() {
     assert_delta!(
         aurora
             .path(Vec2::new(110.0, 273.0), Vec2::new(1002.0, 365.0))
-            .len,
+            .unwrap()
+            .length,
         923.216
     );
 }
@@ -24240,7 +26662,8 @@ fn aurora_merged_obimnzsrzi() {
     assert_delta!(
         aurora
             .path(Vec2::new(441.0, 695.0), Vec2::new(423.0, 91.0))
-            .len,
+            .unwrap()
+            .length,
         922.328
     );
 }
@@ -24250,7 +26673,8 @@ fn aurora_merged_urbcgdwoqe() {
     assert_delta!(
         aurora
             .path(Vec2::new(730.0, 688.0), Vec2::new(134.0, 196.0))
-            .len,
+            .unwrap()
+            .length,
         910.519
     );
 }
@@ -24260,7 +26684,8 @@ fn aurora_merged_xdrxwisipy() {
     assert_delta!(
         aurora
             .path(Vec2::new(298.0, 121.0), Vec2::new(883.0, 622.0))
-            .len,
+            .unwrap()
+            .length,
         909.531
     );
 }
@@ -24270,7 +26695,8 @@ fn aurora_merged_wtutdbrgbh() {
     assert_delta!(
         aurora
             .path(Vec2::new(137.0, 113.0), Vec2::new(447.0, 670.0))
-            .len,
+            .unwrap()
+            .length,
         910.983
     );
 }
@@ -24280,7 +26706,8 @@ fn aurora_merged_csanlkblbw() {
     assert_delta!(
         aurora
             .path(Vec2::new(744.0, 644.0), Vec2::new(332.0, 94.0))
-            .len,
+            .unwrap()
+            .length,
         909.436
     );
 }
@@ -24290,7 +26717,8 @@ fn aurora_merged_xyehqdgqfe() {
     assert_delta!(
         aurora
             .path(Vec2::new(663.0, 676.0), Vec2::new(245.0, 160.0))
-            .len,
+            .unwrap()
+            .length,
         916.703
     );
 }
@@ -24300,7 +26728,8 @@ fn aurora_merged_dolfiqkgzm() {
     assert_delta!(
         aurora
             .path(Vec2::new(734.0, 146.0), Vec2::new(320.0, 597.0))
-            .len,
+            .unwrap()
+            .length,
         915.57
     );
 }
@@ -24310,7 +26739,8 @@ fn aurora_merged_htwgrbgyvl() {
     assert_delta!(
         aurora
             .path(Vec2::new(120.0, 632.0), Vec2::new(844.0, 322.0))
-            .len,
+            .unwrap()
+            .length,
         906.742
     );
 }
@@ -24320,7 +26750,8 @@ fn aurora_merged_pesmnngifx() {
     assert_delta!(
         aurora
             .path(Vec2::new(715.0, 552.0), Vec2::new(198.0, 73.0))
-            .len,
+            .unwrap()
+            .length,
         908.876
     );
 }
@@ -24330,7 +26761,8 @@ fn aurora_merged_goubljtquu() {
     assert_delta!(
         aurora
             .path(Vec2::new(829.0, 664.0), Vec2::new(508.0, 34.0))
-            .len,
+            .unwrap()
+            .length,
         921.456
     );
 }
@@ -24340,7 +26772,8 @@ fn aurora_merged_enelnvfjaa() {
     assert_delta!(
         aurora
             .path(Vec2::new(68.0, 569.0), Vec2::new(835.0, 313.0))
-            .len,
+            .unwrap()
+            .length,
         909.053
     );
 }
@@ -24350,7 +26783,8 @@ fn aurora_merged_emxhfjvmsp() {
     assert_delta!(
         aurora
             .path(Vec2::new(323.0, 175.0), Vec2::new(765.0, 715.0))
-            .len,
+            .unwrap()
+            .length,
         918.319
     );
 }
@@ -24360,7 +26794,8 @@ fn aurora_merged_qjalhpqzhf() {
     assert_delta!(
         aurora
             .path(Vec2::new(186.0, 70.0), Vec2::new(998.0, 414.0))
-            .len,
+            .unwrap()
+            .length,
         907.793
     );
 }
@@ -24370,7 +26805,8 @@ fn aurora_merged_gxqiitpega() {
     assert_delta!(
         aurora
             .path(Vec2::new(160.0, 576.0), Vec2::new(910.0, 278.0))
-            .len,
+            .unwrap()
+            .length,
         908.755
     );
 }
@@ -24380,7 +26816,8 @@ fn aurora_merged_naicnxxsjr() {
     assert_delta!(
         aurora
             .path(Vec2::new(889.0, 364.0), Vec2::new(12.0, 182.0))
-            .len,
+            .unwrap()
+            .length,
         932.431
     );
 }
@@ -24390,7 +26827,8 @@ fn aurora_merged_zdgvhqvygm() {
     assert_delta!(
         aurora
             .path(Vec2::new(146.0, 696.0), Vec2::new(647.0, 88.0))
-            .len,
+            .unwrap()
+            .length,
         918.124
     );
 }
@@ -24400,7 +26838,8 @@ fn aurora_merged_coqhcuvpmq() {
     assert_delta!(
         aurora
             .path(Vec2::new(380.0, 637.0), Vec2::new(667.0, 163.0))
-            .len,
+            .unwrap()
+            .length,
         919.247
     );
 }
@@ -24410,7 +26849,8 @@ fn aurora_merged_ilunuxawqv() {
     assert_delta!(
         aurora
             .path(Vec2::new(69.0, 488.0), Vec2::new(935.0, 421.0))
-            .len,
+            .unwrap()
+            .length,
         918.877
     );
 }
@@ -24420,7 +26860,8 @@ fn aurora_merged_jahbfdlsnk() {
     assert_delta!(
         aurora
             .path(Vec2::new(918.0, 551.0), Vec2::new(14.0, 598.0))
-            .len,
+            .unwrap()
+            .length,
         928.754
     );
 }
@@ -24430,7 +26871,8 @@ fn aurora_merged_qkhogepcnv() {
     assert_delta!(
         aurora
             .path(Vec2::new(252.0, 724.0), Vec2::new(939.0, 312.0))
-            .len,
+            .unwrap()
+            .length,
         926.417
     );
 }
@@ -24440,7 +26882,8 @@ fn aurora_merged_rsqibgsyqa() {
     assert_delta!(
         aurora
             .path(Vec2::new(426.0, 690.0), Vec2::new(700.0, 180.0))
-            .len,
+            .unwrap()
+            .length,
         917.882
     );
 }
@@ -24450,7 +26893,8 @@ fn aurora_merged_npjyucikld() {
     assert_delta!(
         aurora
             .path(Vec2::new(28.0, 507.0), Vec2::new(940.0, 564.0))
-            .len,
+            .unwrap()
+            .length,
         930.844
     );
 }
@@ -24460,7 +26904,8 @@ fn aurora_merged_adpshgcpke() {
     assert_delta!(
         aurora
             .path(Vec2::new(883.0, 576.0), Vec2::new(16.0, 391.0))
-            .len,
+            .unwrap()
+            .length,
         917.343
     );
 }
@@ -24470,7 +26915,8 @@ fn aurora_merged_oymqpeswaq() {
     assert_delta!(
         aurora
             .path(Vec2::new(380.0, 129.0), Vec2::new(791.0, 733.0))
-            .len,
+            .unwrap()
+            .length,
         927.124
     );
 }
@@ -24480,7 +26926,8 @@ fn aurora_merged_ldlfnugkss() {
     assert_delta!(
         aurora
             .path(Vec2::new(693.0, 118.0), Vec2::new(178.0, 671.0))
-            .len,
+            .unwrap()
+            .length,
         918.549
     );
 }
@@ -24490,7 +26937,8 @@ fn aurora_merged_ireqilqfxc() {
     assert_delta!(
         aurora
             .path(Vec2::new(706.0, 81.0), Vec2::new(150.0, 629.0))
-            .len,
+            .unwrap()
+            .length,
         919.708
     );
 }
@@ -24500,7 +26948,8 @@ fn aurora_merged_srzghbprjj() {
     assert_delta!(
         aurora
             .path(Vec2::new(738.0, 50.0), Vec2::new(746.0, 660.0))
-            .len,
+            .unwrap()
+            .length,
         925.589
     );
 }
@@ -24510,7 +26959,8 @@ fn aurora_merged_mtkpnkznqx() {
     assert_delta!(
         aurora
             .path(Vec2::new(100.0, 597.0), Vec2::new(724.0, 168.0))
-            .len,
+            .unwrap()
+            .length,
         928.468
     );
 }
@@ -24520,7 +26970,8 @@ fn aurora_merged_tfhtucmwqc() {
     assert_delta!(
         aurora
             .path(Vec2::new(529.0, 703.0), Vec2::new(870.0, 121.0))
-            .len,
+            .unwrap()
+            .length,
         928.03
     );
 }
@@ -24530,7 +26981,8 @@ fn aurora_merged_jflfgjrrjm() {
     assert_delta!(
         aurora
             .path(Vec2::new(593.0, 717.0), Vec2::new(452.0, 169.0))
-            .len,
+            .unwrap()
+            .length,
         926.867
     );
 }
@@ -24540,7 +26992,8 @@ fn aurora_merged_vyueslwrlf() {
     assert_delta!(
         aurora
             .path(Vec2::new(949.0, 646.0), Vec2::new(71.0, 453.0))
-            .len,
+            .unwrap()
+            .length,
         925.038
     );
 }
@@ -24550,7 +27003,8 @@ fn aurora_merged_uvqpbcmcuz() {
     assert_delta!(
         aurora
             .path(Vec2::new(623.0, 221.0), Vec2::new(128.0, 726.0))
-            .len,
+            .unwrap()
+            .length,
         924.834
     );
 }
@@ -24560,7 +27014,8 @@ fn aurora_merged_ztnenoklnh() {
     assert_delta!(
         aurora
             .path(Vec2::new(31.0, 645.0), Vec2::new(637.0, 178.0))
-            .len,
+            .unwrap()
+            .length,
         925.962
     );
 }
@@ -24570,7 +27025,8 @@ fn aurora_merged_vwfvitgeii() {
     assert_delta!(
         aurora
             .path(Vec2::new(864.0, 186.0), Vec2::new(190.0, 551.0))
-            .len,
+            .unwrap()
+            .length,
         921.604
     );
 }
@@ -24580,7 +27036,8 @@ fn aurora_merged_lcicnldrps() {
     assert_delta!(
         aurora
             .path(Vec2::new(850.0, 359.0), Vec2::new(117.0, 668.0))
-            .len,
+            .unwrap()
+            .length,
         931.373
     );
 }
@@ -24590,7 +27047,8 @@ fn aurora_merged_wiudmugjgq() {
     assert_delta!(
         aurora
             .path(Vec2::new(1008.0, 387.0), Vec2::new(133.0, 157.0))
-            .len,
+            .unwrap()
+            .length,
         929.572
     );
 }
@@ -24600,7 +27058,8 @@ fn aurora_merged_mhdcnzbkuv() {
     assert_delta!(
         aurora
             .path(Vec2::new(219.0, 220.0), Vec2::new(650.0, 715.0))
-            .len,
+            .unwrap()
+            .length,
         933.76
     );
 }
@@ -24610,7 +27069,8 @@ fn aurora_merged_hxzgfuqovm() {
     assert_delta!(
         aurora
             .path(Vec2::new(121.0, 422.0), Vec2::new(981.0, 400.0))
-            .len,
+            .unwrap()
+            .length,
         922.686
     );
 }
@@ -24620,7 +27080,8 @@ fn aurora_merged_ucvfzgfrrb() {
     assert_delta!(
         aurora
             .path(Vec2::new(19.0, 357.0), Vec2::new(873.0, 180.0))
-            .len,
+            .unwrap()
+            .length,
         927.62
     );
 }
@@ -24630,7 +27091,8 @@ fn aurora_merged_ztpyllrevu() {
     assert_delta!(
         aurora
             .path(Vec2::new(923.0, 274.0), Vec2::new(11.0, 161.0))
-            .len,
+            .unwrap()
+            .length,
         941.495
     );
 }
@@ -24640,7 +27102,8 @@ fn aurora_merged_lqorzhlnvp() {
     assert_delta!(
         aurora
             .path(Vec2::new(183.0, 708.0), Vec2::new(654.0, 172.0))
-            .len,
+            .unwrap()
+            .length,
         937.367
     );
 }
@@ -24650,7 +27113,8 @@ fn aurora_merged_trpyckypzg() {
     assert_delta!(
         aurora
             .path(Vec2::new(887.0, 653.0), Vec2::new(31.0, 392.0))
-            .len,
+            .unwrap()
+            .length,
         924.575
     );
 }
@@ -24660,7 +27124,8 @@ fn aurora_merged_fkflkojkgw() {
     assert_delta!(
         aurora
             .path(Vec2::new(277.0, 126.0), Vec2::new(903.0, 618.0))
-            .len,
+            .unwrap()
+            .length,
         924.113
     );
 }
@@ -24670,7 +27135,8 @@ fn aurora_merged_vgoityctru() {
     assert_delta!(
         aurora
             .path(Vec2::new(867.0, 479.0), Vec2::new(125.0, 185.0))
-            .len,
+            .unwrap()
+            .length,
         931.005
     );
 }
@@ -24680,7 +27146,8 @@ fn aurora_merged_dvzuizkfjf() {
     assert_delta!(
         aurora
             .path(Vec2::new(19.0, 370.0), Vec2::new(879.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         930.969
     );
 }
@@ -24690,7 +27157,8 @@ fn aurora_merged_cplegltvgw() {
     assert_delta!(
         aurora
             .path(Vec2::new(77.0, 162.0), Vec2::new(747.0, 635.0))
-            .len,
+            .unwrap()
+            .length,
         922.251
     );
 }
@@ -24700,7 +27168,8 @@ fn aurora_merged_sxiechunjo() {
     assert_delta!(
         aurora
             .path(Vec2::new(952.0, 276.0), Vec2::new(214.0, 585.0))
-            .len,
+            .unwrap()
+            .length,
         921.092
     );
 }
@@ -24710,7 +27179,8 @@ fn aurora_merged_bbmqfemhhi() {
     assert_delta!(
         aurora
             .path(Vec2::new(959.0, 642.0), Vec2::new(73.0, 463.0))
-            .len,
+            .unwrap()
+            .length,
         931.176
     );
 }
@@ -24720,7 +27190,8 @@ fn aurora_merged_wvotqeupre() {
     assert_delta!(
         aurora
             .path(Vec2::new(388.0, 212.0), Vec2::new(615.0, 731.0))
-            .len,
+            .unwrap()
+            .length,
         937.626
     );
 }
@@ -24730,7 +27201,8 @@ fn aurora_merged_tokirieklf() {
     assert_delta!(
         aurora
             .path(Vec2::new(943.0, 608.0), Vec2::new(23.0, 521.0))
-            .len,
+            .unwrap()
+            .length,
         943.609
     );
 }
@@ -24740,7 +27212,8 @@ fn aurora_merged_ofhctdcwav() {
     assert_delta!(
         aurora
             .path(Vec2::new(86.0, 557.0), Vec2::new(736.0, 161.0))
-            .len,
+            .unwrap()
+            .length,
         937.368
     );
 }
@@ -24750,7 +27223,8 @@ fn aurora_merged_yoyeifhecr() {
     assert_delta!(
         aurora
             .path(Vec2::new(335.0, 678.0), Vec2::new(899.0, 280.0))
-            .len,
+            .unwrap()
+            .length,
         931.922
     );
 }
@@ -24760,7 +27234,8 @@ fn aurora_merged_mqdrqodlxx() {
     assert_delta!(
         aurora
             .path(Vec2::new(975.0, 633.0), Vec2::new(68.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         936.786
     );
 }
@@ -24770,7 +27245,8 @@ fn aurora_merged_xvfjbnfrij() {
     assert_delta!(
         aurora
             .path(Vec2::new(952.0, 455.0), Vec2::new(58.0, 601.0))
-            .len,
+            .unwrap()
+            .length,
         932.185
     );
 }
@@ -24780,7 +27256,8 @@ fn aurora_merged_lvfgccehry() {
     assert_delta!(
         aurora
             .path(Vec2::new(512.0, 41.0), Vec2::new(56.0, 638.0))
-            .len,
+            .unwrap()
+            .length,
         935.507
     );
 }
@@ -24790,7 +27267,8 @@ fn aurora_merged_clmgiimatj() {
     assert_delta!(
         aurora
             .path(Vec2::new(83.0, 460.0), Vec2::new(889.0, 136.0))
-            .len,
+            .unwrap()
+            .length,
         937.151
     );
 }
@@ -24800,7 +27278,8 @@ fn aurora_merged_sxozuvtdsf() {
     assert_delta!(
         aurora
             .path(Vec2::new(896.0, 534.0), Vec2::new(189.0, 248.0))
-            .len,
+            .unwrap()
+            .length,
         930.747
     );
 }
@@ -24810,7 +27289,8 @@ fn aurora_merged_gliinkprvy() {
     assert_delta!(
         aurora
             .path(Vec2::new(761.0, 149.0), Vec2::new(556.0, 707.0))
-            .len,
+            .unwrap()
+            .length,
         930.898
     );
 }
@@ -24820,7 +27300,8 @@ fn aurora_merged_zmtphsnmda() {
     assert_delta!(
         aurora
             .path(Vec2::new(816.0, 418.0), Vec2::new(44.0, 595.0))
-            .len,
+            .unwrap()
+            .length,
         928.164
     );
 }
@@ -24830,7 +27311,8 @@ fn aurora_merged_beebjbfgmk() {
     assert_delta!(
         aurora
             .path(Vec2::new(969.0, 273.0), Vec2::new(68.0, 454.0))
-            .len,
+            .unwrap()
+            .length,
         942.777
     );
 }
@@ -24840,7 +27322,8 @@ fn aurora_merged_dquusnusfi() {
     assert_delta!(
         aurora
             .path(Vec2::new(125.0, 703.0), Vec2::new(663.0, 139.0))
-            .len,
+            .unwrap()
+            .length,
         935.318
     );
 }
@@ -24850,7 +27333,8 @@ fn aurora_merged_htnlfclnkk() {
     assert_delta!(
         aurora
             .path(Vec2::new(45.0, 484.0), Vec2::new(904.0, 420.0))
-            .len,
+            .unwrap()
+            .length,
         941.597
     );
 }
@@ -24860,7 +27344,8 @@ fn aurora_merged_tstewarual() {
     assert_delta!(
         aurora
             .path(Vec2::new(903.0, 305.0), Vec2::new(112.0, 510.0))
-            .len,
+            .unwrap()
+            .length,
         930.391
     );
 }
@@ -24870,7 +27355,8 @@ fn aurora_merged_zcvbhknebb() {
     assert_delta!(
         aurora
             .path(Vec2::new(744.0, 238.0), Vec2::new(118.0, 503.0))
-            .len,
+            .unwrap()
+            .length,
         925.752
     );
 }
@@ -24880,7 +27366,8 @@ fn aurora_merged_yowiqqrrwn() {
     assert_delta!(
         aurora
             .path(Vec2::new(9.0, 632.0), Vec2::new(787.0, 369.0))
-            .len,
+            .unwrap()
+            .length,
         928.191
     );
 }
@@ -24890,7 +27377,8 @@ fn aurora_merged_efxtvryumr() {
     assert_delta!(
         aurora
             .path(Vec2::new(320.0, 265.0), Vec2::new(992.0, 598.0))
-            .len,
+            .unwrap()
+            .length,
         930.328
     );
 }
@@ -24900,7 +27388,8 @@ fn aurora_merged_czliddeadv() {
     assert_delta!(
         aurora
             .path(Vec2::new(43.0, 370.0), Vec2::new(977.0, 283.0))
-            .len,
+            .unwrap()
+            .length,
         949.478
     );
 }
@@ -24910,7 +27399,8 @@ fn aurora_merged_nnvodajcut() {
     assert_delta!(
         aurora
             .path(Vec2::new(703.0, 174.0), Vec2::new(415.0, 699.0))
-            .len,
+            .unwrap()
+            .length,
         932.79
     );
 }
@@ -24920,7 +27410,8 @@ fn aurora_merged_ermxuvucah() {
     assert_delta!(
         aurora
             .path(Vec2::new(437.0, 67.0), Vec2::new(660.0, 713.0))
-            .len,
+            .unwrap()
+            .length,
         946.789
     );
 }
@@ -24930,7 +27421,8 @@ fn aurora_merged_bkozntwvax() {
     assert_delta!(
         aurora
             .path(Vec2::new(841.0, 233.0), Vec2::new(28.0, 508.0))
-            .len,
+            .unwrap()
+            .length,
         946.75
     );
 }
@@ -24940,7 +27432,8 @@ fn aurora_merged_gggdgckrwq() {
     assert_delta!(
         aurora
             .path(Vec2::new(736.0, 628.0), Vec2::new(597.0, 31.0))
-            .len,
+            .unwrap()
+            .length,
         940.314
     );
 }
@@ -24950,7 +27443,8 @@ fn aurora_merged_rpapckdeab() {
     assert_delta!(
         aurora
             .path(Vec2::new(195.0, 666.0), Vec2::new(943.0, 338.0))
-            .len,
+            .unwrap()
+            .length,
         954.407
     );
 }
@@ -24960,7 +27454,8 @@ fn aurora_merged_unbkxwsdhi() {
     assert_delta!(
         aurora
             .path(Vec2::new(873.0, 580.0), Vec2::new(198.0, 233.0))
-            .len,
+            .unwrap()
+            .length,
         928.666
     );
 }
@@ -24970,7 +27465,8 @@ fn aurora_merged_tvixslodwi() {
     assert_delta!(
         aurora
             .path(Vec2::new(205.0, 495.0), Vec2::new(923.0, 149.0))
-            .len,
+            .unwrap()
+            .length,
         943.375
     );
 }
@@ -24980,7 +27476,8 @@ fn aurora_merged_dqvwvaaxlm() {
     assert_delta!(
         aurora
             .path(Vec2::new(913.0, 551.0), Vec2::new(22.0, 366.0))
-            .len,
+            .unwrap()
+            .length,
         944.993
     );
 }
@@ -24990,7 +27487,8 @@ fn aurora_merged_yuhqwztzwu() {
     assert_delta!(
         aurora
             .path(Vec2::new(741.0, 716.0), Vec2::new(277.0, 141.0))
-            .len,
+            .unwrap()
+            .length,
         940.238
     );
 }
@@ -25000,7 +27498,8 @@ fn aurora_merged_sxroinxuky() {
     assert_delta!(
         aurora
             .path(Vec2::new(438.0, 658.0), Vec2::new(336.0, 72.0))
-            .len,
+            .unwrap()
+            .length,
         939.028
     );
 }
@@ -25010,7 +27509,8 @@ fn aurora_merged_vydlmotcbs() {
     assert_delta!(
         aurora
             .path(Vec2::new(130.0, 646.0), Vec2::new(696.0, 70.0))
-            .len,
+            .unwrap()
+            .length,
         939.846
     );
 }
@@ -25020,7 +27520,8 @@ fn aurora_merged_mekfuimdkm() {
     assert_delta!(
         aurora
             .path(Vec2::new(35.0, 459.0), Vec2::new(879.0, 413.0))
-            .len,
+            .unwrap()
+            .length,
         948.28
     );
 }
@@ -25030,7 +27531,8 @@ fn aurora_merged_gxdbxvtwtn() {
     assert_delta!(
         aurora
             .path(Vec2::new(135.0, 642.0), Vec2::new(734.0, 140.0))
-            .len,
+            .unwrap()
+            .length,
         951.166
     );
 }
@@ -25040,7 +27542,8 @@ fn aurora_merged_ysakcrgnzw() {
     assert_delta!(
         aurora
             .path(Vec2::new(304.0, 658.0), Vec2::new(817.0, 232.0))
-            .len,
+            .unwrap()
+            .length,
         942.483
     );
 }
@@ -25050,7 +27553,8 @@ fn aurora_merged_qutcyiovjf() {
     assert_delta!(
         aurora
             .path(Vec2::new(262.0, 33.0), Vec2::new(748.0, 599.0))
-            .len,
+            .unwrap()
+            .length,
         940.324
     );
 }
@@ -25060,7 +27564,8 @@ fn aurora_merged_xckesugacp() {
     assert_delta!(
         aurora
             .path(Vec2::new(848.0, 125.0), Vec2::new(4.0, 449.0))
-            .len,
+            .unwrap()
+            .length,
         959.249
     );
 }
@@ -25070,7 +27575,8 @@ fn aurora_merged_ifxabtwsir() {
     assert_delta!(
         aurora
             .path(Vec2::new(859.0, 616.0), Vec2::new(218.0, 240.0))
-            .len,
+            .unwrap()
+            .length,
         937.642
     );
 }
@@ -25080,7 +27586,8 @@ fn aurora_merged_msuqbrjbjz() {
     assert_delta!(
         aurora
             .path(Vec2::new(836.0, 93.0), Vec2::new(565.0, 709.0))
-            .len,
+            .unwrap()
+            .length,
         946.308
     );
 }
@@ -25090,7 +27597,8 @@ fn aurora_merged_jwsydnecbi() {
     assert_delta!(
         aurora
             .path(Vec2::new(797.0, 543.0), Vec2::new(91.0, 153.0))
-            .len,
+            .unwrap()
+            .length,
         935.854
     );
 }
@@ -25100,7 +27608,8 @@ fn aurora_merged_zkzsxmggxl() {
     assert_delta!(
         aurora
             .path(Vec2::new(926.0, 610.0), Vec2::new(66.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         936.27
     );
 }
@@ -25110,7 +27619,8 @@ fn aurora_merged_hqqsctxasp() {
     assert_delta!(
         aurora
             .path(Vec2::new(880.0, 363.0), Vec2::new(30.0, 535.0))
-            .len,
+            .unwrap()
+            .length,
         950.006
     );
 }
@@ -25120,7 +27630,8 @@ fn aurora_merged_snqlewuqgq() {
     assert_delta!(
         aurora
             .path(Vec2::new(902.0, 419.0), Vec2::new(46.0, 581.0))
-            .len,
+            .unwrap()
+            .length,
         950.845
     );
 }
@@ -25130,7 +27641,8 @@ fn aurora_merged_mjcoiemnxg() {
     assert_delta!(
         aurora
             .path(Vec2::new(137.0, 311.0), Vec2::new(1011.0, 609.0))
-            .len,
+            .unwrap()
+            .length,
         940.191
     );
 }
@@ -25140,7 +27652,8 @@ fn aurora_merged_bgoqzgimjy() {
     assert_delta!(
         aurora
             .path(Vec2::new(160.0, 621.0), Vec2::new(754.0, 99.0))
-            .len,
+            .unwrap()
+            .length,
         947.641
     );
 }
@@ -25150,7 +27663,8 @@ fn aurora_merged_nppzvxmxpa() {
     assert_delta!(
         aurora
             .path(Vec2::new(992.0, 297.0), Vec2::new(69.0, 175.0))
-            .len,
+            .unwrap()
+            .length,
         954.016
     );
 }
@@ -25160,7 +27674,8 @@ fn aurora_merged_ydnoallghu() {
     assert_delta!(
         aurora
             .path(Vec2::new(536.0, 27.0), Vec2::new(326.0, 624.0))
-            .len,
+            .unwrap()
+            .length,
         949.066
     );
 }
@@ -25170,7 +27685,8 @@ fn aurora_merged_arqkrdqkau() {
     assert_delta!(
         aurora
             .path(Vec2::new(599.0, 207.0), Vec2::new(405.0, 706.0))
-            .len,
+            .unwrap()
+            .length,
         949.642
     );
 }
@@ -25180,7 +27696,8 @@ fn aurora_merged_pcboaoerra() {
     assert_delta!(
         aurora
             .path(Vec2::new(638.0, 707.0), Vec2::new(406.0, 84.0))
-            .len,
+            .unwrap()
+            .length,
         951.753
     );
 }
@@ -25190,7 +27707,8 @@ fn aurora_merged_tmuoyhmykq() {
     assert_delta!(
         aurora
             .path(Vec2::new(971.0, 414.0), Vec2::new(91.0, 211.0))
-            .len,
+            .unwrap()
+            .length,
         956.628
     );
 }
@@ -25200,7 +27718,8 @@ fn aurora_merged_eghmfnxgyv() {
     assert_delta!(
         aurora
             .path(Vec2::new(835.0, 709.0), Vec2::new(33.0, 463.0))
-            .len,
+            .unwrap()
+            .length,
         941.099
     );
 }
@@ -25210,7 +27729,8 @@ fn aurora_merged_bhdbruzndy() {
     assert_delta!(
         aurora
             .path(Vec2::new(563.0, 178.0), Vec2::new(361.0, 722.0))
-            .len,
+            .unwrap()
+            .length,
         950.743
     );
 }
@@ -25220,7 +27740,8 @@ fn aurora_merged_ptdzgrhwha() {
     assert_delta!(
         aurora
             .path(Vec2::new(258.0, 148.0), Vec2::new(627.0, 701.0))
-            .len,
+            .unwrap()
+            .length,
         955.041
     );
 }
@@ -25230,7 +27751,8 @@ fn aurora_merged_irwifgshaw() {
     assert_delta!(
         aurora
             .path(Vec2::new(428.0, 246.0), Vec2::new(765.0, 682.0))
-            .len,
+            .unwrap()
+            .length,
         946.053
     );
 }
@@ -25240,7 +27762,8 @@ fn aurora_merged_xmkwtquqos() {
     assert_delta!(
         aurora
             .path(Vec2::new(118.0, 447.0), Vec2::new(1017.0, 373.0))
-            .len,
+            .unwrap()
+            .length,
         958.489
     );
 }
@@ -25250,7 +27773,8 @@ fn aurora_merged_gokssskaox() {
     assert_delta!(
         aurora
             .path(Vec2::new(13.0, 504.0), Vec2::new(807.0, 180.0))
-            .len,
+            .unwrap()
+            .length,
         946.135
     );
 }
@@ -25260,7 +27784,8 @@ fn aurora_merged_bqlzmbgaws() {
     assert_delta!(
         aurora
             .path(Vec2::new(958.0, 616.0), Vec2::new(305.0, 92.0))
-            .len,
+            .unwrap()
+            .length,
         948.846
     );
 }
@@ -25270,7 +27795,8 @@ fn aurora_merged_mwjbsodaau() {
     assert_delta!(
         aurora
             .path(Vec2::new(990.0, 366.0), Vec2::new(116.0, 508.0))
-            .len,
+            .unwrap()
+            .length,
         955.236
     );
 }
@@ -25280,7 +27806,8 @@ fn aurora_merged_trtrzxngpm() {
     assert_delta!(
         aurora
             .path(Vec2::new(130.0, 509.0), Vec2::new(1000.0, 351.0))
-            .len,
+            .unwrap()
+            .length,
         959.488
     );
 }
@@ -25290,7 +27817,8 @@ fn aurora_merged_sbusyyoycn() {
     assert_delta!(
         aurora
             .path(Vec2::new(820.0, 213.0), Vec2::new(317.0, 660.0))
-            .len,
+            .unwrap()
+            .length,
         951.569
     );
 }
@@ -25300,7 +27828,8 @@ fn aurora_merged_whtxssrqit() {
     assert_delta!(
         aurora
             .path(Vec2::new(876.0, 449.0), Vec2::new(16.0, 465.0))
-            .len,
+            .unwrap()
+            .length,
         943.985
     );
 }
@@ -25310,7 +27839,8 @@ fn aurora_merged_dyujgrohsw() {
     assert_delta!(
         aurora
             .path(Vec2::new(573.0, 697.0), Vec2::new(386.0, 88.0))
-            .len,
+            .unwrap()
+            .length,
         950.723
     );
 }
@@ -25320,7 +27850,8 @@ fn aurora_merged_btursqsjbu() {
     assert_delta!(
         aurora
             .path(Vec2::new(95.0, 134.0), Vec2::new(541.0, 709.0))
-            .len,
+            .unwrap()
+            .length,
         957.867
     );
 }
@@ -25330,7 +27861,8 @@ fn aurora_merged_mehgjlozoe() {
     assert_delta!(
         aurora
             .path(Vec2::new(54.0, 374.0), Vec2::new(947.0, 580.0))
-            .len,
+            .unwrap()
+            .length,
         953.564
     );
 }
@@ -25340,7 +27872,8 @@ fn aurora_merged_gszmyzzywa() {
     assert_delta!(
         aurora
             .path(Vec2::new(826.0, 616.0), Vec2::new(152.0, 153.0))
-            .len,
+            .unwrap()
+            .length,
         954.121
     );
 }
@@ -25350,7 +27883,8 @@ fn aurora_merged_xxaslddvla() {
     assert_delta!(
         aurora
             .path(Vec2::new(72.0, 577.0), Vec2::new(719.0, 225.0))
-            .len,
+            .unwrap()
+            .length,
         949.135
     );
 }
@@ -25360,7 +27894,8 @@ fn aurora_merged_wagszfgdls() {
     assert_delta!(
         aurora
             .path(Vec2::new(62.0, 528.0), Vec2::new(908.0, 339.0))
-            .len,
+            .unwrap()
+            .length,
         960.329
     );
 }
@@ -25370,7 +27905,8 @@ fn aurora_merged_dcwwlicutz() {
     assert_delta!(
         aurora
             .path(Vec2::new(222.0, 235.0), Vec2::new(947.0, 557.0))
-            .len,
+            .unwrap()
+            .length,
         951.591
     );
 }
@@ -25380,7 +27916,8 @@ fn aurora_merged_jdkwwarscr() {
     assert_delta!(
         aurora
             .path(Vec2::new(808.0, 140.0), Vec2::new(254.0, 611.0))
-            .len,
+            .unwrap()
+            .length,
         961.662
     );
 }
@@ -25390,7 +27927,8 @@ fn aurora_merged_uypulgkyon() {
     assert_delta!(
         aurora
             .path(Vec2::new(756.0, 698.0), Vec2::new(28.0, 198.0))
-            .len,
+            .unwrap()
+            .length,
         953.558
     );
 }
@@ -25400,7 +27938,8 @@ fn aurora_merged_dpnjfbqcke() {
     assert_delta!(
         aurora
             .path(Vec2::new(931.0, 568.0), Vec2::new(199.0, 208.0))
-            .len,
+            .unwrap()
+            .length,
         963.295
     );
 }
@@ -25410,7 +27949,8 @@ fn aurora_merged_dhzaqvhzto() {
     assert_delta!(
         aurora
             .path(Vec2::new(275.0, 568.0), Vec2::new(814.0, 109.0))
-            .len,
+            .unwrap()
+            .length,
         951.806
     );
 }
@@ -25420,7 +27960,8 @@ fn aurora_merged_rrtxftvsme() {
     assert_delta!(
         aurora
             .path(Vec2::new(756.0, 671.0), Vec2::new(349.0, 66.0))
-            .len,
+            .unwrap()
+            .length,
         961.606
     );
 }
@@ -25430,7 +27971,8 @@ fn aurora_merged_mtcoakaykv() {
     assert_delta!(
         aurora
             .path(Vec2::new(434.0, 123.0), Vec2::new(379.0, 722.0))
-            .len,
+            .unwrap()
+            .length,
         962.82
     );
 }
@@ -25440,7 +27982,8 @@ fn aurora_merged_hvpfripjtu() {
     assert_delta!(
         aurora
             .path(Vec2::new(397.0, 254.0), Vec2::new(731.0, 682.0))
-            .len,
+            .unwrap()
+            .length,
         955.612
     );
 }
@@ -25450,7 +27993,8 @@ fn aurora_merged_zoqmaorihd() {
     assert_delta!(
         aurora
             .path(Vec2::new(882.0, 278.0), Vec2::new(206.0, 704.0))
-            .len,
+            .unwrap()
+            .length,
         960.196
     );
 }
@@ -25460,7 +28004,8 @@ fn aurora_merged_xoiiowqgsb() {
     assert_delta!(
         aurora
             .path(Vec2::new(196.0, 589.0), Vec2::new(835.0, 155.0))
-            .len,
+            .unwrap()
+            .length,
         969.113
     );
 }
@@ -25470,7 +28015,8 @@ fn aurora_merged_hkcvvaxefl() {
     assert_delta!(
         aurora
             .path(Vec2::new(225.0, 170.0), Vec2::new(760.0, 691.0))
-            .len,
+            .unwrap()
+            .length,
         957.338
     );
 }
@@ -25480,7 +28026,8 @@ fn aurora_merged_hexylsfqrk() {
     assert_delta!(
         aurora
             .path(Vec2::new(27.0, 200.0), Vec2::new(750.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         952.049
     );
 }
@@ -25490,7 +28037,8 @@ fn aurora_merged_twrykljxbi() {
     assert_delta!(
         aurora
             .path(Vec2::new(999.0, 358.0), Vec2::new(118.0, 509.0))
-            .len,
+            .unwrap()
+            .length,
         965.04
     );
 }
@@ -25500,7 +28048,8 @@ fn aurora_merged_qwaiddygtq() {
     assert_delta!(
         aurora
             .path(Vec2::new(914.0, 532.0), Vec2::new(14.0, 635.0))
-            .len,
+            .unwrap()
+            .length,
         959.281
     );
 }
@@ -25510,7 +28059,8 @@ fn aurora_merged_qhxnfusoxl() {
     assert_delta!(
         aurora
             .path(Vec2::new(831.0, 235.0), Vec2::new(7.0, 473.0))
-            .len,
+            .unwrap()
+            .length,
         962.378
     );
 }
@@ -25520,7 +28070,8 @@ fn aurora_merged_vkcxkfjkoo() {
     assert_delta!(
         aurora
             .path(Vec2::new(945.0, 407.0), Vec2::new(42.0, 159.0))
-            .len,
+            .unwrap()
+            .length,
         967.566
     );
 }
@@ -25530,7 +28081,8 @@ fn aurora_merged_lvnouffvdd() {
     assert_delta!(
         aurora
             .path(Vec2::new(49.0, 517.0), Vec2::new(938.0, 263.0))
-            .len,
+            .unwrap()
+            .length,
         967.541
     );
 }
@@ -25540,7 +28092,8 @@ fn aurora_merged_ptfcbpsfdp() {
     assert_delta!(
         aurora
             .path(Vec2::new(350.0, 621.0), Vec2::new(747.0, 148.0))
-            .len,
+            .unwrap()
+            .length,
         966.31
     );
 }
@@ -25550,7 +28103,8 @@ fn aurora_merged_qrmufvjxgw() {
     assert_delta!(
         aurora
             .path(Vec2::new(734.0, 258.0), Vec2::new(103.0, 594.0))
-            .len,
+            .unwrap()
+            .length,
         958.748
     );
 }
@@ -25560,7 +28114,8 @@ fn aurora_merged_svdfipwqng() {
     assert_delta!(
         aurora
             .path(Vec2::new(172.0, 640.0), Vec2::new(909.0, 254.0))
-            .len,
+            .unwrap()
+            .length,
         955.79
     );
 }
@@ -25570,7 +28125,8 @@ fn aurora_merged_jfmdzcxacl() {
     assert_delta!(
         aurora
             .path(Vec2::new(600.0, 709.0), Vec2::new(242.0, 180.0))
-            .len,
+            .unwrap()
+            .length,
         964.472
     );
 }
@@ -25580,7 +28136,8 @@ fn aurora_merged_vehtbfsios() {
     assert_delta!(
         aurora
             .path(Vec2::new(65.0, 185.0), Vec2::new(978.0, 377.0))
-            .len,
+            .unwrap()
+            .length,
         967.203
     );
 }
@@ -25590,7 +28147,8 @@ fn aurora_merged_icyfhdbtou() {
     assert_delta!(
         aurora
             .path(Vec2::new(125.0, 474.0), Vec2::new(1015.0, 421.0))
-            .len,
+            .unwrap()
+            .length,
         961.996
     );
 }
@@ -25600,7 +28158,8 @@ fn aurora_merged_vuomglxwkx() {
     assert_delta!(
         aurora
             .path(Vec2::new(24.0, 172.0), Vec2::new(942.0, 362.0))
-            .len,
+            .unwrap()
+            .length,
         970.023
     );
 }
@@ -25610,7 +28169,8 @@ fn aurora_merged_hzhonvcaxj() {
     assert_delta!(
         aurora
             .path(Vec2::new(926.0, 380.0), Vec2::new(139.0, 698.0))
-            .len,
+            .unwrap()
+            .length,
         971.334
     );
 }
@@ -25620,7 +28180,8 @@ fn aurora_merged_vwgzwoszqk() {
     assert_delta!(
         aurora
             .path(Vec2::new(993.0, 632.0), Vec2::new(61.0, 467.0))
-            .len,
+            .unwrap()
+            .length,
         971.354
     );
 }
@@ -25630,7 +28191,8 @@ fn aurora_merged_exnidyojvk() {
     assert_delta!(
         aurora
             .path(Vec2::new(173.0, 226.0), Vec2::new(888.0, 673.0))
-            .len,
+            .unwrap()
+            .length,
         960.863
     );
 }
@@ -25640,7 +28202,8 @@ fn aurora_merged_opfcpwklfe() {
     assert_delta!(
         aurora
             .path(Vec2::new(8.0, 365.0), Vec2::new(919.0, 582.0))
-            .len,
+            .unwrap()
+            .length,
         967.566
     );
 }
@@ -25650,7 +28213,8 @@ fn aurora_merged_zlnkhvnxds() {
     assert_delta!(
         aurora
             .path(Vec2::new(790.0, 90.0), Vec2::new(138.0, 560.0))
-            .len,
+            .unwrap()
+            .length,
         961.117
     );
 }
@@ -25660,7 +28224,8 @@ fn aurora_merged_imcemzoief() {
     assert_delta!(
         aurora
             .path(Vec2::new(352.0, 715.0), Vec2::new(812.0, 169.0))
-            .len,
+            .unwrap()
+            .length,
         969.844
     );
 }
@@ -25670,7 +28235,8 @@ fn aurora_merged_zoewyasqpm() {
     assert_delta!(
         aurora
             .path(Vec2::new(207.0, 709.0), Vec2::new(679.0, 69.0))
-            .len,
+            .unwrap()
+            .length,
         972.769
     );
 }
@@ -25680,7 +28246,8 @@ fn aurora_merged_xxqpgdykff() {
     assert_delta!(
         aurora
             .path(Vec2::new(891.0, 172.0), Vec2::new(217.0, 587.0))
-            .len,
+            .unwrap()
+            .length,
         963.013
     );
 }
@@ -25690,7 +28257,8 @@ fn aurora_merged_tknwvmdckl() {
     assert_delta!(
         aurora
             .path(Vec2::new(969.0, 631.0), Vec2::new(28.0, 493.0))
-            .len,
+            .unwrap()
+            .length,
         974.411
     );
 }
@@ -25700,7 +28268,8 @@ fn aurora_merged_cagrgnpcuo() {
     assert_delta!(
         aurora
             .path(Vec2::new(500.0, 47.0), Vec2::new(230.0, 719.0))
-            .len,
+            .unwrap()
+            .length,
         970.065
     );
 }
@@ -25710,7 +28279,8 @@ fn aurora_merged_gqsoifjwoc() {
     assert_delta!(
         aurora
             .path(Vec2::new(854.0, 200.0), Vec2::new(322.0, 679.0))
-            .len,
+            .unwrap()
+            .length,
         968.262
     );
 }
@@ -25720,7 +28290,8 @@ fn aurora_merged_knzjmvwidy() {
     assert_delta!(
         aurora
             .path(Vec2::new(324.0, 742.0), Vec2::new(61.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         968.343
     );
 }
@@ -25730,7 +28301,8 @@ fn aurora_merged_nrbthxylke() {
     assert_delta!(
         aurora
             .path(Vec2::new(738.0, 260.0), Vec2::new(88.0, 567.0))
-            .len,
+            .unwrap()
+            .length,
         964.753
     );
 }
@@ -25740,7 +28312,8 @@ fn aurora_merged_jnfmzhfpkt() {
     assert_delta!(
         aurora
             .path(Vec2::new(203.0, 694.0), Vec2::new(717.0, 153.0))
-            .len,
+            .unwrap()
+            .length,
         978.264
     );
 }
@@ -25750,7 +28323,8 @@ fn aurora_merged_mhxjyurjme() {
     assert_delta!(
         aurora
             .path(Vec2::new(663.0, 87.0), Vec2::new(153.0, 735.0))
-            .len,
+            .unwrap()
+            .length,
         969.579
     );
 }
@@ -25760,7 +28334,8 @@ fn aurora_merged_xjxbotdlvr() {
     assert_delta!(
         aurora
             .path(Vec2::new(548.0, 703.0), Vec2::new(365.0, 66.0))
-            .len,
+            .unwrap()
+            .length,
         977.028
     );
 }
@@ -25770,7 +28345,8 @@ fn aurora_merged_bvetwyjklf() {
     assert_delta!(
         aurora
             .path(Vec2::new(877.0, 178.0), Vec2::new(52.0, 481.0))
-            .len,
+            .unwrap()
+            .length,
         973.749
     );
 }
@@ -25780,7 +28356,8 @@ fn aurora_merged_icqhtzhdlm() {
     assert_delta!(
         aurora
             .path(Vec2::new(930.0, 622.0), Vec2::new(31.0, 365.0))
-            .len,
+            .unwrap()
+            .length,
         968.832
     );
 }
@@ -25790,7 +28367,8 @@ fn aurora_merged_jixvogfahb() {
     assert_delta!(
         aurora
             .path(Vec2::new(26.0, 632.0), Vec2::new(947.0, 459.0))
-            .len,
+            .unwrap()
+            .length,
         966.846
     );
 }
@@ -25800,7 +28378,8 @@ fn aurora_merged_etagffvnks() {
     assert_delta!(
         aurora
             .path(Vec2::new(888.0, 410.0), Vec2::new(8.0, 512.0))
-            .len,
+            .unwrap()
+            .length,
         969.213
     );
 }
@@ -25810,7 +28389,8 @@ fn aurora_merged_ioifztcxzk() {
     assert_delta!(
         aurora
             .path(Vec2::new(308.0, 52.0), Vec2::new(961.0, 618.0))
-            .len,
+            .unwrap()
+            .length,
         967.038
     );
 }
@@ -25820,7 +28400,8 @@ fn aurora_merged_xlajdowydd() {
     assert_delta!(
         aurora
             .path(Vec2::new(48.0, 546.0), Vec2::new(846.0, 153.0))
-            .len,
+            .unwrap()
+            .length,
         984.055
     );
 }
@@ -25830,7 +28411,8 @@ fn aurora_merged_zpgxwgyprf() {
     assert_delta!(
         aurora
             .path(Vec2::new(833.0, 641.0), Vec2::new(139.0, 184.0))
-            .len,
+            .unwrap()
+            .length,
         964.505
     );
 }
@@ -25840,7 +28422,8 @@ fn aurora_merged_wroqupreph() {
     assert_delta!(
         aurora
             .path(Vec2::new(349.0, 718.0), Vec2::new(935.0, 148.0))
-            .len,
+            .unwrap()
+            .length,
         976.227
     );
 }
@@ -25850,7 +28433,8 @@ fn aurora_merged_titfkyqunk() {
     assert_delta!(
         aurora
             .path(Vec2::new(1.0, 442.0), Vec2::new(927.0, 381.0))
-            .len,
+            .unwrap()
+            .length,
         986.434
     );
 }
@@ -25860,7 +28444,8 @@ fn aurora_merged_agjjwtybua() {
     assert_delta!(
         aurora
             .path(Vec2::new(710.0, 157.0), Vec2::new(80.0, 660.0))
-            .len,
+            .unwrap()
+            .length,
         980.388
     );
 }
@@ -25870,7 +28455,8 @@ fn aurora_merged_atkorxmgpt() {
     assert_delta!(
         aurora
             .path(Vec2::new(950.0, 440.0), Vec2::new(139.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         988.294
     );
 }
@@ -25880,7 +28466,8 @@ fn aurora_merged_ssmdzbdsut() {
     assert_delta!(
         aurora
             .path(Vec2::new(803.0, 156.0), Vec2::new(203.0, 635.0))
-            .len,
+            .unwrap()
+            .length,
         984.952
     );
 }
@@ -25890,7 +28477,8 @@ fn aurora_merged_fswhewkcuu() {
     assert_delta!(
         aurora
             .path(Vec2::new(797.0, 265.0), Vec2::new(7.0, 520.0))
-            .len,
+            .unwrap()
+            .length,
         969.203
     );
 }
@@ -25900,7 +28488,8 @@ fn aurora_merged_rlfqllsdlp() {
     assert_delta!(
         aurora
             .path(Vec2::new(513.0, 143.0), Vec2::new(312.0, 755.0))
-            .len,
+            .unwrap()
+            .length,
         977.564
     );
 }
@@ -25910,7 +28499,8 @@ fn aurora_merged_lyewvynstr() {
     assert_delta!(
         aurora
             .path(Vec2::new(1006.0, 588.0), Vec2::new(51.0, 541.0))
-            .len,
+            .unwrap()
+            .length,
         982.381
     );
 }
@@ -25920,7 +28510,8 @@ fn aurora_merged_nybmduhizj() {
     assert_delta!(
         aurora
             .path(Vec2::new(1012.0, 444.0), Vec2::new(58.0, 516.0))
-            .len,
+            .unwrap()
+            .length,
         982.302
     );
 }
@@ -25930,7 +28521,8 @@ fn aurora_merged_dyvisjkblk() {
     assert_delta!(
         aurora
             .path(Vec2::new(124.0, 713.0), Vec2::new(983.0, 361.0))
-            .len,
+            .unwrap()
+            .length,
         992.807
     );
 }
@@ -25940,7 +28532,8 @@ fn aurora_merged_bpwmficxuz() {
     assert_delta!(
         aurora
             .path(Vec2::new(725.0, 127.0), Vec2::new(243.0, 707.0))
-            .len,
+            .unwrap()
+            .length,
         982.288
     );
 }
@@ -25950,7 +28543,8 @@ fn aurora_merged_jisyafxfff() {
     assert_delta!(
         aurora
             .path(Vec2::new(782.0, 195.0), Vec2::new(275.0, 646.0))
-            .len,
+            .unwrap()
+            .length,
         979.082
     );
 }
@@ -25960,7 +28554,8 @@ fn aurora_merged_ppguccegeu() {
     assert_delta!(
         aurora
             .path(Vec2::new(596.0, 728.0), Vec2::new(791.0, 78.0))
-            .len,
+            .unwrap()
+            .length,
         977.525
     );
 }
@@ -25970,7 +28565,8 @@ fn aurora_merged_xtismmsdii() {
     assert_delta!(
         aurora
             .path(Vec2::new(979.0, 589.0), Vec2::new(269.0, 100.0))
-            .len,
+            .unwrap()
+            .length,
         968.371
     );
 }
@@ -25980,7 +28576,8 @@ fn aurora_merged_nulmetxbxy() {
     assert_delta!(
         aurora
             .path(Vec2::new(625.0, 128.0), Vec2::new(403.0, 713.0))
-            .len,
+            .unwrap()
+            .length,
         979.638
     );
 }
@@ -25990,7 +28587,8 @@ fn aurora_merged_chipjfxwns() {
     assert_delta!(
         aurora
             .path(Vec2::new(795.0, 263.0), Vec2::new(261.0, 642.0))
-            .len,
+            .unwrap()
+            .length,
         981.232
     );
 }
@@ -26000,7 +28598,8 @@ fn aurora_merged_bktulyimxr() {
     assert_delta!(
         aurora
             .path(Vec2::new(106.0, 612.0), Vec2::new(738.0, 282.0))
-            .len,
+            .unwrap()
+            .length,
         977.24
     );
 }
@@ -26010,7 +28609,8 @@ fn aurora_merged_qfhrsnxhap() {
     assert_delta!(
         aurora
             .path(Vec2::new(106.0, 624.0), Vec2::new(760.0, 119.0))
-            .len,
+            .unwrap()
+            .length,
         983.087
     );
 }
@@ -26020,7 +28620,8 @@ fn aurora_merged_fwckfthhkg() {
     assert_delta!(
         aurora
             .path(Vec2::new(803.0, 152.0), Vec2::new(123.0, 599.0))
-            .len,
+            .unwrap()
+            .length,
         990.046
     );
 }
@@ -26030,7 +28631,8 @@ fn aurora_merged_pbynqgcskc() {
     assert_delta!(
         aurora
             .path(Vec2::new(42.0, 566.0), Vec2::new(793.0, 275.0))
-            .len,
+            .unwrap()
+            .length,
         980.163
     );
 }
@@ -26040,7 +28642,8 @@ fn aurora_merged_wldpudlvpm() {
     assert_delta!(
         aurora
             .path(Vec2::new(979.0, 363.0), Vec2::new(83.0, 496.0))
-            .len,
+            .unwrap()
+            .length,
         985.647
     );
 }
@@ -26050,7 +28653,8 @@ fn aurora_merged_zohwlmtnhp() {
     assert_delta!(
         aurora
             .path(Vec2::new(857.0, 598.0), Vec2::new(185.0, 131.0))
-            .len,
+            .unwrap()
+            .length,
         978.562
     );
 }
@@ -26060,7 +28664,8 @@ fn aurora_merged_vccsbrynja() {
     assert_delta!(
         aurora
             .path(Vec2::new(823.0, 127.0), Vec2::new(8.0, 502.0))
-            .len,
+            .unwrap()
+            .length,
         971.566
     );
 }
@@ -26070,7 +28675,8 @@ fn aurora_merged_rlqjrofdes() {
     assert_delta!(
         aurora
             .path(Vec2::new(833.0, 105.0), Vec2::new(397.0, 683.0))
-            .len,
+            .unwrap()
+            .length,
         985.181
     );
 }
@@ -26080,7 +28686,8 @@ fn aurora_merged_noryvyaefl() {
     assert_delta!(
         aurora
             .path(Vec2::new(398.0, 125.0), Vec2::new(369.0, 713.0))
-            .len,
+            .unwrap()
+            .length,
         989.761
     );
 }
@@ -26090,7 +28697,8 @@ fn aurora_merged_ndvjmcwral() {
     assert_delta!(
         aurora
             .path(Vec2::new(140.0, 585.0), Vec2::new(799.0, 87.0))
-            .len,
+            .unwrap()
+            .length,
         976.889
     );
 }
@@ -26100,7 +28708,8 @@ fn aurora_merged_watzphdunz() {
     assert_delta!(
         aurora
             .path(Vec2::new(834.0, 329.0), Vec2::new(24.0, 646.0))
-            .len,
+            .unwrap()
+            .length,
         971.856
     );
 }
@@ -26110,7 +28719,8 @@ fn aurora_merged_kiiqxrqgbc() {
     assert_delta!(
         aurora
             .path(Vec2::new(702.0, 214.0), Vec2::new(171.0, 700.0))
-            .len,
+            .unwrap()
+            .length,
         978.893
     );
 }
@@ -26120,7 +28730,8 @@ fn aurora_merged_cahnnicmup() {
     assert_delta!(
         aurora
             .path(Vec2::new(849.0, 430.0), Vec2::new(28.0, 598.0))
-            .len,
+            .unwrap()
+            .length,
         978.599
     );
 }
@@ -26130,7 +28741,8 @@ fn aurora_merged_eccjdvirhb() {
     assert_delta!(
         aurora
             .path(Vec2::new(792.0, 97.0), Vec2::new(131.0, 603.0))
-            .len,
+            .unwrap()
+            .length,
         986.148
     );
 }
@@ -26140,7 +28752,8 @@ fn aurora_merged_nwmgyfdrcb() {
     assert_delta!(
         aurora
             .path(Vec2::new(650.0, 57.0), Vec2::new(722.0, 685.0))
-            .len,
+            .unwrap()
+            .length,
         990.38
     );
 }
@@ -26150,7 +28763,8 @@ fn aurora_merged_tvfbkyetoh() {
     assert_delta!(
         aurora
             .path(Vec2::new(964.0, 349.0), Vec2::new(135.0, 675.0))
-            .len,
+            .unwrap()
+            .length,
         995.156
     );
 }
@@ -26160,7 +28774,8 @@ fn aurora_merged_lhueoiyljj() {
     assert_delta!(
         aurora
             .path(Vec2::new(283.0, 685.0), Vec2::new(580.0, 44.0))
-            .len,
+            .unwrap()
+            .length,
         984.101
     );
 }
@@ -26170,7 +28785,8 @@ fn aurora_merged_ebpocctvdw() {
     assert_delta!(
         aurora
             .path(Vec2::new(20.0, 171.0), Vec2::new(769.0, 718.0))
-            .len,
+            .unwrap()
+            .length,
         981.948
     );
 }
@@ -26180,7 +28796,8 @@ fn aurora_merged_inmqupmkfr() {
     assert_delta!(
         aurora
             .path(Vec2::new(1016.0, 381.0), Vec2::new(142.0, 680.0))
-            .len,
+            .unwrap()
+            .length,
         994.584
     );
 }
@@ -26190,7 +28807,8 @@ fn aurora_merged_vymryuiknw() {
     assert_delta!(
         aurora
             .path(Vec2::new(939.0, 357.0), Vec2::new(99.0, 602.0))
-            .len,
+            .unwrap()
+            .length,
         986.219
     );
 }
@@ -26200,7 +28818,8 @@ fn aurora_merged_irlpfkpbur() {
     assert_delta!(
         aurora
             .path(Vec2::new(748.0, 145.0), Vec2::new(287.0, 693.0))
-            .len,
+            .unwrap()
+            .length,
         991.334
     );
 }
@@ -26210,7 +28829,8 @@ fn aurora_merged_xvhkzdatqd() {
     assert_delta!(
         aurora
             .path(Vec2::new(339.0, 612.0), Vec2::new(757.0, 82.0))
-            .len,
+            .unwrap()
+            .length,
         978.567
     );
 }
@@ -26220,7 +28840,8 @@ fn aurora_merged_ozvjcnhjzu() {
     assert_delta!(
         aurora
             .path(Vec2::new(282.0, 692.0), Vec2::new(743.0, 126.0))
-            .len,
+            .unwrap()
+            .length,
         990.931
     );
 }
@@ -26230,7 +28851,8 @@ fn aurora_merged_pbllfkzmia() {
     assert_delta!(
         aurora
             .path(Vec2::new(391.0, 721.0), Vec2::new(374.0, 107.0))
-            .len,
+            .unwrap()
+            .length,
         997.016
     );
 }
@@ -26240,7 +28862,8 @@ fn aurora_merged_aseeuawdvw() {
     assert_delta!(
         aurora
             .path(Vec2::new(301.0, 97.0), Vec2::new(745.0, 671.0))
-            .len,
+            .unwrap()
+            .length,
         991.751
     );
 }
@@ -26250,7 +28873,8 @@ fn aurora_merged_lvvqesqxlt() {
     assert_delta!(
         aurora
             .path(Vec2::new(678.0, 249.0), Vec2::new(178.0, 722.0))
-            .len,
+            .unwrap()
+            .length,
         987.037
     );
 }
@@ -26260,7 +28884,8 @@ fn aurora_merged_dcvkpoguwo() {
     assert_delta!(
         aurora
             .path(Vec2::new(198.0, 681.0), Vec2::new(728.0, 210.0))
-            .len,
+            .unwrap()
+            .length,
         991.765
     );
 }
@@ -26270,7 +28895,8 @@ fn aurora_merged_szibdgnhae() {
     assert_delta!(
         aurora
             .path(Vec2::new(699.0, 163.0), Vec2::new(289.0, 725.0))
-            .len,
+            .unwrap()
+            .length,
         995.027
     );
 }
@@ -26280,7 +28906,8 @@ fn aurora_merged_zmisxsbyht() {
     assert_delta!(
         aurora
             .path(Vec2::new(899.0, 339.0), Vec2::new(54.0, 578.0))
-            .len,
+            .unwrap()
+            .length,
         984.014
     );
 }
@@ -26290,7 +28917,8 @@ fn aurora_merged_ppcifuddbn() {
     assert_delta!(
         aurora
             .path(Vec2::new(959.0, 641.0), Vec2::new(245.0, 234.0))
-            .len,
+            .unwrap()
+            .length,
         995.78
     );
 }
@@ -26300,7 +28928,8 @@ fn aurora_merged_wuzgxgoiac() {
     assert_delta!(
         aurora
             .path(Vec2::new(924.0, 640.0), Vec2::new(238.0, 134.0))
-            .len,
+            .unwrap()
+            .length,
         986.483
     );
 }
@@ -26310,7 +28939,8 @@ fn aurora_merged_sbymirbruq() {
     assert_delta!(
         aurora
             .path(Vec2::new(183.0, 92.0), Vec2::new(528.0, 706.0))
-            .len,
+            .unwrap()
+            .length,
         991.404
     );
 }
@@ -26320,7 +28950,8 @@ fn aurora_merged_linugahtrw() {
     assert_delta!(
         aurora
             .path(Vec2::new(2.0, 609.0), Vec2::new(957.0, 460.0))
-            .len,
+            .unwrap()
+            .length,
         991.871
     );
 }
@@ -26330,7 +28961,8 @@ fn aurora_merged_ypnvqodpgr() {
     assert_delta!(
         aurora
             .path(Vec2::new(1016.0, 581.0), Vec2::new(121.0, 327.0))
-            .len,
+            .unwrap()
+            .length,
         983.865
     );
 }
@@ -26340,7 +28972,8 @@ fn aurora_merged_sloarfedam() {
     assert_delta!(
         aurora
             .path(Vec2::new(945.0, 569.0), Vec2::new(245.0, 26.0))
-            .len,
+            .unwrap()
+            .length,
         984.542
     );
 }
@@ -26350,7 +28983,8 @@ fn aurora_merged_zahcctcson() {
     assert_delta!(
         aurora
             .path(Vec2::new(744.0, 175.0), Vec2::new(58.0, 628.0))
-            .len,
+            .unwrap()
+            .length,
         1000.5947
     );
 }
@@ -26360,7 +28994,8 @@ fn aurora_merged_utzbaerofi() {
     assert_delta!(
         aurora
             .path(Vec2::new(89.0, 481.0), Vec2::new(1009.0, 431.0))
-            .len,
+            .unwrap()
+            .length,
         996.728
     );
 }
@@ -26370,7 +29005,8 @@ fn aurora_merged_ajxgpdryhx() {
     assert_delta!(
         aurora
             .path(Vec2::new(262.0, 726.0), Vec2::new(710.0, 212.0))
-            .len,
+            .unwrap()
+            .length,
         991.659
     );
 }
@@ -26380,7 +29016,8 @@ fn aurora_merged_qrfjvyrgsj() {
     assert_delta!(
         aurora
             .path(Vec2::new(277.0, 728.0), Vec2::new(713.0, 176.0))
-            .len,
+            .unwrap()
+            .length,
         1000.6979
     );
 }
@@ -26390,7 +29027,8 @@ fn aurora_merged_mplapdhkyx() {
     assert_delta!(
         aurora
             .path(Vec2::new(510.0, 46.0), Vec2::new(532.0, 699.0))
-            .len,
+            .unwrap()
+            .length,
         995.914
     );
 }
@@ -26400,7 +29038,8 @@ fn aurora_merged_mequqewfki() {
     assert_delta!(
         aurora
             .path(Vec2::new(233.0, 198.0), Vec2::new(919.0, 657.0))
-            .len,
+            .unwrap()
+            .length,
         999.093
     );
 }
@@ -26410,7 +29049,8 @@ fn aurora_merged_kphmsrgnzu() {
     assert_delta!(
         aurora
             .path(Vec2::new(737.0, 232.0), Vec2::new(351.0, 639.0))
-            .len,
+            .unwrap()
+            .length,
         988.227
     );
 }
@@ -26420,7 +29060,8 @@ fn aurora_merged_bgoftyecoe() {
     assert_delta!(
         aurora
             .path(Vec2::new(367.0, 704.0), Vec2::new(782.0, 155.0))
-            .len,
+            .unwrap()
+            .length,
         998.706
     );
 }
@@ -26430,7 +29071,8 @@ fn aurora_merged_lhyubnnftl() {
     assert_delta!(
         aurora
             .path(Vec2::new(688.0, 210.0), Vec2::new(82.0, 687.0))
-            .len,
+            .unwrap()
+            .length,
         995.845
     );
 }
@@ -26440,7 +29082,8 @@ fn aurora_merged_ncthpmtfwa() {
     assert_delta!(
         aurora
             .path(Vec2::new(996.0, 423.0), Vec2::new(79.0, 573.0))
-            .len,
+            .unwrap()
+            .length,
         999.01
     );
 }
@@ -26450,7 +29093,8 @@ fn aurora_merged_xysskcekzr() {
     assert_delta!(
         aurora
             .path(Vec2::new(373.0, 685.0), Vec2::new(715.0, 140.0))
-            .len,
+            .unwrap()
+            .length,
         998.232
     );
 }
@@ -26460,7 +29104,8 @@ fn aurora_merged_wvwemdxtlj() {
     assert_delta!(
         aurora
             .path(Vec2::new(816.0, 120.0), Vec2::new(381.0, 702.0))
-            .len,
+            .unwrap()
+            .length,
         1000.6705
     );
 }
@@ -26470,7 +29115,8 @@ fn aurora_merged_emppewiede() {
     assert_delta!(
         aurora
             .path(Vec2::new(298.0, 48.0), Vec2::new(776.0, 678.0))
-            .len,
+            .unwrap()
+            .length,
         996.3369
     );
 }
@@ -26480,7 +29126,8 @@ fn aurora_merged_zdpgsmcjvf() {
     assert_delta!(
         aurora
             .path(Vec2::new(1008.0, 404.0), Vec2::new(116.0, 714.0))
-            .len,
+            .unwrap()
+            .length,
         1009.6711
     );
 }
@@ -26490,7 +29137,8 @@ fn aurora_merged_qpebnkmvby() {
     assert_delta!(
         aurora
             .path(Vec2::new(87.0, 444.0), Vec2::new(955.0, 439.0))
-            .len,
+            .unwrap()
+            .length,
         993.6116
     );
 }
@@ -26500,7 +29148,8 @@ fn aurora_merged_cpfpthivun() {
     assert_delta!(
         aurora
             .path(Vec2::new(133.0, 671.0), Vec2::new(901.0, 276.0))
-            .len,
+            .unwrap()
+            .length,
         991.90805
     );
 }
@@ -26510,7 +29159,8 @@ fn aurora_merged_qdwrneyvoc() {
     assert_delta!(
         aurora
             .path(Vec2::new(997.0, 402.0), Vec2::new(63.0, 406.0))
-            .len,
+            .unwrap()
+            .length,
         994.78382
     );
 }
@@ -26520,7 +29170,8 @@ fn aurora_merged_uucrrrxyxe() {
     assert_delta!(
         aurora
             .path(Vec2::new(103.0, 554.0), Vec2::new(802.0, 214.0))
-            .len,
+            .unwrap()
+            .length,
         997.61857
     );
 }
@@ -26530,7 +29181,8 @@ fn aurora_merged_wxaxrrkhhf() {
     assert_delta!(
         aurora
             .path(Vec2::new(777.0, 244.0), Vec2::new(192.0, 666.0))
-            .len,
+            .unwrap()
+            .length,
         999.93201
     );
 }
@@ -26540,7 +29192,8 @@ fn aurora_merged_onlpdumhzo() {
     assert_delta!(
         aurora
             .path(Vec2::new(564.0, 30.0), Vec2::new(3.0, 603.0))
-            .len,
+            .unwrap()
+            .length,
         994.40793
     );
 }
@@ -26550,7 +29203,8 @@ fn aurora_merged_qopihpykql() {
     assert_delta!(
         aurora
             .path(Vec2::new(154.0, 93.0), Vec2::new(733.0, 621.0))
-            .len,
+            .unwrap()
+            .length,
         993.39839
     );
 }
@@ -26560,7 +29214,8 @@ fn aurora_merged_smyiednvkw() {
     assert_delta!(
         aurora
             .path(Vec2::new(696.0, 144.0), Vec2::new(1.0, 609.0))
-            .len,
+            .unwrap()
+            .length,
         997.58055
     );
 }
@@ -26570,7 +29225,8 @@ fn aurora_merged_bftmfyuktv() {
     assert_delta!(
         aurora
             .path(Vec2::new(968.0, 355.0), Vec2::new(39.0, 511.0))
-            .len,
+            .unwrap()
+            .length,
         1007.6115
     );
 }
@@ -26580,7 +29236,8 @@ fn aurora_merged_iezfgesqgx() {
     assert_delta!(
         aurora
             .path(Vec2::new(791.0, 96.0), Vec2::new(116.0, 609.0))
-            .len,
+            .unwrap()
+            .length,
         1000.729
     );
 }
@@ -26590,7 +29247,8 @@ fn aurora_merged_axaqiygsfg() {
     assert_delta!(
         aurora
             .path(Vec2::new(78.0, 541.0), Vec2::new(981.0, 422.0))
-            .len,
+            .unwrap()
+            .length,
         1000.9445
     );
 }
@@ -26600,7 +29258,8 @@ fn aurora_merged_evvflpbxnh() {
     assert_delta!(
         aurora
             .path(Vec2::new(842.0, 117.0), Vec2::new(242.0, 613.0))
-            .len,
+            .unwrap()
+            .length,
         1002.2897
     );
 }
@@ -26610,7 +29269,8 @@ fn aurora_merged_enyzivenpn() {
     assert_delta!(
         aurora
             .path(Vec2::new(731.0, 707.0), Vec2::new(77.0, 178.0))
-            .len,
+            .unwrap()
+            .length,
         994.75795
     );
 }
@@ -26620,7 +29280,8 @@ fn aurora_merged_elxsfhxbrd() {
     assert_delta!(
         aurora
             .path(Vec2::new(730.0, 44.0), Vec2::new(215.0, 683.0))
-            .len,
+            .unwrap()
+            .length,
         1005.657
     );
 }
@@ -26630,7 +29291,8 @@ fn aurora_merged_prodywiphp() {
     assert_delta!(
         aurora
             .path(Vec2::new(371.0, 125.0), Vec2::new(596.0, 719.0))
-            .len,
+            .unwrap()
+            .length,
         1006.3103
     );
 }
@@ -26640,7 +29302,8 @@ fn aurora_merged_kczhyucezn() {
     assert_delta!(
         aurora
             .path(Vec2::new(3.0, 161.0), Vec2::new(882.0, 621.0))
-            .len,
+            .unwrap()
+            .length,
         996.874
     );
 }
@@ -26650,7 +29313,8 @@ fn aurora_merged_jtlzmvsjpq() {
     assert_delta!(
         aurora
             .path(Vec2::new(688.0, 68.0), Vec2::new(34.0, 653.0))
-            .len,
+            .unwrap()
+            .length,
         1003.2607
     );
 }
@@ -26660,7 +29324,8 @@ fn aurora_merged_atbffxxlog() {
     assert_delta!(
         aurora
             .path(Vec2::new(33.0, 193.0), Vec2::new(938.0, 538.0))
-            .len,
+            .unwrap()
+            .length,
         997.98276
     );
 }
@@ -26670,7 +29335,8 @@ fn aurora_merged_xayjbgcbyc() {
     assert_delta!(
         aurora
             .path(Vec2::new(990.0, 335.0), Vec2::new(16.0, 173.0))
-            .len,
+            .unwrap()
+            .length,
         1008.9775
     );
 }
@@ -26680,7 +29346,8 @@ fn aurora_merged_rznxdqthns() {
     assert_delta!(
         aurora
             .path(Vec2::new(1021.0, 302.0), Vec2::new(37.0, 198.0))
-            .len,
+            .unwrap()
+            .length,
         1014.8737
     );
 }
@@ -26690,7 +29357,8 @@ fn aurora_merged_xztopxuipu() {
     assert_delta!(
         aurora
             .path(Vec2::new(724.0, 47.0), Vec2::new(519.0, 699.0))
-            .len,
+            .unwrap()
+            .length,
         1002.3511
     );
 }
@@ -26700,7 +29368,8 @@ fn aurora_merged_gogfzbgliu() {
     assert_delta!(
         aurora
             .path(Vec2::new(350.0, 737.0), Vec2::new(708.0, 181.0))
-            .len,
+            .unwrap()
+            .length,
         998.59063
     );
 }
@@ -26710,7 +29379,8 @@ fn aurora_merged_thkvqbnjjd() {
     assert_delta!(
         aurora
             .path(Vec2::new(954.0, 572.0), Vec2::new(14.0, 330.0))
-            .len,
+            .unwrap()
+            .length,
         1002.4995
     );
 }
@@ -26720,7 +29390,8 @@ fn aurora_merged_chxbrarifj() {
     assert_delta!(
         aurora
             .path(Vec2::new(427.0, 688.0), Vec2::new(495.0, 37.0))
-            .len,
+            .unwrap()
+            .length,
         1018.9221
     );
 }
@@ -26730,7 +29401,8 @@ fn aurora_merged_dzybcewmyz() {
     assert_delta!(
         aurora
             .path(Vec2::new(1006.0, 336.0), Vec2::new(126.0, 715.0))
-            .len,
+            .unwrap()
+            .length,
         1024.5258
     );
 }
@@ -26740,7 +29412,8 @@ fn aurora_merged_zlrncwpefc() {
     assert_delta!(
         aurora
             .path(Vec2::new(839.0, 96.0), Vec2::new(103.0, 513.0))
-            .len,
+            .unwrap()
+            .length,
         1002.4129
     );
 }
@@ -26750,7 +29423,8 @@ fn aurora_merged_hnifvxqham() {
     assert_delta!(
         aurora
             .path(Vec2::new(738.0, 167.0), Vec2::new(56.0, 668.0))
-            .len,
+            .unwrap()
+            .length,
         1021.4663
     );
 }
@@ -26760,7 +29434,8 @@ fn aurora_merged_vbcicspwha() {
     assert_delta!(
         aurora
             .path(Vec2::new(997.0, 301.0), Vec2::new(17.0, 180.0))
-            .len,
+            .unwrap()
+            .length,
         1016.2511
     );
 }
@@ -26770,7 +29445,8 @@ fn aurora_merged_dqeyichdiu() {
     assert_delta!(
         aurora
             .path(Vec2::new(154.0, 142.0), Vec2::new(860.0, 637.0))
-            .len,
+            .unwrap()
+            .length,
         999.89383
     );
 }
@@ -26780,7 +29456,8 @@ fn aurora_merged_vyvheouwnu() {
     assert_delta!(
         aurora
             .path(Vec2::new(601.0, 41.0), Vec2::new(742.0, 678.0))
-            .len,
+            .unwrap()
+            .length,
         1012.7972
     );
 }
@@ -26790,7 +29467,8 @@ fn aurora_merged_gwvayujwmf() {
     assert_delta!(
         aurora
             .path(Vec2::new(768.0, 588.0), Vec2::new(142.0, 109.0))
-            .len,
+            .unwrap()
+            .length,
         999.31555
     );
 }
@@ -26800,7 +29478,8 @@ fn aurora_merged_srupmthfqx() {
     assert_delta!(
         aurora
             .path(Vec2::new(363.0, 662.0), Vec2::new(736.0, 120.0))
-            .len,
+            .unwrap()
+            .length,
         1006.4688
     );
 }
@@ -26810,7 +29489,8 @@ fn aurora_merged_pwcojuhzih() {
     assert_delta!(
         aurora
             .path(Vec2::new(901.0, 655.0), Vec2::new(208.0, 222.0))
-            .len,
+            .unwrap()
+            .length,
         1002.1547
     );
 }
@@ -26820,7 +29500,8 @@ fn aurora_merged_qgodttzzkk() {
     assert_delta!(
         aurora
             .path(Vec2::new(959.0, 286.0), Vec2::new(101.0, 552.0))
-            .len,
+            .unwrap()
+            .length,
         1003.2709
     );
 }
@@ -26830,7 +29511,8 @@ fn aurora_merged_jutfdmnshi() {
     assert_delta!(
         aurora
             .path(Vec2::new(592.0, 685.0), Vec2::new(523.0, 28.0))
-            .len,
+            .unwrap()
+            .length,
         1009.886
     );
 }
@@ -26840,7 +29522,8 @@ fn aurora_merged_ozqcejqrgx() {
     assert_delta!(
         aurora
             .path(Vec2::new(392.0, 692.0), Vec2::new(620.0, 54.0))
-            .len,
+            .unwrap()
+            .length,
         1012.9085
     );
 }
@@ -26850,7 +29533,8 @@ fn aurora_merged_oseuoehmfj() {
     assert_delta!(
         aurora
             .path(Vec2::new(743.0, 675.0), Vec2::new(58.0, 152.0))
-            .len,
+            .unwrap()
+            .length,
         1009.1445
     );
 }
@@ -26860,7 +29544,8 @@ fn aurora_merged_juremniwgt() {
     assert_delta!(
         aurora
             .path(Vec2::new(318.0, 659.0), Vec2::new(789.0, 146.0))
-            .len,
+            .unwrap()
+            .length,
         1020.0086
     );
 }
@@ -26870,7 +29555,8 @@ fn aurora_merged_axlvrsyins() {
     assert_delta!(
         aurora
             .path(Vec2::new(813.0, 204.0), Vec2::new(114.0, 605.0))
-            .len,
+            .unwrap()
+            .length,
         1006.599
     );
 }
@@ -26880,7 +29566,8 @@ fn aurora_merged_gpecbbvcec() {
     assert_delta!(
         aurora
             .path(Vec2::new(284.0, 698.0), Vec2::new(785.0, 220.0))
-            .len,
+            .unwrap()
+            .length,
         1010.17
     );
 }
@@ -26890,7 +29577,8 @@ fn aurora_merged_czmrtbkeaw() {
     assert_delta!(
         aurora
             .path(Vec2::new(991.0, 325.0), Vec2::new(12.0, 442.0))
-            .len,
+            .unwrap()
+            .length,
         1024.4687
     );
 }
@@ -26900,7 +29588,8 @@ fn aurora_merged_cabmdwikjf() {
     assert_delta!(
         aurora
             .path(Vec2::new(49.0, 582.0), Vec2::new(753.0, 109.0))
-            .len,
+            .unwrap()
+            .length,
         1007.5878
     );
 }
@@ -26910,7 +29599,8 @@ fn aurora_merged_bqkblytwrk() {
     assert_delta!(
         aurora
             .path(Vec2::new(276.0, 29.0), Vec2::new(589.0, 676.0))
-            .len,
+            .unwrap()
+            .length,
         1009.2622
     );
 }
@@ -26920,7 +29610,8 @@ fn aurora_merged_jmnztmwwcn() {
     assert_delta!(
         aurora
             .path(Vec2::new(981.0, 397.0), Vec2::new(30.0, 425.0))
-            .len,
+            .unwrap()
+            .length,
         1018.7957
     );
 }
@@ -26930,7 +29621,8 @@ fn aurora_merged_rfbslayvlr() {
     assert_delta!(
         aurora
             .path(Vec2::new(204.0, 150.0), Vec2::new(951.0, 615.0))
-            .len,
+            .unwrap()
+            .length,
         1017.1941
     );
 }
@@ -26940,7 +29632,8 @@ fn aurora_merged_cuemoawpkd() {
     assert_delta!(
         aurora
             .path(Vec2::new(381.0, 669.0), Vec2::new(602.0, 36.0))
-            .len,
+            .unwrap()
+            .length,
         1015.8513
     );
 }
@@ -26950,7 +29643,8 @@ fn aurora_merged_ulmkbbetbo() {
     assert_delta!(
         aurora
             .path(Vec2::new(732.0, 264.0), Vec2::new(63.0, 623.0))
-            .len,
+            .unwrap()
+            .length,
         1011.1207
     );
 }
@@ -26960,7 +29654,8 @@ fn aurora_merged_hfopunbdku() {
     assert_delta!(
         aurora
             .path(Vec2::new(287.0, 38.0), Vec2::new(657.0, 689.0))
-            .len,
+            .unwrap()
+            .length,
         1020.4903
     );
 }
@@ -26970,7 +29665,8 @@ fn aurora_merged_yanetscsaw() {
     assert_delta!(
         aurora
             .path(Vec2::new(116.0, 615.0), Vec2::new(962.0, 325.0))
-            .len,
+            .unwrap()
+            .length,
         1010.8377
     );
 }
@@ -26980,7 +29676,8 @@ fn aurora_merged_dbcbkjozut() {
     assert_delta!(
         aurora
             .path(Vec2::new(79.0, 682.0), Vec2::new(705.0, 101.0))
-            .len,
+            .unwrap()
+            .length,
         1014.833
     );
 }
@@ -26990,7 +29687,8 @@ fn aurora_merged_mwgwmzvmmv() {
     assert_delta!(
         aurora
             .path(Vec2::new(880.0, 580.0), Vec2::new(62.0, 183.0))
-            .len,
+            .unwrap()
+            .length,
         1004.4071
     );
 }
@@ -27000,7 +29698,8 @@ fn aurora_merged_zrzxvmunrw() {
     assert_delta!(
         aurora
             .path(Vec2::new(281.0, 93.0), Vec2::new(604.0, 715.0))
-            .len,
+            .unwrap()
+            .length,
         1016.5928
     );
 }
@@ -27010,7 +29709,8 @@ fn aurora_merged_epdfwpjjxl() {
     assert_delta!(
         aurora
             .path(Vec2::new(997.0, 420.0), Vec2::new(89.0, 659.0))
-            .len,
+            .unwrap()
+            .length,
         1028.8545
     );
 }
@@ -27020,7 +29720,8 @@ fn aurora_merged_fwumqhdqfy() {
     assert_delta!(
         aurora
             .path(Vec2::new(876.0, 166.0), Vec2::new(117.0, 554.0))
-            .len,
+            .unwrap()
+            .length,
         1014.7948
     );
 }
@@ -27030,7 +29731,8 @@ fn aurora_merged_rbcbkidrsw() {
     assert_delta!(
         aurora
             .path(Vec2::new(735.0, 254.0), Vec2::new(90.0, 662.0))
-            .len,
+            .unwrap()
+            .length,
         1018.8879
     );
 }
@@ -27040,7 +29742,8 @@ fn aurora_merged_zgsfpzzpps() {
     assert_delta!(
         aurora
             .path(Vec2::new(726.0, 92.0), Vec2::new(171.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         1013.5684
     );
 }
@@ -27050,7 +29753,8 @@ fn aurora_merged_oxsexuynni() {
     assert_delta!(
         aurora
             .path(Vec2::new(884.0, 142.0), Vec2::new(284.0, 583.0))
-            .len,
+            .unwrap()
+            .length,
         1027.3267
     );
 }
@@ -27060,7 +29764,8 @@ fn aurora_merged_snpilvedpa() {
     assert_delta!(
         aurora
             .path(Vec2::new(328.0, 667.0), Vec2::new(788.0, 158.0))
-            .len,
+            .unwrap()
+            .length,
         1030.0145
     );
 }
@@ -27070,7 +29775,8 @@ fn aurora_merged_ghqnjszyst() {
     assert_delta!(
         aurora
             .path(Vec2::new(981.0, 575.0), Vec2::new(237.0, 65.0))
-            .len,
+            .unwrap()
+            .length,
         1012.0565
     );
 }
@@ -27080,7 +29786,8 @@ fn aurora_merged_tdydurltqb() {
     assert_delta!(
         aurora
             .path(Vec2::new(884.0, 131.0), Vec2::new(371.0, 653.0))
-            .len,
+            .unwrap()
+            .length,
         1021.6322
     );
 }
@@ -27090,7 +29797,8 @@ fn aurora_merged_yphvhcsztv() {
     assert_delta!(
         aurora
             .path(Vec2::new(392.0, 686.0), Vec2::new(708.0, 108.0))
-            .len,
+            .unwrap()
+            .length,
         1018.3937
     );
 }
@@ -27100,7 +29808,8 @@ fn aurora_merged_shmqznfuoc() {
     assert_delta!(
         aurora
             .path(Vec2::new(5.0, 526.0), Vec2::new(947.0, 358.0))
-            .len,
+            .unwrap()
+            .length,
         1028.2151
     );
 }
@@ -27110,7 +29819,8 @@ fn aurora_merged_barvvfmlhn() {
     assert_delta!(
         aurora
             .path(Vec2::new(162.0, 621.0), Vec2::new(822.0, 128.0))
-            .len,
+            .unwrap()
+            .length,
         1018.9767
     );
 }
@@ -27120,7 +29830,8 @@ fn aurora_merged_kvonvwdwfr() {
     assert_delta!(
         aurora
             .path(Vec2::new(242.0, 90.0), Vec2::new(338.0, 748.0))
-            .len,
+            .unwrap()
+            .length,
         1018.9908
     );
 }
@@ -27130,7 +29841,8 @@ fn aurora_merged_nmkyqityei() {
     assert_delta!(
         aurora
             .path(Vec2::new(627.0, 738.0), Vec2::new(120.0, 171.0))
-            .len,
+            .unwrap()
+            .length,
         1026.9651
     );
 }
@@ -27140,7 +29852,8 @@ fn aurora_merged_bqwzfafaee() {
     assert_delta!(
         aurora
             .path(Vec2::new(980.0, 408.0), Vec2::new(1.0, 376.0))
-            .len,
+            .unwrap()
+            .length,
         1028.7121
     );
 }
@@ -27150,7 +29863,8 @@ fn aurora_merged_xrdhnftxdo() {
     assert_delta!(
         aurora
             .path(Vec2::new(130.0, 598.0), Vec2::new(980.0, 292.0))
-            .len,
+            .unwrap()
+            .length,
         1015.4153
     );
 }
@@ -27160,7 +29874,8 @@ fn aurora_merged_odmrgstxyo() {
     assert_delta!(
         aurora
             .path(Vec2::new(829.0, 179.0), Vec2::new(162.0, 636.0))
-            .len,
+            .unwrap()
+            .length,
         1029.1984
     );
 }
@@ -27170,7 +29885,8 @@ fn aurora_merged_ekjelhsauq() {
     assert_delta!(
         aurora
             .path(Vec2::new(686.0, 705.0), Vec2::new(538.0, 32.0))
-            .len,
+            .unwrap()
+            .length,
         1023.8319
     );
 }
@@ -27180,7 +29896,8 @@ fn aurora_merged_cgxondifjb() {
     assert_delta!(
         aurora
             .path(Vec2::new(833.0, 158.0), Vec2::new(158.0, 645.0))
-            .len,
+            .unwrap()
+            .length,
         1034.0333
     );
 }
@@ -27190,7 +29907,8 @@ fn aurora_merged_kqxmvmsxig() {
     assert_delta!(
         aurora
             .path(Vec2::new(109.0, 174.0), Vec2::new(783.0, 708.0))
-            .len,
+            .unwrap()
+            .length,
         1017.7859
     );
 }
@@ -27200,7 +29918,8 @@ fn aurora_merged_edwaypebuh() {
     assert_delta!(
         aurora
             .path(Vec2::new(165.0, 134.0), Vec2::new(983.0, 561.0))
-            .len,
+            .unwrap()
+            .length,
         1018.7645
     );
 }
@@ -27210,7 +29929,8 @@ fn aurora_merged_tjlbsswhgd() {
     assert_delta!(
         aurora
             .path(Vec2::new(932.0, 606.0), Vec2::new(188.0, 122.0))
-            .len,
+            .unwrap()
+            .length,
         1021.7925
     );
 }
@@ -27220,7 +29940,8 @@ fn aurora_merged_mrzkdcmjza() {
     assert_delta!(
         aurora
             .path(Vec2::new(622.0, 734.0), Vec2::new(648.0, 61.0))
-            .len,
+            .unwrap()
+            .length,
         1032.5187
     );
 }
@@ -27230,7 +29951,8 @@ fn aurora_merged_uifbmmdmcg() {
     assert_delta!(
         aurora
             .path(Vec2::new(67.0, 682.0), Vec2::new(741.0, 156.0))
-            .len,
+            .unwrap()
+            .length,
         1034.5237
     );
 }
@@ -27240,7 +29962,8 @@ fn aurora_merged_vusdxxxnba() {
     assert_delta!(
         aurora
             .path(Vec2::new(541.0, 720.0), Vec2::new(739.0, 46.0))
-            .len,
+            .unwrap()
+            .length,
         1028.0938
     );
 }
@@ -27250,7 +29973,8 @@ fn aurora_merged_jrlsavuylv() {
     assert_delta!(
         aurora
             .path(Vec2::new(1000.0, 305.0), Vec2::new(130.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         1042.2494
     );
 }
@@ -27260,7 +29984,8 @@ fn aurora_merged_fynzeeuhjz() {
     assert_delta!(
         aurora
             .path(Vec2::new(341.0, 748.0), Vec2::new(378.0, 132.0))
-            .len,
+            .unwrap()
+            .length,
         1031.5485
     );
 }
@@ -27270,7 +29995,8 @@ fn aurora_merged_ivguinjtbg() {
     assert_delta!(
         aurora
             .path(Vec2::new(274.0, 746.0), Vec2::new(700.0, 264.0))
-            .len,
+            .unwrap()
+            .length,
         1026.2939
     );
 }
@@ -27280,7 +30006,8 @@ fn aurora_merged_yuqffhkdct() {
     assert_delta!(
         aurora
             .path(Vec2::new(886.0, 138.0), Vec2::new(375.0, 724.0))
-            .len,
+            .unwrap()
+            .length,
         1020.6364
     );
 }
@@ -27290,7 +30017,8 @@ fn aurora_merged_vryjdnrbta() {
     assert_delta!(
         aurora
             .path(Vec2::new(944.0, 423.0), Vec2::new(42.0, 498.0))
-            .len,
+            .unwrap()
+            .length,
         1029.9101
     );
 }
@@ -27300,7 +30028,8 @@ fn aurora_merged_gnrlstmcfg() {
     assert_delta!(
         aurora
             .path(Vec2::new(874.0, 687.0), Vec2::new(254.0, 63.0))
-            .len,
+            .unwrap()
+            .length,
         1024.2445
     );
 }
@@ -27310,7 +30039,8 @@ fn aurora_merged_pokablutef() {
     assert_delta!(
         aurora
             .path(Vec2::new(874.0, 378.0), Vec2::new(24.0, 678.0))
-            .len,
+            .unwrap()
+            .length,
         1025.7853
     );
 }
@@ -27320,7 +30050,8 @@ fn aurora_merged_valfurpzre() {
     assert_delta!(
         aurora
             .path(Vec2::new(799.0, 196.0), Vec2::new(272.0, 677.0))
-            .len,
+            .unwrap()
+            .length,
         1028.992
     );
 }
@@ -27330,7 +30061,8 @@ fn aurora_merged_kxieopvstp() {
     assert_delta!(
         aurora
             .path(Vec2::new(372.0, 666.0), Vec2::new(796.0, 90.0))
-            .len,
+            .unwrap()
+            .length,
         1035.3108
     );
 }
@@ -27340,7 +30072,8 @@ fn aurora_merged_yoheofksfc() {
     assert_delta!(
         aurora
             .path(Vec2::new(511.0, 43.0), Vec2::new(635.0, 715.0))
-            .len,
+            .unwrap()
+            .length,
         1036.4987
     );
 }
@@ -27350,7 +30083,8 @@ fn aurora_merged_tyxplximxl() {
     assert_delta!(
         aurora
             .path(Vec2::new(285.0, 702.0), Vec2::new(758.0, 85.0))
-            .len,
+            .unwrap()
+            .length,
         1025.3019
     );
 }
@@ -27360,7 +30094,8 @@ fn aurora_merged_vivfnatbah() {
     assert_delta!(
         aurora
             .path(Vec2::new(53.0, 200.0), Vec2::new(970.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         1018.7662
     );
 }
@@ -27370,7 +30105,8 @@ fn aurora_merged_vhrewswebe() {
     assert_delta!(
         aurora
             .path(Vec2::new(470.0, 52.0), Vec2::new(385.0, 719.0))
-            .len,
+            .unwrap()
+            .length,
         1039.9285
     );
 }
@@ -27380,7 +30116,8 @@ fn aurora_merged_rgyqkjhejb() {
     assert_delta!(
         aurora
             .path(Vec2::new(946.0, 635.0), Vec2::new(222.0, 123.0))
-            .len,
+            .unwrap()
+            .length,
         1028.4326
     );
 }
@@ -27390,7 +30127,8 @@ fn aurora_merged_pctnscvrvq() {
     assert_delta!(
         aurora
             .path(Vec2::new(942.0, 564.0), Vec2::new(147.0, 144.0))
-            .len,
+            .unwrap()
+            .length,
         1029.0294
     );
 }
@@ -27400,7 +30138,8 @@ fn aurora_merged_dthbuxghgy() {
     assert_delta!(
         aurora
             .path(Vec2::new(635.0, 739.0), Vec2::new(155.0, 120.0))
-            .len,
+            .unwrap()
+            .length,
         1033.738
     );
 }
@@ -27410,7 +30149,8 @@ fn aurora_merged_hfkknxhpkx() {
     assert_delta!(
         aurora
             .path(Vec2::new(629.0, 736.0), Vec2::new(186.0, 110.0))
-            .len,
+            .unwrap()
+            .length,
         1040.1032
     );
 }
@@ -27420,7 +30160,8 @@ fn aurora_merged_atpeksecww() {
     assert_delta!(
         aurora
             .path(Vec2::new(76.0, 663.0), Vec2::new(759.0, 130.0))
-            .len,
+            .unwrap()
+            .length,
         1038.0811
     );
 }
@@ -27430,7 +30171,8 @@ fn aurora_merged_gwdqtbcrup() {
     assert_delta!(
         aurora
             .path(Vec2::new(625.0, 728.0), Vec2::new(81.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         1036.1352
     );
 }
@@ -27440,7 +30182,8 @@ fn aurora_merged_lvmxzqodrp() {
     assert_delta!(
         aurora
             .path(Vec2::new(580.0, 685.0), Vec2::new(181.0, 79.0))
-            .len,
+            .unwrap()
+            .length,
         1038.3029
     );
 }
@@ -27450,7 +30193,8 @@ fn aurora_merged_noruiaolxx() {
     assert_delta!(
         aurora
             .path(Vec2::new(913.0, 533.0), Vec2::new(106.0, 123.0))
-            .len,
+            .unwrap()
+            .length,
         1030.9363
     );
 }
@@ -27460,7 +30204,8 @@ fn aurora_merged_arjwntinue() {
     assert_delta!(
         aurora
             .path(Vec2::new(71.0, 132.0), Vec2::new(621.0, 724.0))
-            .len,
+            .unwrap()
+            .length,
         1036.9646
     );
 }
@@ -27470,7 +30215,8 @@ fn aurora_merged_thismgrrct() {
     assert_delta!(
         aurora
             .path(Vec2::new(49.0, 510.0), Vec2::new(1020.0, 312.0))
-            .len,
+            .unwrap()
+            .length,
         1042.9785
     );
 }
@@ -27480,7 +30226,8 @@ fn aurora_merged_yeigiykobe() {
     assert_delta!(
         aurora
             .path(Vec2::new(800.0, 196.0), Vec2::new(119.0, 657.0))
-            .len,
+            .unwrap()
+            .length,
         1042.7508
     );
 }
@@ -27490,7 +30237,8 @@ fn aurora_merged_qwlnvxopit() {
     assert_delta!(
         aurora
             .path(Vec2::new(751.0, 691.0), Vec2::new(74.0, 187.0))
-            .len,
+            .unwrap()
+            .length,
         1028.1199
     );
 }
@@ -27500,7 +30248,8 @@ fn aurora_merged_ieztesoozb() {
     assert_delta!(
         aurora
             .path(Vec2::new(914.0, 248.0), Vec2::new(151.0, 699.0))
-            .len,
+            .unwrap()
+            .length,
         1025.585
     );
 }
@@ -27510,7 +30259,8 @@ fn aurora_merged_bzxopdispa() {
     assert_delta!(
         aurora
             .path(Vec2::new(817.0, 245.0), Vec2::new(189.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         1033.2575
     );
 }
@@ -27520,7 +30270,8 @@ fn aurora_merged_nmzjojfmam() {
     assert_delta!(
         aurora
             .path(Vec2::new(999.0, 304.0), Vec2::new(26.0, 521.0))
-            .len,
+            .unwrap()
+            .length,
         1047.6106
     );
 }
@@ -27530,7 +30281,8 @@ fn aurora_merged_cfdfznscio() {
     assert_delta!(
         aurora
             .path(Vec2::new(995.0, 341.0), Vec2::new(7.0, 483.0))
-            .len,
+            .unwrap()
+            .length,
         1042.689
     );
 }
@@ -27540,7 +30292,8 @@ fn aurora_merged_sajzlcthcr() {
     assert_delta!(
         aurora
             .path(Vec2::new(593.0, 721.0), Vec2::new(192.0, 131.0))
-            .len,
+            .unwrap()
+            .length,
         1039.5355
     );
 }
@@ -27550,7 +30303,8 @@ fn aurora_merged_dhnqqzster() {
     assert_delta!(
         aurora
             .path(Vec2::new(189.0, 114.0), Vec2::new(736.0, 685.0))
-            .len,
+            .unwrap()
+            .length,
         1037.6433
     );
 }
@@ -27560,7 +30314,8 @@ fn aurora_merged_iqpwhpegff() {
     assert_delta!(
         aurora
             .path(Vec2::new(75.0, 686.0), Vec2::new(752.0, 175.0))
-            .len,
+            .unwrap()
+            .length,
         1049.59
     );
 }
@@ -27570,7 +30325,8 @@ fn aurora_merged_tnbnaufyop() {
     assert_delta!(
         aurora
             .path(Vec2::new(742.0, 126.0), Vec2::new(181.0, 727.0))
-            .len,
+            .unwrap()
+            .length,
         1040.2008
     );
 }
@@ -27580,7 +30336,8 @@ fn aurora_merged_elnhgrdjmp() {
     assert_delta!(
         aurora
             .path(Vec2::new(135.0, 680.0), Vec2::new(794.0, 190.0))
-            .len,
+            .unwrap()
+            .length,
         1043.9505
     );
 }
@@ -27590,7 +30347,8 @@ fn aurora_merged_ewlrbxwtpe() {
     assert_delta!(
         aurora
             .path(Vec2::new(630.0, 60.0), Vec2::new(398.0, 707.0))
-            .len,
+            .unwrap()
+            .length,
         1043.8218
     );
 }
@@ -27600,7 +30358,8 @@ fn aurora_merged_ubulloixrp() {
     assert_delta!(
         aurora
             .path(Vec2::new(814.0, 181.0), Vec2::new(127.0, 638.0))
-            .len,
+            .unwrap()
+            .length,
         1041.7375
     );
 }
@@ -27610,7 +30369,8 @@ fn aurora_merged_hathhacvjb() {
     assert_delta!(
         aurora
             .path(Vec2::new(704.0, 66.0), Vec2::new(0.0, 614.0))
-            .len,
+            .unwrap()
+            .length,
         1029.4557
     );
 }
@@ -27620,7 +30380,8 @@ fn aurora_merged_opabxwmxzo() {
     assert_delta!(
         aurora
             .path(Vec2::new(714.0, 230.0), Vec2::new(18.0, 669.0))
-            .len,
+            .unwrap()
+            .length,
         1038.0273
     );
 }
@@ -27630,7 +30391,8 @@ fn aurora_merged_wlkgkudvub() {
     assert_delta!(
         aurora
             .path(Vec2::new(429.0, 703.0), Vec2::new(521.0, 32.0))
-            .len,
+            .unwrap()
+            .length,
         1045.7003
     );
 }
@@ -27640,7 +30402,8 @@ fn aurora_merged_yedoiiayab() {
     assert_delta!(
         aurora
             .path(Vec2::new(856.0, 156.0), Vec2::new(228.0, 642.0))
-            .len,
+            .unwrap()
+            .length,
         1057.4308
     );
 }
@@ -27650,7 +30413,8 @@ fn aurora_merged_cayrtuyytr() {
     assert_delta!(
         aurora
             .path(Vec2::new(899.0, 159.0), Vec2::new(109.0, 544.0))
-            .len,
+            .unwrap()
+            .length,
         1041.8984
     );
 }
@@ -27660,7 +30424,8 @@ fn aurora_merged_jjbahtawfg() {
     assert_delta!(
         aurora
             .path(Vec2::new(916.0, 561.0), Vec2::new(142.0, 97.0))
-            .len,
+            .unwrap()
+            .length,
         1033.6165
     );
 }
@@ -27670,7 +30435,8 @@ fn aurora_merged_fyqpzillnc() {
     assert_delta!(
         aurora
             .path(Vec2::new(189.0, 137.0), Vec2::new(953.0, 623.0))
-            .len,
+            .unwrap()
+            .length,
         1040.3236
     );
 }
@@ -27680,7 +30446,8 @@ fn aurora_merged_taramoqzlk() {
     assert_delta!(
         aurora
             .path(Vec2::new(154.0, 149.0), Vec2::new(924.0, 615.0))
-            .len,
+            .unwrap()
+            .length,
         1038.5857
     );
 }
@@ -27690,7 +30457,8 @@ fn aurora_merged_tbmnwkgtvd() {
     assert_delta!(
         aurora
             .path(Vec2::new(304.0, 654.0), Vec2::new(808.0, 120.0))
-            .len,
+            .unwrap()
+            .length,
         1039.4372
     );
 }
@@ -27700,7 +30468,8 @@ fn aurora_merged_lxkfzhcaip() {
     assert_delta!(
         aurora
             .path(Vec2::new(396.0, 110.0), Vec2::new(335.0, 738.0))
-            .len,
+            .unwrap()
+            .length,
         1046.1984
     );
 }
@@ -27710,7 +30479,8 @@ fn aurora_merged_ohrtrvgzqn() {
     assert_delta!(
         aurora
             .path(Vec2::new(763.0, 279.0), Vec2::new(53.0, 592.0))
-            .len,
+            .unwrap()
+            .length,
         1036.1649
     );
 }
@@ -27720,7 +30490,8 @@ fn aurora_merged_lqpfgzwpon() {
     assert_delta!(
         aurora
             .path(Vec2::new(40.0, 649.0), Vec2::new(748.0, 98.0))
-            .len,
+            .unwrap()
+            .length,
         1043.5326
     );
 }
@@ -27730,7 +30501,8 @@ fn aurora_merged_yjswofvffk() {
     assert_delta!(
         aurora
             .path(Vec2::new(115.0, 114.0), Vec2::new(671.0, 718.0))
-            .len,
+            .unwrap()
+            .length,
         1045.7259
     );
 }
@@ -27740,7 +30512,8 @@ fn aurora_merged_iuumziiqny() {
     assert_delta!(
         aurora
             .path(Vec2::new(801.0, 699.0), Vec2::new(102.0, 134.0))
-            .len,
+            .unwrap()
+            .length,
         1037.3738
     );
 }
@@ -27750,7 +30523,8 @@ fn aurora_merged_myrcughvhi() {
     assert_delta!(
         aurora
             .path(Vec2::new(148.0, 668.0), Vec2::new(972.0, 294.0))
-            .len,
+            .unwrap()
+            .length,
         1050.5965
     );
 }
@@ -27760,7 +30534,8 @@ fn aurora_merged_upwvbmmzpk() {
     assert_delta!(
         aurora
             .path(Vec2::new(870.0, 125.0), Vec2::new(129.0, 590.0))
-            .len,
+            .unwrap()
+            .length,
         1051.3635
     );
 }
@@ -27770,7 +30545,8 @@ fn aurora_merged_msblcpecaq() {
     assert_delta!(
         aurora
             .path(Vec2::new(0.0, 473.0), Vec2::new(905.0, 171.0))
-            .len,
+            .unwrap()
+            .length,
         1048.11
     );
 }
@@ -27780,7 +30556,8 @@ fn aurora_merged_gdbawzmtsn() {
     assert_delta!(
         aurora
             .path(Vec2::new(812.0, 271.0), Vec2::new(118.0, 649.0))
-            .len,
+            .unwrap()
+            .length,
         1044.3065
     );
 }
@@ -27790,7 +30567,8 @@ fn aurora_merged_ypkoorkomf() {
     assert_delta!(
         aurora
             .path(Vec2::new(34.0, 460.0), Vec2::new(1008.0, 345.0))
-            .len,
+            .unwrap()
+            .length,
         1055.8405
     );
 }
@@ -27800,7 +30578,8 @@ fn aurora_merged_xeusaifqvl() {
     assert_delta!(
         aurora
             .path(Vec2::new(113.0, 644.0), Vec2::new(790.0, 76.0))
-            .len,
+            .unwrap()
+            .length,
         1040.8908
     );
 }
@@ -27810,7 +30589,8 @@ fn aurora_merged_nwtqayqdon() {
     assert_delta!(
         aurora
             .path(Vec2::new(655.0, 720.0), Vec2::new(261.0, 29.0))
-            .len,
+            .unwrap()
+            .length,
         1048.328
     );
 }
@@ -27820,7 +30600,8 @@ fn aurora_merged_sbpybkdkyl() {
     assert_delta!(
         aurora
             .path(Vec2::new(395.0, 627.0), Vec2::new(791.0, 62.0))
-            .len,
+            .unwrap()
+            .length,
         1045.6776
     );
 }
@@ -27830,7 +30611,8 @@ fn aurora_merged_kixbjafziz() {
     assert_delta!(
         aurora
             .path(Vec2::new(214.0, 642.0), Vec2::new(865.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         1058.5512
     );
 }
@@ -27840,7 +30622,8 @@ fn aurora_merged_tcjjkkokfe() {
     assert_delta!(
         aurora
             .path(Vec2::new(89.0, 561.0), Vec2::new(886.0, 172.0))
-            .len,
+            .unwrap()
+            .length,
         1046.5966
     );
 }
@@ -27850,7 +30633,8 @@ fn aurora_merged_qqzraxohem() {
     assert_delta!(
         aurora
             .path(Vec2::new(117.0, 147.0), Vec2::new(856.0, 694.0))
-            .len,
+            .unwrap()
+            .length,
         1044.3686
     );
 }
@@ -27860,7 +30644,8 @@ fn aurora_merged_zfogyyeylc() {
     assert_delta!(
         aurora
             .path(Vec2::new(220.0, 73.0), Vec2::new(902.0, 655.0))
-            .len,
+            .unwrap()
+            .length,
         1046.2102
     );
 }
@@ -27870,7 +30655,8 @@ fn aurora_merged_enjxxpsedx() {
     assert_delta!(
         aurora
             .path(Vec2::new(609.0, 715.0), Vec2::new(236.0, 83.0))
-            .len,
+            .unwrap()
+            .length,
         1049.9614
     );
 }
@@ -27880,7 +30666,8 @@ fn aurora_merged_mfnvomjatr() {
     assert_delta!(
         aurora
             .path(Vec2::new(608.0, 711.0), Vec2::new(83.0, 137.0))
-            .len,
+            .unwrap()
+            .length,
         1047.461
     );
 }
@@ -27890,7 +30677,8 @@ fn aurora_merged_jnkkbxzuff() {
     assert_delta!(
         aurora
             .path(Vec2::new(71.0, 530.0), Vec2::new(1015.0, 318.0))
-            .len,
+            .unwrap()
+            .length,
         1054.8325
     );
 }
@@ -27900,7 +30688,8 @@ fn aurora_merged_mulqtmubfq() {
     assert_delta!(
         aurora
             .path(Vec2::new(112.0, 173.0), Vec2::new(934.0, 561.0))
-            .len,
+            .unwrap()
+            .length,
         1051.85
     );
 }
@@ -27910,7 +30699,8 @@ fn aurora_merged_jnpmkgyspy() {
     assert_delta!(
         aurora
             .path(Vec2::new(1002.0, 425.0), Vec2::new(74.0, 688.0))
-            .len,
+            .unwrap()
+            .length,
         1057.3649
     );
 }
@@ -27920,7 +30710,8 @@ fn aurora_merged_ccsjrcjoeq() {
     assert_delta!(
         aurora
             .path(Vec2::new(361.0, 735.0), Vec2::new(465.0, 63.0))
-            .len,
+            .unwrap()
+            .length,
         1057.2282
     );
 }
@@ -27930,7 +30721,8 @@ fn aurora_merged_vgglfhagxc() {
     assert_delta!(
         aurora
             .path(Vec2::new(1014.0, 306.0), Vec2::new(116.0, 674.0))
-            .len,
+            .unwrap()
+            .length,
         1062.6103
     );
 }
@@ -27940,7 +30732,8 @@ fn aurora_merged_oiztvembox() {
     assert_delta!(
         aurora
             .path(Vec2::new(588.0, 721.0), Vec2::new(659.0, 66.0))
-            .len,
+            .unwrap()
+            .length,
         1050.7028
     );
 }
@@ -27950,7 +30743,8 @@ fn aurora_merged_rihacydqnl() {
     assert_delta!(
         aurora
             .path(Vec2::new(809.0, 102.0), Vec2::new(58.0, 567.0))
-            .len,
+            .unwrap()
+            .length,
         1050.5933
     );
 }
@@ -27960,7 +30754,8 @@ fn aurora_merged_wplqwymxtw() {
     assert_delta!(
         aurora
             .path(Vec2::new(68.0, 550.0), Vec2::new(899.0, 162.0))
-            .len,
+            .unwrap()
+            .length,
         1059.9533
     );
 }
@@ -27970,7 +30765,8 @@ fn aurora_merged_zxvbokmbjo() {
     assert_delta!(
         aurora
             .path(Vec2::new(857.0, 690.0), Vec2::new(76.0, 160.0))
-            .len,
+            .unwrap()
+            .length,
         1046.0208
     );
 }
@@ -27980,7 +30776,8 @@ fn aurora_merged_xafceqhvuz() {
     assert_delta!(
         aurora
             .path(Vec2::new(836.0, 250.0), Vec2::new(136.0, 703.0))
-            .len,
+            .unwrap()
+            .length,
         1046.3291
     );
 }
@@ -27990,7 +30787,8 @@ fn aurora_merged_iprdvalmqg() {
     assert_delta!(
         aurora
             .path(Vec2::new(736.0, 123.0), Vec2::new(14.0, 655.0))
-            .len,
+            .unwrap()
+            .length,
         1051.9877
     );
 }
@@ -28000,7 +30798,8 @@ fn aurora_merged_lwltmkatma() {
     assert_delta!(
         aurora
             .path(Vec2::new(32.0, 165.0), Vec2::new(928.0, 650.0))
-            .len,
+            .unwrap()
+            .length,
         1042.3754
     );
 }
@@ -28010,7 +30809,8 @@ fn aurora_merged_itlvpajcwo() {
     assert_delta!(
         aurora
             .path(Vec2::new(329.0, 743.0), Vec2::new(414.0, 79.0))
-            .len,
+            .unwrap()
+            .length,
         1059.1344
     );
 }
@@ -28020,7 +30820,8 @@ fn aurora_merged_aqgseghwpv() {
     assert_delta!(
         aurora
             .path(Vec2::new(869.0, 235.0), Vec2::new(16.0, 639.0))
-            .len,
+            .unwrap()
+            .length,
         1049.7446
     );
 }
@@ -28030,7 +30831,8 @@ fn aurora_merged_hmhfazaajh() {
     assert_delta!(
         aurora
             .path(Vec2::new(841.0, 144.0), Vec2::new(127.0, 658.0))
-            .len,
+            .unwrap()
+            .length,
         1073.0762
     );
 }
@@ -28040,7 +30842,8 @@ fn aurora_merged_iqoxaqwfdh() {
     assert_delta!(
         aurora
             .path(Vec2::new(148.0, 563.0), Vec2::new(940.0, 153.0))
-            .len,
+            .unwrap()
+            .length,
         1047.8525
     );
 }
@@ -28050,7 +30853,8 @@ fn aurora_merged_wrwtzexirf() {
     assert_delta!(
         aurora
             .path(Vec2::new(179.0, 130.0), Vec2::new(970.0, 606.0))
-            .len,
+            .unwrap()
+            .length,
         1052.5179
     );
 }
@@ -28060,7 +30864,8 @@ fn aurora_merged_dvuorlrrdi() {
     assert_delta!(
         aurora
             .path(Vec2::new(172.0, 697.0), Vec2::new(770.0, 238.0))
-            .len,
+            .unwrap()
+            .length,
         1052.5848
     );
 }
@@ -28070,7 +30875,8 @@ fn aurora_merged_lsxgvgcyax() {
     assert_delta!(
         aurora
             .path(Vec2::new(48.0, 664.0), Vec2::new(927.0, 329.0))
-            .len,
+            .unwrap()
+            .length,
         1057.0439
     );
 }
@@ -28080,7 +30886,8 @@ fn aurora_merged_pgljincpvv() {
     assert_delta!(
         aurora
             .path(Vec2::new(677.0, 714.0), Vec2::new(555.0, 19.0))
-            .len,
+            .unwrap()
+            .length,
         1057.1375
     );
 }
@@ -28090,7 +30897,8 @@ fn aurora_merged_wheuhptjhf() {
     assert_delta!(
         aurora
             .path(Vec2::new(130.0, 656.0), Vec2::new(820.0, 88.0))
-            .len,
+            .unwrap()
+            .length,
         1060.0573
     );
 }
@@ -28100,7 +30908,8 @@ fn aurora_merged_mxapihrluw() {
     assert_delta!(
         aurora
             .path(Vec2::new(838.0, 99.0), Vec2::new(83.0, 561.0))
-            .len,
+            .unwrap()
+            .length,
         1053.9903
     );
 }
@@ -28110,7 +30919,8 @@ fn aurora_merged_mnutchljrb() {
     assert_delta!(
         aurora
             .path(Vec2::new(384.0, 699.0), Vec2::new(547.0, 27.0))
-            .len,
+            .unwrap()
+            .length,
         1057.9248
     );
 }
@@ -28120,7 +30930,8 @@ fn aurora_merged_fhfjavvtea() {
     assert_delta!(
         aurora
             .path(Vec2::new(796.0, 98.0), Vec2::new(309.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         1056.4009
     );
 }
@@ -28130,7 +30941,8 @@ fn aurora_merged_ninjrcider() {
     assert_delta!(
         aurora
             .path(Vec2::new(940.0, 433.0), Vec2::new(15.0, 167.0))
-            .len,
+            .unwrap()
+            .length,
         1066.2878
     );
 }
@@ -28140,7 +30952,8 @@ fn aurora_merged_kfbgnopfln() {
     assert_delta!(
         aurora
             .path(Vec2::new(0.0, 607.0), Vec2::new(873.0, 235.0))
-            .len,
+            .unwrap()
+            .length,
         1054.2336
     );
 }
@@ -28150,7 +30963,8 @@ fn aurora_merged_ynxdgwjtuv() {
     assert_delta!(
         aurora
             .path(Vec2::new(753.0, 76.0), Vec2::new(132.0, 724.0))
-            .len,
+            .unwrap()
+            .length,
         1055.0198
     );
 }
@@ -28160,7 +30974,8 @@ fn aurora_merged_lxvjztipfs() {
     assert_delta!(
         aurora
             .path(Vec2::new(872.0, 136.0), Vec2::new(229.0, 635.0))
-            .len,
+            .unwrap()
+            .length,
         1071.2331
     );
 }
@@ -28170,7 +30985,8 @@ fn aurora_merged_ojxwwraspa() {
     assert_delta!(
         aurora
             .path(Vec2::new(363.0, 102.0), Vec2::new(335.0, 745.0))
-            .len,
+            .unwrap()
+            .length,
         1068.0746
     );
 }
@@ -28180,7 +30996,8 @@ fn aurora_merged_qiofcmceqj() {
     assert_delta!(
         aurora
             .path(Vec2::new(960.0, 587.0), Vec2::new(11.0, 168.0))
-            .len,
+            .unwrap()
+            .length,
         1052.2824
     );
 }
@@ -28190,7 +31007,8 @@ fn aurora_merged_wfvaemhiyk() {
     assert_delta!(
         aurora
             .path(Vec2::new(776.0, 198.0), Vec2::new(141.0, 727.0))
-            .len,
+            .unwrap()
+            .length,
         1063.5421
     );
 }
@@ -28200,7 +31018,8 @@ fn aurora_merged_oltqmplhdm() {
     assert_delta!(
         aurora
             .path(Vec2::new(582.0, 34.0), Vec2::new(638.0, 703.0))
-            .len,
+            .unwrap()
+            .length,
         1063.2197
     );
 }
@@ -28210,7 +31029,8 @@ fn aurora_merged_pnupvcjtif() {
     assert_delta!(
         aurora
             .path(Vec2::new(354.0, 707.0), Vec2::new(908.0, 139.0))
-            .len,
+            .unwrap()
+            .length,
         1058.5008
     );
 }
@@ -28220,7 +31040,8 @@ fn aurora_merged_ogdtlapskf() {
     assert_delta!(
         aurora
             .path(Vec2::new(1017.0, 433.0), Vec2::new(34.0, 424.0))
-            .len,
+            .unwrap()
+            .length,
         1064.2754
     );
 }
@@ -28230,7 +31051,8 @@ fn aurora_merged_ecknqdzvgn() {
     assert_delta!(
         aurora
             .path(Vec2::new(347.0, 731.0), Vec2::new(168.0, 97.0))
-            .len,
+            .unwrap()
+            .length,
         1060.2302
     );
 }
@@ -28240,7 +31062,8 @@ fn aurora_merged_rcntlgrouv() {
     assert_delta!(
         aurora
             .path(Vec2::new(725.0, 278.0), Vec2::new(14.0, 642.0))
-            .len,
+            .unwrap()
+            .length,
         1057.5821
     );
 }
@@ -28250,7 +31073,8 @@ fn aurora_merged_yxqzfjvmjx() {
     assert_delta!(
         aurora
             .path(Vec2::new(752.0, 138.0), Vec2::new(1.0, 631.0))
-            .len,
+            .unwrap()
+            .length,
         1063.6049
     );
 }
@@ -28260,7 +31084,8 @@ fn aurora_merged_uioausdzoz() {
     assert_delta!(
         aurora
             .path(Vec2::new(8.0, 581.0), Vec2::new(881.0, 133.0))
-            .len,
+            .unwrap()
+            .length,
         1071.9477
     );
 }
@@ -28270,7 +31095,8 @@ fn aurora_merged_uxaxfqcdtb() {
     assert_delta!(
         aurora
             .path(Vec2::new(821.0, 147.0), Vec2::new(280.0, 724.0))
-            .len,
+            .unwrap()
+            .length,
         1062.9317
     );
 }
@@ -28280,7 +31106,8 @@ fn aurora_merged_bhwutlbnly() {
     assert_delta!(
         aurora
             .path(Vec2::new(746.0, 248.0), Vec2::new(288.0, 733.0))
-            .len,
+            .unwrap()
+            .length,
         1061.3282
     );
 }
@@ -28290,7 +31117,8 @@ fn aurora_merged_zzkiisyqxf() {
     assert_delta!(
         aurora
             .path(Vec2::new(762.0, 253.0), Vec2::new(111.0, 706.0))
-            .len,
+            .unwrap()
+            .length,
         1061.167
     );
 }
@@ -28300,7 +31128,8 @@ fn aurora_merged_efnoesutxk() {
     assert_delta!(
         aurora
             .path(Vec2::new(756.0, 227.0), Vec2::new(14.0, 621.0))
-            .len,
+            .unwrap()
+            .length,
         1061.1829
     );
 }
@@ -28310,7 +31139,8 @@ fn aurora_merged_jykctquick() {
     assert_delta!(
         aurora
             .path(Vec2::new(318.0, 722.0), Vec2::new(861.0, 125.0))
-            .len,
+            .unwrap()
+            .length,
         1068.3091
     );
 }
@@ -28320,7 +31150,8 @@ fn aurora_merged_hpqwmtalmf() {
     assert_delta!(
         aurora
             .path(Vec2::new(69.0, 650.0), Vec2::new(942.0, 268.0))
-            .len,
+            .unwrap()
+            .length,
         1060.3116
     );
 }
@@ -28330,7 +31161,8 @@ fn aurora_merged_yrbsueafgo() {
     assert_delta!(
         aurora
             .path(Vec2::new(964.0, 435.0), Vec2::new(49.0, 451.0))
-            .len,
+            .unwrap()
+            .length,
         1069.0434
     );
 }
@@ -28340,7 +31172,8 @@ fn aurora_merged_jnaqruekbr() {
     assert_delta!(
         aurora
             .path(Vec2::new(939.0, 571.0), Vec2::new(103.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         1070.1654
     );
 }
@@ -28350,7 +31183,8 @@ fn aurora_merged_rvkcepsviv() {
     assert_delta!(
         aurora
             .path(Vec2::new(832.0, 205.0), Vec2::new(141.0, 726.0))
-            .len,
+            .unwrap()
+            .length,
         1071.6588
     );
 }
@@ -28360,7 +31194,8 @@ fn aurora_merged_wbeysmrhak() {
     assert_delta!(
         aurora
             .path(Vec2::new(76.0, 130.0), Vec2::new(927.0, 564.0))
-            .len,
+            .unwrap()
+            .length,
         1062.6823
     );
 }
@@ -28370,7 +31205,8 @@ fn aurora_merged_mazefrtipu() {
     assert_delta!(
         aurora
             .path(Vec2::new(926.0, 256.0), Vec2::new(37.0, 615.0))
-            .len,
+            .unwrap()
+            .length,
         1057.5907
     );
 }
@@ -28380,7 +31216,8 @@ fn aurora_merged_tpdfudsefj() {
     assert_delta!(
         aurora
             .path(Vec2::new(780.0, 725.0), Vec2::new(99.0, 202.0))
-            .len,
+            .unwrap()
+            .length,
         1063.6161
     );
 }
@@ -28390,7 +31227,8 @@ fn aurora_merged_itnnzbnary() {
     assert_delta!(
         aurora
             .path(Vec2::new(980.0, 588.0), Vec2::new(155.0, 165.0))
-            .len,
+            .unwrap()
+            .length,
         1064.7545
     );
 }
@@ -28400,7 +31238,8 @@ fn aurora_merged_wdvychvmfz() {
     assert_delta!(
         aurora
             .path(Vec2::new(18.0, 587.0), Vec2::new(984.0, 439.0))
-            .len,
+            .unwrap()
+            .length,
         1067.1807
     );
 }
@@ -28410,7 +31249,8 @@ fn aurora_merged_xjwpqtjofi() {
     assert_delta!(
         aurora
             .path(Vec2::new(40.0, 627.0), Vec2::new(756.0, 60.0))
-            .len,
+            .unwrap()
+            .length,
         1060.2935
     );
 }
@@ -28420,7 +31260,8 @@ fn aurora_merged_gmshxavcka() {
     assert_delta!(
         aurora
             .path(Vec2::new(80.0, 687.0), Vec2::new(769.0, 120.0))
-            .len,
+            .unwrap()
+            .length,
         1076.2361
     );
 }
@@ -28430,7 +31271,8 @@ fn aurora_merged_iroibvtntn() {
     assert_delta!(
         aurora
             .path(Vec2::new(23.0, 657.0), Vec2::new(931.0, 354.0))
-            .len,
+            .unwrap()
+            .length,
         1071.8706
     );
 }
@@ -28440,7 +31282,8 @@ fn aurora_merged_ccjqfuljqs() {
     assert_delta!(
         aurora
             .path(Vec2::new(337.0, 746.0), Vec2::new(160.0, 103.0))
-            .len,
+            .unwrap()
+            .length,
         1066.6171
     );
 }
@@ -28450,7 +31293,8 @@ fn aurora_merged_bxatvmgsxj() {
     assert_delta!(
         aurora
             .path(Vec2::new(808.0, 118.0), Vec2::new(335.0, 666.0))
-            .len,
+            .unwrap()
+            .length,
         1069.7688
     );
 }
@@ -28460,7 +31304,8 @@ fn aurora_merged_wphixcmxji() {
     assert_delta!(
         aurora
             .path(Vec2::new(897.0, 654.0), Vec2::new(114.0, 192.0))
-            .len,
+            .unwrap()
+            .length,
         1063.7989
     );
 }
@@ -28470,7 +31315,8 @@ fn aurora_merged_etmfeuxvdb() {
     assert_delta!(
         aurora
             .path(Vec2::new(34.0, 677.0), Vec2::new(1020.0, 583.0))
-            .len,
+            .unwrap()
+            .length,
         1082.4165
     );
 }
@@ -28480,7 +31326,8 @@ fn aurora_merged_jgreumqxlo() {
     assert_delta!(
         aurora
             .path(Vec2::new(987.0, 623.0), Vec2::new(204.0, 100.0))
-            .len,
+            .unwrap()
+            .length,
         1067.4429
     );
 }
@@ -28490,7 +31337,8 @@ fn aurora_merged_yfggbrbces() {
     assert_delta!(
         aurora
             .path(Vec2::new(751.0, 78.0), Vec2::new(96.0, 692.0))
-            .len,
+            .unwrap()
+            .length,
         1068.0877
     );
 }
@@ -28500,7 +31348,8 @@ fn aurora_merged_jufrafdujr() {
     assert_delta!(
         aurora
             .path(Vec2::new(65.0, 141.0), Vec2::new(900.0, 674.0))
-            .len,
+            .unwrap()
+            .length,
         1063.7702
     );
 }
@@ -28510,7 +31359,8 @@ fn aurora_merged_lgzcjguojo() {
     assert_delta!(
         aurora
             .path(Vec2::new(366.0, 727.0), Vec2::new(684.0, 122.0))
-            .len,
+            .unwrap()
+            .length,
         1074.1009
     );
 }
@@ -28520,7 +31370,8 @@ fn aurora_merged_xxflnkyqio() {
     assert_delta!(
         aurora
             .path(Vec2::new(57.0, 448.0), Vec2::new(1002.0, 428.0))
-            .len,
+            .unwrap()
+            .length,
         1077.3664
     );
 }
@@ -28530,7 +31381,8 @@ fn aurora_merged_dnspgdiylq() {
     assert_delta!(
         aurora
             .path(Vec2::new(725.0, 48.0), Vec2::new(9.0, 662.0))
-            .len,
+            .unwrap()
+            .length,
         1071.0622
     );
 }
@@ -28540,7 +31392,8 @@ fn aurora_merged_yuhcfdjegt() {
     assert_delta!(
         aurora
             .path(Vec2::new(71.0, 170.0), Vec2::new(930.0, 619.0))
-            .len,
+            .unwrap()
+            .length,
         1061.8972
     );
 }
@@ -28550,7 +31403,8 @@ fn aurora_merged_pwzodplmad() {
     assert_delta!(
         aurora
             .path(Vec2::new(866.0, 116.0), Vec2::new(155.0, 654.0))
-            .len,
+            .unwrap()
+            .length,
         1085.53
     );
 }
@@ -28560,7 +31414,8 @@ fn aurora_merged_suacixanvu() {
     assert_delta!(
         aurora
             .path(Vec2::new(52.0, 639.0), Vec2::new(800.0, 183.0))
-            .len,
+            .unwrap()
+            .length,
         1076.9483
     );
 }
@@ -28570,7 +31425,8 @@ fn aurora_merged_eaggzuyhcl() {
     assert_delta!(
         aurora
             .path(Vec2::new(123.0, 162.0), Vec2::new(958.0, 582.0))
-            .len,
+            .unwrap()
+            .length,
         1074.6262
     );
 }
@@ -28580,7 +31436,8 @@ fn aurora_merged_gtvyqbvblr() {
     assert_delta!(
         aurora
             .path(Vec2::new(67.0, 690.0), Vec2::new(788.0, 158.0))
-            .len,
+            .unwrap()
+            .length,
         1089.307
     );
 }
@@ -28590,7 +31447,8 @@ fn aurora_merged_oqpmobvjlw() {
     assert_delta!(
         aurora
             .path(Vec2::new(246.0, 722.0), Vec2::new(794.0, 88.0))
-            .len,
+            .unwrap()
+            .length,
         1072.6185
     );
 }
@@ -28600,7 +31458,8 @@ fn aurora_merged_hujjdsrdpb() {
     assert_delta!(
         aurora
             .path(Vec2::new(29.0, 605.0), Vec2::new(781.0, 83.0))
-            .len,
+            .unwrap()
+            .length,
         1068.2169
     );
 }
@@ -28610,7 +31469,8 @@ fn aurora_merged_eksjsgfwjg() {
     assert_delta!(
         aurora
             .path(Vec2::new(758.0, 277.0), Vec2::new(182.0, 721.0))
-            .len,
+            .unwrap()
+            .length,
         1075.1892
     );
 }
@@ -28620,7 +31480,8 @@ fn aurora_merged_cvxigsdobj() {
     assert_delta!(
         aurora
             .path(Vec2::new(136.0, 105.0), Vec2::new(772.0, 680.0))
-            .len,
+            .unwrap()
+            .length,
         1073.0619
     );
 }
@@ -28630,7 +31491,8 @@ fn aurora_merged_fwonxuegki() {
     assert_delta!(
         aurora
             .path(Vec2::new(3.0, 644.0), Vec2::new(745.0, 241.0))
-            .len,
+            .unwrap()
+            .length,
         1070.4251
     );
 }
@@ -28640,7 +31502,8 @@ fn aurora_merged_vbhdagcxae() {
     assert_delta!(
         aurora
             .path(Vec2::new(57.0, 642.0), Vec2::new(813.0, 191.0))
-            .len,
+            .unwrap()
+            .length,
         1085.155
     );
 }
@@ -28650,7 +31513,8 @@ fn aurora_merged_sbzitzeklk() {
     assert_delta!(
         aurora
             .path(Vec2::new(826.0, 84.0), Vec2::new(151.0, 681.0))
-            .len,
+            .unwrap()
+            .length,
         1074.3721
     );
 }
@@ -28660,7 +31524,8 @@ fn aurora_merged_olwtxyoflu() {
     assert_delta!(
         aurora
             .path(Vec2::new(232.0, 685.0), Vec2::new(852.0, 133.0))
-            .len,
+            .unwrap()
+            .length,
         1089.0184
     );
 }
@@ -28670,7 +31535,8 @@ fn aurora_merged_tzeaqjicbo() {
     assert_delta!(
         aurora
             .path(Vec2::new(789.0, 218.0), Vec2::new(155.0, 731.0))
-            .len,
+            .unwrap()
+            .length,
         1079.1427
     );
 }
@@ -28680,7 +31546,8 @@ fn aurora_merged_viaojylgvu() {
     assert_delta!(
         aurora
             .path(Vec2::new(47.0, 685.0), Vec2::new(993.0, 341.0))
-            .len,
+            .unwrap()
+            .length,
         1095.0758
     );
 }
@@ -28690,7 +31557,8 @@ fn aurora_merged_bthojcgvmt() {
     assert_delta!(
         aurora
             .path(Vec2::new(179.0, 117.0), Vec2::new(1000.0, 598.0))
-            .len,
+            .unwrap()
+            .length,
         1074.3074
     );
 }
@@ -28700,7 +31568,8 @@ fn aurora_merged_ojlpbqgraq() {
     assert_delta!(
         aurora
             .path(Vec2::new(116.0, 705.0), Vec2::new(847.0, 195.0))
-            .len,
+            .unwrap()
+            .length,
         1074.189
     );
 }
@@ -28710,7 +31579,8 @@ fn aurora_merged_oqhotfgqhb() {
     assert_delta!(
         aurora
             .path(Vec2::new(864.0, 108.0), Vec2::new(238.0, 662.0))
-            .len,
+            .unwrap()
+            .length,
         1088.5511
     );
 }
@@ -28720,7 +31590,8 @@ fn aurora_merged_yzoilvnaze() {
     assert_delta!(
         aurora
             .path(Vec2::new(36.0, 646.0), Vec2::new(802.0, 140.0))
-            .len,
+            .unwrap()
+            .length,
         1088.3798
     );
 }
@@ -28730,7 +31601,8 @@ fn aurora_merged_gkgpooltxv() {
     assert_delta!(
         aurora
             .path(Vec2::new(989.0, 598.0), Vec2::new(152.0, 168.0))
-            .len,
+            .unwrap()
+            .length,
         1079.792
     );
 }
@@ -28740,7 +31612,8 @@ fn aurora_merged_gtxutwnuie() {
     assert_delta!(
         aurora
             .path(Vec2::new(311.0, 699.0), Vec2::new(819.0, 102.0))
-            .len,
+            .unwrap()
+            .length,
         1083.4738
     );
 }
@@ -28750,7 +31623,8 @@ fn aurora_merged_pdwwodvnaw() {
     assert_delta!(
         aurora
             .path(Vec2::new(881.0, 230.0), Vec2::new(0.0, 641.0))
-            .len,
+            .unwrap()
+            .length,
         1074.0278
     );
 }
@@ -28760,7 +31634,8 @@ fn aurora_merged_tlllqqafpu() {
     assert_delta!(
         aurora
             .path(Vec2::new(961.0, 447.0), Vec2::new(55.0, 453.0))
-            .len,
+            .unwrap()
+            .length,
         1085.2016
     );
 }
@@ -28770,7 +31645,8 @@ fn aurora_merged_zvmrkbqnxa() {
     assert_delta!(
         aurora
             .path(Vec2::new(158.0, 125.0), Vec2::new(952.0, 644.0))
-            .len,
+            .unwrap()
+            .length,
         1086.9142
     );
 }
@@ -28780,7 +31656,8 @@ fn aurora_merged_doawwtyjqa() {
     assert_delta!(
         aurora
             .path(Vec2::new(846.0, 105.0), Vec2::new(65.0, 566.0))
-            .len,
+            .unwrap()
+            .length,
         1080.5805
     );
 }
@@ -28790,7 +31667,8 @@ fn aurora_merged_wnjukyvkgy() {
     assert_delta!(
         aurora
             .path(Vec2::new(812.0, 91.0), Vec2::new(152.0, 701.0))
-            .len,
+            .unwrap()
+            .length,
         1077.9138
     );
 }
@@ -28800,7 +31678,8 @@ fn aurora_merged_vpcmbduhwa() {
     assert_delta!(
         aurora
             .path(Vec2::new(159.0, 705.0), Vec2::new(814.0, 177.0))
-            .len,
+            .unwrap()
+            .length,
         1085.3328
     );
 }
@@ -28810,7 +31689,8 @@ fn aurora_merged_exvjpgqajr() {
     assert_delta!(
         aurora
             .path(Vec2::new(110.0, 121.0), Vec2::new(738.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         1075.9822
     );
 }
@@ -28820,7 +31700,8 @@ fn aurora_merged_yrpdvsqvzz() {
     assert_delta!(
         aurora
             .path(Vec2::new(788.0, 159.0), Vec2::new(82.0, 703.0))
-            .len,
+            .unwrap()
+            .length,
         1098.8684
     );
 }
@@ -28830,7 +31711,8 @@ fn aurora_merged_sxwtilcdgg() {
     assert_delta!(
         aurora
             .path(Vec2::new(72.0, 664.0), Vec2::new(804.0, 216.0))
-            .len,
+            .unwrap()
+            .length,
         1086.3925
     );
 }
@@ -28840,7 +31722,8 @@ fn aurora_merged_vglswnrsms() {
     assert_delta!(
         aurora
             .path(Vec2::new(78.0, 609.0), Vec2::new(847.0, 116.0))
-            .len,
+            .unwrap()
+            .length,
         1088.4016
     );
 }
@@ -28850,7 +31733,8 @@ fn aurora_merged_xoejbbyohd() {
     assert_delta!(
         aurora
             .path(Vec2::new(250.0, 684.0), Vec2::new(941.0, 151.0))
-            .len,
+            .unwrap()
+            .length,
         1087.6429
     );
 }
@@ -28860,7 +31744,8 @@ fn aurora_merged_aychuxfomv() {
     assert_delta!(
         aurora
             .path(Vec2::new(569.0, 24.0), Vec2::new(334.0, 715.0))
-            .len,
+            .unwrap()
+            .length,
         1092.3505
     );
 }
@@ -28870,7 +31755,8 @@ fn aurora_merged_okckfnwamb() {
     assert_delta!(
         aurora
             .path(Vec2::new(826.0, 90.0), Vec2::new(276.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         1084.4033
     );
 }
@@ -28880,7 +31766,8 @@ fn aurora_merged_voumiyqkrd() {
     assert_delta!(
         aurora
             .path(Vec2::new(333.0, 755.0), Vec2::new(739.0, 116.0))
-            .len,
+            .unwrap()
+            .length,
         1079.5976
     );
 }
@@ -28890,7 +31777,8 @@ fn aurora_merged_qqunawcxyu() {
     assert_delta!(
         aurora
             .path(Vec2::new(78.0, 689.0), Vec2::new(784.0, 196.0))
-            .len,
+            .unwrap()
+            .length,
         1091.8364
     );
 }
@@ -28900,7 +31788,8 @@ fn aurora_merged_ohkmpajzxk() {
     assert_delta!(
         aurora
             .path(Vec2::new(130.0, 717.0), Vec2::new(781.0, 59.0))
-            .len,
+            .unwrap()
+            .length,
         1082.2023
     );
 }
@@ -28910,7 +31799,8 @@ fn aurora_merged_uxoyzcgunx() {
     assert_delta!(
         aurora
             .path(Vec2::new(380.0, 78.0), Vec2::new(327.0, 750.0))
-            .len,
+            .unwrap()
+            .length,
         1090.6357
     );
 }
@@ -28920,7 +31810,8 @@ fn aurora_merged_ujzoasrini() {
     assert_delta!(
         aurora
             .path(Vec2::new(769.0, 69.0), Vec2::new(3.0, 594.0))
-            .len,
+            .unwrap()
+            .length,
         1081.7998
     );
 }
@@ -28930,7 +31821,8 @@ fn aurora_merged_zrmmhyuxuo() {
     assert_delta!(
         aurora
             .path(Vec2::new(3.0, 659.0), Vec2::new(925.0, 344.0))
-            .len,
+            .unwrap()
+            .length,
         1085.8277
     );
 }
@@ -28940,7 +31832,8 @@ fn aurora_merged_ckcaigrfzn() {
     assert_delta!(
         aurora
             .path(Vec2::new(930.0, 307.0), Vec2::new(7.0, 635.0))
-            .len,
+            .unwrap()
+            .length,
         1080.6315
     );
 }
@@ -28950,7 +31843,8 @@ fn aurora_merged_wiydcxclle() {
     assert_delta!(
         aurora
             .path(Vec2::new(851.0, 157.0), Vec2::new(139.0, 692.0))
-            .len,
+            .unwrap()
+            .length,
         1101.7203
     );
 }
@@ -28960,7 +31854,8 @@ fn aurora_merged_mexjhtdbdl() {
     assert_delta!(
         aurora
             .path(Vec2::new(644.0, 148.0), Vec2::new(304.0, 748.0))
-            .len,
+            .unwrap()
+            .length,
         1093.6667
     );
 }
@@ -28970,7 +31865,8 @@ fn aurora_merged_kdriotyfap() {
     assert_delta!(
         aurora
             .path(Vec2::new(137.0, 701.0), Vec2::new(841.0, 148.0))
-            .len,
+            .unwrap()
+            .length,
         1100.8814
     );
 }
@@ -28980,7 +31876,8 @@ fn aurora_merged_srbhvdpkyh() {
     assert_delta!(
         aurora
             .path(Vec2::new(9.0, 518.0), Vec2::new(935.0, 150.0))
-            .len,
+            .unwrap()
+            .length,
         1093.32
     );
 }
@@ -28990,7 +31887,8 @@ fn aurora_merged_rrcrtavacn() {
     assert_delta!(
         aurora
             .path(Vec2::new(17.0, 661.0), Vec2::new(777.0, 210.0))
-            .len,
+            .unwrap()
+            .length,
         1091.5112
     );
 }
@@ -29000,7 +31898,8 @@ fn aurora_merged_iqhpnorraa() {
     assert_delta!(
         aurora
             .path(Vec2::new(1021.0, 350.0), Vec2::new(49.0, 682.0))
-            .len,
+            .unwrap()
+            .length,
         1105.1879
     );
 }
@@ -29010,7 +31909,8 @@ fn aurora_merged_fgcpsghygo() {
     assert_delta!(
         aurora
             .path(Vec2::new(56.0, 673.0), Vec2::new(1007.0, 321.0))
-            .len,
+            .unwrap()
+            .length,
         1105.7451
     );
 }
@@ -29020,7 +31920,8 @@ fn aurora_merged_fkbqdcqpvk() {
     assert_delta!(
         aurora
             .path(Vec2::new(840.0, 182.0), Vec2::new(113.0, 717.0))
-            .len,
+            .unwrap()
+            .length,
         1095.2473
     );
 }
@@ -29030,7 +31931,8 @@ fn aurora_merged_dxbrabawda() {
     assert_delta!(
         aurora
             .path(Vec2::new(83.0, 697.0), Vec2::new(957.0, 303.0))
-            .len,
+            .unwrap()
+            .length,
         1108.7885
     );
 }
@@ -29040,7 +31942,8 @@ fn aurora_merged_ftgaalboab() {
     assert_delta!(
         aurora
             .path(Vec2::new(68.0, 661.0), Vec2::new(821.0, 174.0))
-            .len,
+            .unwrap()
+            .length,
         1104.4252
     );
 }
@@ -29050,7 +31953,8 @@ fn aurora_merged_bgkadwuifw() {
     assert_delta!(
         aurora
             .path(Vec2::new(48.0, 643.0), Vec2::new(798.0, 207.0))
-            .len,
+            .unwrap()
+            .length,
         1093.8601
     );
 }
@@ -29060,7 +31964,8 @@ fn aurora_merged_lbsyvomghi() {
     assert_delta!(
         aurora
             .path(Vec2::new(357.0, 735.0), Vec2::new(752.0, 73.0))
-            .len,
+            .unwrap()
+            .length,
         1090.8151
     );
 }
@@ -29070,7 +31975,8 @@ fn aurora_merged_xditioolwy() {
     assert_delta!(
         aurora
             .path(Vec2::new(0.0, 617.0), Vec2::new(754.0, 279.0))
-            .len,
+            .unwrap()
+            .length,
         1085.8279
     );
 }
@@ -29080,7 +31986,8 @@ fn aurora_merged_plthxodmew() {
     assert_delta!(
         aurora
             .path(Vec2::new(783.0, 186.0), Vec2::new(59.0, 695.0))
-            .len,
+            .unwrap()
+            .length,
         1099.823
     );
 }
@@ -29090,7 +31997,8 @@ fn aurora_merged_zacuskuzds() {
     assert_delta!(
         aurora
             .path(Vec2::new(352.0, 735.0), Vec2::new(631.0, 56.0))
-            .len,
+            .unwrap()
+            .length,
         1099.2037
     );
 }
@@ -29100,7 +32008,8 @@ fn aurora_merged_awrydbssur() {
     assert_delta!(
         aurora
             .path(Vec2::new(819.0, 79.0), Vec2::new(89.0, 650.0))
-            .len,
+            .unwrap()
+            .length,
         1091.1437
     );
 }
@@ -29110,7 +32019,8 @@ fn aurora_merged_eimdnrhbos() {
     assert_delta!(
         aurora
             .path(Vec2::new(76.0, 620.0), Vec2::new(863.0, 141.0))
-            .len,
+            .unwrap()
+            .length,
         1101.2165
     );
 }
@@ -29120,7 +32030,8 @@ fn aurora_merged_eqgrulngdm() {
     assert_delta!(
         aurora
             .path(Vec2::new(903.0, 155.0), Vec2::new(184.0, 718.0))
-            .len,
+            .unwrap()
+            .length,
         1106.5873
     );
 }
@@ -29130,7 +32041,8 @@ fn aurora_merged_aqeszwzfjx() {
     assert_delta!(
         aurora
             .path(Vec2::new(812.0, 95.0), Vec2::new(150.0, 721.0))
-            .len,
+            .unwrap()
+            .length,
         1097.1694
     );
 }
@@ -29140,7 +32052,8 @@ fn aurora_merged_xsevaqwfio() {
     assert_delta!(
         aurora
             .path(Vec2::new(1009.0, 402.0), Vec2::new(0.0, 635.0))
-            .len,
+            .unwrap()
+            .length,
         1096.4528
     );
 }
@@ -29150,7 +32063,8 @@ fn aurora_merged_mvpsgopqdk() {
     assert_delta!(
         aurora
             .path(Vec2::new(305.0, 719.0), Vec2::new(777.0, 100.0))
-            .len,
+            .unwrap()
+            .length,
         1097.7203
     );
 }
@@ -29160,7 +32074,8 @@ fn aurora_merged_ehfvclspzf() {
     assert_delta!(
         aurora
             .path(Vec2::new(84.0, 621.0), Vec2::new(901.0, 160.0))
-            .len,
+            .unwrap()
+            .length,
         1093.2823
     );
 }
@@ -29170,7 +32085,8 @@ fn aurora_merged_hrbfeujvxv() {
     assert_delta!(
         aurora
             .path(Vec2::new(128.0, 178.0), Vec2::new(960.0, 640.0))
-            .len,
+            .unwrap()
+            .length,
         1085.7275
     );
 }
@@ -29180,7 +32096,8 @@ fn aurora_merged_btfgunhhsf() {
     assert_delta!(
         aurora
             .path(Vec2::new(100.0, 158.0), Vec2::new(943.0, 596.0))
-            .len,
+            .unwrap()
+            .length,
         1086.1153
     );
 }
@@ -29190,7 +32107,8 @@ fn aurora_merged_xnoksxdnaf() {
     assert_delta!(
         aurora
             .path(Vec2::new(205.0, 60.0), Vec2::new(599.0, 713.0))
-            .len,
+            .unwrap()
+            .length,
         1096.3202
     );
 }
@@ -29200,7 +32118,8 @@ fn aurora_merged_edobjqxgsj() {
     assert_delta!(
         aurora
             .path(Vec2::new(874.0, 170.0), Vec2::new(40.0, 586.0))
-            .len,
+            .unwrap()
+            .length,
         1093.7328
     );
 }
@@ -29210,7 +32129,8 @@ fn aurora_merged_cvmxgwgkiy() {
     assert_delta!(
         aurora
             .path(Vec2::new(79.0, 685.0), Vec2::new(946.0, 295.0))
-            .len,
+            .unwrap()
+            .length,
         1091.2468
     );
 }
@@ -29220,7 +32140,8 @@ fn aurora_merged_tgxpjxsulw() {
     assert_delta!(
         aurora
             .path(Vec2::new(316.0, 736.0), Vec2::new(815.0, 86.0))
-            .len,
+            .unwrap()
+            .length,
         1103.6204
     );
 }
@@ -29230,7 +32151,8 @@ fn aurora_merged_syrdgvymwj() {
     assert_delta!(
         aurora
             .path(Vec2::new(317.0, 754.0), Vec2::new(657.0, 131.0))
-            .len,
+            .unwrap()
+            .length,
         1101.3279
     );
 }
@@ -29240,7 +32162,8 @@ fn aurora_merged_klzqoyoahw() {
     assert_delta!(
         aurora
             .path(Vec2::new(323.0, 745.0), Vec2::new(653.0, 82.0))
-            .len,
+            .unwrap()
+            .length,
         1104.373
     );
 }
@@ -29250,7 +32173,8 @@ fn aurora_merged_bzxyidoyml() {
     assert_delta!(
         aurora
             .path(Vec2::new(819.0, 253.0), Vec2::new(3.0, 596.0))
-            .len,
+            .unwrap()
+            .length,
         1094.1186
     );
 }
@@ -29260,7 +32184,8 @@ fn aurora_merged_wybklnfxax() {
     assert_delta!(
         aurora
             .path(Vec2::new(762.0, 73.0), Vec2::new(353.0, 742.0))
-            .len,
+            .unwrap()
+            .length,
         1096.8566
     );
 }
@@ -29270,7 +32195,8 @@ fn aurora_merged_ayudeuwntk() {
     assert_delta!(
         aurora
             .path(Vec2::new(788.0, 70.0), Vec2::new(103.0, 699.0))
-            .len,
+            .unwrap()
+            .length,
         1097.3119
     );
 }
@@ -29280,7 +32206,8 @@ fn aurora_merged_cmlyfgcvox() {
     assert_delta!(
         aurora
             .path(Vec2::new(16.0, 627.0), Vec2::new(792.0, 106.0))
-            .len,
+            .unwrap()
+            .length,
         1096.4103
     );
 }
@@ -29290,7 +32217,8 @@ fn aurora_merged_qkaqyezxzo() {
     assert_delta!(
         aurora
             .path(Vec2::new(65.0, 642.0), Vec2::new(987.0, 297.0))
-            .len,
+            .unwrap()
+            .length,
         1102.0939
     );
 }
@@ -29300,7 +32228,8 @@ fn aurora_merged_pfwpnrjwse() {
     assert_delta!(
         aurora
             .path(Vec2::new(9.0, 667.0), Vec2::new(955.0, 437.0))
-            .len,
+            .unwrap()
+            .length,
         1104.0966
     );
 }
@@ -29310,7 +32239,8 @@ fn aurora_merged_howzynlbxp() {
     assert_delta!(
         aurora
             .path(Vec2::new(851.0, 172.0), Vec2::new(53.0, 613.0))
-            .len,
+            .unwrap()
+            .length,
         1108.4147
     );
 }
@@ -29320,7 +32250,8 @@ fn aurora_merged_vgxhnsqenb() {
     assert_delta!(
         aurora
             .path(Vec2::new(40.0, 670.0), Vec2::new(786.0, 275.0))
-            .len,
+            .unwrap()
+            .length,
         1110.2192
     );
 }
@@ -29330,7 +32261,8 @@ fn aurora_merged_wklbetpdvo() {
     assert_delta!(
         aurora
             .path(Vec2::new(775.0, 717.0), Vec2::new(177.0, 75.0))
-            .len,
+            .unwrap()
+            .length,
         1100.4302
     );
 }
@@ -29340,7 +32272,8 @@ fn aurora_merged_kfpwbmpzzk() {
     assert_delta!(
         aurora
             .path(Vec2::new(768.0, 260.0), Vec2::new(1.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         1096.6247
     );
 }
@@ -29350,7 +32283,8 @@ fn aurora_merged_tissavcqrf() {
     assert_delta!(
         aurora
             .path(Vec2::new(151.0, 733.0), Vec2::new(822.0, 168.0))
-            .len,
+            .unwrap()
+            .length,
         1114.6805
     );
 }
@@ -29360,7 +32294,8 @@ fn aurora_merged_sfkiuornnp() {
     assert_delta!(
         aurora
             .path(Vec2::new(518.0, 35.0), Vec2::new(362.0, 723.0))
-            .len,
+            .unwrap()
+            .length,
         1111.2067
     );
 }
@@ -29370,7 +32305,8 @@ fn aurora_merged_poxlclocah() {
     assert_delta!(
         aurora
             .path(Vec2::new(49.0, 665.0), Vec2::new(811.0, 107.0))
-            .len,
+            .unwrap()
+            .length,
         1107.5912
     );
 }
@@ -29380,7 +32316,8 @@ fn aurora_merged_wkudhcsxae() {
     assert_delta!(
         aurora
             .path(Vec2::new(599.0, 717.0), Vec2::new(579.0, 34.0))
-            .len,
+            .unwrap()
+            .length,
         1106.6263
     );
 }
@@ -29390,7 +32327,8 @@ fn aurora_merged_xvpbszpmmz() {
     assert_delta!(
         aurora
             .path(Vec2::new(870.0, 160.0), Vec2::new(268.0, 689.0))
-            .len,
+            .unwrap()
+            .length,
         1115.7576
     );
 }
@@ -29400,7 +32338,8 @@ fn aurora_merged_vytqcllrjf() {
     assert_delta!(
         aurora
             .path(Vec2::new(263.0, 728.0), Vec2::new(812.0, 79.0))
-            .len,
+            .unwrap()
+            .length,
         1104.9207
     );
 }
@@ -29410,7 +32349,8 @@ fn aurora_merged_shtdvftiul() {
     assert_delta!(
         aurora
             .path(Vec2::new(853.0, 187.0), Vec2::new(37.0, 658.0))
-            .len,
+            .unwrap()
+            .length,
         1100.2835
     );
 }
@@ -29420,7 +32360,8 @@ fn aurora_merged_xkdibyfoxo() {
     assert_delta!(
         aurora
             .path(Vec2::new(1023.0, 414.0), Vec2::new(3.0, 582.0))
-            .len,
+            .unwrap()
+            .length,
         1114.0306
     );
 }
@@ -29430,7 +32371,8 @@ fn aurora_merged_wklwgviivq() {
     assert_delta!(
         aurora
             .path(Vec2::new(966.0, 626.0), Vec2::new(122.0, 160.0))
-            .len,
+            .unwrap()
+            .length,
         1097.3395
     );
 }
@@ -29440,7 +32382,8 @@ fn aurora_merged_acclmrimyi() {
     assert_delta!(
         aurora
             .path(Vec2::new(884.0, 144.0), Vec2::new(79.0, 619.0))
-            .len,
+            .unwrap()
+            .length,
         1118.86
     );
 }
@@ -29450,7 +32393,8 @@ fn aurora_merged_yhavgiaxrm() {
     assert_delta!(
         aurora
             .path(Vec2::new(47.0, 617.0), Vec2::new(996.0, 293.0))
-            .len,
+            .unwrap()
+            .length,
         1109.2477
     );
 }
@@ -29460,7 +32404,8 @@ fn aurora_merged_awsexwenrs() {
     assert_delta!(
         aurora
             .path(Vec2::new(226.0, 720.0), Vec2::new(850.0, 142.0))
-            .len,
+            .unwrap()
+            .length,
         1118.3891
     );
 }
@@ -29470,7 +32415,8 @@ fn aurora_merged_vvlscybcvq() {
     assert_delta!(
         aurora
             .path(Vec2::new(92.0, 709.0), Vec2::new(853.0, 250.0))
-            .len,
+            .unwrap()
+            .length,
         1103.0609
     );
 }
@@ -29480,7 +32426,8 @@ fn aurora_merged_birgzgamcv() {
     assert_delta!(
         aurora
             .path(Vec2::new(987.0, 618.0), Vec2::new(41.0, 147.0))
-            .len,
+            .unwrap()
+            .length,
         1096.2784
     );
 }
@@ -29490,7 +32437,8 @@ fn aurora_merged_wyuplffwar() {
     assert_delta!(
         aurora
             .path(Vec2::new(776.0, 255.0), Vec2::new(5.0, 644.0))
-            .len,
+            .unwrap()
+            .length,
         1102.6386
     );
 }
@@ -29500,7 +32448,8 @@ fn aurora_merged_jpvaqozngo() {
     assert_delta!(
         aurora
             .path(Vec2::new(869.0, 132.0), Vec2::new(329.0, 672.0))
-            .len,
+            .unwrap()
+            .length,
         1116.5478
     );
 }
@@ -29510,7 +32459,8 @@ fn aurora_merged_koknwlrrhw() {
     assert_delta!(
         aurora
             .path(Vec2::new(940.0, 150.0), Vec2::new(153.0, 653.0))
-            .len,
+            .unwrap()
+            .length,
         1107.1249
     );
 }
@@ -29520,7 +32470,8 @@ fn aurora_merged_eerbeihkgf() {
     assert_delta!(
         aurora
             .path(Vec2::new(821.0, 194.0), Vec2::new(89.0, 688.0))
-            .len,
+            .unwrap()
+            .length,
         1112.4352
     );
 }
@@ -29530,7 +32481,8 @@ fn aurora_merged_dpmxfcmxfp() {
     assert_delta!(
         aurora
             .path(Vec2::new(75.0, 144.0), Vec2::new(971.0, 589.0))
-            .len,
+            .unwrap()
+            .length,
         1103.8122
     );
 }
@@ -29540,7 +32492,8 @@ fn aurora_merged_vfxvljxyir() {
     assert_delta!(
         aurora
             .path(Vec2::new(609.0, 730.0), Vec2::new(555.0, 17.0))
-            .len,
+            .unwrap()
+            .length,
         1117.4709
     );
 }
@@ -29550,7 +32503,8 @@ fn aurora_merged_awduroujhi() {
     assert_delta!(
         aurora
             .path(Vec2::new(16.0, 611.0), Vec2::new(819.0, 173.0))
-            .len,
+            .unwrap()
+            .length,
         1116.5963
     );
 }
@@ -29560,7 +32514,8 @@ fn aurora_merged_hdnguicdhq() {
     assert_delta!(
         aurora
             .path(Vec2::new(96.0, 176.0), Vec2::new(952.0, 623.0))
-            .len,
+            .unwrap()
+            .length,
         1104.2441
     );
 }
@@ -29570,7 +32525,8 @@ fn aurora_merged_dvkmhdnhgv() {
     assert_delta!(
         aurora
             .path(Vec2::new(26.0, 649.0), Vec2::new(787.0, 276.0))
-            .len,
+            .unwrap()
+            .length,
         1110.3193
     );
 }
@@ -29580,7 +32536,8 @@ fn aurora_merged_ikfqpcppgh() {
     assert_delta!(
         aurora
             .path(Vec2::new(810.0, 138.0), Vec2::new(12.0, 644.0))
-            .len,
+            .unwrap()
+            .length,
         1116.0613
     );
 }
@@ -29590,7 +32547,8 @@ fn aurora_merged_tnmptlbtte() {
     assert_delta!(
         aurora
             .path(Vec2::new(887.0, 119.0), Vec2::new(238.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         1122.6222
     );
 }
@@ -29600,7 +32558,8 @@ fn aurora_merged_vpsowcnnkw() {
     assert_delta!(
         aurora
             .path(Vec2::new(835.0, 179.0), Vec2::new(145.0, 726.0))
-            .len,
+            .unwrap()
+            .length,
         1123.3291
     );
 }
@@ -29610,7 +32569,8 @@ fn aurora_merged_zuvfleazek() {
     assert_delta!(
         aurora
             .path(Vec2::new(117.0, 670.0), Vec2::new(872.0, 112.0))
-            .len,
+            .unwrap()
+            .length,
         1129.7237
     );
 }
@@ -29620,7 +32580,8 @@ fn aurora_merged_znplmpusuo() {
     assert_delta!(
         aurora
             .path(Vec2::new(854.0, 679.0), Vec2::new(144.0, 107.0))
-            .len,
+            .unwrap()
+            .length,
         1108.788
     );
 }
@@ -29630,7 +32591,8 @@ fn aurora_merged_qirlykrube() {
     assert_delta!(
         aurora
             .path(Vec2::new(779.0, 285.0), Vec2::new(49.0, 690.0))
-            .len,
+            .unwrap()
+            .length,
         1114.7555
     );
 }
@@ -29640,7 +32602,8 @@ fn aurora_merged_llafgphpve() {
     assert_delta!(
         aurora
             .path(Vec2::new(50.0, 636.0), Vec2::new(850.0, 123.0))
-            .len,
+            .unwrap()
+            .length,
         1126.6631
     );
 }
@@ -29650,7 +32613,8 @@ fn aurora_merged_hcvmmangig() {
     assert_delta!(
         aurora
             .path(Vec2::new(34.0, 672.0), Vec2::new(957.0, 276.0))
-            .len,
+            .unwrap()
+            .length,
         1111.8828
     );
 }
@@ -29660,7 +32624,8 @@ fn aurora_merged_hwqhrwqenu() {
     assert_delta!(
         aurora
             .path(Vec2::new(62.0, 683.0), Vec2::new(858.0, 178.0))
-            .len,
+            .unwrap()
+            .length,
         1114.6736
     );
 }
@@ -29670,7 +32635,8 @@ fn aurora_merged_ghjbfevjal() {
     assert_delta!(
         aurora
             .path(Vec2::new(895.0, 134.0), Vec2::new(293.0, 677.0))
-            .len,
+            .unwrap()
+            .length,
         1123.073
     );
 }
@@ -29680,7 +32646,8 @@ fn aurora_merged_elfcxklckn() {
     assert_delta!(
         aurora
             .path(Vec2::new(830.0, 156.0), Vec2::new(77.0, 689.0))
-            .len,
+            .unwrap()
+            .length,
         1131.2928
     );
 }
@@ -29690,7 +32657,8 @@ fn aurora_merged_owevyjjvha() {
     assert_delta!(
         aurora
             .path(Vec2::new(809.0, 176.0), Vec2::new(41.0, 680.0))
-            .len,
+            .unwrap()
+            .length,
         1122.342
     );
 }
@@ -29700,7 +32668,8 @@ fn aurora_merged_emgadfptfd() {
     assert_delta!(
         aurora
             .path(Vec2::new(98.0, 191.0), Vec2::new(934.0, 652.0))
-            .len,
+            .unwrap()
+            .length,
         1104.4646
     );
 }
@@ -29710,7 +32679,8 @@ fn aurora_merged_rtjwphpfmc() {
     assert_delta!(
         aurora
             .path(Vec2::new(793.0, 78.0), Vec2::new(89.0, 684.0))
-            .len,
+            .unwrap()
+            .length,
         1114.1801
     );
 }
@@ -29720,7 +32690,8 @@ fn aurora_merged_casjdjtwew() {
     assert_delta!(
         aurora
             .path(Vec2::new(331.0, 671.0), Vec2::new(866.0, 103.0))
-            .len,
+            .unwrap()
+            .length,
         1122.9406
     );
 }
@@ -29730,7 +32701,8 @@ fn aurora_merged_zqtajdupdn() {
     assert_delta!(
         aurora
             .path(Vec2::new(52.0, 614.0), Vec2::new(874.0, 160.0))
-            .len,
+            .unwrap()
+            .length,
         1129.4693
     );
 }
@@ -29740,7 +32712,8 @@ fn aurora_merged_spbyjrgbdq() {
     assert_delta!(
         aurora
             .path(Vec2::new(979.0, 590.0), Vec2::new(98.0, 191.0))
-            .len,
+            .unwrap()
+            .length,
         1120.2311
     );
 }
@@ -29750,7 +32723,8 @@ fn aurora_merged_ztyphjfxsp() {
     assert_delta!(
         aurora
             .path(Vec2::new(104.0, 166.0), Vec2::new(961.0, 633.0))
-            .len,
+            .unwrap()
+            .length,
         1110.02
     );
 }
@@ -29760,7 +32734,8 @@ fn aurora_merged_oakxxstbyn() {
     assert_delta!(
         aurora
             .path(Vec2::new(875.0, 691.0), Vec2::new(121.0, 107.0))
-            .len,
+            .unwrap()
+            .length,
         1114.0472
     );
 }
@@ -29770,7 +32745,8 @@ fn aurora_merged_alguihfbwg() {
     assert_delta!(
         aurora
             .path(Vec2::new(67.0, 569.0), Vec2::new(904.0, 144.0))
-            .len,
+            .unwrap()
+            .length,
         1127.4946
     );
 }
@@ -29780,7 +32756,8 @@ fn aurora_merged_cmlaknrbnv() {
     assert_delta!(
         aurora
             .path(Vec2::new(843.0, 156.0), Vec2::new(59.0, 675.0))
-            .len,
+            .unwrap()
+            .length,
         1131.6711
     );
 }
@@ -29790,7 +32767,8 @@ fn aurora_merged_hrokohqkcv() {
     assert_delta!(
         aurora
             .path(Vec2::new(284.0, 674.0), Vec2::new(896.0, 119.0))
-            .len,
+            .unwrap()
+            .length,
         1125.2731
     );
 }
@@ -29800,7 +32778,8 @@ fn aurora_merged_tjjxwfyogr() {
     assert_delta!(
         aurora
             .path(Vec2::new(991.0, 589.0), Vec2::new(61.0, 140.0))
-            .len,
+            .unwrap()
+            .length,
         1113.5999
     );
 }
@@ -29810,7 +32789,8 @@ fn aurora_merged_kgubohftar() {
     assert_delta!(
         aurora
             .path(Vec2::new(808.0, 207.0), Vec2::new(10.0, 627.0))
-            .len,
+            .unwrap()
+            .length,
         1112.4008
     );
 }
@@ -29820,7 +32800,8 @@ fn aurora_merged_oxtnchorbl() {
     assert_delta!(
         aurora
             .path(Vec2::new(855.0, 144.0), Vec2::new(27.0, 600.0))
-            .len,
+            .unwrap()
+            .length,
         1127.1473
     );
 }
@@ -29830,7 +32811,8 @@ fn aurora_merged_pwdqwakdtl() {
     assert_delta!(
         aurora
             .path(Vec2::new(596.0, 722.0), Vec2::new(565.0, 34.0))
-            .len,
+            .unwrap()
+            .length,
         1123.7803
     );
 }
@@ -29840,7 +32822,8 @@ fn aurora_merged_yyeggxbmdi() {
     assert_delta!(
         aurora
             .path(Vec2::new(182.0, 723.0), Vec2::new(847.0, 148.0))
-            .len,
+            .unwrap()
+            .length,
         1137.4998
     );
 }
@@ -29850,7 +32833,8 @@ fn aurora_merged_wtlgktygaa() {
     assert_delta!(
         aurora
             .path(Vec2::new(145.0, 97.0), Vec2::new(969.0, 616.0))
-            .len,
+            .unwrap()
+            .length,
         1115.7011
     );
 }
@@ -29860,7 +32844,8 @@ fn aurora_merged_jasjmgcbzu() {
     assert_delta!(
         aurora
             .path(Vec2::new(718.0, 682.0), Vec2::new(134.0, 115.0))
-            .len,
+            .unwrap()
+            .length,
         1119.0245
     );
 }
@@ -29870,7 +32855,8 @@ fn aurora_merged_sgztwbnkjs() {
     assert_delta!(
         aurora
             .path(Vec2::new(856.0, 192.0), Vec2::new(5.0, 643.0))
-            .len,
+            .unwrap()
+            .length,
         1118.2746
     );
 }
@@ -29880,7 +32866,8 @@ fn aurora_merged_guooaikkit() {
     assert_delta!(
         aurora
             .path(Vec2::new(1.0, 576.0), Vec2::new(928.0, 151.0))
-            .len,
+            .unwrap()
+            .length,
         1132.1721
     );
 }
@@ -29890,7 +32877,8 @@ fn aurora_merged_vgpuexkkct() {
     assert_delta!(
         aurora
             .path(Vec2::new(950.0, 605.0), Vec2::new(94.0, 119.0))
-            .len,
+            .unwrap()
+            .length,
         1113.1997
     );
 }
@@ -29900,7 +32888,8 @@ fn aurora_merged_pplmauwqup() {
     assert_delta!(
         aurora
             .path(Vec2::new(891.0, 163.0), Vec2::new(54.0, 645.0))
-            .len,
+            .unwrap()
+            .length,
         1121.9482
     );
 }
@@ -29910,7 +32899,8 @@ fn aurora_merged_vydupdxvld() {
     assert_delta!(
         aurora
             .path(Vec2::new(993.0, 290.0), Vec2::new(34.0, 622.0))
-            .len,
+            .unwrap()
+            .length,
         1123.2226
     );
 }

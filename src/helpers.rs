@@ -3,7 +3,7 @@ use glam::Vec2;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use crate::EdgeSide;
+use crate::instance::EdgeSide;
 
 const EPSILON: f32 = 1e-2;
 
@@ -135,7 +135,7 @@ pub(crate) fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) 
 mod tests {
     use glam::Vec2;
 
-    use crate::{helpers::Vec2Helper, EdgeSide};
+    use crate::{helpers::Vec2Helper, instance::EdgeSide};
 
     use super::{heuristic, line_intersect_segment};
 

@@ -4,8 +4,8 @@ use polyanya::Mesh;
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
         let val = $x;
-        if !((val.len - $y).abs() < 0.001) {
-            assert_eq!(val.len, $y);
+        if !((val.length - $y).abs() < 0.001) {
+            assert_eq!(val.length, $y);
         }
     };
 }
@@ -21,7 +21,8 @@ fn main() {
     let mesh = Mesh::from_file("meshes/aurora-merged.mesh".into());
 
     assert_delta!(
-        mesh.path(Vec2::new(993.0, 290.0), Vec2::new(34.0, 622.0)),
+        mesh.path(Vec2::new(993.0, 290.0), Vec2::new(34.0, 622.0))
+            .unwrap(),
         1123.2226
     );
 }
