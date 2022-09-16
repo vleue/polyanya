@@ -18,9 +18,8 @@ impl Scenarios {
             io::BufReader::new(file)
                 .lines()
                 .skip(1)
-                // .flatten()
+                .flatten()
                 .map(|line| {
-                    let line = line.unwrap();
                     let mut split = line.split('\t');
                     Scenario {
                         from: Vec2::new(

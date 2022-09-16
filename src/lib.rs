@@ -1152,8 +1152,6 @@ mod tests {
         for successor in &successors {
             println!("{:?}", successor);
         }
-
-        // assert!(false);
     }
 
     #[test]
@@ -1176,6 +1174,5 @@ mod tests {
         for successor in &successors {
             println!("{:?}", successor);
         }
-        // assert!(false);
     }
 }
