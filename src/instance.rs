@@ -65,17 +65,17 @@ impl<'m> SearchInstance<'m> {
 
         let polygon = self.mesh.polygons.get(node.polygon_to as usize).unwrap();
 
-        if node.interval.0.distance(node.root) < 1.0e-5
-            || node.interval.1.distance(node.root) < 1.0e-5
-            || node.root.side(node.interval) == EdgeSide::Edge
-        {
-            // println!("collinear");
-            // TODO: possible optimisation
-        }
-        if polygon.vertices.len() == 3 {
-            // println!("triangle");
-            // TODO: possible optimisation
-        }
+        // if node.interval.0.distance(node.root) < 1.0e-5
+        //     || node.interval.1.distance(node.root) < 1.0e-5
+        //     || node.root.side(node.interval) == EdgeSide::Edge
+        // {
+        //     // println!("collinear");
+        //     // TODO: possible optimisation
+        // }
+        // if polygon.vertices.len() == 3 {
+        //     // println!("triangle");
+        //     // TODO: possible optimisation
+        // }
 
         let right_index = {
             let mut temp = 0;
