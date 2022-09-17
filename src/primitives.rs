@@ -1,3 +1,4 @@
+use smallvec::{smallvec, SmallVec};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -82,10 +83,10 @@ impl Polygon {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub(crate) fn edges_index(&self) -> Vec<(usize, usize)> {
-        let mut edges = Vec::with_capacity(self.vertices.len() / 2);
+    pub(crate) fn edges_index(&self) -> SmallVec<[(usize, usize); 10]> {
+        let mut edges = SmallVec::new();
         if self.vertices.is_empty() {
-            return vec![];
+            return smallvec![];
         }
         let mut last = self.vertices[0];
         for vertex in self.vertices.iter().skip(1) {
@@ -98,8 +99,8 @@ impl Polygon {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub(crate) fn double_edges_index(&self) -> Vec<(usize, usize)> {
-        let mut edges = Vec::with_capacity(self.vertices.len());
+    pub(crate) fn double_edges_index(&self) -> SmallVec<[(usize, usize); 20]> {
+        let mut edges = SmallVec::new();
         let mut last = self.vertices[0];
         for vertex in self.vertices.iter().skip(1) {
             edges.push((last, *vertex));

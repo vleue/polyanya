@@ -90,7 +90,7 @@ Compiling this crate with feature `stats` will output almost the same level of i
 
 ```notrust
 index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length
-0;3961.125;6983;7748;4314;3828;21;1123.2228
+0;3773.333;6983;7748;4314;3828;21;1123.2228
 ```
 
 The `verbose` feature will give the same output as [setting `verbose` to `1`](https://bitbucket.org/dharabor/pathfinding/src/ce5b02e9d051d5f17addb359429104c0293decaf/anyangle/polyanya/scenariorunner.cpp#lines-20).
