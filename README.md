@@ -85,6 +85,7 @@ This crate seems to generate a few more nodes, but tends to be faster than the c
 * collinear optimisation, when a search node root and interval are all on a same line
 * triangle optimisation, when searching in a triangle polygon
 * when an intersection is very close to a vertex, it sometimes generates an extra slim search node
+* searching start and end nodes is costlier
 
 Compiling this crate with feature `stats` will output almost the same level of information as the default cpp implementation output.
 
