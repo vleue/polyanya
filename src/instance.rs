@@ -1,3 +1,4 @@
+use smallvec::SmallVec;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -63,10 +64,10 @@ pub(crate) struct SearchInstance<'m> {
 impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub(crate) fn edges_between(&self, node: &SearchNode) -> Vec<Successor> {
-        let mut successors = vec![];
+    pub(crate) fn edges_between(&self, node: &SearchNode) -> SmallVec<[Successor; 10]> {
+        let mut successors = SmallVec::new();
 
-        let polygon = self.mesh.polygons.get(node.polygon_to as usize).unwrap();
+        let polygon = &self.mesh.polygons[node.polygon_to as usize];
 
         // if node.interval.0.distance(node.root) < 1.0e-5
         //     || node.interval.1.distance(node.root) < 1.0e-5
@@ -87,20 +88,18 @@ impl<'m> SearchInstance<'m> {
             }
             temp + 1
         };
-        let left_index = polygon.vertices.len() + right_index - 1 - 1;
+        let left_index = polygon.vertices.len() + right_index - 2;
 
         let mut ty = SuccessorType::RightNonObservable;
         for edge in &polygon.double_edges_index()[right_index..=left_index] {
-            let start = if let Some(vertex) = self.mesh.vertices.get(edge.0) {
-                vertex
-            } else {
+            if edge.0.max(edge.1) > self.mesh.vertices.len() {
                 continue;
-            };
-            let end = if let Some(vertex) = self.mesh.vertices.get(edge.1) {
-                vertex
-            } else {
-                continue;
-            };
+            }
+            // Bounds are checked just before
+            #[allow(unsafe_code)]
+            let start = unsafe { self.mesh.vertices.get_unchecked(edge.0) };
+            #[allow(unsafe_code)]
+            let end = unsafe { self.mesh.vertices.get_unchecked(edge.1) };
             let mut start_point = start.coords;
             let end_point = end.coords;
 
@@ -119,6 +118,7 @@ impl<'m> SearchInstance<'m> {
                 );
             }
 
+            let end_root_int1 = end_point.side((node.root, node.interval.1));
             match start_point.side((node.root, node.interval.0)) {
                 EdgeSide::Right => {
                     if let Some(intersect) = line_intersect_segment(
@@ -134,8 +134,8 @@ impl<'m> SearchInstance<'m> {
                                 intersect.distance(end_point)
                             );
                         }
-                        if intersect.distance(start_point) > 1.0e-3
-                            && intersect.distance(end_point) > 1.0e-3
+                        if intersect.distance_squared(start_point) > 1.0e-6
+                            && intersect.distance_squared(end_point) > 1.0e-6
                         {
                             successors.push(Successor {
                                 interval: (start_point, intersect),
@@ -149,7 +149,7 @@ impl<'m> SearchInstance<'m> {
                                 println!("|     ignoring intersection");
                             }
                         }
-                        if intersect.distance(end_point) > 1.0e-3 {
+                        if intersect.distance_squared(end_point) > 1.0e-6 {
                             ty = SuccessorType::Observable;
                         }
                     }
@@ -168,7 +168,7 @@ impl<'m> SearchInstance<'m> {
             }
             let mut end_intersection_p = None;
             let mut found_intersection = false;
-            if end_point.side((node.root, node.interval.1)) == EdgeSide::Left {
+            if end_root_int1 == EdgeSide::Left {
                 if let Some(intersect) =
                     line_intersect_segment((node.root, node.interval.1), (start_point, end_point))
                 {
@@ -182,7 +182,7 @@ impl<'m> SearchInstance<'m> {
                         );
                     }
 
-                    if intersect.distance(end_point) > 1.0e-3 {
+                    if intersect.distance_squared(end_point) > 1.0e-6 {
                         end_intersection_p = Some(intersect);
                     } else {
                         #[cfg(debug_assertions)]
@@ -198,7 +198,7 @@ impl<'m> SearchInstance<'m> {
                 edge: *edge,
                 ty,
             });
-            match end_point.side((node.root, node.interval.1)) {
+            match end_root_int1 {
                 EdgeSide::Left => {
                     if found_intersection {
                         ty = SuccessorType::LeftNonObservable;
@@ -376,10 +376,10 @@ impl<'m> SearchInstance<'m> {
                     continue;
                 }
 
-                const EPSILON: f32 = 1.0e-5;
+                const EPSILON: f32 = 1.0e-10;
                 let root = match successor.ty {
                     SuccessorType::RightNonObservable => {
-                        if successor.interval.0.distance(start.coords) > EPSILON {
+                        if successor.interval.0.distance_squared(start.coords) > EPSILON {
                             #[cfg(debug_assertions)]
                             if self.debug {
                                 println!("x non observable on an intersection");
@@ -387,7 +387,9 @@ impl<'m> SearchInstance<'m> {
                             continue;
                         }
                         let vertex = self.mesh.vertices.get(node.edge.0).unwrap();
-                        if vertex.is_corner && vertex.coords.distance(node.interval.0) < EPSILON {
+                        if vertex.is_corner
+                            && vertex.coords.distance_squared(node.interval.0) < EPSILON
+                        {
                             node.interval.0
                         } else {
                             #[cfg(debug_assertions)]
@@ -399,7 +401,7 @@ impl<'m> SearchInstance<'m> {
                     }
                     SuccessorType::Observable => node.root,
                     SuccessorType::LeftNonObservable => {
-                        if successor.interval.1.distance(end.coords) > EPSILON {
+                        if successor.interval.1.distance_squared(end.coords) > EPSILON {
                             #[cfg(debug_assertions)]
                             if self.debug {
                                 println!("x non observable on an intersection");
@@ -407,7 +409,9 @@ impl<'m> SearchInstance<'m> {
                             continue;
                         }
                         let vertex = self.mesh.vertices.get(node.edge.1).unwrap();
-                        if vertex.is_corner && vertex.coords.distance(node.interval.1) < EPSILON {
+                        if vertex.is_corner
+                            && vertex.coords.distance_squared(node.interval.1) < EPSILON
+                        {
                             node.interval.1
                         } else {
                             #[cfg(debug_assertions)]

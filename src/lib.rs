@@ -438,7 +438,7 @@ impl Mesh {
             #[cfg(debug_assertions)]
             fail_fast: -1,
         };
-        search_instance.edges_between(node)
+        search_instance.edges_between(node).to_vec()
     }
 
     /// Check if a given point is in a `Mesh`
