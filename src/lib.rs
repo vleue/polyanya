@@ -222,8 +222,8 @@ impl Mesh {
                 }
                 eprintln!(
                     "{};{};0;0;0;0;0;{}",
-                    start.elapsed().as_secs_f32() * 1_000_000.0,
                     self.scenarios.get(),
+                    start.elapsed().as_secs_f32() * 1_000_000.0,
                     from.distance(to),
                 );
                 self.scenarios.set(self.scenarios.get() + 1);
