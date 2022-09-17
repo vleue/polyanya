@@ -1,3 +1,6 @@
+#[cfg(feature = "tracing")]
+use tracing::instrument;
+
 use std::collections::BinaryHeap;
 
 #[cfg(feature = "stats")]

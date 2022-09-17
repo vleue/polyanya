@@ -1,3 +1,6 @@
+#[cfg(feature = "tracing")]
+use tracing::instrument;
+
 use glam::Vec2;
 
 /// A point that lies on an edge of a polygon in the navigation mesh.
