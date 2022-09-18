@@ -4,7 +4,7 @@
 [![Realease Doc](https://docs.rs/polyanya/badge.svg)](https://docs.rs/polyanya)
 [![Crate](https://img.shields.io/crates/v/polyanya.svg)](https://crates.io/crates/polyanya)
 
-Implementation of [Polyanya](https://www.ijcai.org/proceedings/2017/0070.pdf) in Rust!
+Implementation of [Polyanya](https://www.ijcai.org/proceedings/2017/0070.pdf) in Rust! Polyanya is a [any-angle path planning](https://en.wikipedia.org/wiki/Any-angle_path_planning) algorithm.
 
 A WASM demo made with [Bevy](https://bevyengine.org) is available [here](https://vleue.github.io/bevy_pathmesh/).
 
