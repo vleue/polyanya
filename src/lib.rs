@@ -397,6 +397,8 @@ impl Mesh {
     #[cfg(test)]
     fn successors(&self, node: SearchNode, to: Vec2) -> Vec<SearchNode> {
         let mut search_instance = SearchInstance {
+            #[cfg(feature = "stats")]
+            start: Instant::now(),
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
@@ -426,6 +428,8 @@ impl Mesh {
     #[cfg(test)]
     fn edges_between(&self, node: &SearchNode) -> Vec<instance::Successor> {
         let search_instance = SearchInstance {
+            #[cfg(feature = "stats")]
+            start: Instant::now(),
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
@@ -626,6 +630,8 @@ mod tests {
                 Polygon::new(vec![6, 7, 11, 10], true),
             ],
             baked_polygons: IndexMap::default(),
+            #[cfg(feature = "stats")]
+            scenarios: std::cell::Cell::new(0),
         }
     }
 
@@ -844,6 +850,8 @@ mod tests {
                 Polygon::new(vec![11, 17, 20, 21], true),
             ],
             baked_polygons: IndexMap::default(),
+            #[cfg(feature = "stats")]
+            scenarios: std::cell::Cell::new(0),
         }
     }
 
