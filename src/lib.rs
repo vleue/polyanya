@@ -21,7 +21,7 @@ use std::{
     fmt::{self, Display},
     hash::Hash,
     io,
-    io::BufRead,
+    io::{BufRead, Read},
 };
 
 use glam::Vec2;
@@ -150,12 +150,21 @@ impl Mesh {
     ///
     /// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
     pub fn from_file(path: &str) -> Mesh {
-        let file = std::fs::File::open(path).unwrap();
+        let mut file = std::fs::File::open(path).unwrap();
+        let mut buffer = Vec::new();
+        file.read_to_end(&mut buffer).unwrap();
+        Self::from_bytes(&buffer)
+    }
+
+    /// Create a `Mesh` from bytes in the format `mesh 2`
+    ///
+    /// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
+    pub fn from_bytes(bytes: &[u8]) -> Mesh {
         let mut mesh = Mesh::default();
         let mut nb_vertices = 0;
         let mut nb_polygons = 0;
         let mut phase = 0;
-        for line in io::BufReader::new(file).lines() {
+        for line in io::BufReader::new(bytes).lines() {
             let line: String = line.unwrap();
             if phase == 0 {
                 if line == "mesh" || line == "2" {
