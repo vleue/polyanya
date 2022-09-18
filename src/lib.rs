@@ -291,7 +291,6 @@ impl Mesh {
             } else {
                 continue;
             };
-
             let mut other_side = isize::MAX;
             for i in &start.polygons {
                 if *i != -1 && *i != starting_polygon_index as isize && end.polygons.contains(i) {
@@ -299,13 +298,14 @@ impl Mesh {
                 }
             }
 
-            if other_side != isize::MAX
-                && !search_instance
-                    .mesh
-                    .polygons
-                    .get(other_side as usize)
-                    .unwrap()
-                    .is_one_way
+            if other_side == ending_polygon as isize
+                || (other_side != isize::MAX
+                    && !search_instance
+                        .mesh
+                        .polygons
+                        .get(other_side as usize)
+                        .unwrap()
+                        .is_one_way)
             {
                 search_instance.add_node(
                     from,
@@ -1034,6 +1034,21 @@ mod tests {
             mesh.path(from, to).unwrap().path,
             vec![Vec2::new(7.0, 4.0), to]
         );
+    }
+
+    #[test]
+    fn paper_going_to_one_way_polygon() {
+        let mesh = mesh_from_paper();
+
+        let from = Vec2::new(11., 0.);
+        let to = Vec2::new(9., 3.);
+        let path = mesh.path(from, to);
+
+        assert_eq!(path.unwrap().path, vec![to]);
+
+        let path = mesh.path(to, from);
+
+        assert_eq!(path.unwrap().path, vec![from]);
     }
 
     #[test]
