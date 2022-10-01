@@ -32,3 +32,11 @@ tracing = "0.1"
 [[bench]]
 name = "path"
 harness = false
+
+[[bench]]
+name = "no_path"
+harness = false
+
+[[bench]]
+name = "is_in_mesh"
+harness = false
