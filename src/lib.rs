@@ -17,7 +17,6 @@ const PRECISION: f32 = 1000.0;
 use std::{cell::Cell, time::Instant};
 use std::{
     cmp::Ordering,
-    collections::BinaryHeap,
     fmt::{self, Display},
     hash::Hash,
     io,
@@ -25,21 +24,23 @@ use std::{
 };
 
 use glam::Vec2;
-use hashbrown::{HashMap, HashSet};
+use hashbrown::HashSet;
 
 use helpers::Vec2Helper;
 use indexmap::IndexMap;
-use instance::EdgeSide;
+use instance::{EdgeSide, InstanceStep};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
+mod async_helpers;
 mod helpers;
 mod instance;
 mod primitives;
 
+pub use async_helpers::FuturePath;
 pub use primitives::{Polygon, Vertex};
 
-use crate::{helpers::turning_point, instance::SearchInstance};
+use crate::instance::SearchInstance;
 
 /// A path between two points.
 #[derive(Debug, PartialEq)]
@@ -211,6 +212,24 @@ impl Mesh {
     }
 
     /// Compute a path between two points.
+    ///
+    /// This method returns a `Future`, to get the path in a blocking way use [`Self::path`].
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn get_path(&self, from: Vec2, to: Vec2) -> FuturePath {
+        FuturePath {
+            from,
+            to,
+            mesh: self,
+            instance: None,
+            ending_polygon: -2,
+        }
+    }
+
+    /// Compute a path between two points.
+    ///
+    /// This will be a [`Path`] if a path is found, or `None` if not.
+    ///
+    /// This method is blocking, to get the path in an async way use [`Self::get_path`].
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     pub fn path(&self, from: Vec2, to: Vec2) -> Option<Path> {
@@ -218,7 +237,9 @@ impl Mesh {
         let start = Instant::now();
 
         let starting_polygon_index = self.get_point_location(from);
-        let starting_polygon = self.polygons.get(starting_polygon_index)?;
+        if starting_polygon_index == usize::MAX {
+            return None;
+        }
         let ending_polygon = self.get_point_location(to);
         if ending_polygon == usize::MAX {
             return None;
@@ -246,165 +267,36 @@ impl Mesh {
             });
         }
 
-        let mut search_instance = SearchInstance {
-            queue: BinaryHeap::with_capacity(15),
-            node_buffer: Vec::with_capacity(10),
-            root_history: HashMap::with_capacity(10),
-            to,
-            polygon_to: ending_polygon as isize,
-            mesh: self,
+        let mut search_instance = SearchInstance::setup(
+            self,
+            (from, starting_polygon_index),
+            (to, ending_polygon),
             #[cfg(feature = "stats")]
             start,
-            #[cfg(feature = "stats")]
-            pushed: 0,
-            #[cfg(feature = "stats")]
-            popped: 0,
-            #[cfg(feature = "stats")]
-            successors_called: 0,
-            #[cfg(feature = "stats")]
-            nodes_generated: 0,
-            #[cfg(feature = "stats")]
-            nodes_pruned_post_pop: 0,
-            #[cfg(debug_assertions)]
-            debug: false,
-            #[cfg(debug_assertions)]
-            fail_fast: -1,
-        };
-        search_instance.root_history.insert(Root(from), 0.0);
-
-        let empty_node = SearchNode {
-            path: vec![],
-            root: from,
-            interval: (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
-            edge: (0, 0),
-            polygon_from: -1,
-            polygon_to: starting_polygon_index as isize,
-            f: 0.0,
-            g: 0.0,
-        };
-
-        for edge in starting_polygon.edges_index().iter() {
-            let start = if let Some(v) = self.vertices.get(edge.0) {
-                v
-            } else {
-                continue;
-            };
-            let end = if let Some(v) = self.vertices.get(edge.1) {
-                v
-            } else {
-                continue;
-            };
-            let mut other_side = isize::MAX;
-            for i in &start.polygons {
-                if *i != -1 && *i != starting_polygon_index as isize && end.polygons.contains(i) {
-                    other_side = *i;
-                }
-            }
-
-            if other_side == ending_polygon as isize
-                || (other_side != isize::MAX
-                    && !search_instance
-                        .mesh
-                        .polygons
-                        .get(other_side as usize)
-                        .unwrap()
-                        .is_one_way)
-            {
-                search_instance.add_node(
-                    from,
-                    other_side,
-                    (start.coords, edge.0),
-                    (end.coords, edge.1),
-                    &empty_node,
-                );
-            }
-        }
-        search_instance.flush_nodes();
-
-        while let Some(next) = search_instance.pop_node() {
-            #[cfg(feature = "verbose")]
-            println!("popped off: {}", next);
-            #[cfg(feature = "stats")]
-            {
-                search_instance.popped += 1;
-            }
-
-            if let Some(o) = search_instance.root_history.get(&Root(next.root)) {
-                if o < &next.f {
-                    #[cfg(feature = "verbose")]
-                    println!("node is dominated!");
-                    #[cfg(feature = "stats")]
-                    {
-                        search_instance.nodes_pruned_post_pop += 1;
-                    }
-                    continue;
-                }
-            }
-
-            if next.polygon_to == ending_polygon as isize {
-                #[cfg(feature = "stats")]
-                {
-                    if self.scenarios.get() == 0 {
-                        eprintln!(
-                        "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
-                    );
-                    }
-                    eprintln!(
-                        "{};{};{};{};{};{};{};{}",
-                        self.scenarios.get(),
-                        search_instance.start.elapsed().as_secs_f32() * 1_000_000.0,
-                        search_instance.successors_called,
-                        search_instance.nodes_generated,
-                        search_instance.pushed,
-                        search_instance.popped,
-                        search_instance.nodes_pruned_post_pop,
-                        next.f + next.g,
-                    );
-                    self.scenarios.set(self.scenarios.get() + 1);
-                }
-                let mut path = next
-                    .path
-                    .split_first()
-                    .map(|(_, p)| p)
-                    .unwrap_or(&[])
-                    .to_vec();
-                if next.root != from {
-                    path.push(next.root);
-                }
-                if let Some(turn) = turning_point(next.root, to, next.interval) {
-                    path.push(turn);
-                }
-                let complete = next.polygon_to == ending_polygon as isize;
-                if complete {
-                    path.push(to);
-                }
-                return Some(Path {
-                    path,
-                    length: next.f + next.g,
-                });
-            }
-            search_instance.successors(next);
-        }
-        #[cfg(feature = "stats")]
-        eprintln!(
-            "{:?} / {:?} / {:?} / {:?}",
-            search_instance.successors_called,
-            search_instance.nodes_generated,
-            search_instance.pushed,
-            search_instance.popped
         );
-        None
+
+        loop {
+            match search_instance.next() {
+                InstanceStep::Found(path) => return Some(path),
+                InstanceStep::NotFound => return None,
+                InstanceStep::Continue => (),
+            }
+        }
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[cfg(test)]
     fn successors(&self, node: SearchNode, to: Vec2) -> Vec<SearchNode> {
+        use hashbrown::HashMap;
+        use std::collections::BinaryHeap;
+
         let mut search_instance = SearchInstance {
             #[cfg(feature = "stats")]
             start: Instant::now(),
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
+            from: Vec2::ZERO,
             to,
             polygon_to: self.get_point_location(to) as isize,
             mesh: self,
@@ -430,12 +322,16 @@ impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[cfg(test)]
     fn edges_between(&self, node: &SearchNode) -> Vec<instance::Successor> {
+        use hashbrown::HashMap;
+        use std::collections::BinaryHeap;
+
         let search_instance = SearchInstance {
             #[cfg(feature = "stats")]
             start: Instant::now(),
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
+            from: Vec2::ZERO,
             to: Vec2::new(0.0, 0.0),
             polygon_to: self.get_point_location(Vec2::new(0.0, 0.0)) as isize,
             mesh: self,

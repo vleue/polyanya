@@ -11,8 +11,8 @@ use glam::Vec2;
 use hashbrown::{hash_map::Entry, HashMap};
 
 use crate::{
-    helpers::{heuristic, line_intersect_segment, Vec2Helper},
-    Mesh, Root, SearchNode,
+    helpers::{heuristic, line_intersect_segment, turning_point, Vec2Helper},
+    Mesh, Path, Root, SearchNode,
 };
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -40,6 +40,7 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) queue: BinaryHeap<SearchNode>,
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
+    pub(crate) from: Vec2,
     pub(crate) to: Vec2,
     pub(crate) polygon_to: isize,
     pub(crate) mesh: &'m Mesh,
@@ -61,7 +62,177 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) fail_fast: i32,
 }
 
+pub(crate) enum InstanceStep {
+    Found(Path),
+    NotFound,
+    Continue,
+}
+
 impl<'m> SearchInstance<'m> {
+    pub(crate) fn setup(
+        mesh: &'m Mesh,
+        from: (Vec2, usize),
+        to: (Vec2, usize),
+        #[cfg(feature = "stats")] start: Instant,
+    ) -> Self {
+        let starting_polygon = &mesh.polygons[from.1];
+
+        let mut search_instance = SearchInstance {
+            queue: BinaryHeap::with_capacity(15),
+            node_buffer: Vec::with_capacity(10),
+            root_history: HashMap::with_capacity(10),
+            from: from.0,
+            to: to.0,
+            polygon_to: to.1 as isize,
+            mesh,
+            #[cfg(feature = "stats")]
+            start,
+            #[cfg(feature = "stats")]
+            pushed: 0,
+            #[cfg(feature = "stats")]
+            popped: 0,
+            #[cfg(feature = "stats")]
+            successors_called: 0,
+            #[cfg(feature = "stats")]
+            nodes_generated: 0,
+            #[cfg(feature = "stats")]
+            nodes_pruned_post_pop: 0,
+            #[cfg(debug_assertions)]
+            debug: false,
+            #[cfg(debug_assertions)]
+            fail_fast: -1,
+        };
+        search_instance.root_history.insert(Root(from.0), 0.0);
+
+        let empty_node = SearchNode {
+            path: vec![],
+            root: from.0,
+            interval: (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
+            edge: (0, 0),
+            polygon_from: -1,
+            polygon_to: from.1 as isize,
+            f: 0.0,
+            g: 0.0,
+        };
+
+        for edge in starting_polygon.edges_index().iter() {
+            let start = if let Some(v) = mesh.vertices.get(edge.0) {
+                v
+            } else {
+                continue;
+            };
+            let end = if let Some(v) = mesh.vertices.get(edge.1) {
+                v
+            } else {
+                continue;
+            };
+            let mut other_side = isize::MAX;
+            for i in &start.polygons {
+                if *i != -1 && *i != from.1 as isize && end.polygons.contains(i) {
+                    other_side = *i;
+                }
+            }
+
+            if other_side == to.1 as isize
+                || (other_side != isize::MAX
+                    && !search_instance
+                        .mesh
+                        .polygons
+                        .get(other_side as usize)
+                        .unwrap()
+                        .is_one_way)
+            {
+                search_instance.add_node(
+                    from.0,
+                    other_side,
+                    (start.coords, edge.0),
+                    (end.coords, edge.1),
+                    &empty_node,
+                );
+            }
+        }
+        search_instance.flush_nodes();
+        search_instance
+    }
+
+    pub(crate) fn next(&mut self) -> InstanceStep {
+        if let Some(next) = self.pop_node() {
+            #[cfg(feature = "verbose")]
+            println!("popped off: {}", next);
+            #[cfg(feature = "stats")]
+            {
+                search_instance.popped += 1;
+            }
+
+            if let Some(o) = self.root_history.get(&Root(next.root)) {
+                if o < &next.f {
+                    #[cfg(feature = "verbose")]
+                    println!("node is dominated!");
+                    #[cfg(feature = "stats")]
+                    {
+                        search_instance.nodes_pruned_post_pop += 1;
+                    }
+
+                    return InstanceStep::Continue;
+                }
+            }
+
+            if next.polygon_to == self.polygon_to {
+                #[cfg(feature = "stats")]
+                {
+                    if self.scenarios.get() == 0 {
+                        eprintln!(
+                        "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
+                    );
+                    }
+                    eprintln!(
+                        "{};{};{};{};{};{};{};{}",
+                        self.scenarios.get(),
+                        search_instance.start.elapsed().as_secs_f32() * 1_000_000.0,
+                        search_instance.successors_called,
+                        search_instance.nodes_generated,
+                        search_instance.pushed,
+                        search_instance.popped,
+                        search_instance.nodes_pruned_post_pop,
+                        next.f + next.g,
+                    );
+                    self.scenarios.set(self.scenarios.get() + 1);
+                }
+                let mut path = next
+                    .path
+                    .split_first()
+                    .map(|(_, p)| p)
+                    .unwrap_or(&[])
+                    .to_vec();
+                if next.root != self.from {
+                    path.push(next.root);
+                }
+                if let Some(turn) = turning_point(next.root, self.to, next.interval) {
+                    path.push(turn);
+                }
+                let complete = next.polygon_to == self.polygon_to;
+                if complete {
+                    path.push(self.to);
+                }
+                return InstanceStep::Found(Path {
+                    path,
+                    length: next.f + next.g,
+                });
+            }
+            self.successors(next);
+            return InstanceStep::Continue;
+        }
+        #[cfg(feature = "stats")]
+        eprintln!(
+            "{:?} / {:?} / {:?} / {:?}",
+            search_instance.successors_called,
+            search_instance.nodes_generated,
+            search_instance.pushed,
+            search_instance.popped
+        );
+        InstanceStep::NotFound
+    }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     pub(crate) fn edges_between(&self, node: &SearchNode) -> SmallVec<[Successor; 10]> {
