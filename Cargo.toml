@@ -12,8 +12,10 @@ documentation = "https://docs.rs/polyanya"
 categories = ["game-development"]
 
 [features]
+default = ["async"]
 stats = []
 verbose = []
+async = []
 
 [dependencies]
 tracing = { version = "0.1", optional = true }
