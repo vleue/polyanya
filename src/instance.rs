@@ -327,7 +327,7 @@ impl<'m> SearchInstance<'m> {
                 self.debug = true;
                 self.fail_fast = 3;
             }
-            for successor in self.edges_between(&node) {
+            for successor in self.edges_between(&node).iter() {
                 let start = self.mesh.vertices.get(successor.edge.0).unwrap();
                 let end = self.mesh.vertices.get(successor.edge.1).unwrap();
 

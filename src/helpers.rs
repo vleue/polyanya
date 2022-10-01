@@ -49,9 +49,57 @@ impl Vec2Helper for Vec2 {
         // Check if the point is in the segment's bounding box and then check if it is on the line.
         // Just checking if the point is on the line is not sufficient because the point can be
         // outside the segment but still be on the line.
-        (segment.0.x.min(segment.1.x)..=segment.0.x.max(segment.1.x)).contains(&self.x)
-            && (segment.0.y.min(segment.1.y)..=segment.0.y.max(segment.1.y)).contains(&self.y)
+        (min(segment.0.x, segment.1.x)..=max(segment.0.x, segment.1.x)).contains(&self.x)
+            && (min(segment.0.y, segment.1.y)..=max(segment.0.y, segment.1.y)).contains(&self.y)
             && (self.side(segment) == EdgeSide::Edge)
+    }
+}
+
+/// Fast floating point minimum.  This function matches the semantics of
+///
+/// ```no_compile
+/// if x < y { x } else { y }
+/// ```
+///
+/// which has efficient instruction sequences on many platforms (1 instruction on x86).  For most
+/// values, it matches the semantics of `x.min(y)`; the special cases are:
+///
+/// ```text
+/// min(-0.0, +0.0); +0.0
+/// min(+0.0, -0.0): -0.0
+/// min( NaN,  1.0):  1.0
+/// min( 1.0,  NaN):  NaN
+/// ```
+#[inline(always)]
+pub(crate) fn min(x: f32, y: f32) -> f32 {
+    if x < y {
+        x
+    } else {
+        y
+    }
+}
+
+/// Fast floating point maximum.  This function matches the semantics of
+///
+/// ```no_compile
+/// if x > y { x } else { y }
+/// ```
+///
+/// which has efficient instruction sequences on many platforms (1 instruction on x86).  For most
+/// values, it matches the semantics of `x.max(y)`; the special cases are:
+///
+/// ```text
+/// max(-0.0, +0.0); +0.0
+/// max(+0.0, -0.0): -0.0
+/// max( NaN,  1.0):  1.0
+/// max( 1.0,  NaN):  NaN
+/// ```
+#[inline(always)]
+pub(crate) fn max(x: f32, y: f32) -> f32 {
+    if x > y {
+        x
+    } else {
+        y
     }
 }
 
