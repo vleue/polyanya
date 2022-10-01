@@ -103,7 +103,6 @@ pub(crate) fn max(x: f32, y: f32) -> f32 {
     }
 }
 
-
 /// Computes heuristic distance from a [`super::SearchNode`] represented by the given root and interval to the goal.
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
 #[inline(always)]
