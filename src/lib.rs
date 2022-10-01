@@ -60,7 +60,8 @@ pub struct Mesh {
     pub vertices: Vec<Vertex>,
     /// List of `Polygons` in this mesh
     pub polygons: Vec<Polygon>,
-    baked_polygons: IndexMap<i32, Vec<usize>>,
+    /// polygons that overlap a given x index
+    baked_polygons_x: IndexMap<i32, Vec<usize>>,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
 }
@@ -88,11 +89,12 @@ impl Hash for Root {
 impl Mesh {
     /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
     pub fn unbake(&mut self) {
-        self.baked_polygons.clear();
+        self.baked_polygons_x.clear();
     }
 
     /// Pre-compute optimizations on the mesh
     pub fn bake(&mut self) {
+        // compute the axis aligned bounding box for each polygon
         for polygon in &mut self.polygons {
             polygon.aabb = polygon.vertices.iter().fold(
                 (Vec2::new(f32::MAX, f32::MAX), Vec2::ZERO),
@@ -116,20 +118,30 @@ impl Mesh {
             );
         }
 
-        self.baked_polygons = self
+        self.baked_polygons_x = self
             .vertices
             .iter()
             .map(|v| ((v.coords.x * PRECISION) as i32, vec![]))
             .collect();
-        self.baked_polygons.sort_keys();
+        self.baked_polygons_x.sort_unstable_keys();
 
-        for (i, polygon) in self.polygons.iter().enumerate() {
-            for (k, polys) in &mut self.baked_polygons {
-                if *k < (polygon.aabb.0.x * PRECISION) as i32 {
+        for (polygon_index, xs) in self
+            .polygons
+            .iter()
+            .map(|p| {
+                (
+                    (p.aabb.0.x * PRECISION) as i32,
+                    (p.aabb.1.x * PRECISION) as i32,
+                )
+            })
+            .enumerate()
+        {
+            for (x_index, slice) in &mut self.baked_polygons_x {
+                if *x_index < xs.0 {
                     continue;
                 }
-                polys.push(i);
-                if *k > (polygon.aabb.1.x * PRECISION) as i32 {
+                slice.push(polygon_index);
+                if *x_index > xs.1 {
                     break;
                 }
             }
@@ -141,7 +153,7 @@ impl Mesh {
         let mut mesh = Mesh {
             vertices,
             polygons,
-            baked_polygons: IndexMap::default(),
+            baked_polygons_x: IndexMap::default(),
             #[cfg(feature = "stats")]
             scenarios: Cell::new(0),
         };
@@ -377,7 +389,7 @@ impl Mesh {
         ]
         .iter()
         .map(|delta| {
-            if self.baked_polygons.is_empty() {
+            if self.baked_polygons_x.is_empty() {
                 self.get_point_location_unit(point + *delta)
             } else {
                 self.get_point_location_unit_baked(point + *delta)
@@ -400,7 +412,7 @@ impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location_unit_baked(&self, point: Vec2) -> usize {
         let mut visited = HashSet::new();
-        let mut peekable = self.baked_polygons.iter().peekable();
+        let mut peekable = self.baked_polygons_x.iter().peekable();
         while let Some(baked) = peekable.next() {
             if let Some((next, _)) = peekable.peek() {
                 if **next > (point.x * PRECISION) as i32 {
@@ -531,7 +543,7 @@ mod tests {
                 Polygon::new(vec![4, 5, 9, 8], true),
                 Polygon::new(vec![6, 7, 11, 10], true),
             ],
-            baked_polygons: IndexMap::default(),
+            baked_polygons_x: IndexMap::default(),
             #[cfg(feature = "stats")]
             scenarios: std::cell::Cell::new(0),
         }
@@ -751,7 +763,7 @@ mod tests {
                 Polygon::new(vec![15, 18, 19, 16], true),
                 Polygon::new(vec![11, 17, 20, 21], true),
             ],
-            baked_polygons: IndexMap::default(),
+            baked_polygons_x: IndexMap::default(),
             #[cfg(feature = "stats")]
             scenarios: std::cell::Cell::new(0),
         }
