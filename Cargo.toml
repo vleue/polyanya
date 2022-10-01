@@ -42,3 +42,7 @@ harness = false
 [[bench]]
 name = "is_in_mesh"
 harness = false
+
+[[bench]]
+name = "baking"
+harness = false
