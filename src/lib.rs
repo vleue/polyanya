@@ -280,7 +280,7 @@ impl Mesh {
             g: 0.0,
         };
 
-        for edge in starting_polygon.edges_index() {
+        for edge in starting_polygon.edges_index().iter() {
             let start = if let Some(v) = self.vertices.get(edge.0) {
                 v
             } else {
@@ -520,7 +520,7 @@ impl Mesh {
     #[inline(always)]
     fn point_in_polygon(&self, point: Vec2, polygon: &Polygon) -> bool {
         let mut edged = false;
-        for edge in polygon.edges_index() {
+        for edge in polygon.edges_index().iter() {
             if edge.0.max(edge.1) >= self.vertices.len() {
                 return false;
             }
