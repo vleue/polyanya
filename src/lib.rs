@@ -220,6 +220,9 @@ impl Mesh {
         let starting_polygon_index = self.get_point_location(from);
         let starting_polygon = self.polygons.get(starting_polygon_index)?;
         let ending_polygon = self.get_point_location(to);
+        if ending_polygon == usize::MAX {
+            return None;
+        }
 
         if starting_polygon_index == ending_polygon {
             #[cfg(feature = "stats")]
