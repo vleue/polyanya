@@ -32,11 +32,13 @@ use instance::{EdgeSide, InstanceStep};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
+#[cfg(feature = "async")]
 mod async_helpers;
 mod helpers;
 mod instance;
 mod primitives;
 
+#[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
 pub use primitives::{Polygon, Vertex};
 
@@ -214,6 +216,7 @@ impl Mesh {
     /// Compute a path between two points.
     ///
     /// This method returns a `Future`, to get the path in a blocking way use [`Self::path`].
+    #[cfg(feature = "async")]
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn get_path(&self, from: Vec2, to: Vec2) -> FuturePath {
         FuturePath {
