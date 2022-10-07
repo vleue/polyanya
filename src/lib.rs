@@ -61,7 +61,7 @@ pub struct Mesh {
     /// List of `Polygons` in this mesh
     pub polygons: Vec<Polygon>,
     /// polygons that overlap a given x index
-    baked_polygons_x: IndexMap<i32, Vec<usize>>,
+    baked_polygons_x: IndexMap<i32, Vec<u32>>,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
 }
@@ -99,7 +99,7 @@ impl Mesh {
             polygon.aabb = polygon.vertices.iter().fold(
                 (Vec2::new(f32::MAX, f32::MAX), Vec2::ZERO),
                 |mut aabb, v| {
-                    if let Some(v) = self.vertices.get(*v) {
+                    if let Some(v) = self.vertices.get(*v as usize) {
                         if v.coords.x < aabb.0.x {
                             aabb.0.x = v.coords.x;
                         }
@@ -140,7 +140,7 @@ impl Mesh {
                 if *x_index < xs.0 {
                     continue;
                 }
-                slice.push(polygon_index);
+                slice.push(polygon_index as u32);
                 if *x_index > xs.1 {
                     break;
                 }
@@ -252,11 +252,11 @@ impl Mesh {
         let start = Instant::now();
 
         let starting_polygon_index = self.get_point_location(from);
-        if starting_polygon_index == usize::MAX {
+        if starting_polygon_index == u32::MAX {
             return None;
         }
         let ending_polygon = self.get_point_location(to);
-        if ending_polygon == usize::MAX {
+        if ending_polygon == u32::MAX {
             return None;
         }
 
@@ -370,11 +370,11 @@ impl Mesh {
 
     /// Check if a given point is in a `Mesh`
     pub fn point_in_mesh(&self, point: Vec2) -> bool {
-        self.get_point_location(point) != usize::MAX
+        self.get_point_location(point) != u32::MAX
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location(&self, point: Vec2) -> usize {
+    fn get_point_location(&self, point: Vec2) -> u32 {
         let delta = 0.1;
         [
             Vec2::new(0.0, 0.0),
@@ -395,31 +395,30 @@ impl Mesh {
                 self.get_point_location_unit_baked(point + *delta)
             }
         })
-        .find(|poly| *poly != usize::MAX)
-        .unwrap_or(usize::MAX)
+        .find(|poly| *poly != u32::MAX)
+        .unwrap_or(u32::MAX)
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location_unit(&self, point: Vec2) -> usize {
+    fn get_point_location_unit(&self, point: Vec2) -> u32 {
         for (i, polygon) in self.polygons.iter().enumerate() {
             if self.point_in_polygon(point, polygon) {
-                return i;
+                return i as u32;
             }
         }
-        usize::MAX
+        u32::MAX
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location_unit_baked(&self, point: Vec2) -> usize {
+    fn get_point_location_unit_baked(&self, point: Vec2) -> u32 {
         let mut visited = HashSet::new();
-        let mut peekable = self.baked_polygons_x.iter().peekable();
-        while let Some(baked) = peekable.next() {
-            if let Some((next, _)) = peekable.peek() {
-                if **next > (point.x * PRECISION) as i32 {
-                    for i in baked.1.iter() {
-                        if visited.insert(i) && self.point_in_polygon(point, &self.polygons[*i]) {
-                            return *i;
-                        }
+        for baked in self.baked_polygons_x.iter() {
+            if *baked.0 > (point.x * PRECISION) as i32 {
+                for i in baked.1.iter() {
+                    if visited.insert(i)
+                        && self.point_in_polygon(point, &self.polygons[*i as usize])
+                    {
+                        return *i;
                     }
                 }
             }
@@ -427,7 +426,7 @@ impl Mesh {
                 break;
             }
         }
-        usize::MAX
+        u32::MAX
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
@@ -435,12 +434,18 @@ impl Mesh {
     fn point_in_polygon(&self, point: Vec2, polygon: &Polygon) -> bool {
         let mut edged = false;
         for edge in polygon.edges_index().iter() {
-            if edge.0.max(edge.1) >= self.vertices.len() {
+            if edge.0.max(edge.1) as usize >= self.vertices.len() {
                 return false;
             }
             edged = true;
-            let last = self.vertices[edge.0].coords;
-            let next = self.vertices[edge.1].coords;
+            // Bounds are checked just before
+            #[allow(unsafe_code)]
+            let (last, next) = unsafe {
+                (
+                    self.vertices.get_unchecked(edge.0 as usize).coords,
+                    self.vertices.get_unchecked(edge.1 as usize).coords,
+                )
+            };
 
             let current_side = point.side((last, next));
             if current_side == EdgeSide::Edge && point.on_segment((last, next)) {
@@ -462,7 +467,7 @@ struct SearchNode {
     path: Vec<Vec2>,
     root: Vec2,
     interval: (Vec2, Vec2),
-    edge: (usize, usize),
+    edge: (u32, u32),
     polygon_from: isize,
     polygon_to: isize,
     f: f32,
@@ -555,7 +560,7 @@ mod tests {
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), 0);
         assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)), 1);
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 1.5)), 3);
-        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 1.5)), usize::MAX);
+        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 1.5)), u32::MAX);
         assert_eq!(mesh.get_point_location(Vec2::new(2.5, 1.5)), 4);
     }
 

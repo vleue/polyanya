@@ -32,7 +32,7 @@ enum SuccessorType {
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub(crate) struct Successor {
     interval: (Vec2, Vec2),
-    edge: (usize, usize),
+    edge: (u32, u32),
     ty: SuccessorType,
 }
 
@@ -47,15 +47,15 @@ pub(crate) struct SearchInstance<'m> {
     #[cfg(feature = "stats")]
     pub(crate) start: Instant,
     #[cfg(feature = "stats")]
-    pub(crate) pushed: usize,
+    pub(crate) pushed: u32,
     #[cfg(feature = "stats")]
-    pub(crate) popped: usize,
+    pub(crate) popped: u32,
     #[cfg(feature = "stats")]
-    pub(crate) successors_called: usize,
+    pub(crate) successors_called: u32,
     #[cfg(feature = "stats")]
-    pub(crate) nodes_generated: usize,
+    pub(crate) nodes_generated: u32,
     #[cfg(feature = "stats")]
-    pub(crate) nodes_pruned_post_pop: usize,
+    pub(crate) nodes_pruned_post_pop: u32,
     #[cfg(debug_assertions)]
     pub(crate) debug: bool,
     #[cfg(debug_assertions)]
@@ -71,11 +71,11 @@ pub(crate) enum InstanceStep {
 impl<'m> SearchInstance<'m> {
     pub(crate) fn setup(
         mesh: &'m Mesh,
-        from: (Vec2, usize),
-        to: (Vec2, usize),
+        from: (Vec2, u32),
+        to: (Vec2, u32),
         #[cfg(feature = "stats")] start: Instant,
     ) -> Self {
-        let starting_polygon = &mesh.polygons[from.1];
+        let starting_polygon = &mesh.polygons[from.1 as usize];
 
         let mut search_instance = SearchInstance {
             queue: BinaryHeap::with_capacity(15),
@@ -116,22 +116,21 @@ impl<'m> SearchInstance<'m> {
         };
 
         for edge in starting_polygon.edges_index().iter() {
-            let start = if let Some(v) = mesh.vertices.get(edge.0) {
+            let start = if let Some(v) = mesh.vertices.get(edge.0 as usize) {
                 v
             } else {
                 continue;
             };
-            let end = if let Some(v) = mesh.vertices.get(edge.1) {
+            let end = if let Some(v) = mesh.vertices.get(edge.1 as usize) {
                 v
             } else {
                 continue;
             };
-            let mut other_side = isize::MAX;
-            for i in &start.polygons {
-                if *i != -1 && *i != from.1 as isize && end.polygons.contains(i) {
-                    other_side = *i;
-                }
-            }
+            let other_side = *start
+                .polygons
+                .iter()
+                .find(|i| **i != -1 && **i != from.1 as isize && end.polygons.contains(*i))
+                .unwrap_or(&isize::MAX);
 
             if other_side == to.1 as isize
                 || (other_side != isize::MAX
@@ -263,14 +262,17 @@ impl<'m> SearchInstance<'m> {
 
         let mut ty = SuccessorType::RightNonObservable;
         for edge in &polygon.double_edges_index()[right_index..=left_index] {
-            if edge.0.max(edge.1) > self.mesh.vertices.len() {
+            if edge.0.max(edge.1) as usize > self.mesh.vertices.len() {
                 continue;
             }
             // Bounds are checked just before
             #[allow(unsafe_code)]
-            let start = unsafe { self.mesh.vertices.get_unchecked(edge.0) };
-            #[allow(unsafe_code)]
-            let end = unsafe { self.mesh.vertices.get_unchecked(edge.1) };
+            let (start, end) = unsafe {
+                (
+                    self.mesh.vertices.get_unchecked(edge.0 as usize),
+                    self.mesh.vertices.get_unchecked(edge.1 as usize),
+                )
+            };
             let mut start_point = start.coords;
             let end_point = end.coords;
 
@@ -289,7 +291,6 @@ impl<'m> SearchInstance<'m> {
                 );
             }
 
-            let end_root_int1 = end_point.side((node.root, node.interval.1));
             match start_point.side((node.root, node.interval.0)) {
                 EdgeSide::Right => {
                     if let Some(intersect) = line_intersect_segment(
@@ -339,6 +340,8 @@ impl<'m> SearchInstance<'m> {
             }
             let mut end_intersection_p = None;
             let mut found_intersection = false;
+            let end_root_int1 = end_point.side((node.root, node.interval.1));
+
             if end_root_int1 == EdgeSide::Left {
                 if let Some(intersect) =
                     line_intersect_segment((node.root, node.interval.1), (start_point, end_point))
@@ -401,8 +404,8 @@ impl<'m> SearchInstance<'m> {
         &mut self,
         root: Vec2,
         other_side: isize,
-        start: (Vec2, usize),
-        end: (Vec2, usize),
+        start: (Vec2, u32),
+        end: (Vec2, u32),
         node: &SearchNode,
     ) {
         #[cfg(feature = "stats")]
@@ -499,21 +502,25 @@ impl<'m> SearchInstance<'m> {
                 self.fail_fast = 3;
             }
             for successor in self.edges_between(&node).iter() {
-                let start = self.mesh.vertices.get(successor.edge.0).unwrap();
-                let end = self.mesh.vertices.get(successor.edge.1).unwrap();
+                // we know they exist, it's checked in `edges_between`
+                #[allow(unsafe_code)]
+                let (start, end) = unsafe {
+                    (
+                        self.mesh.vertices.get_unchecked(successor.edge.0 as usize),
+                        self.mesh.vertices.get_unchecked(successor.edge.1 as usize),
+                    )
+                };
 
                 #[cfg(debug_assertions)]
                 if self.debug {
                     println!("v {:?}", successor);
                 }
 
-                let mut other_side = isize::MAX;
-                // find the polygon at the other side of this edge
-                for i in &start.polygons {
-                    if *i != -1 && *i != node.polygon_to && end.polygons.contains(i) {
-                        other_side = *i;
-                    }
-                }
+                let other_side = *start
+                    .polygons
+                    .iter()
+                    .find(|i| **i != -1 && **i != node.polygon_to && end.polygons.contains(*i))
+                    .unwrap_or(&isize::MAX);
 
                 #[cfg(debug_assertions)]
                 if self.debug {
@@ -557,7 +564,7 @@ impl<'m> SearchInstance<'m> {
                             }
                             continue;
                         }
-                        let vertex = self.mesh.vertices.get(node.edge.0).unwrap();
+                        let vertex = self.mesh.vertices.get(node.edge.0 as usize).unwrap();
                         if vertex.is_corner
                             && vertex.coords.distance_squared(node.interval.0) < EPSILON
                         {
@@ -579,7 +586,7 @@ impl<'m> SearchInstance<'m> {
                             }
                             continue;
                         }
-                        let vertex = self.mesh.vertices.get(node.edge.1).unwrap();
+                        let vertex = self.mesh.vertices.get(node.edge.1 as usize).unwrap();
                         if vertex.is_corner
                             && vertex.coords.distance_squared(node.interval.1) < EPSILON
                         {

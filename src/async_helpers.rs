@@ -49,11 +49,11 @@ impl<'m> Future for FuturePath<'m> {
             let start = Instant::now();
 
             let starting_polygon_index = self.mesh.get_point_location(self.from);
-            if starting_polygon_index == usize::MAX {
+            if starting_polygon_index == u32::MAX {
                 return Poll::Ready(None);
             }
             let ending_polygon = self.mesh.get_point_location(self.to);
-            if ending_polygon == usize::MAX {
+            if ending_polygon == u32::MAX {
                 return Poll::Ready(None);
             }
 
