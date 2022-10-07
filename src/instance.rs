@@ -126,12 +126,11 @@ impl<'m> SearchInstance<'m> {
             } else {
                 continue;
             };
-            let mut other_side = isize::MAX;
-            for i in &start.polygons {
-                if *i != -1 && *i != from.1 as isize && end.polygons.contains(i) {
-                    other_side = *i;
-                }
-            }
+            let other_side = *start
+                .polygons
+                .iter()
+                .find(|i| **i != -1 && **i != from.1 as isize && end.polygons.contains(*i))
+                .unwrap_or(&isize::MAX);
 
             if other_side == to.1 as isize
                 || (other_side != isize::MAX
@@ -507,13 +506,11 @@ impl<'m> SearchInstance<'m> {
                     println!("v {:?}", successor);
                 }
 
-                let mut other_side = isize::MAX;
-                // find the polygon at the other side of this edge
-                for i in &start.polygons {
-                    if *i != -1 && *i != node.polygon_to && end.polygons.contains(i) {
-                        other_side = *i;
-                    }
-                }
+                let other_side = *start
+                    .polygons
+                    .iter()
+                    .find(|i| **i != -1 && **i != node.polygon_to && end.polygons.contains(*i))
+                    .unwrap_or(&isize::MAX);
 
                 #[cfg(debug_assertions)]
                 if self.debug {
