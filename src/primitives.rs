@@ -31,7 +31,7 @@ impl Vertex {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Polygon {
     /// List of vertex making this polygon, in counter clockwise order.
-    pub vertices: Vec<usize>,
+    pub vertices: Vec<u32>,
     /// A one way polygon is a polygon that has only one neighbour. This is used to speed up
     /// path finding, but not mandatory.
     pub is_one_way: bool,
@@ -49,7 +49,7 @@ impl Polygon {
     };
 
     /// Creates a new `Polygon`.
-    pub fn new(vertices: Vec<usize>, is_one_way: bool) -> Polygon {
+    pub fn new(vertices: Vec<u32>, is_one_way: bool) -> Polygon {
         Polygon {
             vertices,
             is_one_way,
@@ -60,7 +60,7 @@ impl Polygon {
     pub(crate) fn using(nb: usize, data: Vec<isize>) -> Self {
         assert!(data.len() == nb * 2);
         let (vertices, neighbours) = data.split_at(nb);
-        let vertices = vertices.iter().copied().map(|v| v as usize).collect();
+        let vertices = vertices.iter().copied().map(|v| v as u32).collect();
         let neighbours = neighbours.to_vec();
         let mut found_trav = false;
         let mut is_one_way = true;
@@ -83,11 +83,8 @@ impl Polygon {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub(crate) fn edges_index(&self) -> SmallVec<[(usize, usize); 10]> {
-        let mut edges = SmallVec::new();
-        if self.vertices.is_empty() {
-            return smallvec![];
-        }
+    pub(crate) fn edges_index(&self) -> SmallVec<[(u32, u32); 10]> {
+        let mut edges = SmallVec::with_capacity(self.vertices.len());
         let mut last = self.vertices[0];
         for vertex in self.vertices.iter().skip(1) {
             edges.push((last, *vertex));
@@ -99,20 +96,16 @@ impl Polygon {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub(crate) fn double_edges_index(&self) -> SmallVec<[(usize, usize); 20]> {
-        let mut edges = SmallVec::new();
+    pub(crate) fn double_edges_index(&self) -> SmallVec<[(u32, u32); 20]> {
+        let mut edges = smallvec![(u32::MAX, u32::MAX); self.vertices.len() * 2];
         let mut last = self.vertices[0];
-        for vertex in self.vertices.iter().skip(1) {
-            edges.push((last, *vertex));
+        for (i, vertex) in self.vertices.iter().skip(1).enumerate() {
+            edges[i] = (last, *vertex);
+            edges[i + self.vertices.len()] = (last, *vertex);
             last = *vertex;
         }
-        edges.push((last, self.vertices[0]));
-        let mut last = self.vertices[0];
-        for vertex in self.vertices.iter().skip(1) {
-            edges.push((last, *vertex));
-            last = *vertex;
-        }
-        edges.push((last, self.vertices[0]));
+        edges[self.vertices.len() - 1] = (last, self.vertices[0]);
+        edges[self.vertices.len() * 2 - 1] = (last, self.vertices[0]);
         edges
     }
 }
