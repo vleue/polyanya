@@ -438,8 +438,14 @@ impl Mesh {
                 return false;
             }
             edged = true;
-            let last = self.vertices[edge.0].coords;
-            let next = self.vertices[edge.1].coords;
+            // Bounds are checked just before
+            #[allow(unsafe_code)]
+            let (last, next) = unsafe {
+                (
+                    self.vertices.get_unchecked(edge.0 as usize).coords,
+                    self.vertices.get_unchecked(edge.1 as usize).coords,
+                )
+            };
 
             let current_side = point.side((last, next));
             if current_side == EdgeSide::Edge && point.on_segment((last, next)) {

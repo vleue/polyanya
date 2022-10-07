@@ -267,9 +267,12 @@ impl<'m> SearchInstance<'m> {
             }
             // Bounds are checked just before
             #[allow(unsafe_code)]
-            let start = unsafe { self.mesh.vertices.get_unchecked(edge.0) };
-            #[allow(unsafe_code)]
-            let end = unsafe { self.mesh.vertices.get_unchecked(edge.1) };
+            let (start, end) = unsafe {
+                (
+                    self.mesh.vertices.get_unchecked(edge.0 as usize),
+                    self.mesh.vertices.get_unchecked(edge.1 as usize),
+                )
+            };
             let mut start_point = start.coords;
             let end_point = end.coords;
 
@@ -498,8 +501,14 @@ impl<'m> SearchInstance<'m> {
                 self.fail_fast = 3;
             }
             for successor in self.edges_between(&node).iter() {
-                let start = self.mesh.vertices.get(successor.edge.0).unwrap();
-                let end = self.mesh.vertices.get(successor.edge.1).unwrap();
+                // we know they exist, it's checked in `edges_between`
+                #[allow(unsafe_code)]
+                let (start, end) = unsafe {
+                    (
+                        self.mesh.vertices.get_unchecked(successor.edge.0 as usize),
+                        self.mesh.vertices.get_unchecked(successor.edge.1 as usize),
+                    )
+                };
 
                 #[cfg(debug_assertions)]
                 if self.debug {
