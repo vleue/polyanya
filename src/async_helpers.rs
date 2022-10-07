@@ -1,3 +1,5 @@
+#[cfg(feature = "stats")]
+use std::time::Instant;
 use std::{fmt, future::Future, task::Poll};
 
 use glam::Vec2;
@@ -60,18 +62,18 @@ impl<'m> Future for FuturePath<'m> {
             if starting_polygon_index == ending_polygon {
                 #[cfg(feature = "stats")]
                 {
-                    if self.scenarios.get() == 0 {
+                    if self.mesh.scenarios.get() == 0 {
                         eprintln!(
                         "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
                     );
                     }
                     eprintln!(
                         "{};{};0;0;0;0;0;{}",
-                        self.scenarios.get(),
+                        self.mesh.scenarios.get(),
                         start.elapsed().as_secs_f32() * 1_000_000.0,
-                        from.distance(to),
+                        self.from.distance(self.to),
                     );
-                    self.scenarios.set(self.scenarios.get() + 1);
+                    self.mesh.scenarios.set(self.mesh.scenarios.get() + 1);
                 }
                 return Poll::Ready(Some(Path {
                     length: self.from.distance(self.to),

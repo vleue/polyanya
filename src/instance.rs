@@ -47,7 +47,7 @@ pub(crate) struct SearchInstance<'m> {
     #[cfg(feature = "stats")]
     pub(crate) start: Instant,
     #[cfg(feature = "stats")]
-    pub(crate) pushed: u32,
+    pub(crate) pushed: usize,
     #[cfg(feature = "stats")]
     pub(crate) popped: u32,
     #[cfg(feature = "stats")]
@@ -160,7 +160,7 @@ impl<'m> SearchInstance<'m> {
             println!("popped off: {}", next);
             #[cfg(feature = "stats")]
             {
-                search_instance.popped += 1;
+                self.popped += 1;
             }
 
             if let Some(o) = self.root_history.get(&Root(next.root)) {
@@ -169,7 +169,7 @@ impl<'m> SearchInstance<'m> {
                     println!("node is dominated!");
                     #[cfg(feature = "stats")]
                     {
-                        search_instance.nodes_pruned_post_pop += 1;
+                        self.nodes_pruned_post_pop += 1;
                     }
 
                     return InstanceStep::Continue;
@@ -179,23 +179,23 @@ impl<'m> SearchInstance<'m> {
             if next.polygon_to == self.polygon_to {
                 #[cfg(feature = "stats")]
                 {
-                    if self.scenarios.get() == 0 {
+                    if self.mesh.scenarios.get() == 0 {
                         eprintln!(
                         "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
                     );
                     }
                     eprintln!(
                         "{};{};{};{};{};{};{};{}",
-                        self.scenarios.get(),
-                        search_instance.start.elapsed().as_secs_f32() * 1_000_000.0,
-                        search_instance.successors_called,
-                        search_instance.nodes_generated,
-                        search_instance.pushed,
-                        search_instance.popped,
-                        search_instance.nodes_pruned_post_pop,
+                        self.mesh.scenarios.get(),
+                        self.start.elapsed().as_secs_f32() * 1_000_000.0,
+                        self.successors_called,
+                        self.nodes_generated,
+                        self.pushed,
+                        self.popped,
+                        self.nodes_pruned_post_pop,
                         next.f + next.g,
                     );
-                    self.scenarios.set(self.scenarios.get() + 1);
+                    self.mesh.scenarios.set(self.mesh.scenarios.get() + 1);
                 }
                 let mut path = next
                     .path
@@ -224,10 +224,7 @@ impl<'m> SearchInstance<'m> {
         #[cfg(feature = "stats")]
         eprintln!(
             "{:?} / {:?} / {:?} / {:?}",
-            search_instance.successors_called,
-            search_instance.nodes_generated,
-            search_instance.pushed,
-            search_instance.popped
+            self.successors_called, self.nodes_generated, self.pushed, self.popped
         );
         InstanceStep::NotFound
     }
