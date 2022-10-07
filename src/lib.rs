@@ -412,14 +412,13 @@ impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location_unit_baked(&self, point: Vec2) -> usize {
         let mut visited = HashSet::new();
-        let mut peekable = self.baked_polygons_x.iter().peekable();
-        while let Some(baked) = peekable.next() {
-            if let Some((next, _)) = peekable.peek() {
-                if **next > (point.x * PRECISION) as i32 {
-                    for i in baked.1.iter() {
-                        if visited.insert(i) && self.point_in_polygon(point, &self.polygons[*i]) {
-                            return *i;
-                        }
+        for baked in self.baked_polygons_x.iter() {
+            if *baked.0 > (point.x * PRECISION) as i32 {
+                for i in baked.1.iter() {
+                    if visited.insert(i)
+                        && self.point_in_polygon(point, &self.polygons[*i as usize])
+                    {
+                        return *i;
                     }
                 }
             }
