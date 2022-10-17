@@ -1,4 +1,6 @@
-use smallvec::{smallvec, SmallVec};
+use std::ops::RangeInclusive;
+
+use smallvec::SmallVec;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -94,9 +96,9 @@ impl Polygon {
         edges
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    #[inline(always)]
+    #[cfg(test)]
     pub(crate) fn double_edges_index(&self) -> SmallVec<[(u32, u32); 20]> {
+        use smallvec::smallvec;
         let mut edges = smallvec![(u32::MAX, u32::MAX); self.vertices.len() * 2];
         let mut last = self.vertices[0];
         for (i, vertex) in self.vertices.iter().skip(1).enumerate() {
@@ -107,5 +109,65 @@ impl Polygon {
         edges[self.vertices.len() - 1] = (last, self.vertices[0]);
         edges[self.vertices.len() * 2 - 1] = (last, self.vertices[0]);
         edges
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
+    pub(crate) fn circular_edges_index(
+        &self,
+        bounds: RangeInclusive<usize>,
+    ) -> SmallVec<[(u32, u32); 10]> {
+        let mut edges = SmallVec::with_capacity(self.vertices.len());
+        if *bounds.start() < self.vertices.len() {
+            let mut last = self.vertices[*bounds.start() % self.vertices.len()];
+            for vertex in self.vertices.iter().skip(1 + bounds.start()) {
+                edges.push((last, *vertex));
+                last = *vertex;
+            }
+            edges.push((last, self.vertices[0]));
+        }
+        if *bounds.end() + 1 > self.vertices.len() {
+            let start = bounds.start().saturating_sub(self.vertices.len());
+            let mut last = self.vertices[0.max(start)];
+            for vertex in self.vertices.iter().skip(0.max(start) + 1).take(
+                bounds
+                    .end()
+                    .saturating_sub(self.vertices.len().max(*bounds.start())),
+            ) {
+                edges.push((last, *vertex));
+                last = *vertex;
+            }
+            edges.push((
+                last,
+                self.vertices[(*bounds.end() + 1) % self.vertices.len()],
+            ));
+        }
+
+        edges
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::Polygon;
+    use glam::Vec2;
+
+    #[test]
+    fn edges_between() {
+        let polygon = Polygon {
+            vertices: vec![0, 1, 2, 3],
+            is_one_way: false,
+            aabb: (Vec2::ZERO, Vec2::ONE),
+        };
+
+        for start in 0..6 {
+            for end in (start.max(2) + 1)..8 {
+                eprintln!("{} -> {}", start, end);
+                assert_eq!(
+                    polygon.double_edges_index()[start..=end],
+                    polygon.circular_edges_index(start..=end)[..]
+                );
+            }
+        }
     }
 }

@@ -258,7 +258,7 @@ impl<'m> SearchInstance<'m> {
         let left_index = polygon.vertices.len() + right_index - 2;
 
         let mut ty = SuccessorType::RightNonObservable;
-        for edge in &polygon.double_edges_index()[right_index..=left_index] {
+        for edge in &polygon.circular_edges_index(right_index..=left_index) {
             if edge.0.max(edge.1) as usize > self.mesh.vertices.len() {
                 continue;
             }
