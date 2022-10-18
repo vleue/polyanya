@@ -30,7 +30,7 @@ impl Vertex {
 }
 
 /// A polygon in the navigation mesh.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Polygon {
     /// List of vertex making this polygon, in counter clockwise order.
     pub vertices: Vec<u32>,

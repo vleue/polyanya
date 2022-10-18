@@ -397,13 +397,12 @@ impl Mesh {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location_unit_baked<'a>(&'a self, point: Vec2) -> u32 {
+    fn get_point_location_unit_baked(&self, point: Vec2) -> u32 {
         self.baked_polygons
             .as_ref()
             .unwrap()
             .contains_iterator(&point)
-            .filter(|index| self.point_in_polygon(point, &self.polygons[*index]))
-            .next()
+            .find(|index| self.point_in_polygon(point, &self.polygons[*index]))
             .map(|index| index as u32)
             .unwrap_or(u32::MAX)
     }
