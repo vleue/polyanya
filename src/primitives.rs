@@ -37,7 +37,6 @@ pub struct Polygon {
     /// A one way polygon is a polygon that has only one neighbour. This is used to speed up
     /// path finding, but not mandatory.
     pub is_one_way: bool,
-    pub(crate) aabb: (Vec2, Vec2),
 }
 
 impl Polygon {
@@ -47,7 +46,6 @@ impl Polygon {
     pub const EMPTY: Polygon = Polygon {
         vertices: vec![],
         is_one_way: false,
-        aabb: (Vec2::ZERO, Vec2::ZERO),
     };
 
     /// Creates a new `Polygon`.
@@ -55,7 +53,6 @@ impl Polygon {
         Polygon {
             vertices,
             is_one_way,
-            aabb: (Vec2::ZERO, Vec2::ZERO),
         }
     }
 
@@ -79,7 +76,6 @@ impl Polygon {
         Polygon {
             vertices,
             is_one_way,
-            aabb: (Vec2::ZERO, Vec2::ZERO),
         }
     }
 
@@ -150,14 +146,12 @@ impl Polygon {
 #[cfg(test)]
 mod tests {
     use crate::Polygon;
-    use glam::Vec2;
 
     #[test]
     fn edges_between() {
         let polygon = Polygon {
             vertices: vec![0, 1, 2, 3],
             is_one_way: false,
-            aabb: (Vec2::ZERO, Vec2::ONE),
         };
 
         for start in 0..6 {
