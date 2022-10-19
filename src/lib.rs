@@ -17,17 +17,19 @@ const PRECISION: f32 = 1000.0;
 use std::{cell::Cell, time::Instant};
 use std::{
     cmp::Ordering,
-    fmt::{self, Display},
+    fmt::{self, Debug, Display},
     hash::Hash,
     io,
     io::{BufRead, Read},
 };
 
+use bvh2d::{
+    aabb::{Bounded, AABB},
+    bvh2d::BVH2d,
+};
 use glam::Vec2;
-use hashbrown::HashSet;
 
 use helpers::Vec2Helper;
-use indexmap::IndexMap;
 use instance::{EdgeSide, InstanceStep};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -60,8 +62,7 @@ pub struct Mesh {
     pub vertices: Vec<Vertex>,
     /// List of `Polygons` in this mesh
     pub polygons: Vec<Polygon>,
-    /// polygons that overlap a given x index
-    baked_polygons_x: IndexMap<i32, Vec<u32>>,
+    baked_polygons: Option<BVH2d>,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
 }
@@ -86,66 +87,52 @@ impl Hash for Root {
     }
 }
 
+struct BoundedPolygon {
+    aabb: (Vec2, Vec2),
+}
+
+impl Bounded for BoundedPolygon {
+    fn aabb(&self) -> AABB {
+        AABB::with_bounds(self.aabb.0, self.aabb.1)
+    }
+}
+
 impl Mesh {
     /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
     pub fn unbake(&mut self) {
-        self.baked_polygons_x.clear();
+        self.baked_polygons = None;
     }
 
     /// Pre-compute optimizations on the mesh
     pub fn bake(&mut self) {
-        // compute the axis aligned bounding box for each polygon
-        for polygon in &mut self.polygons {
-            polygon.aabb = polygon.vertices.iter().fold(
-                (Vec2::new(f32::MAX, f32::MAX), Vec2::ZERO),
-                |mut aabb, v| {
-                    if let Some(v) = self.vertices.get(*v as usize) {
-                        if v.coords.x < aabb.0.x {
-                            aabb.0.x = v.coords.x;
-                        }
-                        if v.coords.y < aabb.0.y {
-                            aabb.0.y = v.coords.y;
-                        }
-                        if v.coords.x > aabb.1.x {
-                            aabb.1.x = v.coords.x;
-                        }
-                        if v.coords.y > aabb.1.y {
-                            aabb.1.y = v.coords.y;
-                        }
-                    }
-                    aabb
-                },
-            );
-        }
-
-        self.baked_polygons_x = self
-            .vertices
-            .iter()
-            .map(|v| ((v.coords.x * PRECISION) as i32, vec![]))
-            .collect();
-        self.baked_polygons_x.sort_unstable_keys();
-
-        for (polygon_index, xs) in self
+        let bounded_polygons = self
             .polygons
-            .iter()
-            .map(|p| {
-                (
-                    (p.aabb.0.x * PRECISION) as i32,
-                    (p.aabb.1.x * PRECISION) as i32,
-                )
+            .iter_mut()
+            .map(|polygon| BoundedPolygon {
+                aabb: polygon.vertices.iter().fold(
+                    (Vec2::new(f32::MAX, f32::MAX), Vec2::ZERO),
+                    |mut aabb, v| {
+                        if let Some(v) = self.vertices.get(*v as usize) {
+                            if v.coords.x < aabb.0.x {
+                                aabb.0.x = v.coords.x;
+                            }
+                            if v.coords.y < aabb.0.y {
+                                aabb.0.y = v.coords.y;
+                            }
+                            if v.coords.x > aabb.1.x {
+                                aabb.1.x = v.coords.x;
+                            }
+                            if v.coords.y > aabb.1.y {
+                                aabb.1.y = v.coords.y;
+                            }
+                        }
+                        aabb
+                    },
+                ),
             })
-            .enumerate()
-        {
-            for (x_index, slice) in &mut self.baked_polygons_x {
-                if *x_index < xs.0 {
-                    continue;
-                }
-                slice.push(polygon_index as u32);
-                if *x_index > xs.1 {
-                    break;
-                }
-            }
-        }
+            .collect::<Vec<_>>();
+
+        self.baked_polygons = Some(BVH2d::build(&bounded_polygons));
     }
 
     /// Create a `Mesh` from a list of [`Vertex`] and [`Polygon`].
@@ -153,7 +140,7 @@ impl Mesh {
         let mut mesh = Mesh {
             vertices,
             polygons,
-            baked_polygons_x: IndexMap::default(),
+            baked_polygons: None,
             #[cfg(feature = "stats")]
             scenarios: Cell::new(0),
         };
@@ -389,7 +376,7 @@ impl Mesh {
         ]
         .iter()
         .map(|delta| {
-            if self.baked_polygons_x.is_empty() {
+            if self.baked_polygons.is_none() {
                 self.get_point_location_unit(point + *delta)
             } else {
                 self.get_point_location_unit_baked(point + *delta)
@@ -411,22 +398,13 @@ impl Mesh {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location_unit_baked(&self, point: Vec2) -> u32 {
-        let mut visited = HashSet::new();
-        for baked in self.baked_polygons_x.iter() {
-            if *baked.0 > (point.x * PRECISION) as i32 {
-                for i in baked.1.iter() {
-                    if visited.insert(i)
-                        && self.point_in_polygon(point, &self.polygons[*i as usize])
-                    {
-                        return *i;
-                    }
-                }
-            }
-            if *baked.0 > (point.x * PRECISION) as i32 {
-                break;
-            }
-        }
-        u32::MAX
+        self.baked_polygons
+            .as_ref()
+            .unwrap()
+            .contains_iterator(&point)
+            .find(|index| self.point_in_polygon(point, &self.polygons[*index]))
+            .map(|index| index as u32)
+            .unwrap_or(u32::MAX)
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
@@ -521,7 +499,6 @@ mod tests {
     }
 
     use glam::Vec2;
-    use indexmap::IndexMap;
 
     use crate::{helpers::*, Mesh, Path, Polygon, SearchNode, Vertex};
 
@@ -548,7 +525,7 @@ mod tests {
                 Polygon::new(vec![4, 5, 9, 8], true),
                 Polygon::new(vec![6, 7, 11, 10], true),
             ],
-            baked_polygons_x: IndexMap::default(),
+            baked_polygons: None,
             #[cfg(feature = "stats")]
             scenarios: std::cell::Cell::new(0),
         }
@@ -556,7 +533,8 @@ mod tests {
 
     #[test]
     fn point_in_polygon() {
-        let mesh = mesh_u_grid();
+        let mut mesh = mesh_u_grid();
+        mesh.bake();
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), 0);
         assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)), 1);
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 1.5)), 3);
@@ -768,10 +746,21 @@ mod tests {
                 Polygon::new(vec![15, 18, 19, 16], true),
                 Polygon::new(vec![11, 17, 20, 21], true),
             ],
-            baked_polygons_x: IndexMap::default(),
+            baked_polygons: None,
             #[cfg(feature = "stats")]
             scenarios: std::cell::Cell::new(0),
         }
+    }
+
+    #[test]
+    fn paper_point_in_polygon() {
+        let mut mesh = mesh_from_paper();
+        mesh.bake();
+        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), u32::MAX);
+        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 6.0)), 0);
+        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 5.1)), 0);
+        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 1.5)), 1);
+        assert_eq!(mesh.get_point_location(Vec2::new(4.0, 2.1)), 2);
     }
 
     #[test]
