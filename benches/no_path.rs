@@ -2,7 +2,7 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use glam::Vec2;
 use polyanya::Mesh;
 
-fn get_path(c: &mut Criterion) {
+fn no_path(c: &mut Criterion) {
     let mesh = Mesh::from_file("meshes/aurora-merged.mesh".into());
 
     [
@@ -15,7 +15,7 @@ fn get_path(c: &mut Criterion) {
     ]
     .iter()
     .for_each(|(from, to)| {
-        c.bench_function(&format!("get path {:?}-{:?}", from, to), |b| {
+        c.bench_function(&format!("no path {:?}-{:?}", from, to), |b| {
             b.iter(|| {
                 assert_eq!(black_box(mesh.path(*from, *to)), None);
             })
@@ -23,5 +23,5 @@ fn get_path(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, get_path);
+criterion_group!(benches, no_path);
 criterion_main!(benches);
