@@ -16,6 +16,7 @@ default = ["async"]
 stats = []
 verbose = []
 async = []
+no-default-baking = []
 
 [dependencies]
 tracing = { version = "0.1", optional = true }
