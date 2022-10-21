@@ -100,6 +100,7 @@ impl Bounded for BoundedPolygon {
 
 impl Mesh {
     /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
+    #[inline]
     pub fn unbake(&mut self) {
         self.baked_polygons = None;
         self.islands = None;
@@ -191,7 +192,11 @@ impl Mesh {
             #[cfg(feature = "stats")]
             scenarios: Cell::new(0),
         };
+        #[cfg(not(feature = "no-default-baking"))]
         mesh.bake();
+        // just to not get a warning on the mut borrow. should be pretty much free anyway
+        #[cfg(feature = "no-default-baking")]
+        mesh.unbake();
         mesh
     }
 
@@ -255,6 +260,7 @@ impl Mesh {
                 }
             }
         }
+        #[cfg(not(feature = "no-default-baking"))]
         mesh.bake();
         mesh
     }
