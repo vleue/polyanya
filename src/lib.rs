@@ -63,6 +63,7 @@ pub struct Mesh {
     /// List of `Polygons` in this mesh
     pub polygons: Vec<Polygon>,
     baked_polygons: Option<BVH2d>,
+    islands: Option<Vec<usize>>,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
 }
@@ -101,10 +102,55 @@ impl Mesh {
     /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
     pub fn unbake(&mut self) {
         self.baked_polygons = None;
+        self.islands = None;
     }
 
     /// Pre-compute optimizations on the mesh
+    ///
+    /// Optimisations available are:
+    /// - [`Self::bake_polygon_finder`]
+    /// - [`Self::bake_islands_detection`]
     pub fn bake(&mut self) {
+        self.bake_polygon_finder();
+        self.bake_islands_detection()
+    }
+
+    /// Speed up bailing out if two points are not reachable.
+    ///
+    /// This is useful if there are isolated zones in the mesh, and you need to check for a path
+    /// between them.
+    pub fn bake_islands_detection(&mut self) {
+        let mut islands = vec![usize::MAX; self.polygons.len()];
+        while let Some((root, _)) = islands
+            .iter()
+            .enumerate()
+            .find(|(_, island)| **island == usize::MAX)
+        {
+            let mut to_visit = Vec::new();
+            to_visit.push(root);
+            while let Some(next) = to_visit.pop() {
+                if islands[next] == usize::MAX {
+                    let polygon = &mut self.polygons[next];
+                    islands[next] = root;
+                    to_visit.extend(
+                        polygon
+                            .vertices
+                            .iter()
+                            .flat_map(|v| self.vertices[*v as usize].polygons.iter())
+                            .filter_map(|i| if *i != -1 { Some(*i as usize) } else { None }),
+                    );
+                }
+            }
+        }
+        self.islands = Some(islands);
+    }
+
+    /// Speed up finding which polygon, if any, contains a point in the mesh.
+    ///
+    /// Uses a BVH. This is useful at the start of the pathfinding, to get the containing polygons
+    /// for the start and end point. It can also be used through [`Self::point_in_mesh`] to check
+    /// if a point is in the mesh.
+    pub fn bake_polygon_finder(&mut self) {
         let bounded_polygons = self
             .polygons
             .iter_mut()
@@ -141,6 +187,7 @@ impl Mesh {
             vertices,
             polygons,
             baked_polygons: None,
+            islands: None,
             #[cfg(feature = "stats")]
             scenarios: Cell::new(0),
         };
@@ -245,6 +292,13 @@ impl Mesh {
         let ending_polygon = self.get_point_location(to);
         if ending_polygon == u32::MAX {
             return None;
+        }
+        if let Some(islands) = self.islands.as_ref() {
+            let start_island = islands.get(starting_polygon_index as usize);
+            let end_island = islands.get(ending_polygon as usize);
+            if start_island.is_some() && end_island.is_some() && start_island != end_island {
+                return None;
+            }
         }
 
         if starting_polygon_index == ending_polygon {
@@ -526,6 +580,7 @@ mod tests {
                 Polygon::new(vec![6, 7, 11, 10], true),
             ],
             baked_polygons: None,
+            islands: None,
             #[cfg(feature = "stats")]
             scenarios: std::cell::Cell::new(0),
         }
@@ -747,6 +802,7 @@ mod tests {
                 Polygon::new(vec![11, 17, 20, 21], true),
             ],
             baked_polygons: None,
+            islands: None,
             #[cfg(feature = "stats")]
             scenarios: std::cell::Cell::new(0),
         }

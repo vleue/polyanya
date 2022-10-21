@@ -58,6 +58,13 @@ impl<'m> Future for FuturePath<'m> {
             if ending_polygon == u32::MAX {
                 return Poll::Ready(None);
             }
+            if let Some(islands) = self.mesh.islands.as_ref() {
+                let start_island = islands.get(starting_polygon_index as usize);
+                let end_island = islands.get(ending_polygon as usize);
+                if start_island.is_some() && end_island.is_some() && start_island != end_island {
+                    return Poll::Ready(None);
+                }
+            }
 
             if starting_polygon_index == ending_polygon {
                 #[cfg(feature = "stats")]
