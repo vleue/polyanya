@@ -20,10 +20,10 @@ no-default-baking = []
 
 [dependencies]
 tracing = { version = "0.1", optional = true }
-hashbrown = { version = "0.12" }
-glam = { version = "0.21.3", features = ["approx"] }
+hashbrown = { version = "0.13" }
+glam = { version = "0.22", features = ["approx"] }
 smallvec = { version = "1.9", features = ["union", "const_generics"] }
-bvh2d = "0.1"
+bvh2d = "0.2"
 
 [dev-dependencies]
 criterion = "0.4"
