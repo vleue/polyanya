@@ -68,9 +68,8 @@ fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<VertexIndices>) -> Mesh {
             let is_one_way = vertex_indices_in_polygon
                 .into_array()
                 .iter()
-                .map(|index| &vertices[*index as usize])
-                .map(|vertex| &vertex.polygons)
-                .flatten()
+                .map(|index| &vertices[*index])
+                .flat_map(|vertex| &vertex.polygons)
                 .unique()
                 .take(3)
                 .count()
@@ -161,6 +160,14 @@ impl Polygon {
             .map(|(a, b, c)| (*a as usize, *b as usize, *c as usize))
             .map(VertexIndices::from_tuple)
             .find(|triangle| triangle.b == vertex_index)
-            .map(|triangle| UnrolledTriangle(triangle))
+            .map(UnrolledTriangle)
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn generation_from_trimesh_is_same_as_regular() {}
 }
