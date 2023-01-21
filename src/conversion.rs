@@ -6,9 +6,13 @@ use std::cmp::Ordering;
 use std::iter;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
+/// A triangle described by the indices of three vertices passed to `Mesh::from_trimesh`
 pub struct VertexIndices {
+    /// The index of a vertex
     pub a: usize,
+    /// The index of a vertex
     pub b: usize,
+    /// The index of a vertex
     pub c: usize,
 }
 
@@ -54,6 +58,8 @@ impl UnrolledTriangle {
 }
 
 impl Mesh {
+    /// Convert a mesh composed of triangles to a `Mesh`. Behaves like `Mesh::new`, but does not require
+    /// any information on neighbors.
     pub fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<VertexIndices>) -> Self {
         let mut vertices: Vec<_> = vertices
             .into_iter()
