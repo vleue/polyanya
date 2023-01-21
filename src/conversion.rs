@@ -212,13 +212,13 @@ mod tests {
         {
             assert_eq!(
                 expected_vertex.coords, actual_vertex.coords,
-                "\nvertex {index} has not the expected coords.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
+                "\nvertex {index} does not have the expected coords.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                 regular_mesh.vertices, from_trimesh.vertices
             );
 
             assert_eq!(
                 expected_vertex.is_corner, actual_vertex.is_corner,
-                "\nvertex {index} has not the expected value for `is_corner`.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
+                "\nvertex {index} does not have the expected value for `is_corner`.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                 regular_mesh.vertices, from_trimesh.vertices
             );
 
@@ -238,7 +238,7 @@ mod tests {
 
             assert_eq!(
                 adjusted_expectation, actual_vertex.polygons,
-                "\nvertex {index} has not the expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
+                "\nvertex {index} does not have the expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                 regular_mesh.vertices, from_trimesh.vertices
             );
         }
