@@ -30,7 +30,7 @@ impl VertexIndices {
 struct UnrolledTriangle(VertexIndices);
 
 impl UnrolledTriangle {
-    fn get_sorted_counterclockwise(&self, vertices: &[Vertex]) -> (usize, usize) {
+    fn get_sorted_neighbors(&self, vertices: &[Vertex]) -> (usize, usize) {
         let mut other_indices = [self.0.a, self.0.c];
         let own_coords = vertices[self.0.b].coords;
         other_indices.sort_by(|index_a, index_b| {
@@ -45,11 +45,11 @@ impl UnrolledTriangle {
         (other_indices[0], other_indices[1])
     }
     fn get_counterclockwise_neighbor(&self, vertices: &[Vertex]) -> usize {
-        self.get_sorted_counterclockwise(vertices).0
+        self.get_sorted_neighbors(vertices).0
     }
 
     fn get_clockwise_neighbor(&self, vertices: &[Vertex]) -> usize {
-        self.get_sorted_counterclockwise(vertices).1
+        self.get_sorted_neighbors(vertices).1
     }
 }
 
@@ -123,24 +123,16 @@ impl Mesh {
                     polygons_including_obstacles.push(polygon_index);
                     continue;
                 }
-                let last_polygon = &polygons[usize::try_from(last_index).unwrap()];
-                let last_counterclockwise_neighbor = last_polygon
-                    .unroll_triangle_at(vertex_index)
-                    .unwrap()
-                    .get_counterclockwise_neighbor(&unordered_vertices);
+                let unroll = |index: isize| {
+                    let polygon = &polygons[usize::try_from(index).unwrap()];
+                    polygon.unroll_triangle_at(vertex_index).unwrap()
+                };
 
-                let next_polygon = &polygons[usize::try_from(polygon_index).unwrap()];
-                let next_clockwise_neighbor = next_polygon
-                    .unroll_triangle_at(vertex_index)
-                    .unwrap()
-                    .get_clockwise_neighbor(&unordered_vertices);
+                let last_counterclockwise_neighbor =
+                    unroll(last_index).get_counterclockwise_neighbor(&unordered_vertices);
+                let next_clockwise_neighbor =
+                    unroll(polygon_index).get_clockwise_neighbor(&unordered_vertices);
 
-                if vertex_index == 1 {
-                    println!("last_index: {last_index}");
-                    println!("this_index: {polygon_index}");
-                    println!("last_counterclockwise_neighbor: {last_counterclockwise_neighbor}");
-                    println!("next_clockwise_neighbor: {next_clockwise_neighbor}");
-                }
                 if last_counterclockwise_neighbor != next_clockwise_neighbor {
                     // The edges don't align; there's an obstacle here
                     polygons_including_obstacles.push(-1);
@@ -161,12 +153,6 @@ impl Mesh {
 }
 
 impl Polygon {
-    fn do_edges_on_corner_align(&self, other: &Self, vertex: usize) -> Option<bool> {
-        let unrolled_self = self.unroll_triangle_at(vertex)?;
-        let unrolled_other = other.unroll_triangle_at(vertex)?;
-        Some(unrolled_self.0.a == unrolled_other.0.c || unrolled_self.0.c == unrolled_other.0.a)
-    }
-
     fn unroll_triangle_at(&self, vertex_index: usize) -> Option<UnrolledTriangle> {
         self.vertices
             .iter()
