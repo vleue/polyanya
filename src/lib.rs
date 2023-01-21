@@ -39,6 +39,7 @@ mod async_helpers;
 mod helpers;
 mod instance;
 mod primitives;
+mod conversion;
 
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
