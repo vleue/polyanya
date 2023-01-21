@@ -33,9 +33,14 @@ impl UnrolledTriangle {
     fn get_sorted_counterclockwise(&self, vertices: &[Vertex]) -> (usize, usize) {
         let mut other_indices = [self.0.a, self.0.c];
         let own_coords = vertices[self.0.b].coords;
-        other_indices.sort_by_key(|index| {
-            let cross_product = vertices[*index].coords.perp_dot(own_coords);
-            OrderedFloat(cross_product)
+        other_indices.sort_by(|index_a, index_b| {
+            let edge_a = vertices[*index_a].coords - own_coords;
+            let edge_b = vertices[*index_b].coords - own_coords;
+            if edge_a.perp_dot(edge_b) < 0. {
+                Ordering::Less
+            } else {
+                Ordering::Greater
+            }
         });
         (other_indices[0], other_indices[1])
     }
@@ -130,7 +135,7 @@ impl Mesh {
                     .unwrap()
                     .get_clockwise_neighbor(&unordered_vertices);
 
-                if vertex_index == 2 {
+                if vertex_index == 1 {
                     println!("last_index: {last_index}");
                     println!("this_index: {polygon_index}");
                     println!("last_counterclockwise_neighbor: {last_counterclockwise_neighbor}");
@@ -232,10 +237,20 @@ mod tests {
                 "\nvertex {index} does not have the expected value for `is_corner`.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                 regular_mesh.vertices, from_trimesh.vertices
             );
+            let offset_in_actual = actual_vertex.polygons.iter().position(|index| *index != -1).unwrap_or_else(||
+                panic!("vertex {index}: Found only surrounded by obstacles.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
+                       regular_mesh.vertices, from_trimesh.vertices));
+            let adjusted_actual: Vec<_> = actual_vertex
+                .polygons
+                .iter()
+                .skip(offset_in_actual)
+                .chain(expected_vertex.polygons.iter().take(offset_in_actual))
+                .cloned()
+                .collect();
 
             let offset = expected_vertex.polygons
                 .iter()
-                .position(|polygon| *polygon == *actual_vertex.polygons.iter().find(|index| **index != -1).unwrap())
+                .position(|polygon| *polygon == adjusted_actual[0])
                 .unwrap_or_else(||
                     panic!("vertex {index}: first polygon is not in expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                            regular_mesh.vertices, from_trimesh.vertices));
@@ -248,7 +263,7 @@ mod tests {
                 .collect();
 
             assert_eq!(
-                adjusted_expectation, actual_vertex.polygons,
+                adjusted_expectation, adjusted_actual,
                 "\nvertex {index} does not have the expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                 regular_mesh.vertices, from_trimesh.vertices
             );
