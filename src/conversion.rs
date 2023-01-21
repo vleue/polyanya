@@ -237,30 +237,16 @@ mod tests {
                 "\nvertex {index} does not have the expected value for `is_corner`.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                 regular_mesh.vertices, from_trimesh.vertices
             );
-            let offset_in_actual = actual_vertex.polygons.iter().position(|index| *index != -1).unwrap_or_else(||
+            let adjusted_actual = wrap_to_first(&actual_vertex.polygons, |index| *index != -1).unwrap_or_else(||
                 panic!("vertex {index}: Found only surrounded by obstacles.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                        regular_mesh.vertices, from_trimesh.vertices));
-            let adjusted_actual: Vec<_> = actual_vertex
-                .polygons
-                .iter()
-                .skip(offset_in_actual)
-                .chain(expected_vertex.polygons.iter().take(offset_in_actual))
-                .cloned()
-                .collect();
 
-            let offset = expected_vertex.polygons
-                .iter()
-                .position(|polygon| *polygon == adjusted_actual[0])
+            let adjusted_expectation= wrap_to_first(&expected_vertex.polygons, |polygon| {
+                *polygon == adjusted_actual[0]
+            })
                 .unwrap_or_else(||
-                    panic!("vertex {index}: first polygon is not in expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
+                    panic!("vertex {index}: Failed to expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                            regular_mesh.vertices, from_trimesh.vertices));
-            let adjusted_expectation: Vec<_> = expected_vertex
-                .polygons
-                .iter()
-                .skip(offset)
-                .chain(expected_vertex.polygons.iter().take(offset))
-                .cloned()
-                .collect();
 
             assert_eq!(
                 adjusted_expectation, adjusted_actual,
@@ -268,5 +254,17 @@ mod tests {
                 regular_mesh.vertices, from_trimesh.vertices
             );
         }
+    }
+
+    fn wrap_to_first(polygons: &[isize], pred: impl Fn(&isize) -> bool) -> Option<Vec<isize>> {
+        let offset = polygons.iter().position(pred)?;
+        Some(
+            polygons
+                .iter()
+                .skip(offset)
+                .chain(polygons.iter().take(offset))
+                .cloned()
+                .collect(),
+        )
     }
 }
