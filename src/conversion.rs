@@ -172,7 +172,7 @@ mod tests {
         let regular_mesh = Mesh::new(
             vec![
                 Vertex::new(Vec2::new(1., 1.), vec![0, 4, -1]), // 0
-                Vertex::new(Vec2::new(5., 0.), vec![-1, 1, 3, -1, 0]), // 1
+                Vertex::new(Vec2::new(5., 1.), vec![-1, 1, 3, -1, 0]), // 1
                 Vertex::new(Vec2::new(5., 4.), vec![-1, 2, 1]), // 2
                 Vertex::new(Vec2::new(1., 4.), vec![-1, 4, -1, 3, 2]), // 3
                 Vertex::new(Vec2::new(2., 2.), vec![-1, 4, 0]), // 4
@@ -189,7 +189,7 @@ mod tests {
         let from_trimesh = Mesh::from_trimesh(
             vec![
                 Vec2::new(1., 1.),
-                Vec2::new(5., 0.),
+                Vec2::new(5., 1.),
                 Vec2::new(5., 4.),
                 Vec2::new(1., 4.),
                 Vec2::new(2., 2.),
