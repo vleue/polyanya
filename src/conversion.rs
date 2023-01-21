@@ -204,6 +204,17 @@ mod tests {
             ],
         );
         assert_eq!(regular_mesh.polygons, from_trimesh.polygons);
-        assert_eq!(regular_mesh.vertices, from_trimesh.vertices);
+        for (index, (expected_vertex, actual_vertex)) in regular_mesh
+            .vertices
+            .iter()
+            .zip(from_trimesh.vertices.iter())
+            .enumerate()
+        {
+            assert_eq!(
+                expected_vertex.coords,
+                Vertex::new(vec![], vec![]),
+                "Vertex {index}\nleft: {expected_vertex.coords}\nright: {actual_vertex.coords}"
+            );
+        }
     }
 }
