@@ -11,10 +11,13 @@ pub struct VertexIndices {
     pub c: usize,
 }
 
-impl VertexIndices {
-    fn from_tuple((a, b, c): (usize, usize, usize)) -> Self {
+impl From<(usize, usize, usize)> for VertexIndices {
+    fn from((a, b, c): (usize, usize, usize)) -> Self {
         Self { a, b, c }
     }
+}
+
+impl VertexIndices {
     fn into_array(self) -> [usize; 3] {
         [self.a, self.b, self.c]
     }
@@ -44,105 +47,101 @@ impl UnrolledTriangle {
     }
 }
 
-fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<VertexIndices>) -> Mesh {
-    let mut vertices: Vec<_> = vertices
-        .into_iter()
-        .enumerate()
-        .map(|(vertex_index, coords)| {
-            let neighbor_indices = triangles
-                .iter()
-                .enumerate()
-                .filter_map(|(polygon_index, vertex_indices_in_polygon)| {
+impl Mesh {
+    pub fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<VertexIndices>) -> Self {
+        let mut vertices: Vec<_> = vertices
+            .into_iter()
+            .enumerate()
+            .map(|(vertex_index, coords)| {
+                let neighbor_indices = triangles
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(polygon_index, vertex_indices_in_polygon)| {
+                        vertex_indices_in_polygon
+                            .contains(vertex_index)
+                            .then_some(polygon_index)
+                    })
+                    .map(|index| isize::try_from(index).unwrap())
+                    .collect();
+                Vertex::new(coords, neighbor_indices)
+            })
+            .collect();
+        let triangle_count = triangles.len();
+        let polygons: Vec<_> = triangles
+            .into_iter()
+            .map(|vertex_indices_in_polygon| {
+                // It's geometrically impossible for a triangle to have only one neighbor in a trimesh,
+                // except for the trivial case
+                let is_one_way = triangle_count == 1;
+                Polygon::new(
                     vertex_indices_in_polygon
-                        .contains(vertex_index)
-                        .then_some(polygon_index)
-                })
-                .map(|index| isize::try_from(index).unwrap())
-                .collect();
-            Vertex::new(coords, neighbor_indices)
-        })
-        .collect();
-    let polygons: Vec<_> = triangles
-        .into_iter()
-        .map(|vertex_indices_in_polygon| {
-            let is_one_way = vertex_indices_in_polygon
-                .into_array()
-                .iter()
-                .map(|index| &vertices[*index])
-                .flat_map(|vertex| &vertex.polygons)
-                .unique()
-                .take(3)
-                .count()
-                // One way means all vertices have at most 2 neighbors: the original polygon and one other
-                < 3;
-            Polygon::new(
-                vertex_indices_in_polygon
+                        .into_array()
+                        .map(|index| index as u32)
+                        .to_vec(),
+                    is_one_way,
+                )
+            })
+            .collect();
+        let unordered_vertices = vertices.clone();
+        for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
+            vertex.polygons.sort_by_key(|index| {
+                // No -1 present yet, so the unwrap is safe
+                let index = usize::try_from(*index).unwrap();
+                let polygon = &polygons[index];
+                let unrolled_indices = polygon.unroll_triangle_at(vertex_index).unwrap();
+                let triangle_center_direction: Vec2 = unrolled_indices
+                    .0
                     .into_array()
-                    .map(|index| index as u32)
-                    .to_vec(),
-                is_one_way,
-            )
-        })
-        .collect();
-    let unordered_vertices = vertices.clone();
-    for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
-        vertex.polygons.sort_by_key(|index| {
-            // No -1 present yet, so the unwrap is safe
-            let index = usize::try_from(*index).unwrap();
-            let polygon = &polygons[index];
-            let unrolled_indices = polygon.unroll_triangle_at(vertex_index).unwrap();
-            let triangle_center_direction: Vec2 = unrolled_indices
-                .0
-                .into_array()
-                .into_iter()
-                .map(|index| &unordered_vertices[index])
-                .map(|vertex| vertex.coords)
-                .sum();
-            let angle_to_positive_x_axis = triangle_center_direction
-                .y
-                .atan2(triangle_center_direction.x);
-            OrderedFloat(angle_to_positive_x_axis)
-        });
-        let mut polygons_including_obstacles = vec![vertex.polygons[0]];
-        for polygon_index in vertex
-            .polygons
-            .iter()
-            .cloned()
-            .skip(1)
-            .chain(iter::once(polygons_including_obstacles[0]))
-        {
-            let last_index = *polygons_including_obstacles.last().unwrap();
-            if last_index == -1 {
-                polygons_including_obstacles.push(polygon_index);
-                continue;
-            }
-            let last_polygon = &polygons[usize::try_from(last_index).unwrap()];
-            let last_counterclockwise_neighbor = last_polygon
-                .unroll_triangle_at(vertex_index)
-                .unwrap()
-                .get_counterclockwise_neighbor(&unordered_vertices);
+                    .into_iter()
+                    .map(|index| &unordered_vertices[index])
+                    .map(|vertex| vertex.coords)
+                    .sum();
+                let angle_to_positive_x_axis = triangle_center_direction
+                    .y
+                    .atan2(triangle_center_direction.x);
+                OrderedFloat(angle_to_positive_x_axis)
+            });
+            let mut polygons_including_obstacles = vec![vertex.polygons[0]];
+            for polygon_index in vertex
+                .polygons
+                .iter()
+                .cloned()
+                .skip(1)
+                .chain(iter::once(polygons_including_obstacles[0]))
+            {
+                let last_index = *polygons_including_obstacles.last().unwrap();
+                if last_index == -1 {
+                    polygons_including_obstacles.push(polygon_index);
+                    continue;
+                }
+                let last_polygon = &polygons[usize::try_from(last_index).unwrap()];
+                let last_counterclockwise_neighbor = last_polygon
+                    .unroll_triangle_at(vertex_index)
+                    .unwrap()
+                    .get_counterclockwise_neighbor(&unordered_vertices);
 
-            let next_polygon = &polygons[usize::try_from(polygon_index).unwrap()];
-            let next_clockwise_neighbor = next_polygon
-                .unroll_triangle_at(vertex_index)
-                .unwrap()
-                .get_clockwise_neighbor(&unordered_vertices);
-            if last_counterclockwise_neighbor != next_clockwise_neighbor {
-                // The edges don't align; there's an obstacle here
-                polygons_including_obstacles.push(-1);
+                let next_polygon = &polygons[usize::try_from(polygon_index).unwrap()];
+                let next_clockwise_neighbor = next_polygon
+                    .unroll_triangle_at(vertex_index)
+                    .unwrap()
+                    .get_clockwise_neighbor(&unordered_vertices);
+                if last_counterclockwise_neighbor != next_clockwise_neighbor {
+                    // The edges don't align; there's an obstacle here
+                    polygons_including_obstacles.push(-1);
+                }
+                polygons_including_obstacles.push(polygon_index);
             }
-            polygons_including_obstacles.push(polygon_index);
+            // The first element is included in the end again
+            polygons_including_obstacles.remove(0);
+            vertex.polygons = polygons_including_obstacles;
         }
-        // The first element is included in the end again
-        polygons_including_obstacles.remove(0);
-        vertex.polygons = polygons_including_obstacles;
+        // Recreate vertices because we now include obstacles, so vertices can now be properly identified as edges
+        let vertices: Vec<_> = vertices
+            .into_iter()
+            .map(|vertex| Vertex::new(vertex.coords, vertex.polygons))
+            .collect();
+        Self::new(vertices, polygons)
     }
-    // Recreate vertices because we now include obstacles, so vertices can now be properly identified as edges
-    let vertices: Vec<_> = vertices
-        .into_iter()
-        .map(|vertex| Vertex::new(vertex.coords, vertex.polygons))
-        .collect();
-    Mesh::new(vertices, polygons)
 }
 
 impl Polygon {
@@ -158,7 +157,7 @@ impl Polygon {
             .chain(self.vertices.iter().take(2))
             .tuple_windows()
             .map(|(a, b, c)| (*a as usize, *b as usize, *c as usize))
-            .map(VertexIndices::from_tuple)
+            .map(VertexIndices::from)
             .find(|triangle| triangle.b == vertex_index)
             .map(UnrolledTriangle)
     }
@@ -169,5 +168,42 @@ mod tests {
     use super::*;
 
     #[test]
-    fn generation_from_trimesh_is_same_as_regular() {}
+    fn generation_from_trimesh_is_same_as_regular() {
+        let regular_mesh = Mesh::new(
+            vec![
+                Vertex::new(Vec2::new(1., 1.), vec![0, 4, -1]), // 0
+                Vertex::new(Vec2::new(5., 0.), vec![-1, 1, 3, -1, 0]), // 1
+                Vertex::new(Vec2::new(5., 4.), vec![-1, 2, 1]), // 2
+                Vertex::new(Vec2::new(1., 4.), vec![-1, 4, -1, 3, 2]), // 3
+                Vertex::new(Vec2::new(2., 2.), vec![-1, 4, 0]), // 4
+                Vertex::new(Vec2::new(4., 3.), vec![1, 2, 3]),  // 5
+            ],
+            vec![
+                Polygon::new(vec![0, 1, 4], false), // 0
+                Polygon::new(vec![1, 2, 5], false), // 1
+                Polygon::new(vec![5, 2, 3], false), // 2
+                Polygon::new(vec![1, 5, 3], false), // 3
+                Polygon::new(vec![0, 4, 3], false), // 4
+            ],
+        );
+        let from_trimesh = Mesh::from_trimesh(
+            vec![
+                Vec2::new(1., 1.),
+                Vec2::new(5., 0.),
+                Vec2::new(5., 4.),
+                Vec2::new(1., 4.),
+                Vec2::new(2., 2.),
+                Vec2::new(4., 3.),
+            ],
+            vec![
+                (0, 1, 4).into(),
+                (1, 2, 5).into(),
+                (5, 2, 3).into(),
+                (1, 5, 3).into(),
+                (0, 4, 3).into(),
+            ],
+        );
+        assert_eq!(regular_mesh.polygons, from_trimesh.polygons);
+        assert_eq!(regular_mesh.vertices, from_trimesh.vertices);
+    }
 }

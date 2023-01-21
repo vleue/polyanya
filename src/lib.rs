@@ -36,10 +36,10 @@ use tracing::instrument;
 
 #[cfg(feature = "async")]
 mod async_helpers;
+mod conversion;
 mod helpers;
 mod instance;
 mod primitives;
-mod conversion;
 
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
