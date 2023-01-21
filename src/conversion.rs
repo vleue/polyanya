@@ -1,7 +1,6 @@
 use crate::{Mesh, Polygon, Vertex};
 use glam::Vec2;
 use itertools::Itertools;
-use ordered_float::OrderedFloat;
 use std::cmp::Ordering;
 use std::iter;
 
