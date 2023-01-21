@@ -211,9 +211,35 @@ mod tests {
             .enumerate()
         {
             assert_eq!(
-                expected_vertex.coords,
-                Vertex::new(vec![], vec![]),
-                "Vertex {index}\nleft: {expected_vertex.coords}\nright: {actual_vertex.coords}"
+                expected_vertex.coords, actual_vertex.coords,
+                "\nvertex {index} has not the expected coords.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
+                regular_mesh.vertices, from_trimesh.vertices
+            );
+
+            assert_eq!(
+                expected_vertex.is_corner, actual_vertex.is_corner,
+                "\nvertex {index} has not the expected value for `is_corner`.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
+                regular_mesh.vertices, from_trimesh.vertices
+            );
+
+            let offset = expected_vertex.polygons
+                .iter()
+                .position(|polygon| *polygon == actual_vertex.polygons[0])
+                .unwrap_or_else(||
+                    panic!("vertex {index}: first polygon is not in expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
+                           regular_mesh.vertices, from_trimesh.vertices));
+            let adjusted_expectation: Vec<_> = expected_vertex
+                .polygons
+                .iter()
+                .skip(offset)
+                .chain(expected_vertex.polygons.iter().take(offset))
+                .cloned()
+                .collect();
+
+            assert_eq!(
+                adjusted_expectation, actual_vertex.polygons,
+                "\nvertex {index} has not the expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
+                regular_mesh.vertices, from_trimesh.vertices
             );
         }
     }
