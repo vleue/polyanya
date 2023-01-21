@@ -2,6 +2,7 @@ use crate::{Mesh, Polygon, Vertex};
 use glam::Vec2;
 use itertools::Itertools;
 use ordered_float::OrderedFloat;
+use std::cmp::Ordering;
 use std::iter;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -33,8 +34,8 @@ impl UnrolledTriangle {
         let mut other_indices = [self.0.a, self.0.c];
         let own_coords = vertices[self.0.b].coords;
         other_indices.sort_by_key(|index| {
-            let dir = vertices[*index].coords - own_coords;
-            OrderedFloat(dir.y.atan2(dir.x))
+            let cross_product = vertices[*index].coords.perp_dot(own_coords);
+            OrderedFloat(cross_product)
         });
         (other_indices[0], other_indices[1])
     }
@@ -84,23 +85,26 @@ impl Mesh {
             .collect();
         let unordered_vertices = vertices.clone();
         for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
-            vertex.polygons.sort_by_key(|index| {
-                // No -1 present yet, so the unwrap is safe
-                let index = usize::try_from(*index).unwrap();
-                let polygon = &polygons[index];
-                let unrolled_indices = polygon.unroll_triangle_at(vertex_index).unwrap();
-                let triangle_center_direction: Vec2 = unrolled_indices
-                    .0
-                    .into_array()
-                    .into_iter()
-                    .map(|index| &unordered_vertices[index])
-                    .map(|vertex| vertex.coords)
-                    .sum();
-                let angle_to_positive_x_axis = triangle_center_direction
-                    .y
-                    .atan2(triangle_center_direction.x);
-                OrderedFloat(angle_to_positive_x_axis)
+            vertex.polygons.sort_by(|index_a, index_b| {
+                let get_counterclockwise_edge = |index: isize| {
+                    // No -1 present yet, so the unwrap is safe
+                    let index = usize::try_from(index).unwrap();
+                    let neighbor_index = polygons[index]
+                        .unroll_triangle_at(vertex_index)
+                        .unwrap()
+                        .get_counterclockwise_neighbor(&unordered_vertices);
+                    let neighbor = &unordered_vertices[neighbor_index];
+                    neighbor.coords - vertex.coords
+                };
+                let edge_a = get_counterclockwise_edge(*index_a);
+                let edge_b = get_counterclockwise_edge(*index_b);
+                if edge_a.perp_dot(edge_b) > 0. {
+                    Ordering::Less
+                } else {
+                    Ordering::Greater
+                }
             });
+
             let mut polygons_including_obstacles = vec![vertex.polygons[0]];
             for polygon_index in vertex
                 .polygons
@@ -125,6 +129,13 @@ impl Mesh {
                     .unroll_triangle_at(vertex_index)
                     .unwrap()
                     .get_clockwise_neighbor(&unordered_vertices);
+
+                if vertex_index == 2 {
+                    println!("last_index: {last_index}");
+                    println!("this_index: {polygon_index}");
+                    println!("last_counterclockwise_neighbor: {last_counterclockwise_neighbor}");
+                    println!("next_clockwise_neighbor: {next_clockwise_neighbor}");
+                }
                 if last_counterclockwise_neighbor != next_clockwise_neighbor {
                     // The edges don't align; there's an obstacle here
                     polygons_including_obstacles.push(-1);
@@ -224,7 +235,7 @@ mod tests {
 
             let offset = expected_vertex.polygons
                 .iter()
-                .position(|polygon| *polygon == actual_vertex.polygons[0])
+                .position(|polygon| *polygon == *actual_vertex.polygons.iter().find(|index| **index != -1).unwrap())
                 .unwrap_or_else(||
                     panic!("vertex {index}: first polygon is not in expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                            regular_mesh.vertices, from_trimesh.vertices));
