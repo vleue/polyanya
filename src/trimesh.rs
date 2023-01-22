@@ -136,7 +136,7 @@ impl Mesh {
     }
 }
 
-fn to_vertices(vertices: Vec<Vec2>, triangles: &Vec<Triangle>) -> Vec<Vertex> {
+fn to_vertices(vertices: Vec<Vec2>, triangles: &[Triangle]) -> Vec<Vertex> {
     vertices
         .into_iter()
         .enumerate()
