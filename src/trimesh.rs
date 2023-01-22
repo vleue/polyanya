@@ -1,6 +1,5 @@
 use crate::{Mesh, Polygon, Vertex};
 use glam::Vec2;
-use itertools::Itertools;
 use std::cmp::Ordering;
 use std::iter;
 
@@ -20,8 +19,26 @@ impl From<(usize, usize, usize)> for Triangle {
         Self { a, b, c }
     }
 }
+impl From<[usize; 3]> for Triangle {
+    fn from(vertices: [usize; 3]) -> Self {
+        Self::new(vertices[0], vertices[1], vertices[2])
+    }
+}
+
+impl From<&Polygon> for Triangle {
+    fn from(value: &Polygon) -> Self {
+        let vertices = &value.vertices;
+        [vertices[0], vertices[1], vertices[2]]
+            .map(|index| index as usize)
+            .into()
+    }
+}
 
 impl Triangle {
+    fn new(a: usize, b: usize, c: usize) -> Self {
+        Self { a, b, c }
+    }
+
     fn into_array(self) -> [usize; 3] {
         [self.a, self.b, self.c]
     }
@@ -75,31 +92,14 @@ impl Mesh {
                 Vertex::new(coords, neighbor_indices)
             })
             .collect();
-        let triangle_count = triangles.len();
-        let polygons: Vec<_> = triangles
-            .into_iter()
-            .map(|vertex_indices_in_polygon| {
-                // It's geometrically impossible for a triangle to have only one neighbor in a trimesh,
-                // except for the trivial case
-                let is_one_way = triangle_count == 1;
-                Polygon::new(
-                    vertex_indices_in_polygon
-                        .into_array()
-                        .map(|index| index as u32)
-                        .to_vec(),
-                    is_one_way,
-                )
-            })
-            .collect();
+        let polygons = to_polygons(triangles);
         let unordered_vertices = vertices.clone();
         for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
             vertex.polygons.sort_by(|index_a, index_b| {
                 let get_counterclockwise_edge = |index: isize| {
                     // No -1 present yet, so the unwrap is safe
                     let index = usize::try_from(index).unwrap();
-                    let neighbor_index = polygons[index]
-                        .get_triangle_at(vertex_index)
-                        .unwrap()
+                    let neighbor_index = Triangle::from(&polygons[index])
                         .get_counterclockwise_neighbor(vertex_index);
                     let neighbor = &unordered_vertices[neighbor_index];
                     neighbor.coords - vertex.coords
@@ -126,15 +126,24 @@ impl Mesh {
                     polygons_including_obstacles.push(polygon_index);
                     continue;
                 }
-                let unroll = |index: isize| {
+                let triangle_at = |index: isize| {
                     let polygon = &polygons[usize::try_from(index).unwrap()];
-                    polygon.get_triangle_at(vertex_index).unwrap()
+                    Triangle::from(polygon)
                 };
 
                 let last_counterclockwise_neighbor =
-                    unroll(last_index).get_counterclockwise_neighbor(vertex_index);
+                    triangle_at(last_index).get_counterclockwise_neighbor(vertex_index);
                 let next_clockwise_neighbor =
-                    unroll(polygon_index).get_clockwise_neighbor(vertex_index);
+                    triangle_at(polygon_index).get_clockwise_neighbor(vertex_index);
+
+                if vertex_index == 0 {
+                    println!("vertex polygons: {:?}", vertex.polygons);
+                    println!(
+                        "last_counterclockwise_neighbor: {:?}",
+                        last_counterclockwise_neighbor
+                    );
+                    println!("next_clockwise_neighbor: {:?}", next_clockwise_neighbor);
+                }
 
                 if last_counterclockwise_neighbor != next_clockwise_neighbor {
                     // The edges don't align; there's an obstacle here
@@ -155,16 +164,24 @@ impl Mesh {
     }
 }
 
-impl Polygon {
-    fn get_triangle_at(&self, vertex_index: usize) -> Option<Triangle> {
-        self.vertices
-            .iter()
-            .chain(self.vertices.iter().take(2))
-            .tuple_windows()
-            .map(|(a, b, c)| (*a as usize, *b as usize, *c as usize))
-            .map(Triangle::from)
-            .find(|triangle| triangle.contains(vertex_index))
-    }
+fn to_polygons(triangles: Vec<Triangle>) -> Vec<Polygon> {
+    let triangle_count = triangles.len();
+
+    triangles
+        .into_iter()
+        .map(|vertex_indices_in_polygon| {
+            // It's geometrically impossible for a triangle to have only one neighbor in a trimesh,
+            // except for the trivial case
+            let is_one_way = triangle_count == 1;
+            Polygon::new(
+                vertex_indices_in_polygon
+                    .into_array()
+                    .map(|index| index as u32)
+                    .to_vec(),
+                is_one_way,
+            )
+        })
+        .collect()
 }
 
 #[cfg(test)]

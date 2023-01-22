@@ -24,7 +24,6 @@ hashbrown = { version = "0.13" }
 glam = { version = "0.22", features = ["approx"] }
 smallvec = { version = "1.9", features = ["union", "const_generics"] }
 bvh2d = "0.2"
-itertools = "0.10.5"
 
 [dev-dependencies]
 criterion = "0.4"
