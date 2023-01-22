@@ -614,10 +614,7 @@ mod tests {
                 Polygon::new(vec![4, 5, 9, 8], true),
                 Polygon::new(vec![6, 7, 11, 10], true),
             ],
-            baked_polygons: None,
-            islands: None,
-            #[cfg(feature = "stats")]
-            scenarios: std::cell::Cell::new(0),
+            ..Default::default()
         }
     }
 
@@ -836,10 +833,7 @@ mod tests {
                 Polygon::new(vec![15, 18, 19, 16], true),
                 Polygon::new(vec![11, 17, 20, 21], true),
             ],
-            baked_polygons: None,
-            islands: None,
-            #[cfg(feature = "stats")]
-            scenarios: std::cell::Cell::new(0),
+            ..Default::default()
         }
     }
 
