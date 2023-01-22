@@ -48,20 +48,14 @@ impl Triangle {
 
     fn get_clockwise_neighbor(self, index: usize) -> usize {
         let position = self.position(index);
-        if position == 2 {
-            0
-        } else {
-            position + 1
-        }
+        let neighbor_pos = if position == 2 { 0 } else { position + 1 };
+        self.into_array()[neighbor_pos]
     }
 
     fn get_counterclockwise_neighbor(self, index: usize) -> usize {
         let position = self.position(index);
-        if position == 0 {
-            2
-        } else {
-            position - 1
-        }
+        let neighbor_pos = if position == 0 { 2 } else { position - 1 };
+        self.into_array()[neighbor_pos]
     }
     fn position(self, index: usize) -> usize {
         self.into_array()
@@ -135,17 +129,6 @@ impl Mesh {
                     triangle_at(last_index).get_counterclockwise_neighbor(vertex_index);
                 let next_clockwise_neighbor =
                     triangle_at(polygon_index).get_clockwise_neighbor(vertex_index);
-
-                if vertex_index == 0 {
-                    println!("last polygon: {}", last_index);
-                    println!("next polygon: {}", polygon_index);
-                    println!("vertex polygons: {:?}", vertex.polygons);
-                    println!(
-                        "last_counterclockwise_neighbor: {:?}",
-                        last_counterclockwise_neighbor
-                    );
-                    println!("next_clockwise_neighbor: {:?}", next_clockwise_neighbor);
-                }
 
                 if last_counterclockwise_neighbor != next_clockwise_neighbor {
                     // The edges don't align; there's an obstacle here
