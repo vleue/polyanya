@@ -4,13 +4,13 @@ use std::cmp::Ordering;
 use std::iter;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
-/// A triangle described by the indices of three vertices passed to `Mesh::from_trimesh` in counterclockwise order
+/// A triangle described by the indices of three vertices passed to [`Mesh::from_trimesh`] in counterclockwise order
 pub struct Triangle {
-    /// The index of a vertex
+    /// The index of a vertex. When constructing the [`Triangle`], this vertex is accessed after `c`
     pub a: usize,
-    /// The index of a vertex
+    /// The index of a vertex. When constructing the [`Triangle`], this vertex is accessed after `a`
     pub b: usize,
-    /// The index of a vertex
+    /// The index of a vertex. When constructing the [`Triangle`], this vertex is accessed after `b`
     pub c: usize,
 }
 
@@ -66,8 +66,8 @@ impl Triangle {
 }
 
 impl Mesh {
-    /// Convert a mesh composed of triangles to a `Mesh`. Behaves like `Mesh::new`, but does not require
-    /// any information on neighbors.
+    /// Convert a mesh composed of [`Triangle`]s to a [`Mesh`]. Behaves like [`Mesh::new`], but does not require
+    /// any information about vertex or polygon neighbors.
     pub fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<Triangle>) -> Self {
         let mut vertices: Vec<_> = to_vertices(vertices, &triangles);
         let polygons = to_polygons(triangles);
