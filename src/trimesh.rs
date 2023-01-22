@@ -5,8 +5,8 @@ use std::cmp::Ordering;
 use std::iter;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
-/// A triangle described by the indices of three vertices passed to `Mesh::from_trimesh`
-pub struct VertexIndices {
+/// A triangle described by the indices of three vertices passed to `Mesh::from_trimesh` in counterclockwise order
+pub struct Triangle {
     /// The index of a vertex
     pub a: usize,
     /// The index of a vertex
@@ -15,51 +15,49 @@ pub struct VertexIndices {
     pub c: usize,
 }
 
-impl From<(usize, usize, usize)> for VertexIndices {
+impl From<(usize, usize, usize)> for Triangle {
     fn from((a, b, c): (usize, usize, usize)) -> Self {
         Self { a, b, c }
     }
 }
 
-impl VertexIndices {
+impl Triangle {
     fn into_array(self) -> [usize; 3] {
         [self.a, self.b, self.c]
     }
     fn contains(self, index: usize) -> bool {
         self.into_array().contains(&index)
     }
-}
 
-struct UnrolledTriangle(VertexIndices);
-
-impl UnrolledTriangle {
-    fn get_sorted_neighbors(&self, vertices: &[Vertex]) -> (usize, usize) {
-        let mut other_indices = [self.0.a, self.0.c];
-        let own_coords = vertices[self.0.b].coords;
-        other_indices.sort_by(|index_a, index_b| {
-            let edge_a = vertices[*index_a].coords - own_coords;
-            let edge_b = vertices[*index_b].coords - own_coords;
-            if edge_a.perp_dot(edge_b) < 0. {
-                Ordering::Less
-            } else {
-                Ordering::Greater
-            }
-        });
-        (other_indices[0], other_indices[1])
-    }
-    fn get_counterclockwise_neighbor(&self, vertices: &[Vertex]) -> usize {
-        self.get_sorted_neighbors(vertices).0
+    fn get_clockwise_neighbor(self, index: usize) -> usize {
+        let position = self.position(index);
+        if position == 2 {
+            0
+        } else {
+            position + 1
+        }
     }
 
-    fn get_clockwise_neighbor(&self, vertices: &[Vertex]) -> usize {
-        self.get_sorted_neighbors(vertices).1
+    fn get_counterclockwise_neighbor(self, index: usize) -> usize {
+        let position = self.position(index);
+        if position == 0 {
+            2
+        } else {
+            position - 1
+        }
+    }
+    fn position(self, index: usize) -> usize {
+        self.into_array()
+            .into_iter()
+            .position(|i| i == index)
+            .unwrap()
     }
 }
 
 impl Mesh {
     /// Convert a mesh composed of triangles to a `Mesh`. Behaves like `Mesh::new`, but does not require
     /// any information on neighbors.
-    pub fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<VertexIndices>) -> Self {
+    pub fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<Triangle>) -> Self {
         let mut vertices: Vec<_> = vertices
             .into_iter()
             .enumerate()
@@ -100,9 +98,9 @@ impl Mesh {
                     // No -1 present yet, so the unwrap is safe
                     let index = usize::try_from(index).unwrap();
                     let neighbor_index = polygons[index]
-                        .unroll_triangle_at(vertex_index)
+                        .get_triangle_at(vertex_index)
                         .unwrap()
-                        .get_counterclockwise_neighbor(&unordered_vertices);
+                        .get_counterclockwise_neighbor(vertex_index);
                     let neighbor = &unordered_vertices[neighbor_index];
                     neighbor.coords - vertex.coords
                 };
@@ -130,13 +128,13 @@ impl Mesh {
                 }
                 let unroll = |index: isize| {
                     let polygon = &polygons[usize::try_from(index).unwrap()];
-                    polygon.unroll_triangle_at(vertex_index).unwrap()
+                    polygon.get_triangle_at(vertex_index).unwrap()
                 };
 
                 let last_counterclockwise_neighbor =
-                    unroll(last_index).get_counterclockwise_neighbor(&unordered_vertices);
+                    unroll(last_index).get_counterclockwise_neighbor(vertex_index);
                 let next_clockwise_neighbor =
-                    unroll(polygon_index).get_clockwise_neighbor(&unordered_vertices);
+                    unroll(polygon_index).get_clockwise_neighbor(vertex_index);
 
                 if last_counterclockwise_neighbor != next_clockwise_neighbor {
                     // The edges don't align; there's an obstacle here
@@ -158,15 +156,14 @@ impl Mesh {
 }
 
 impl Polygon {
-    fn unroll_triangle_at(&self, vertex_index: usize) -> Option<UnrolledTriangle> {
+    fn get_triangle_at(&self, vertex_index: usize) -> Option<Triangle> {
         self.vertices
             .iter()
             .chain(self.vertices.iter().take(2))
             .tuple_windows()
             .map(|(a, b, c)| (*a as usize, *b as usize, *c as usize))
-            .map(VertexIndices::from)
-            .find(|triangle| triangle.b == vertex_index)
-            .map(UnrolledTriangle)
+            .map(Triangle::from)
+            .find(|triangle| triangle.contains(vertex_index))
     }
 }
 

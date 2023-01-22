@@ -44,7 +44,7 @@ mod trimesh;
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
 pub use primitives::{Polygon, Vertex};
-pub use trimesh::VertexIndices;
+pub use trimesh::Triangle;
 
 use crate::instance::SearchInstance;
 
