@@ -5,23 +5,16 @@ use std::iter;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 /// A triangle described by the indices of three vertices passed to [`Mesh::from_trimesh`] in counterclockwise order
-pub struct Triangle {
-    /// The index of a vertex. When constructing the [`Triangle`], this vertex is accessed after `c`
-    pub a: usize,
-    /// The index of a vertex. When constructing the [`Triangle`], this vertex is accessed after `a`
-    pub b: usize,
-    /// The index of a vertex. When constructing the [`Triangle`], this vertex is accessed after `b`
-    pub c: usize,
-}
+pub struct Triangle(pub [usize; 3]);
 
 impl From<(usize, usize, usize)> for Triangle {
     fn from((a, b, c): (usize, usize, usize)) -> Self {
-        Self { a, b, c }
+        Self([a, b, c])
     }
 }
 impl From<[usize; 3]> for Triangle {
     fn from(vertices: [usize; 3]) -> Self {
-        Self::new(vertices[0], vertices[1], vertices[2])
+        Self(vertices)
     }
 }
 
@@ -35,33 +28,23 @@ impl From<&Polygon> for Triangle {
 }
 
 impl Triangle {
-    fn new(a: usize, b: usize, c: usize) -> Self {
-        Self { a, b, c }
-    }
-
-    fn into_array(self) -> [usize; 3] {
-        [self.a, self.b, self.c]
-    }
     fn contains(self, index: usize) -> bool {
-        self.into_array().contains(&index)
+        self.0.contains(&index)
     }
 
     fn get_clockwise_neighbor(self, index: usize) -> usize {
         let position = self.position(index);
         let neighbor_pos = if position == 2 { 0 } else { position + 1 };
-        self.into_array()[neighbor_pos]
+        self.0[neighbor_pos]
     }
 
     fn get_counterclockwise_neighbor(self, index: usize) -> usize {
         let position = self.position(index);
         let neighbor_pos = if position == 0 { 2 } else { position - 1 };
-        self.into_array()[neighbor_pos]
+        self.0[neighbor_pos]
     }
     fn position(self, index: usize) -> usize {
-        self.into_array()
-            .into_iter()
-            .position(|i| i == index)
-            .unwrap()
+        self.0.into_iter().position(|i| i == index).unwrap()
     }
 }
 
@@ -167,7 +150,7 @@ fn to_polygons(triangles: Vec<Triangle>) -> Vec<Polygon> {
             let is_one_way = triangle_count == 1;
             Polygon::new(
                 vertex_indices_in_polygon
-                    .into_array()
+                    .0
                     .map(|index| index as u32)
                     .to_vec(),
                 is_one_way,
