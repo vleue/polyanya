@@ -137,6 +137,8 @@ impl Mesh {
                     triangle_at(polygon_index).get_clockwise_neighbor(vertex_index);
 
                 if vertex_index == 0 {
+                    println!("last polygon: {}", last_index);
+                    println!("next polygon: {}", polygon_index);
                     println!("vertex polygons: {:?}", vertex.polygons);
                     println!(
                         "last_counterclockwise_neighbor: {:?}",
