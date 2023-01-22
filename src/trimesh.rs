@@ -69,25 +69,11 @@ impl Mesh {
     /// Convert a mesh composed of triangles to a `Mesh`. Behaves like `Mesh::new`, but does not require
     /// any information on neighbors.
     pub fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<Triangle>) -> Self {
-        let mut vertices: Vec<_> = vertices
-            .into_iter()
-            .enumerate()
-            .map(|(vertex_index, coords)| {
-                let neighbor_indices = triangles
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(polygon_index, vertex_indices_in_polygon)| {
-                        vertex_indices_in_polygon
-                            .contains(vertex_index)
-                            .then_some(polygon_index)
-                    })
-                    .map(|index| isize::try_from(index).unwrap())
-                    .collect();
-                Vertex::new(coords, neighbor_indices)
-            })
-            .collect();
+        let mut vertices: Vec<_> = to_vertices(vertices, &triangles);
         let polygons = to_polygons(triangles);
         let unordered_vertices = vertices.clone();
+
+        // Order vertex polygon neighbors counterclockwise
         for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
             vertex.polygons.sort_by(|index_a, index_b| {
                 let get_counterclockwise_edge = |index: isize| {
@@ -107,6 +93,7 @@ impl Mesh {
                 }
             });
 
+            // Add obstacles (-1) as vertex neighbors
             let mut polygons_including_obstacles = vec![vertex.polygons[0]];
             for polygon_index in vertex
                 .polygons
@@ -147,6 +134,26 @@ impl Mesh {
             .collect();
         Self::new(vertices, polygons)
     }
+}
+
+fn to_vertices(vertices: Vec<Vec2>, triangles: &Vec<Triangle>) -> Vec<Vertex> {
+    vertices
+        .into_iter()
+        .enumerate()
+        .map(|(vertex_index, coords)| {
+            let neighbor_indices = triangles
+                .iter()
+                .enumerate()
+                .filter_map(|(polygon_index, vertex_indices_in_polygon)| {
+                    vertex_indices_in_polygon
+                        .contains(vertex_index)
+                        .then_some(polygon_index)
+                })
+                .map(|index| isize::try_from(index).unwrap())
+                .collect();
+            Vertex::new(coords, neighbor_indices)
+        })
+        .collect()
 }
 
 fn to_polygons(triangles: Vec<Triangle>) -> Vec<Polygon> {
