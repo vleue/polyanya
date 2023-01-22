@@ -58,7 +58,7 @@ pub struct Path {
 }
 
 /// A navigation mesh
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct Mesh {
     /// List of `Vertex` in this mesh
     pub vertices: Vec<Vertex>,
@@ -66,8 +66,23 @@ pub struct Mesh {
     pub polygons: Vec<Polygon>,
     baked_polygons: Option<BVH2d>,
     islands: Option<Vec<usize>>,
+    delta: f32,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
+}
+
+impl Default for Mesh {
+    fn default() -> Self {
+        Self {
+            delta: 0.1,
+            vertices: Default::default(),
+            polygons: Default::default(),
+            baked_polygons: Default::default(),
+            islands: Default::default(),
+            #[cfg(feature = "stats")]
+            scenarios: Cell::new(0),
+        }
+    }
 }
 
 struct Root(Vec2);
@@ -189,10 +204,7 @@ impl Mesh {
         let mut mesh = Mesh {
             vertices,
             polygons,
-            baked_polygons: None,
-            islands: None,
-            #[cfg(feature = "stats")]
-            scenarios: Cell::new(0),
+            ..Default::default()
         };
         #[cfg(not(feature = "no-default-baking"))]
         mesh.bake();
@@ -348,6 +360,21 @@ impl Mesh {
         }
     }
 
+    /// The delta set by [`Mesh::set_delta`]
+    pub fn delta(&self) -> f32 {
+        self.delta
+    }
+
+    /// Set the delta for search with [`Mesh::path`], [`Mesh::get_path`], and [`Mesh::point_in_mesh`].
+    /// A given point (x, y)  will be searched in a square around a delimited by (x ± delta, y ± delta).
+    ///
+    /// Default is 0.1
+    pub fn set_delta(&mut self, delta: f32) -> &mut Self {
+        assert!(delta >= 0.0);
+        self.delta = delta;
+        self
+    }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[cfg(test)]
     fn successors(&self, node: SearchNode, to: Vec2) -> Vec<SearchNode> {
@@ -424,7 +451,7 @@ impl Mesh {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location(&self, point: Vec2) -> u32 {
-        let delta = 0.1;
+        let delta = self.delta;
         [
             Vec2::new(0.0, 0.0),
             Vec2::new(delta, 0.0),
