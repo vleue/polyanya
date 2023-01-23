@@ -34,8 +34,7 @@ impl Triangle {
 
     fn get_clockwise_neighbor(self, index: usize) -> usize {
         let position = self.position(index);
-        let neighbor_pos = if position == 2 { 0 } else { position + 1 };
-        self.0[neighbor_pos]
+        self.0[(position + 1) % 3]
     }
 
     fn get_counterclockwise_neighbor(self, index: usize) -> usize {
