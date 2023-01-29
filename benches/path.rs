@@ -13,7 +13,7 @@ macro_rules! assert_delta {
 }
 
 fn get_path(c: &mut Criterion) {
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh".into());
+    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
 
     [
         (Vec2::new(993.0, 290.0), Vec2::new(34.0, 622.0), 1123.2226),
@@ -26,7 +26,7 @@ fn get_path(c: &mut Criterion) {
     ]
     .iter()
     .for_each(|(from, to, len)| {
-        c.bench_function(&format!("get path {:?}", from), |b| {
+        c.bench_function(&format!("get path {from:?}"), |b| {
             b.iter(|| {
                 assert_delta!(mesh.path(*from, *to).unwrap(), *len);
             })

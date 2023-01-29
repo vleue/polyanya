@@ -156,7 +156,7 @@ mod tests {
 
         for start in 0..6 {
             for end in (start.max(2) + 1)..8 {
-                eprintln!("{} -> {}", start, end);
+                eprintln!("{start} -> {end}");
                 assert_eq!(
                     polygon.double_edges_index()[start..=end],
                     polygon.circular_edges_index(start..=end)[..]

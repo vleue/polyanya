@@ -3,7 +3,7 @@ use glam::Vec2;
 use polyanya::Mesh;
 
 fn is_in_mesh(c: &mut Criterion) {
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh".into());
+    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
 
     [
         Vec2::new(575., 410.),
@@ -15,7 +15,7 @@ fn is_in_mesh(c: &mut Criterion) {
     ]
     .iter()
     .for_each(|from| {
-        c.bench_function(&format!("is in mesh {:?}", from), |b| {
+        c.bench_function(&format!("is in mesh {from:?}"), |b| {
             b.iter(|| {
                 assert!(black_box(mesh.point_in_mesh(*from)));
             })
@@ -24,7 +24,7 @@ fn is_in_mesh(c: &mut Criterion) {
 }
 
 fn is_not_in_mesh(c: &mut Criterion) {
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh".into());
+    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
 
     [
         Vec2::new(0., 0.),
@@ -35,7 +35,7 @@ fn is_not_in_mesh(c: &mut Criterion) {
     ]
     .iter()
     .for_each(|from| {
-        c.bench_function(&format!("is not in mesh {:?}", from), |b| {
+        c.bench_function(&format!("is not in mesh {from:?}"), |b| {
             b.iter(|| {
                 assert!(black_box(!mesh.point_in_mesh(*from)));
             })

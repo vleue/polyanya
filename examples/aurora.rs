@@ -18,7 +18,7 @@ fn main() {
     )
     .expect("set up the subscriber");
 
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh".into());
+    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
 
     assert_delta!(
         mesh.path(Vec2::new(993.0, 290.0), Vec2::new(34.0, 622.0))
