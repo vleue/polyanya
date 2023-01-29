@@ -37,14 +37,14 @@ use tracing::instrument;
 #[cfg(feature = "async")]
 mod async_helpers;
 mod helpers;
+mod input;
 mod instance;
 mod primitives;
-mod trimesh;
 
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
+pub use input::trimesh::{Triangle, Trimesh};
 pub use primitives::{Polygon, Vertex};
-pub use trimesh::Triangle;
 
 use crate::instance::SearchInstance;
 

@@ -46,12 +46,19 @@ impl Triangle {
     }
 }
 
-impl Mesh {
-    /// Convert a mesh composed of [`Triangle`]s to a [`Mesh`]. Behaves like [`Mesh::new`], but does not require
-    /// any information about vertex or polygon neighbors.
-    pub fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<Triangle>) -> Self {
-        let mut vertices: Vec<_> = to_vertices(vertices, &triangles);
-        let polygons = to_polygons(triangles);
+/// A triangle mesh, represented by a list of vertex and how they are arranged in triangles
+#[derive(Debug)]
+pub struct Trimesh {
+    /// List of vertex making this trimesh
+    pub vertices: Vec<Vec2>,
+    /// List of triangles, made of vertex indices
+    pub triangles: Vec<Triangle>,
+}
+
+impl From<Trimesh> for Mesh {
+    fn from(value: Trimesh) -> Self {
+        let mut vertices: Vec<_> = to_vertices(value.vertices, &value.triangles);
+        let polygons = to_polygons(value.triangles);
         let unordered_vertices = vertices.clone();
 
         // Order vertex polygon neighbors counterclockwise
@@ -180,8 +187,8 @@ mod tests {
                 Polygon::new(vec![0, 4, 3], false), // 4
             ],
         );
-        let from_trimesh = Mesh::from_trimesh(
-            vec![
+        let from_trimesh: Mesh = Trimesh {
+            vertices: vec![
                 Vec2::new(1., 1.),
                 Vec2::new(5., 1.),
                 Vec2::new(5., 4.),
@@ -189,14 +196,15 @@ mod tests {
                 Vec2::new(2., 2.),
                 Vec2::new(4., 3.),
             ],
-            vec![
+            triangles: vec![
                 (0, 1, 4).into(),
                 (1, 2, 5).into(),
                 (5, 2, 3).into(),
                 (1, 5, 3).into(),
                 (0, 4, 3).into(),
             ],
-        );
+        }
+        .into();
         assert_eq!(regular_mesh.polygons, from_trimesh.polygons);
         for (index, (expected_vertex, actual_vertex)) in regular_mesh
             .vertices
