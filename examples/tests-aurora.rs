@@ -3,7 +3,7 @@ fn main() {}
 #[cfg(test)]
 use glam::Vec2;
 #[cfg(test)]
-use polyanya::Mesh;
+use polyanya::{Mesh, PolyanyaFile};
 
 #[cfg(test)]
 macro_rules! assert_delta {
@@ -17,7 +17,7 @@ macro_rules! assert_delta {
 
 #[cfg(test)]
 fn aurora_mesh() -> Mesh {
-    Mesh::from_file("meshes/aurora.mesh".into())
+    PolyanyaFile::from_file("meshes/aurora.mesh").into()
 }
 
 #[test]

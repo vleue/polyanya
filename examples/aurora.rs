@@ -1,5 +1,5 @@
 use glam::Vec2;
-use polyanya::Mesh;
+use polyanya::{Mesh, PolyanyaFile};
 
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
@@ -18,8 +18,7 @@ fn main() {
     )
     .expect("set up the subscriber");
 
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
-
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh").into();
     assert_delta!(
         mesh.path(Vec2::new(993.0, 290.0), Vec2::new(34.0, 622.0))
             .unwrap(),

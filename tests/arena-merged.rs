@@ -1,5 +1,5 @@
 use glam::Vec2;
-use polyanya::Mesh;
+use polyanya::{Mesh, PolyanyaFile};
 
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
@@ -11,7 +11,7 @@ macro_rules! assert_delta {
 }
 
 fn arena_mesh() -> Mesh {
-    Mesh::from_file("meshes/arena-merged.mesh")
+    PolyanyaFile::from_file("meshes/arena-merged.mesh").into()
 }
 
 #[test]

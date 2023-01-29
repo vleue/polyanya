@@ -1,7 +1,7 @@
 use std::io::{self, BufRead};
 
 use glam::Vec2;
-use polyanya::Mesh;
+use polyanya::{Mesh, PolyanyaFile};
 
 struct Scenario {
     from: Vec2,
@@ -48,7 +48,7 @@ fn main() {
     let mut args = std::env::args();
     args.next();
 
-    let mesh = Mesh::from_file(&args.next().unwrap());
+    let mesh: Mesh = PolyanyaFile::from_file(&args.next().unwrap()).into();
 
     for scenario in Scenarios::from_file(&args.next().unwrap()).0 {
         mesh.path(scenario.from, scenario.to).unwrap();

@@ -3,55 +3,55 @@ use glam::Vec2;
 use std::cmp::Ordering;
 use std::iter;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
-/// A triangle described by the indices of three vertices passed to [`Mesh::from_trimesh`] in counterclockwise order
-pub struct Triangle(pub [usize; 3]);
-
-impl From<(usize, usize, usize)> for Triangle {
-    fn from((a, b, c): (usize, usize, usize)) -> Self {
-        Self([a, b, c])
-    }
-}
-impl From<[usize; 3]> for Triangle {
-    fn from(vertices: [usize; 3]) -> Self {
-        Self(vertices)
-    }
+trait Triangle {
+    fn get_clockwise_neighbor(&self, index: usize) -> usize;
+    fn get_counterclockwise_neighbor(&self, index: usize) -> usize;
+    fn position(&self, index: usize) -> usize;
 }
 
-impl From<&Polygon> for Triangle {
-    fn from(value: &Polygon) -> Self {
-        let vertices = &value.vertices;
-        [vertices[0], vertices[1], vertices[2]]
-            .map(|index| index as usize)
-            .into()
-    }
-}
-
-impl Triangle {
-    fn contains(self, index: usize) -> bool {
-        self.0.contains(&index)
-    }
-
-    fn get_clockwise_neighbor(self, index: usize) -> usize {
+impl Triangle for [usize; 3] {
+    fn get_clockwise_neighbor(&self, index: usize) -> usize {
         let position = self.position(index);
-        self.0[(position + 1) % 3]
+        self[(position + 1) % 3]
     }
 
-    fn get_counterclockwise_neighbor(self, index: usize) -> usize {
+    fn get_counterclockwise_neighbor(&self, index: usize) -> usize {
         let position = self.position(index);
-        self.0[(position + 2) % 3]
+        self[(position + 2) % 3]
     }
-    fn position(self, index: usize) -> usize {
-        self.0.into_iter().position(|i| i == index).unwrap()
+    fn position(&self, index: usize) -> usize {
+        self.iter().position(|i| *i == index).unwrap()
     }
 }
 
-impl Mesh {
-    /// Convert a mesh composed of [`Triangle`]s to a [`Mesh`]. Behaves like [`Mesh::new`], but does not require
-    /// any information about vertex or polygon neighbors.
-    pub fn from_trimesh(vertices: Vec<Vec2>, triangles: Vec<Triangle>) -> Self {
-        let mut vertices: Vec<_> = to_vertices(vertices, &triangles);
-        let polygons = to_polygons(triangles);
+impl Triangle for Vec<u32> {
+    fn get_clockwise_neighbor(&self, index: usize) -> usize {
+        let position = self.position(index);
+        self[(position + 1) % self.len()] as usize
+    }
+
+    fn get_counterclockwise_neighbor(&self, index: usize) -> usize {
+        let position = self.position(index);
+        self[(position + (self.len() - 1)) % self.len()] as usize
+    }
+    fn position(&self, index: usize) -> usize {
+        self.iter().position(|i| *i as usize == index).unwrap()
+    }
+}
+
+/// A triangle mesh, represented by a list of vertex and how they are arranged in triangles
+#[derive(Debug)]
+pub struct Trimesh {
+    /// List of vertex making this trimesh
+    pub vertices: Vec<Vec2>,
+    /// List of triangles, made of vertex indices in counterclockwise order
+    pub triangles: Vec<[usize; 3]>,
+}
+
+impl From<Trimesh> for Mesh {
+    fn from(value: Trimesh) -> Self {
+        let mut vertices: Vec<_> = to_vertices(&value);
+        let polygons = to_polygons(value.triangles);
         let unordered_vertices = vertices.clone();
 
         // Order vertex polygon neighbors counterclockwise
@@ -60,7 +60,8 @@ impl Mesh {
                 let get_counterclockwise_edge = |index: isize| {
                     // No -1 present yet, so the unwrap is safe
                     let index = usize::try_from(index).unwrap();
-                    let neighbor_index = Triangle::from(&polygons[index])
+                    let neighbor_index = polygons[index]
+                        .vertices
                         .get_counterclockwise_neighbor(vertex_index);
                     let neighbor = &unordered_vertices[neighbor_index];
                     neighbor.coords - vertex.coords
@@ -90,7 +91,7 @@ impl Mesh {
                 }
                 let triangle_at = |index: isize| {
                     let polygon = &polygons[usize::try_from(index).unwrap()];
-                    Triangle::from(polygon)
+                    &polygon.vertices
                 };
 
                 let last_counterclockwise_neighbor =
@@ -117,27 +118,29 @@ impl Mesh {
     }
 }
 
-fn to_vertices(vertices: Vec<Vec2>, triangles: &[Triangle]) -> Vec<Vertex> {
-    vertices
-        .into_iter()
+fn to_vertices(trimesh: &Trimesh) -> Vec<Vertex> {
+    trimesh
+        .vertices
+        .iter()
         .enumerate()
         .map(|(vertex_index, coords)| {
-            let neighbor_indices = triangles
+            let neighbor_indices = trimesh
+                .triangles
                 .iter()
                 .enumerate()
                 .filter_map(|(polygon_index, vertex_indices_in_polygon)| {
                     vertex_indices_in_polygon
-                        .contains(vertex_index)
+                        .contains(&vertex_index)
                         .then_some(polygon_index)
                 })
                 .map(|index| isize::try_from(index).unwrap())
                 .collect();
-            Vertex::new(coords, neighbor_indices)
+            Vertex::new(*coords, neighbor_indices)
         })
         .collect()
 }
 
-fn to_polygons(triangles: Vec<Triangle>) -> Vec<Polygon> {
+fn to_polygons(triangles: Vec<[usize; 3]>) -> Vec<Polygon> {
     let triangle_count = triangles.len();
 
     triangles
@@ -147,10 +150,7 @@ fn to_polygons(triangles: Vec<Triangle>) -> Vec<Polygon> {
             // except for the trivial case
             let is_one_way = triangle_count == 1;
             Polygon::new(
-                vertex_indices_in_polygon
-                    .0
-                    .map(|index| index as u32)
-                    .to_vec(),
+                vertex_indices_in_polygon.map(|index| index as u32).to_vec(),
                 is_one_way,
             )
         })
@@ -180,8 +180,8 @@ mod tests {
                 Polygon::new(vec![0, 4, 3], false), // 4
             ],
         );
-        let from_trimesh = Mesh::from_trimesh(
-            vec![
+        let from_trimesh: Mesh = Trimesh {
+            vertices: vec![
                 Vec2::new(1., 1.),
                 Vec2::new(5., 1.),
                 Vec2::new(5., 4.),
@@ -189,14 +189,9 @@ mod tests {
                 Vec2::new(2., 2.),
                 Vec2::new(4., 3.),
             ],
-            vec![
-                (0, 1, 4).into(),
-                (1, 2, 5).into(),
-                (5, 2, 3).into(),
-                (1, 5, 3).into(),
-                (0, 4, 3).into(),
-            ],
-        );
+            triangles: vec![[0, 1, 4], [1, 2, 5], [5, 2, 3], [1, 5, 3], [0, 4, 3]],
+        }
+        .into();
         assert_eq!(regular_mesh.polygons, from_trimesh.polygons);
         for (index, (expected_vertex, actual_vertex)) in regular_mesh
             .vertices

@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use glam::Vec2;
-use polyanya::Mesh;
+use polyanya::{Mesh, PolyanyaFile};
 
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
@@ -13,8 +13,7 @@ macro_rules! assert_delta {
 }
 
 fn get_path(c: &mut Criterion) {
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
-
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh").into();
     [
         (Vec2::new(993.0, 290.0), Vec2::new(34.0, 622.0), 1123.2226),
         (Vec2::new(356.0, 166.0), Vec2::new(661.0, 441.0), 595.041),

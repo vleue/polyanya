@@ -1,10 +1,9 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use glam::Vec2;
-use polyanya::Mesh;
+use polyanya::{Mesh, PolyanyaFile};
 
 fn is_in_mesh(c: &mut Criterion) {
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
-
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh").into();
     [
         Vec2::new(575., 410.),
         Vec2::new(728., 148.),
@@ -24,8 +23,7 @@ fn is_in_mesh(c: &mut Criterion) {
 }
 
 fn is_not_in_mesh(c: &mut Criterion) {
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
-
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh").into();
     [
         Vec2::new(0., 0.),
         Vec2::new(297., 438.),
