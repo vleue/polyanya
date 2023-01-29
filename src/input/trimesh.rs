@@ -20,7 +20,7 @@ impl Triangle for [usize; 3] {
         self[(position + 2) % 3]
     }
     fn position(&self, index: usize) -> usize {
-        self.into_iter().position(|i| *i == index).unwrap()
+        self.iter().position(|i| *i == index).unwrap()
     }
 }
 
