@@ -275,7 +275,7 @@ impl<'m> SearchInstance<'m> {
 
             #[cfg(debug_assertions)]
             if self.debug {
-                println!("| {:?} : {:?} / {:?}", edge, start_point, end_point);
+                println!("| {edge:?} : {start_point:?} / {end_point:?}");
                 println!(
                     "|   {:?} - {:?}",
                     start_point.side((node.root, node.interval.0)),
@@ -296,7 +296,7 @@ impl<'m> SearchInstance<'m> {
                     ) {
                         #[cfg(debug_assertions)]
                         if self.debug {
-                            println!("|   intersection 0 {:?}", intersect);
+                            println!("|   intersection 0 {intersect:?}");
                             println!(
                                 "|     {:?} / {:?}",
                                 intersect.distance(start_point),
@@ -345,7 +345,7 @@ impl<'m> SearchInstance<'m> {
                 {
                     #[cfg(debug_assertions)]
                     if self.debug {
-                        println!("|   intersection 1 {:?}", intersect);
+                        println!("|   intersection 1 {intersect:?}");
                         println!(
                             "|     {:?} / {:?}",
                             intersect.distance(start_point),
@@ -510,7 +510,7 @@ impl<'m> SearchInstance<'m> {
 
                 #[cfg(debug_assertions)]
                 if self.debug {
-                    println!("v {:?}", successor);
+                    println!("v {successor:?}");
                 }
 
                 let other_side = *start
@@ -521,7 +521,7 @@ impl<'m> SearchInstance<'m> {
 
                 #[cfg(debug_assertions)]
                 if self.debug {
-                    println!("| going to {:?}", other_side);
+                    println!("| going to {other_side:?}");
                 }
 
                 // prune edges that don't have a polygon on the other side: cul de sac pruning
@@ -600,7 +600,7 @@ impl<'m> SearchInstance<'m> {
 
                 #[cfg(debug_assertions)]
                 if self.debug {
-                    println!("| through root {:?}", root);
+                    println!("| through root {root:?}");
                 }
 
                 self.add_node(

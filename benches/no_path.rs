@@ -3,7 +3,7 @@ use glam::Vec2;
 use polyanya::Mesh;
 
 fn no_path(c: &mut Criterion) {
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh".into());
+    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
 
     [
         (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
@@ -15,7 +15,7 @@ fn no_path(c: &mut Criterion) {
     ]
     .iter()
     .for_each(|(from, to)| {
-        c.bench_function(&format!("no path {:?}-{:?}", from, to), |b| {
+        c.bench_function(&format!("no path {from:?}-{to:?}"), |b| {
             b.iter(|| {
                 assert_eq!(black_box(mesh.path(*from, *to)), None);
             })

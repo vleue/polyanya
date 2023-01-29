@@ -1140,7 +1140,7 @@ mod tests {
         let successors = mesh.edges_between(&search_node);
 
         for successor in &successors {
-            println!("{:?}", successor);
+            println!("{successor:?}");
         }
 
         println!("=========================");
@@ -1159,7 +1159,7 @@ mod tests {
         let successors = mesh.edges_between(&search_node);
 
         for successor in &successors {
-            println!("{:?}", successor);
+            println!("{successor:?}");
         }
 
         println!("=========================");
@@ -1178,7 +1178,7 @@ mod tests {
         let successors = mesh.edges_between(&search_node);
 
         for successor in &successors {
-            println!("{:?}", successor);
+            println!("{successor:?}");
         }
     }
 
@@ -1200,7 +1200,7 @@ mod tests {
         let successors = mesh.edges_between(&search_node);
 
         for successor in &successors {
-            println!("{:?}", successor);
+            println!("{successor:?}");
         }
     }
 }

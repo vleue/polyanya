@@ -11,7 +11,7 @@ macro_rules! assert_delta {
 }
 
 fn arena_mesh() -> Mesh {
-    Mesh::from_file("meshes/arena.mesh".into())
+    Mesh::from_file("meshes/arena.mesh")
 }
 
 #[test]
