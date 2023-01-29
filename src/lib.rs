@@ -43,7 +43,7 @@ mod primitives;
 
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
-pub use input::trimesh::{Triangle, Trimesh};
+pub use input::trimesh::Trimesh;
 pub use primitives::{Polygon, Vertex};
 
 use crate::instance::SearchInstance;
