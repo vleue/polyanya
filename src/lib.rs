@@ -19,8 +19,6 @@ use std::{
     cmp::Ordering,
     fmt::{self, Debug, Display},
     hash::Hash,
-    io,
-    io::{BufRead, Read},
 };
 
 use bvh2d::{
@@ -43,6 +41,7 @@ mod primitives;
 
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
+pub use input::polyanya_file::PolyanyaFile;
 pub use input::trimesh::Trimesh;
 pub use primitives::{Polygon, Vertex};
 
@@ -211,71 +210,6 @@ impl Mesh {
         // just to not get a warning on the mut borrow. should be pretty much free anyway
         #[cfg(feature = "no-default-baking")]
         mesh.unbake();
-        mesh
-    }
-
-    /// Create a `Mesh` from a file in the format `mesh 2`
-    ///
-    /// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
-    pub fn from_file(path: &str) -> Mesh {
-        let mut file = std::fs::File::open(path).unwrap();
-        let mut buffer = Vec::new();
-        file.read_to_end(&mut buffer).unwrap();
-        Self::from_bytes(&buffer)
-    }
-
-    /// Create a `Mesh` from bytes in the format `mesh 2`
-    ///
-    /// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
-    pub fn from_bytes(bytes: &[u8]) -> Mesh {
-        let mut mesh = Mesh::default();
-        let mut nb_vertices = 0;
-        let mut nb_polygons = 0;
-        let mut phase = 0;
-        for line in io::BufReader::new(bytes).lines() {
-            let line: String = line.unwrap();
-            if phase == 0 {
-                if line == "mesh" || line == "2" {
-                    continue;
-                } else {
-                    (nb_vertices, nb_polygons) = line
-                        .split_once(' ')
-                        .map(|(a, b)| (a.parse().unwrap(), b.parse().unwrap()))
-                        .unwrap();
-                    phase = 1;
-                    continue;
-                }
-            }
-            if phase == 1 {
-                if nb_vertices > 0 {
-                    nb_vertices -= 1;
-                    let mut values = line.split(' ');
-                    let x = values.next().unwrap().parse().unwrap();
-                    let y = values.next().unwrap().parse().unwrap();
-                    let _ = values.next();
-                    let vertex = Vertex::new(
-                        Vec2::new(x, y),
-                        values.map(|v| v.parse().unwrap()).collect(),
-                    );
-                    mesh.vertices.push(vertex);
-                } else {
-                    phase = 2;
-                }
-            }
-            if phase == 2 {
-                if nb_polygons > 0 {
-                    nb_polygons -= 1;
-                    let mut values = line.split(' ');
-                    let n = values.next().unwrap().parse().unwrap();
-                    let polygon = Polygon::using(n, values.map(|v| v.parse().unwrap()).collect());
-                    mesh.polygons.push(polygon)
-                } else {
-                    panic!("unexpected line");
-                }
-            }
-        }
-        #[cfg(not(feature = "no-default-baking"))]
-        mesh.bake();
         mesh
     }
 

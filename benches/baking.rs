@@ -1,9 +1,8 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use polyanya::Mesh;
+use polyanya::{Mesh, PolyanyaFile};
 
 fn baking(c: &mut Criterion) {
-    let mut mesh = Mesh::from_file("meshes/aurora-merged.mesh");
-
+    let mut mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh").into();
     c.bench_function(&"baking".to_string(), |b| {
         b.iter(|| {
             mesh.unbake();

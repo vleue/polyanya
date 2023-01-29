@@ -1,10 +1,9 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use glam::Vec2;
-use polyanya::Mesh;
+use polyanya::{Mesh, PolyanyaFile};
 
 fn no_path(c: &mut Criterion) {
-    let mesh = Mesh::from_file("meshes/aurora-merged.mesh");
-
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh").into();
     [
         (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
         (Vec2::new(0.0, 0.0), Vec2::new(575.0, 410.0)),
