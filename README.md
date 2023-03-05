@@ -1,7 +1,7 @@
 # Polyanya - Compromise-free Pathfinding on a Navigation Mesh
 
 ![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)
-[![Realease Doc](https://docs.rs/polyanya/badge.svg)](https://docs.rs/polyanya)
+[![Release Doc](https://docs.rs/polyanya/badge.svg)](https://docs.rs/polyanya)
 [![Crate](https://img.shields.io/crates/v/polyanya.svg)](https://crates.io/crates/polyanya)
 
 Implementation of [Polyanya](https://www.ijcai.org/proceedings/2017/0070.pdf) in Rust! Polyanya is a [any-angle path planning](https://en.wikipedia.org/wiki/Any-angle_path_planning) algorithm.
