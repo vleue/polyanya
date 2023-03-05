@@ -21,9 +21,9 @@ no-default-baking = []
 [dependencies]
 tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.13" }
-glam = { version = "0.22", features = ["approx"] }
+glam = { version = "0.23", features = ["approx"] }
 smallvec = { version = "1.9", features = ["union", "const_generics"] }
-bvh2d = "0.2"
+bvh2d = { version = "0.2", git = "https://github.com/mockersf/bvh2d" }
 
 [dev-dependencies]
 criterion = "0.4"
