@@ -17,6 +17,7 @@ stats = []
 verbose = []
 async = []
 no-default-baking = []
+serde = ["glam/serde", "bvh2d/serde", "dep:serde"]
 
 [dependencies]
 tracing = { version = "0.1", optional = true }
@@ -24,6 +25,7 @@ hashbrown = { version = "0.13" }
 glam = { version = "0.23", features = ["approx"] }
 smallvec = { version = "1.9", features = ["union", "const_generics"] }
 bvh2d = { version = "0.3", git = "https://github.com/mockersf/bvh2d" }
+serde = { version = "1.0.164", features = ["derive"], optional = true }
 
 [dev-dependencies]
 criterion = "0.4"

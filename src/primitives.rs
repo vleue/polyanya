@@ -6,8 +6,12 @@ use tracing::instrument;
 
 use glam::Vec2;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 /// A point that lies on an edge of a polygon in the navigation mesh.
 #[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Vertex {
     /// Coordinates of that point.
     pub coords: Vec2,
@@ -31,6 +35,7 @@ impl Vertex {
 
 /// A polygon in the navigation mesh.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Polygon {
     /// List of vertex making this polygon, in counter clockwise order.
     pub vertices: Vec<u32>,

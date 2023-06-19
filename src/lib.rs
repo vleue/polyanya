@@ -32,6 +32,9 @@ use instance::{EdgeSide, InstanceStep};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 #[cfg(feature = "async")]
 mod async_helpers;
 mod helpers;
@@ -58,6 +61,7 @@ pub struct Path {
 
 /// A navigation mesh
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Mesh {
     /// List of `Vertex` in this mesh
     pub vertices: Vec<Vertex>,
