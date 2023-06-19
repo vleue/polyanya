@@ -33,7 +33,7 @@ use instance::{EdgeSide, InstanceStep};
 use tracing::instrument;
 
 #[cfg(feature = "serde")]
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "async")]
 mod async_helpers;
