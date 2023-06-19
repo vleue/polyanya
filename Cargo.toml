@@ -28,7 +28,7 @@ bvh2d = { version = "0.3", git = "https://github.com/mockersf/bvh2d" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 
 [dev-dependencies]
-criterion = "0.4"
+criterion = "0.5"
 tracing-tracy = "0.10"
 tracing-subscriber = "0.3"
 tracing = "0.1"
