@@ -7,7 +7,7 @@ use tracing::instrument;
 use glam::Vec2;
 
 #[cfg(feature = "serde")]
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// A point that lies on an edge of a polygon in the navigation mesh.
 #[derive(Debug, Clone, PartialEq)]
