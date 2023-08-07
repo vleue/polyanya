@@ -1,4 +1,4 @@
-use std::io::{self, BufRead, Read};
+use std::io::{self, BufRead, Read, Write};
 
 use glam::Vec2;
 
@@ -81,10 +81,73 @@ impl PolyanyaFile {
         }
         mesh
     }
+
+    /// Write a `Mesh` to a file in the format `mesh 2`.
+    ///
+    /// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
+    pub fn to_file(&self, path: &str) {
+        let mut file = std::fs::File::create(path).unwrap();
+        let bytes = self.to_bytes();
+        file.write_all(&bytes).unwrap();
+    }
+
+    /// Write a `Mesh` to bytes in the format `mesh 2`.
+    ///
+    /// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+
+        bytes.extend_from_slice(b"mesh\n");
+        bytes.extend_from_slice(b"2\n");
+        bytes.extend_from_slice(
+            format!("{} {}\n", self.vertices.len(), self.polygons.len()).as_bytes(),
+        );
+        for vertex in &self.vertices {
+            bytes.extend_from_slice(
+                format!(
+                    "{} {} {}\n",
+                    vertex.coords.x,
+                    vertex.coords.y,
+                    vertex
+                        .polygons
+                        .iter()
+                        .map(|n| n.to_string())
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                )
+                .as_bytes(),
+            );
+        }
+        for polygon in &self.polygons {
+            bytes.extend_from_slice(
+                format!(
+                    "{} {}\n",
+                    polygon.vertices.len(),
+                    polygon
+                        .vertices
+                        .iter()
+                        .map(|v| v.to_string())
+                        .collect::<Vec<String>>()
+                        .join(" ")
+                )
+                .as_bytes(),
+            );
+        }
+        bytes
+    }
 }
 
 impl From<PolyanyaFile> for Mesh {
     fn from(value: PolyanyaFile) -> Self {
         Mesh::new(value.vertices, value.polygons)
+    }
+}
+
+impl From<Mesh> for PolyanyaFile {
+    fn from(mesh: Mesh) -> Self {
+        PolyanyaFile {
+            vertices: mesh.vertices,
+            polygons: mesh.polygons,
+        }
     }
 }
