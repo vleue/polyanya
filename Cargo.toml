@@ -26,6 +26,7 @@ glam = { version = "0.24", features = ["approx"] }
 smallvec = { version = "1.9", features = ["union", "const_generics"] }
 bvh2d = { version = "0.3", git = "https://github.com/mockersf/bvh2d" }
 serde = { version = "1.0", features = ["derive"], optional = true }
+spade = "2.2"
 
 [dev-dependencies]
 criterion = "0.5"
@@ -50,4 +51,8 @@ harness = false
 
 [[bench]]
 name = "baking"
+harness = false
+
+[[bench]]
+name = "triangulation"
 harness = false

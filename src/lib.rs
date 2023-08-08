@@ -45,6 +45,7 @@ mod primitives;
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
 pub use input::polyanya_file::PolyanyaFile;
+pub use input::triangulation::Triangulation;
 pub use input::trimesh::Trimesh;
 pub use primitives::{Polygon, Vertex};
 
