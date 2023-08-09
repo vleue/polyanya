@@ -83,7 +83,7 @@ impl Triangulation {
 // Check if a point is in a polygon, first by checking its AABB, then by checking the number of times
 // a ray from the point to the top of the AABB intersects the polygon.
 #[inline]
-fn in_polygon(point: Vec2, edges: &Vec<(Vec2, Vec2)>, aabb: (Vec2, Vec2)) -> bool {
+fn in_polygon(point: Vec2, edges: &[(Vec2, Vec2)], aabb: (Vec2, Vec2)) -> bool {
     if point.x < aabb.0.x || point.x > aabb.1.x || point.y < aabb.0.y || point.y > aabb.1.y {
         return false;
     }
