@@ -26,6 +26,8 @@ impl Triangulation {
     }
 
     /// Add an obstacle delimited by the list of points on its edges.
+    ///
+    /// Obstacles *MUST NOT* overlap.
     pub fn add_obstacle(&mut self, edges: Vec<Vec2>) {
         self.obstacles.push(edges);
     }
