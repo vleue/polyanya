@@ -1,6 +1,9 @@
 use std::collections::VecDeque;
 
-use geo::{Contains, Coord, LineString};
+pub use geo::LineString;
+use geo::{
+    BooleanOps, Contains, Coord, CoordsIter, Intersects, MultiPolygon, Polygon as GeoPolygon,
+};
 use glam::{vec2, Vec2};
 use hashbrown::HashMap;
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
@@ -10,16 +13,17 @@ use crate::{Mesh, Polygon, Vertex};
 /// An helper to create a [`Mesh`] from a list of edges and obstacle, using a constrained Delaunay triangulation.
 #[derive(Debug, Clone)]
 pub struct Triangulation {
-    edges: LineString<f32>,
-    obstacles: Vec<LineString<f32>>,
+    inner: GeoPolygon<f32>,
 }
 
 impl Triangulation {
     /// Create a new triangulation from a the list of points on its outer edges.
     pub fn from_outer_edges(edges: Vec<Vec2>) -> Triangulation {
         Self {
-            edges: LineString::from(edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>()),
-            obstacles: Default::default(),
+            inner: GeoPolygon::new(
+                LineString::from(edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>()),
+                vec![],
+            ),
         }
     }
 
@@ -27,7 +31,7 @@ impl Triangulation {
     ///
     /// Obstacles *MUST NOT* overlap.
     pub fn add_obstacle(&mut self, edges: Vec<Vec2>) {
-        self.obstacles.push(LineString::from(
+        self.inner.interiors_push(LineString::from(
             edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>(),
         ));
     }
@@ -78,14 +82,11 @@ impl Triangulation {
 impl From<Triangulation> for Mesh {
     fn from(value: Triangulation) -> Self {
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
-        Triangulation::add_constraint_edges(&mut cdt, &value.edges);
-        let outer = geo::Polygon::new(value.edges, vec![]);
+        Triangulation::add_constraint_edges(&mut cdt, value.inner.exterior());
 
-        let mut obstacles = vec![];
-        for obstacle in value.obstacles {
+        value.inner.interiors().iter().for_each(|obstacle| {
             Triangulation::add_constraint_edges(&mut cdt, &obstacle);
-            obstacles.push(geo::Polygon::new(obstacle, vec![]));
-        }
+        });
 
         let mut face_to_polygon = HashMap::new();
         let polygons = cdt
@@ -93,12 +94,7 @@ impl From<Triangulation> for Mesh {
             .filter_map(|face| {
                 let center = face.center();
                 let center = Coord::from((center.x, center.y));
-                (outer.contains(&center)
-                    && obstacles
-                        .iter()
-                        .map(|poly| !poly.contains(&center))
-                        .all(|b| b))
-                .then(|| {
+                value.inner.contains(&center).then(|| {
                     face_to_polygon.insert(face.index(), face_to_polygon.len() as isize);
                     Polygon::new(
                         face.vertices()
