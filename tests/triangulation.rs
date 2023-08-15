@@ -28,7 +28,7 @@ fn is_in_mesh() {
 }
 
 #[test]
-fn is_in_mesh_4_obstackes() {
+fn is_in_mesh_4_obstacles() {
     let mut triangulation = Triangulation::from_outer_edges(vec![
         vec2(0.0, 0.0),
         vec2(10.0, 0.0),
@@ -42,22 +42,22 @@ fn is_in_mesh_4_obstackes() {
         vec2(4.5, 2.5),
     ]);
     triangulation.add_obstacle(vec![
-        vec2(2.5, 4.5),
+        vec2(2.5, 4.6),
         vec2(2.5, 7.5),
         vec2(4.5, 7.5),
-        vec2(4.5, 4.5),
+        vec2(4.5, 4.6),
     ]);
     triangulation.add_obstacle(vec![
-        vec2(4.5, 2.5),
-        vec2(4.5, 4.5),
+        vec2(4.6, 2.5),
+        vec2(4.6, 4.5),
         vec2(7.5, 4.5),
         vec2(7.5, 2.5),
     ]);
     triangulation.add_obstacle(vec![
-        vec2(4.5, 4.5),
-        vec2(4.5, 7.5),
+        vec2(4.6, 4.6),
+        vec2(4.6, 7.5),
         vec2(7.5, 7.5),
-        vec2(7.5, 4.5),
+        vec2(7.5, 4.6),
     ]);
     let mesh: Mesh = triangulation.into();
     for i in 0..10 {
