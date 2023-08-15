@@ -1,26 +1,24 @@
 use std::collections::VecDeque;
 
+use geo::{Contains, Coord, LineString};
 use glam::{vec2, Vec2};
 use hashbrown::HashMap;
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
-use crate::{
-    helpers::{line_intersect_segment, Vec2Helper},
-    Mesh, Polygon, Vertex,
-};
+use crate::{Mesh, Polygon, Vertex};
 
 /// An helper to create a [`Mesh`] from a list of edges and obstacle, using a constrained Delaunay triangulation.
 #[derive(Debug, Clone)]
 pub struct Triangulation {
-    edges: Vec<Vec2>,
-    obstacles: Vec<Vec<Vec2>>,
+    edges: LineString<f32>,
+    obstacles: Vec<LineString<f32>>,
 }
 
 impl Triangulation {
     /// Create a new triangulation from a the list of points on its outer edges.
     pub fn from_outer_edges(edges: Vec<Vec2>) -> Triangulation {
         Self {
-            edges,
+            edges: LineString::from(edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>()),
             obstacles: Default::default(),
         }
     }
@@ -29,24 +27,21 @@ impl Triangulation {
     ///
     /// Obstacles *MUST NOT* overlap.
     pub fn add_obstacle(&mut self, edges: Vec<Vec2>) {
-        self.obstacles.push(edges);
+        self.obstacles.push(LineString::from(
+            edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>(),
+        ));
     }
 
     #[inline]
     fn add_constraint_edges(
         cdt: &mut ConstrainedDelaunayTriangulation<Point2<f32>>,
-        edges: Vec<Vec2>,
-    ) -> (Vec<(Vec2, Vec2)>, (Vec2, Vec2)) {
-        let mut edge_iter = edges.iter().peekable();
+        edges: &LineString<f32>,
+    ) {
+        let mut edge_iter = edges.coords().peekable();
         let mut vertex_pairs = Vec::new();
-        let mut aabb_min = edges[0];
-        let mut aabb_max = edges[0];
         loop {
             let from = edge_iter.next().unwrap();
             let next = edge_iter.peek();
-
-            aabb_min = aabb_min.min(*from);
-            aabb_max = aabb_max.max(*from);
 
             if let Some(next) = next {
                 cdt.add_constraint_edge(
@@ -77,43 +72,19 @@ impl Triangulation {
                 break;
             }
         }
-
-        (vertex_pairs, (aabb_min, aabb_max))
     }
-}
-
-// Check if a point is in a polygon, first by checking its AABB, then by checking the number of times
-// a ray from the point to the top of the AABB intersects the polygon.
-#[inline]
-fn in_polygon(point: Vec2, edges: &[(Vec2, Vec2)], aabb: (Vec2, Vec2)) -> bool {
-    if point.x < aabb.0.x || point.x > aabb.1.x || point.y < aabb.0.y || point.y > aabb.1.y {
-        return false;
-    }
-    let mut parallel = 0;
-    let intersect = edges
-        .iter()
-        .filter(|edge| {
-            let start = point;
-            let far = point + vec2(0.0, aabb.1.y + 1.0);
-            if edge.0.on_segment((start, far)) && edge.1.on_segment((start, far)) {
-                parallel += 1;
-            }
-            line_intersect_segment((start, far), **edge)
-                .map(|i| i.y > start.y)
-                .unwrap_or(false)
-        })
-        .count();
-    (intersect - parallel) % 2 == 1
 }
 
 impl From<Triangulation> for Mesh {
     fn from(value: Triangulation) -> Self {
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
-        let (outer_edges, aabb_outer) = Triangulation::add_constraint_edges(&mut cdt, value.edges);
+        Triangulation::add_constraint_edges(&mut cdt, &value.edges);
+        let outer = geo::Polygon::new(value.edges, vec![]);
 
         let mut obstacles = vec![];
         for obstacle in value.obstacles {
-            obstacles.push(Triangulation::add_constraint_edges(&mut cdt, obstacle));
+            Triangulation::add_constraint_edges(&mut cdt, &obstacle);
+            obstacles.push(geo::Polygon::new(obstacle, vec![]));
         }
 
         let mut face_to_polygon = HashMap::new();
@@ -121,11 +92,11 @@ impl From<Triangulation> for Mesh {
             .inner_faces()
             .filter_map(|face| {
                 let center = face.center();
-                let center = vec2(center.x, center.y);
-                (in_polygon(center, &outer_edges, aabb_outer)
+                let center = Coord::from((center.x, center.y));
+                (outer.contains(&center)
                     && obstacles
                         .iter()
-                        .map(|(edges, aabb)| !in_polygon(center, edges, *aabb))
+                        .map(|poly| !poly.contains(&center))
                         .all(|b| b))
                 .then(|| {
                     face_to_polygon.insert(face.index(), face_to_polygon.len() as isize);
