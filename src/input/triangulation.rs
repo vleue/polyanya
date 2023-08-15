@@ -29,11 +29,75 @@ impl Triangulation {
 
     /// Add an obstacle delimited by the list of points on its edges.
     ///
-    /// Obstacles *MUST NOT* overlap.
+    /// Obstacles *MUST NOT* overlap. If some obstacles do overlap, use [`Triangulation::merge_overlapping_obstacles`].
     pub fn add_obstacle(&mut self, edges: Vec<Vec2>) {
         self.inner.interiors_push(LineString::from(
             edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>(),
         ));
+    }
+
+    /// Add obstacles delimited by the list of points on their edges.
+    ///
+    /// Obstacles *MUST NOT* overlap. If some obstacles do overlap, use [`Triangulation::merge_overlapping_obstacles`].
+    pub fn add_obstacles(&mut self, obstacles: impl IntoIterator<Item = Vec<Vec2>>) {
+        let (exterior, interiors) =
+            std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
+                .into_inner();
+        self.inner = GeoPolygon::new(
+            exterior,
+            interiors
+                .into_iter()
+                .chain(obstacles.into_iter().map(|edges| {
+                    LineString(
+                        edges
+                            .iter()
+                            .map(|v| Coord::from((v.x, v.y)))
+                            .collect::<Vec<_>>(),
+                    )
+                }))
+                .collect::<Vec<_>>(),
+        );
+    }
+
+    /// Merge overlapping obstacles.
+    ///
+    /// This must be called before converting the triangulation into a [`Mesh`] if there are overlapping obstacles,
+    /// otherwise it will panic.
+    pub fn merge_overlapping_obstacles(&mut self) {
+        let (exterior, interiors) =
+            std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
+                .into_inner();
+
+        let mut not_intersecting: Vec<MultiPolygon<f32>> = vec![];
+        for poly in interiors.into_iter() {
+            let mut intersecting = vec![];
+            for (i, other) in not_intersecting.iter().enumerate() {
+                if poly.intersects(other) {
+                    intersecting.push(i);
+                }
+            }
+
+            let poly = GeoPolygon::new(poly.into(), vec![]);
+            intersecting.sort();
+            intersecting.reverse();
+            if intersecting.is_empty() {
+                not_intersecting.push(poly.into());
+            } else {
+                let mut merged: MultiPolygon<f32> = poly.into();
+                for other in intersecting.iter() {
+                    merged = merged.union(&not_intersecting.remove(*other).into());
+                }
+                not_intersecting.push(merged);
+            }
+        }
+
+        self.inner = GeoPolygon::new(
+            exterior,
+            not_intersecting
+                .into_iter()
+                .map(|polygon| LineString(polygon.exterior_coords_iter().collect::<Vec<_>>()))
+                .collect::<Vec<_>>(),
+        );
     }
 
     #[inline]
