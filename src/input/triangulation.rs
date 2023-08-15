@@ -68,36 +68,32 @@ impl Triangulation {
             std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
                 .into_inner();
 
-        let mut not_intersecting: Vec<MultiPolygon<f32>> = vec![];
+        let mut not_intersecting: Vec<LineString<f32>> = vec![];
+        let mut intersecting = vec![];
         for poly in interiors.into_iter() {
-            let mut intersecting = vec![];
+            intersecting.clear();
             for (i, other) in not_intersecting.iter().enumerate() {
                 if poly.intersects(other) {
                     intersecting.push(i);
                 }
             }
 
-            let poly = GeoPolygon::new(poly.into(), vec![]);
-            intersecting.sort();
-            intersecting.reverse();
             if intersecting.is_empty() {
-                not_intersecting.push(poly.into());
+                not_intersecting.push(poly);
             } else {
-                let mut merged: MultiPolygon<f32> = poly.into();
+                intersecting.reverse();
+                let mut merged: MultiPolygon<f32> = GeoPolygon::new(poly, vec![]).into();
                 for other in intersecting.iter() {
-                    merged = merged.union(&not_intersecting.remove(*other).into());
+                    merged = merged
+                        .union(&GeoPolygon::new(not_intersecting.remove(*other), vec![]).into());
                 }
-                not_intersecting.push(merged);
+                not_intersecting.push(LineString(
+                    merged.exterior_coords_iter().collect::<Vec<_>>(),
+                ));
             }
         }
 
-        self.inner = GeoPolygon::new(
-            exterior,
-            not_intersecting
-                .into_iter()
-                .map(|polygon| LineString(polygon.exterior_coords_iter().collect::<Vec<_>>()))
-                .collect::<Vec<_>>(),
-        );
+        self.inner = GeoPolygon::new(exterior, not_intersecting);
     }
 
     #[inline]
@@ -149,7 +145,7 @@ impl From<Triangulation> for Mesh {
         Triangulation::add_constraint_edges(&mut cdt, value.inner.exterior());
 
         value.inner.interiors().iter().for_each(|obstacle| {
-            Triangulation::add_constraint_edges(&mut cdt, &obstacle);
+            Triangulation::add_constraint_edges(&mut cdt, obstacle);
         });
 
         let mut face_to_polygon = HashMap::new();
