@@ -180,11 +180,16 @@ impl From<Triangulation> for Mesh {
                             .unwrap_or(-1)
                     })
                     .collect::<VecDeque<_>>();
-                while neighbour_polygons[0] == -1 {
-                    neighbour_polygons.rotate_left(1);
-                }
-                let mut neighbour_polygons: Vec<_> = neighbour_polygons.into();
-                neighbour_polygons.dedup();
+                let neighbour_polygons: Vec<_> = if neighbour_polygons.iter().all(|i| *i == -1) {
+                    vec![-1]
+                } else {
+                    while neighbour_polygons[0] == -1 {
+                        neighbour_polygons.rotate_left(1);
+                    }
+                    let mut neighbour_polygons: Vec<_> = neighbour_polygons.into();
+                    neighbour_polygons.dedup();
+                    neighbour_polygons
+                };
                 let point = point.position();
                 Vertex::new(vec2(point.x, point.y), neighbour_polygons)
             })

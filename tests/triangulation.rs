@@ -42,22 +42,22 @@ fn is_in_mesh_4_obstacles() {
         vec2(4.5, 2.5),
     ]);
     triangulation.add_obstacle(vec![
-        vec2(2.5, 4.6),
+        vec2(2.5, 4.5),
         vec2(2.5, 7.5),
         vec2(4.5, 7.5),
-        vec2(4.5, 4.6),
+        vec2(4.5, 4.5),
     ]);
     triangulation.add_obstacle(vec![
-        vec2(4.6, 2.5),
-        vec2(4.6, 4.5),
+        vec2(4.5, 2.5),
+        vec2(4.5, 4.5),
         vec2(7.5, 4.5),
         vec2(7.5, 2.5),
     ]);
     triangulation.add_obstacle(vec![
-        vec2(4.6, 4.6),
-        vec2(4.6, 7.5),
+        vec2(4.5, 4.5),
+        vec2(4.5, 7.5),
         vec2(7.5, 7.5),
-        vec2(7.5, 4.6),
+        vec2(7.5, 4.5),
     ]);
     let mesh: Mesh = triangulation.into();
     for i in 0..10 {
