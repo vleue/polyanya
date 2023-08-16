@@ -137,14 +137,13 @@ impl Triangulation {
             }
         }
     }
-}
 
-impl From<Triangulation> for Mesh {
-    fn from(value: Triangulation) -> Self {
+    /// Convert the triangulation into a [`Mesh`].
+    pub fn as_navmesh(&self) -> Mesh {
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
-        Triangulation::add_constraint_edges(&mut cdt, value.inner.exterior());
+        Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
 
-        value.inner.interiors().iter().for_each(|obstacle| {
+        self.inner.interiors().iter().for_each(|obstacle| {
             Triangulation::add_constraint_edges(&mut cdt, obstacle);
         });
 
@@ -154,14 +153,14 @@ impl From<Triangulation> for Mesh {
             .filter_map(|face| {
                 let center = face.center();
                 let center = Coord::from((center.x, center.y));
-                value.inner.contains(&center).then(|| {
+                self.inner.contains(&center).then(|| {
                     face_to_polygon.insert(face.index(), face_to_polygon.len() as isize);
                     Polygon::new(
                         face.vertices()
                             .iter()
                             .map(|vertex| vertex.index() as u32)
                             .collect(),
-                        // TODO: can this be set to the correct value
+                        // TODO: can this be set to the correct value?
                         false,
                     )
                 })

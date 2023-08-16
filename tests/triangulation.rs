@@ -15,7 +15,7 @@ fn is_in_mesh() {
         vec2(7.5, 7.5),
         vec2(7.5, 2.5),
     ]);
-    let mesh: Mesh = triangulation.into();
+    let mesh: Mesh = triangulation.as_navmesh();
     for i in 0..10 {
         for j in 0..10 {
             if i > 2 && i < 8 && j > 2 && j < 8 {
@@ -59,7 +59,7 @@ fn is_in_mesh_4_obstacles() {
         vec2(7.5, 7.5),
         vec2(7.5, 5.0),
     ]);
-    let mesh: Mesh = triangulation.into();
+    let mesh: Mesh = triangulation.as_navmesh();
     for i in 0..10 {
         for j in 0..10 {
             if i > 2 && i < 8 && j > 2 && j < 8 {
@@ -104,7 +104,7 @@ fn is_in_mesh_overlapping() {
         vec2(7.5, 4.0),
     ]);
     triangulation.merge_overlapping_obstacles();
-    let mesh: Mesh = triangulation.into();
+    let mesh: Mesh = triangulation.as_navmesh();
     for i in 0..10 {
         for j in 0..10 {
             if i > 2 && i < 8 && j > 2 && j < 8 {
