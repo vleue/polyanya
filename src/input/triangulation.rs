@@ -170,8 +170,7 @@ impl Triangulation {
             .inner
             .interiors()
             .iter()
-            .filter(|obstacle| Triangulation::add_constraint_edges(&mut cdt, obstacle).is_none())
-            .next()
+            .find(|obstacle| Triangulation::add_constraint_edges(&mut cdt, obstacle).is_none())
             .is_some()
         {
             return None;
