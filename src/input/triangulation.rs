@@ -33,7 +33,8 @@ impl Triangulation {
 
     /// Add an obstacle delimited by the list of points on its edges.
     ///
-    /// Obstacles *MUST NOT* overlap. If some obstacles do overlap, use [`Triangulation::merge_overlapping_obstacles`].
+    /// Obstacles *MUST NOT* overlap. If some obstacles do overlap, use [`Triangulation::merge_overlapping_obstacles`]
+    /// before calling [`Triangulation::as_navmesh`].
     pub fn add_obstacle(&mut self, edges: Vec<Vec2>) {
         self.inner.interiors_push(LineString::from(
             edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>(),
@@ -42,7 +43,8 @@ impl Triangulation {
 
     /// Add obstacles delimited by the list of points on their edges.
     ///
-    /// Obstacles *MUST NOT* overlap. If some obstacles do overlap, use [`Triangulation::merge_overlapping_obstacles`].
+    /// Obstacles *MUST NOT* overlap. If some obstacles do overlap, use [`Triangulation::merge_overlapping_obstacles`]
+    /// before calling [`Triangulation::as_navmesh`].
     pub fn add_obstacles(&mut self, obstacles: impl IntoIterator<Item = Vec<Vec2>>) {
         let (exterior, interiors) =
             std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
@@ -66,7 +68,7 @@ impl Triangulation {
     /// Merge overlapping obstacles.
     ///
     /// This must be called before converting the triangulation into a [`Mesh`] if there are overlapping obstacles,
-    /// otherwise it will panic.
+    /// otherwise it will fail.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn merge_overlapping_obstacles(&mut self) {
         let (exterior, interiors) =
@@ -146,7 +148,6 @@ impl Triangulation {
                     y: edges[0].y,
                 })
                 .unwrap()
-                // break;
             };
             if cdt.can_add_constraint(point_a, point_b) {
                 cdt.add_constraint(point_a, point_b);
