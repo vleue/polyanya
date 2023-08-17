@@ -118,53 +118,64 @@ impl Triangulation {
     fn add_constraint_edges(
         cdt: &mut ConstrainedDelaunayTriangulation<Point2<f32>>,
         edges: &LineString<f32>,
-    ) {
+    ) -> Option<()> {
         let mut edge_iter = edges.coords().peekable();
         let mut vertex_pairs = Vec::new();
         loop {
             let from = edge_iter.next().unwrap();
             let next = edge_iter.peek();
 
-            if let Some(next) = next {
-                cdt.add_constraint_edge(
-                    Point2 {
-                        x: from.x,
-                        y: from.y,
-                    },
-                    Point2 {
-                        x: next.x,
-                        y: next.y,
-                    },
-                )
+            let point_a = cdt
+                .insert(Point2 {
+                    x: from.x,
+                    y: from.y,
+                })
                 .unwrap();
+            let point_b = if let Some(next) = next {
                 vertex_pairs.push((*from, **next));
+                cdt.insert(Point2 {
+                    x: next.x,
+                    y: next.y,
+                })
+                .unwrap()
             } else {
-                cdt.add_constraint_edge(
-                    Point2 {
-                        x: from.x,
-                        y: from.y,
-                    },
-                    Point2 {
-                        x: edges[0].x,
-                        y: edges[0].y,
-                    },
-                )
-                .unwrap();
                 vertex_pairs.push((*from, edges[0]));
+
+                cdt.insert(Point2 {
+                    x: edges[0].x,
+                    y: edges[0].y,
+                })
+                .unwrap()
+                // break;
+            };
+            if cdt.can_add_constraint(point_a, point_b) {
+                cdt.add_constraint(point_a, point_b);
+            } else {
+                return None;
+            }
+            if next.is_none() {
                 break;
             }
         }
+        Some(())
     }
 
     /// Convert the triangulation into a [`Mesh`].
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn as_navmesh(&self) -> Mesh {
+    pub fn as_navmesh(&self) -> Option<Mesh> {
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
-        Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
+        Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior())?;
 
-        self.inner.interiors().iter().for_each(|obstacle| {
-            Triangulation::add_constraint_edges(&mut cdt, obstacle);
-        });
+        if self
+            .inner
+            .interiors()
+            .iter()
+            .filter(|obstacle| Triangulation::add_constraint_edges(&mut cdt, obstacle).is_none())
+            .next()
+            .is_some()
+        {
+            return None;
+        }
 
         #[cfg(feature = "tracing")]
         let polygon_span = tracing::info_span!("listing polygons").entered();
@@ -231,6 +242,6 @@ impl Triangulation {
         #[cfg(feature = "tracing")]
         drop(vertex_span);
 
-        Mesh::new(vertices, polygons)
+        Some(Mesh::new(vertices, polygons))
     }
 }

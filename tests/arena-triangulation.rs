@@ -136,7 +136,7 @@ fn arena_mesh() -> Mesh {
         vec2(26., 7.),
         vec2(26., 10.),
     ]);
-    triangulation.as_navmesh()
+    triangulation.as_navmesh().unwrap()
 }
 
 #[test]
