@@ -3,6 +3,7 @@ use std::collections::VecDeque;
 pub use geo::LineString;
 use geo::{
     BooleanOps, Contains, Coord, CoordsIter, Intersects, MultiPolygon, Polygon as GeoPolygon,
+    SimplifyVwPreserve,
 };
 use glam::{vec2, Vec2};
 use hashbrown::HashMap;
@@ -94,6 +95,14 @@ impl Triangulation {
         }
 
         self.inner = GeoPolygon::new(exterior, not_intersecting);
+    }
+
+    /// Simplify the outer edge and obstacles, using a topology-preserving variant of the
+    /// [Visvalingam-Whyatt algorithm](https://www.tandfonline.com/doi/abs/10.1179/000870493786962263).
+    ///
+    /// Epsilon is the minimum area a point should contribute to a polygon.
+    pub fn simplify(&mut self, epsilon: f32) {
+        self.inner = self.inner.simplify_vw_preserve(&epsilon);
     }
 
     #[inline]
