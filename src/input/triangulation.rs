@@ -1,5 +1,8 @@
 use std::collections::VecDeque;
 
+#[cfg(feature = "tracing")]
+use tracing::instrument;
+
 pub use geo::LineString;
 use geo::{
     BooleanOps, Contains, Coord, CoordsIter, Intersects, MultiPolygon, Polygon as GeoPolygon,
@@ -64,6 +67,7 @@ impl Triangulation {
     ///
     /// This must be called before converting the triangulation into a [`Mesh`] if there are overlapping obstacles,
     /// otherwise it will panic.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn merge_overlapping_obstacles(&mut self) {
         let (exterior, interiors) =
             std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
@@ -82,6 +86,9 @@ impl Triangulation {
             if intersecting.is_empty() {
                 not_intersecting.push(poly);
             } else {
+                #[cfg(feature = "tracing")]
+                let _merging_span = tracing::info_span!("merging polygons").entered();
+
                 intersecting.reverse();
                 let mut merged: MultiPolygon<f32> = GeoPolygon::new(poly, vec![]).into();
                 for other in intersecting.iter() {
@@ -101,10 +108,12 @@ impl Triangulation {
     /// [Visvalingam-Whyatt algorithm](https://www.tandfonline.com/doi/abs/10.1179/000870493786962263).
     ///
     /// Epsilon is the minimum area a point should contribute to a polygon.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn simplify(&mut self, epsilon: f32) {
         self.inner = self.inner.simplify_vw_preserve(&epsilon);
     }
 
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline]
     fn add_constraint_edges(
         cdt: &mut ConstrainedDelaunayTriangulation<Point2<f32>>,
@@ -148,6 +157,7 @@ impl Triangulation {
     }
 
     /// Convert the triangulation into a [`Mesh`].
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Mesh {
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
         Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
@@ -156,13 +166,22 @@ impl Triangulation {
             Triangulation::add_constraint_edges(&mut cdt, obstacle);
         });
 
+        #[cfg(feature = "tracing")]
+        let polygon_span = tracing::info_span!("listing polygons").entered();
+
         let mut face_to_polygon = HashMap::new();
         let polygons = cdt
             .inner_faces()
             .filter_map(|face| {
+                #[cfg(feature = "tracing")]
+                let _checking_span = tracing::info_span!("checking polygon").entered();
+
                 let center = face.center();
                 let center = Coord::from((center.x, center.y));
                 self.inner.contains(&center).then(|| {
+                    #[cfg(feature = "tracing")]
+                    let _preparing_span = tracing::info_span!("preparing polygon").entered();
+
                     face_to_polygon.insert(face.index(), face_to_polygon.len() as isize);
                     Polygon::new(
                         face.vertices()
@@ -175,6 +194,12 @@ impl Triangulation {
                 })
             })
             .collect::<Vec<_>>();
+
+        #[cfg(feature = "tracing")]
+        drop(polygon_span);
+
+        #[cfg(feature = "tracing")]
+        let vertex_span = tracing::info_span!("listing vertices").entered();
 
         let vertices = cdt
             .vertices()
@@ -202,6 +227,9 @@ impl Triangulation {
                 Vertex::new(vec2(point.x, point.y), neighbour_polygons)
             })
             .collect::<Vec<_>>();
+
+        #[cfg(feature = "tracing")]
+        drop(vertex_span);
 
         Mesh::new(vertices, polygons)
     }
