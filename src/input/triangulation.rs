@@ -22,7 +22,7 @@ pub struct Triangulation {
 
 impl Triangulation {
     /// Create a new triangulation from a the list of points on its outer edges.
-    pub fn from_outer_edges(edges: Vec<Vec2>) -> Triangulation {
+    pub fn from_outer_edges(edges: &[Vec2]) -> Triangulation {
         Self {
             inner: GeoPolygon::new(
                 LineString::from(edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>()),
@@ -122,7 +122,6 @@ impl Triangulation {
         edges: &LineString<f32>,
     ) -> Option<()> {
         let mut edge_iter = edges.coords().peekable();
-        let mut vertex_pairs = Vec::new();
         loop {
             let from = edge_iter.next().unwrap();
             let next = edge_iter.peek();
@@ -134,15 +133,12 @@ impl Triangulation {
                 })
                 .unwrap();
             let point_b = if let Some(next) = next {
-                vertex_pairs.push((*from, **next));
                 cdt.insert(Point2 {
                     x: next.x,
                     y: next.y,
                 })
                 .unwrap()
             } else {
-                vertex_pairs.push((*from, edges[0]));
-
                 cdt.insert(Point2 {
                     x: edges[0].x,
                     y: edges[0].y,

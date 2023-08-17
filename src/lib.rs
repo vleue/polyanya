@@ -40,6 +40,7 @@ mod async_helpers;
 mod helpers;
 mod input;
 mod instance;
+mod merger;
 mod primitives;
 
 #[cfg(feature = "async")]

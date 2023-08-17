@@ -1825,6 +1825,7 @@ fn main() {
         ]);
         triangulation.merge_overlapping_obstacles();
         triangulation.simplify(0.005);
-        triangulation.as_navmesh().unwrap();
+        let mut mesh = triangulation.as_navmesh().unwrap();
+        while mesh.merge_polygons() {}
     }
 }

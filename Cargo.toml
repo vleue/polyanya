@@ -60,3 +60,7 @@ harness = false
 [[bench]]
 name = "triangulation"
 harness = false
+
+[[bench]]
+name = "merger"
+harness = false
