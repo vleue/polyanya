@@ -130,136 +130,21 @@ const ARENA_OBSTACLES: [[Vec2; 6]; 5] = [
     ],
 ];
 
-fn triangulation(c: &mut Criterion) {
-    c.bench_function(&"triangulation arena".to_string(), |b| {
+fn merger(c: &mut Criterion) {
+    c.bench_function(&"merger arena".to_string(), |b| {
+        // Equivalent to the arena mesh
+        let mut triangulation = Triangulation::from_outer_edges(&ARENA_OUTER_EDGE);
+
+        triangulation.add_obstacle(ARENA_OBSTACLES[0].to_vec());
+        triangulation.add_obstacle(ARENA_OBSTACLES[1].to_vec());
+        triangulation.add_obstacle(ARENA_OBSTACLES[2].to_vec());
+        triangulation.add_obstacle(ARENA_OBSTACLES[3].to_vec());
+        triangulation.add_obstacle(ARENA_OBSTACLES[4].to_vec());
+        let mesh: Mesh = triangulation.as_navmesh().unwrap();
         b.iter(|| {
-            // Equivalent to the arena mesh
-            let mut triangulation = Triangulation::from_outer_edges(&ARENA_OUTER_EDGE);
+            let mut mesh = mesh.clone();
 
-            triangulation.add_obstacle(ARENA_OBSTACLES[0].to_vec());
-            triangulation.add_obstacle(ARENA_OBSTACLES[1].to_vec());
-            triangulation.add_obstacle(ARENA_OBSTACLES[2].to_vec());
-            triangulation.add_obstacle(ARENA_OBSTACLES[3].to_vec());
-            triangulation.add_obstacle(ARENA_OBSTACLES[4].to_vec());
-
-            let mesh: Mesh = triangulation.as_navmesh().unwrap();
-            black_box(mesh);
-        })
-    });
-}
-
-fn triangulation_bulk(c: &mut Criterion) {
-    c.bench_function(&"triangulation arena bulk add obstacles".to_string(), |b| {
-        b.iter(|| {
-            // Equivalent to the arena mesh
-            let mut triangulation = Triangulation::from_outer_edges(&ARENA_OUTER_EDGE);
-
-            triangulation.add_obstacles(vec![
-                ARENA_OBSTACLES[0].to_vec(),
-                ARENA_OBSTACLES[1].to_vec(),
-                ARENA_OBSTACLES[2].to_vec(),
-                ARENA_OBSTACLES[3].to_vec(),
-                ARENA_OBSTACLES[4].to_vec(),
-            ]);
-            let mesh: Mesh = triangulation.as_navmesh().unwrap();
-            black_box(mesh);
-        })
-    });
-}
-
-fn triangulation_overlapping(c: &mut Criterion) {
-    c.bench_function(&"triangulation arena overlapping".to_string(), |b| {
-        b.iter(|| {
-            // Equivalent to the arena mesh
-            let mut triangulation = Triangulation::from_outer_edges(&ARENA_OUTER_EDGE);
-
-            triangulation.add_obstacle(ARENA_OBSTACLES[0].to_vec());
-            triangulation.add_obstacle(ARENA_OBSTACLES[1].to_vec());
-            triangulation.add_obstacle(ARENA_OBSTACLES[2].to_vec());
-            triangulation.add_obstacle(ARENA_OBSTACLES[3].to_vec());
-            triangulation.add_obstacle(ARENA_OBSTACLES[4].to_vec());
-            triangulation.merge_overlapping_obstacles();
-
-            let mesh: Mesh = triangulation.as_navmesh().unwrap();
-            black_box(mesh);
-        })
-    });
-}
-
-fn triangulation_square(c: &mut Criterion) {
-    c.bench_function(&"triangulation square".to_string(), |b| {
-        b.iter(|| {
-            let mut triangulation = Triangulation::from_outer_edges(&[
-                vec2(0.0, 0.0),
-                vec2(10.0, 0.0),
-                vec2(10.0, 10.0),
-                vec2(0.0, 10.0),
-            ]);
-            triangulation.add_obstacle(vec![
-                vec2(2.5, 2.5),
-                vec2(2.5, 5.0),
-                vec2(5.0, 5.0),
-                vec2(5.0, 2.5),
-            ]);
-            triangulation.add_obstacle(vec![
-                vec2(2.5, 5.01),
-                vec2(2.5, 7.5),
-                vec2(5.01, 7.5),
-                vec2(5.01, 5.01),
-            ]);
-            triangulation.add_obstacle(vec![
-                vec2(5.01, 2.5),
-                vec2(5.01, 5.0),
-                vec2(7.5, 5.0),
-                vec2(7.5, 2.5),
-            ]);
-            triangulation.add_obstacle(vec![
-                vec2(5.01, 5.01),
-                vec2(5.01, 7.5),
-                vec2(7.5, 7.5),
-                vec2(7.5, 5.01),
-            ]);
-            let mesh: Mesh = triangulation.as_navmesh().unwrap();
-            black_box(mesh);
-        })
-    });
-}
-
-fn triangulation_square_overlapping(c: &mut Criterion) {
-    c.bench_function(&"triangulation square overlapping".to_string(), |b| {
-        b.iter(|| {
-            let mut triangulation = Triangulation::from_outer_edges(&[
-                vec2(0.0, 0.0),
-                vec2(10.0, 0.0),
-                vec2(10.0, 10.0),
-                vec2(0.0, 10.0),
-            ]);
-            triangulation.add_obstacle(vec![
-                vec2(2.5, 2.5),
-                vec2(2.5, 6.0),
-                vec2(6.0, 6.0),
-                vec2(6.0, 2.5),
-            ]);
-            triangulation.add_obstacle(vec![
-                vec2(2.5, 4.0),
-                vec2(2.5, 7.5),
-                vec2(6.0, 7.5),
-                vec2(6.0, 4.0),
-            ]);
-            triangulation.add_obstacle(vec![
-                vec2(4.0, 2.5),
-                vec2(4.0, 6.0),
-                vec2(7.5, 6.0),
-                vec2(7.5, 2.5),
-            ]);
-            triangulation.add_obstacle(vec![
-                vec2(4.0, 4.0),
-                vec2(4.0, 7.5),
-                vec2(7.5, 7.5),
-                vec2(7.5, 4.0),
-            ]);
-            triangulation.merge_overlapping_obstacles();
-            let mesh: Mesh = triangulation.as_navmesh().unwrap();
+            while mesh.merge_polygons() {}
             black_box(mesh);
         })
     });
@@ -2083,40 +1968,36 @@ fn random_with_many_obstacles() -> Triangulation {
     triangulation
 }
 
-fn triangulation_many_overlapping(c: &mut Criterion) {
-    c.bench_function(&"triangulation many overlapping".to_string(), |b| {
+fn merger_many_overlapping(c: &mut Criterion) {
+    c.bench_function(&"merger many overlapping".to_string(), |b| {
+        let mut triangulation = random_with_many_obstacles();
+        triangulation.merge_overlapping_obstacles();
+        let mesh: Mesh = triangulation.as_navmesh().unwrap();
         b.iter(|| {
-            let mut triangulation = random_with_many_obstacles();
-            triangulation.merge_overlapping_obstacles();
-            let mesh: Mesh = triangulation.as_navmesh().unwrap();
+            let mut mesh = mesh.clone();
+            while mesh.merge_polygons() {}
             black_box(mesh);
         })
     });
 }
 
-fn triangulation_many_overlapping_simplified(c: &mut Criterion) {
-    c.bench_function(
-        &"triangulation many overlapping (simplified)".to_string(),
-        |b| {
-            b.iter(|| {
-                let mut triangulation = random_with_many_obstacles();
-                triangulation.merge_overlapping_obstacles();
-                triangulation.simplify(0.005);
-                let mesh: Mesh = triangulation.as_navmesh().unwrap();
-                black_box(mesh);
-            })
-        },
-    );
+fn merger_many_overlapping_once(c: &mut Criterion) {
+    c.bench_function(&"merger many overlapping (once)".to_string(), |b| {
+        let mut triangulation = random_with_many_obstacles();
+        triangulation.merge_overlapping_obstacles();
+        let mesh: Mesh = triangulation.as_navmesh().unwrap();
+        b.iter(|| {
+            let mut mesh = mesh.clone();
+            mesh.merge_polygons();
+            black_box(mesh);
+        })
+    });
 }
 
 criterion_group!(
     benches,
-    triangulation,
-    triangulation_bulk,
-    triangulation_overlapping,
-    triangulation_square,
-    triangulation_square_overlapping,
-    triangulation_many_overlapping,
-    triangulation_many_overlapping_simplified,
+    merger,
+    merger_many_overlapping,
+    merger_many_overlapping_once
 );
 criterion_main!(benches);

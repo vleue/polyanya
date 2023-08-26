@@ -11,7 +11,7 @@ macro_rules! assert_delta {
 }
 
 fn arena_mesh() -> Mesh {
-    let mut triangulation = Triangulation::from_outer_edges(vec![
+    let mut triangulation = Triangulation::from_outer_edges(&[
         vec2(1., 3.),
         vec2(2., 3.),
         vec2(2., 2.),

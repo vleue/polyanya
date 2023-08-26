@@ -1,5 +1,6 @@
 use std::ops::RangeInclusive;
 
+use geo::{Area, Coord};
 use smallvec::SmallVec;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -8,6 +9,8 @@ use glam::Vec2;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+
+use crate::Mesh;
 
 /// A point that lies on an edge of a polygon in the navigation mesh.
 #[derive(Debug, Clone, PartialEq)]
@@ -145,6 +148,22 @@ impl Polygon {
         }
 
         edges
+    }
+
+    pub(crate) fn area(&self, mesh: &Mesh) -> f32 {
+        geo::Polygon::new(
+            geo::LineString(
+                self.vertices
+                    .iter()
+                    .map(|v| {
+                        let c = mesh.vertices[*v as usize].coords;
+                        Coord::from((c.x, c.y))
+                    })
+                    .collect(),
+            ),
+            vec![],
+        )
+        .unsigned_area()
     }
 }
 

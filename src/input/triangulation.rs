@@ -9,7 +9,6 @@ use geo::{
     SimplifyVwPreserve,
 };
 use glam::{vec2, Vec2};
-use hashbrown::HashMap;
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
 use crate::{Mesh, Polygon, Vertex};
@@ -22,7 +21,7 @@ pub struct Triangulation {
 
 impl Triangulation {
     /// Create a new triangulation from a the list of points on its outer edges.
-    pub fn from_outer_edges(edges: Vec<Vec2>) -> Triangulation {
+    pub fn from_outer_edges(edges: &[Vec2]) -> Triangulation {
         Self {
             inner: GeoPolygon::new(
                 LineString::from(edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>()),
@@ -76,14 +75,13 @@ impl Triangulation {
                 .into_inner();
 
         let mut not_intersecting: Vec<LineString<f32>> = vec![];
-        let mut intersecting = vec![];
         for poly in interiors.into_iter() {
-            intersecting.clear();
-            for (i, other) in not_intersecting.iter().enumerate() {
-                if poly.intersects(other) {
-                    intersecting.push(i);
-                }
-            }
+            let intersecting = not_intersecting
+                .iter()
+                .enumerate()
+                .filter(|(_, other)| poly.intersects(*other))
+                .map(|(i, _)| i)
+                .collect::<Vec<_>>();
 
             if intersecting.is_empty() {
                 not_intersecting.push(poly);
@@ -91,12 +89,14 @@ impl Triangulation {
                 #[cfg(feature = "tracing")]
                 let _merging_span = tracing::info_span!("merging polygons").entered();
 
-                intersecting.reverse();
-                let mut merged: MultiPolygon<f32> = GeoPolygon::new(poly, vec![]).into();
-                for other in intersecting.iter() {
-                    merged = merged
-                        .union(&GeoPolygon::new(not_intersecting.remove(*other), vec![]).into());
-                }
+                let mut merged = MultiPolygon::<f32>(
+                    intersecting
+                        .iter()
+                        .rev()
+                        .map(|other| GeoPolygon::new(not_intersecting.remove(*other), vec![]))
+                        .collect(),
+                );
+                merged = merged.union(&GeoPolygon::new(poly, vec![]).into());
                 not_intersecting.push(LineString(
                     merged.exterior_coords_iter().collect::<Vec<_>>(),
                 ));
@@ -122,7 +122,6 @@ impl Triangulation {
         edges: &LineString<f32>,
     ) -> Option<()> {
         let mut edge_iter = edges.coords().peekable();
-        let mut vertex_pairs = Vec::new();
         loop {
             let from = edge_iter.next().unwrap();
             let next = edge_iter.peek();
@@ -134,15 +133,12 @@ impl Triangulation {
                 })
                 .unwrap();
             let point_b = if let Some(next) = next {
-                vertex_pairs.push((*from, **next));
                 cdt.insert(Point2 {
                     x: next.x,
                     y: next.y,
                 })
                 .unwrap()
             } else {
-                vertex_pairs.push((*from, edges[0]));
-
                 cdt.insert(Point2 {
                     x: edges[0].x,
                     y: edges[0].y,
@@ -162,6 +158,22 @@ impl Triangulation {
     }
 
     /// Convert the triangulation into a [`Mesh`].
+    ///
+    /// Meshes generated are not [baked](Mesh::bake), as they are made of triangles and it is recommended to
+    /// call [`Mesh::merge_polygons`] on them before baking.
+    ///
+    /// ```
+    /// # use glam::vec2;
+    /// # use polyanya::Triangulation;
+    /// # let triangulation = Triangulation::from_outer_edges(&[vec2(0.0, 0.0), vec2(1.0, 0.0), vec2(0.0, 1.0)]);
+    /// let mut mesh = triangulation.as_navmesh().unwrap();
+    ///
+    /// // Merge polygons at least once before baking.
+    /// mesh.merge_polygons();
+    ///
+    /// // One call to merge should have reduced the number of polygons, baking will be less expensive.
+    /// mesh.bake();
+    /// ```
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Option<Mesh> {
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
@@ -179,7 +191,8 @@ impl Triangulation {
         #[cfg(feature = "tracing")]
         let polygon_span = tracing::info_span!("listing polygons").entered();
 
-        let mut face_to_polygon = HashMap::new();
+        let mut face_to_polygon: Vec<isize> = vec![-1; cdt.all_faces().len()];
+        let mut i = 0;
         let polygons = cdt
             .inner_faces()
             .filter_map(|face| {
@@ -192,7 +205,8 @@ impl Triangulation {
                     #[cfg(feature = "tracing")]
                     let _preparing_span = tracing::info_span!("preparing polygon").entered();
 
-                    face_to_polygon.insert(face.index(), face_to_polygon.len() as isize);
+                    face_to_polygon[face.index()] = i;
+                    i += 1;
                     Polygon::new(
                         face.vertices()
                             .iter()
@@ -214,14 +228,12 @@ impl Triangulation {
         let vertices = cdt
             .vertices()
             .map(|point| {
+                #[cfg(feature = "tracing")]
+                let _preparing_span = tracing::info_span!("preparing vertex").entered();
+
                 let mut neighbour_polygons = point
                     .out_edges()
-                    .map(|out_edge| {
-                        face_to_polygon
-                            .get(&out_edge.face().index())
-                            .cloned()
-                            .unwrap_or(-1)
-                    })
+                    .map(|out_edge| face_to_polygon[out_edge.face().index()])
                     .collect::<VecDeque<_>>();
                 let neighbour_polygons: Vec<_> = if neighbour_polygons.iter().all(|i| *i == -1) {
                     vec![-1]
@@ -241,6 +253,10 @@ impl Triangulation {
         #[cfg(feature = "tracing")]
         drop(vertex_span);
 
-        Some(Mesh::new(vertices, polygons))
+        Some(Mesh {
+            vertices,
+            polygons,
+            ..Default::default()
+        })
     }
 }

@@ -3,7 +3,7 @@ use polyanya::{Mesh, Triangulation};
 
 #[test]
 fn is_in_mesh() {
-    let mut triangulation = Triangulation::from_outer_edges(vec![
+    let mut triangulation = Triangulation::from_outer_edges(&[
         vec2(0.0, 0.0),
         vec2(10.0, 0.0),
         vec2(10.0, 10.0),
@@ -29,7 +29,7 @@ fn is_in_mesh() {
 
 #[test]
 fn is_in_mesh_4_obstacles() {
-    let mut triangulation = Triangulation::from_outer_edges(vec![
+    let mut triangulation = Triangulation::from_outer_edges(&[
         vec2(0.0, 0.0),
         vec2(10.0, 0.0),
         vec2(10.0, 10.0),
@@ -78,7 +78,7 @@ fn is_in_mesh_4_obstacles() {
 #[test]
 #[should_panic]
 fn is_in_mesh_overlapping() {
-    let mut triangulation = Triangulation::from_outer_edges(vec![
+    let mut triangulation = Triangulation::from_outer_edges(&[
         vec2(0.0, 0.0),
         vec2(10.0, 0.0),
         vec2(10.0, 10.0),
@@ -122,7 +122,7 @@ fn is_in_mesh_overlapping() {
 
 #[test]
 fn is_in_mesh_overlapping_merged() {
-    let mut triangulation = Triangulation::from_outer_edges(vec![
+    let mut triangulation = Triangulation::from_outer_edges(&[
         vec2(0.0, 0.0),
         vec2(10.0, 0.0),
         vec2(10.0, 10.0),
@@ -167,7 +167,7 @@ fn is_in_mesh_overlapping_merged() {
 
 #[test]
 fn is_in_mesh_overlapping_simplified() {
-    let mut triangulation = Triangulation::from_outer_edges(vec![
+    let mut triangulation = Triangulation::from_outer_edges(&[
         vec2(0.0, 0.0),
         vec2(10.0, 0.0),
         vec2(10.0, 10.0),
