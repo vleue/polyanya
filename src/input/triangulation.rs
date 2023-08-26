@@ -76,14 +76,13 @@ impl Triangulation {
                 .into_inner();
 
         let mut not_intersecting: Vec<LineString<f32>> = vec![];
-        let mut intersecting = vec![];
         for poly in interiors.into_iter() {
-            intersecting.clear();
-            for (i, other) in not_intersecting.iter().enumerate() {
-                if poly.intersects(other) {
-                    intersecting.push(i);
-                }
-            }
+            let intersecting = not_intersecting
+                .iter()
+                .enumerate()
+                .filter(|(_, other)| poly.intersects(*other))
+                .map(|(i, _)| i)
+                .collect::<Vec<_>>();
 
             if intersecting.is_empty() {
                 not_intersecting.push(poly);
@@ -91,12 +90,14 @@ impl Triangulation {
                 #[cfg(feature = "tracing")]
                 let _merging_span = tracing::info_span!("merging polygons").entered();
 
-                intersecting.reverse();
-                let mut merged: MultiPolygon<f32> = GeoPolygon::new(poly, vec![]).into();
-                for other in intersecting.iter() {
-                    merged = merged
-                        .union(&GeoPolygon::new(not_intersecting.remove(*other), vec![]).into());
-                }
+                let mut merged = MultiPolygon::<f32>(
+                    intersecting
+                        .iter()
+                        .rev()
+                        .map(|other| GeoPolygon::new(not_intersecting.remove(*other), vec![]))
+                        .collect(),
+                );
+                merged = merged.union(&GeoPolygon::new(poly, vec![]).into());
                 not_intersecting.push(LineString(
                     merged.exterior_coords_iter().collect::<Vec<_>>(),
                 ));
