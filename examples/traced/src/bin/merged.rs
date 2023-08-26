@@ -9,6 +9,9 @@ fn main() {
     .expect("set up the subscriber");
 
     for _i in 0..100 {
+        let _execution_span: tracing::span::EnteredSpan =
+            tracing::info_span!("one execution").entered();
+
         let mut triangulation = Triangulation::from_outer_edges(&[
             vec2(-5., -5.),
             vec2(5., -5.),

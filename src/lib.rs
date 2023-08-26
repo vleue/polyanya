@@ -142,6 +142,7 @@ impl Mesh {
     ///
     /// This is useful if there are isolated zones in the mesh, and you need to check for a path
     /// between them.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn bake_islands_detection(&mut self) {
         let mut islands = vec![usize::MAX; self.polygons.len()];
         while let Some((root, _)) = islands
@@ -173,6 +174,7 @@ impl Mesh {
     /// Uses a BVH. This is useful at the start of the pathfinding, to get the containing polygons
     /// for the start and end point. It can also be used through [`Self::point_in_mesh`] to check
     /// if a point is in the mesh.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn bake_polygon_finder(&mut self) {
         let bounded_polygons = self
             .polygons
