@@ -159,6 +159,22 @@ impl Triangulation {
     }
 
     /// Convert the triangulation into a [`Mesh`].
+    ///
+    /// Meshes generated are not [baked](Mesh::bake), as they are made of triangles and it is recommended to
+    /// call [`Mesh::merge_polygons`] on them before baking.
+    ///
+    /// ```
+    /// # use glam::vec2;
+    /// # use polyanya::Triangulation;
+    /// # let triangulation = Triangulation::from_outer_edges(&[vec2(0.0, 0.0), vec2(1.0, 0.0), vec2(0.0, 1.0)]);
+    /// let mut mesh = triangulation.as_navmesh().unwrap();
+    ///
+    /// // Merge polygons at least once before baking.
+    /// mesh.merge_polygons();
+    ///
+    /// // One call to merge should have reduced the number of polygons, baking will be less expensive.
+    /// mesh.bake();
+    /// ```
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Option<Mesh> {
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
@@ -238,6 +254,10 @@ impl Triangulation {
         #[cfg(feature = "tracing")]
         drop(vertex_span);
 
-        Some(Mesh::new(vertices, polygons))
+        Some(Mesh {
+            vertices,
+            polygons,
+            ..Default::default()
+        })
     }
 }
