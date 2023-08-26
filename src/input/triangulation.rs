@@ -9,7 +9,6 @@ use geo::{
     SimplifyVwPreserve,
 };
 use glam::{vec2, Vec2};
-use hashbrown::HashMap;
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
 use crate::{Mesh, Polygon, Vertex};
@@ -192,7 +191,8 @@ impl Triangulation {
         #[cfg(feature = "tracing")]
         let polygon_span = tracing::info_span!("listing polygons").entered();
 
-        let mut face_to_polygon = HashMap::new();
+        let mut face_to_polygon: Vec<isize> = vec![-1; cdt.all_faces().len()];
+        let mut i = 0;
         let polygons = cdt
             .inner_faces()
             .filter_map(|face| {
@@ -205,7 +205,8 @@ impl Triangulation {
                     #[cfg(feature = "tracing")]
                     let _preparing_span = tracing::info_span!("preparing polygon").entered();
 
-                    face_to_polygon.insert(face.index(), face_to_polygon.len() as isize);
+                    face_to_polygon[face.index()] = i;
+                    i += 1;
                     Polygon::new(
                         face.vertices()
                             .iter()
@@ -227,14 +228,12 @@ impl Triangulation {
         let vertices = cdt
             .vertices()
             .map(|point| {
+                #[cfg(feature = "tracing")]
+                let _preparing_span = tracing::info_span!("preparing vertex").entered();
+
                 let mut neighbour_polygons = point
                     .out_edges()
-                    .map(|out_edge| {
-                        face_to_polygon
-                            .get(&out_edge.face().index())
-                            .cloned()
-                            .unwrap_or(-1)
-                    })
+                    .map(|out_edge| face_to_polygon[out_edge.face().index()])
                     .collect::<VecDeque<_>>();
                 let neighbour_polygons: Vec<_> = if neighbour_polygons.iter().all(|i| *i == -1) {
                     vec![-1]
