@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 
+use geo_offset::Offset;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -17,6 +18,7 @@ use crate::{Mesh, Polygon, Vertex};
 #[derive(Debug, Clone)]
 pub struct Triangulation {
     inner: GeoPolygon<f32>,
+    unit_radius: f32,
 }
 
 impl Triangulation {
@@ -27,7 +29,13 @@ impl Triangulation {
                 LineString::from(edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>()),
                 vec![],
             ),
+            unit_radius: 0.0,
         }
+    }
+
+    /// Zut
+    pub fn set_unit_radius(&mut self, radius: f32) {
+        self.unit_radius = radius;
     }
 
     /// Add an obstacle delimited by the list of points on its edges.
@@ -176,15 +184,25 @@ impl Triangulation {
     /// ```
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Option<Mesh> {
+        let buffered: GeoPolygon<f32> = if self.unit_radius != 0.0 {
+            let radiused = self
+                .inner
+                .offset_with_arc_segments(-self.unit_radius, 5)
+                .unwrap();
+            radiused.0[0].simplify_vw_preserve(&(self.unit_radius / 100.0))
+        } else {
+            self.inner.clone()
+        };
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
-        Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior())?;
+        Triangulation::add_constraint_edges(
+            &mut cdt,
+            &LineString(buffered.exterior_coords_iter().collect()),
+        )?;
 
-        if self
-            .inner
-            .interiors()
-            .iter()
-            .any(|obstacle| Triangulation::add_constraint_edges(&mut cdt, obstacle).is_none())
-        {
+        if buffered.interiors().iter().any(|obstacle| {
+            let obstacle = LineString::<f32>(obstacle.0.iter().cloned().collect());
+            Triangulation::add_constraint_edges(&mut cdt, &obstacle).is_none()
+        }) {
             return None;
         }
 
@@ -201,7 +219,7 @@ impl Triangulation {
 
                 let center = face.center();
                 let center = Coord::from((center.x, center.y));
-                self.inner.contains(&center).then(|| {
+                buffered.contains(&center).then(|| {
                     #[cfg(feature = "tracing")]
                     let _preparing_span = tracing::info_span!("preparing polygon").entered();
 
