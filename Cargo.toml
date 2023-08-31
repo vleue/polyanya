@@ -28,7 +28,7 @@ bvh2d = { version = "0.3", git = "https://github.com/mockersf/bvh2d" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 spade = "2.2"
 geo = "0.26.0"
-geo-offset = { path = "../../bevy_friends/geo-offset" }
+geo-offset = { git = "https://github.com/mockersf/geo-offset", branch = "support-f32" }
 geo-booleanop = { git = "https://github.com/21re/rust-geo-booleanop" }
 
 [dev-dependencies]
