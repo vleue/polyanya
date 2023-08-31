@@ -127,3 +127,12 @@ popped off: root=(993, 290); left=(977, 276); right=(965, 293); f=1015.58, g=0.0
 ```
 
 The mesh files used in tests are coming from the cpp implementation and are available under MIT license.
+
+
+## Implementation details
+
+Compromise-free Pathfinding on a Navigation Mesh: https://www.ijcai.org/proceedings/2017/0070.pdf
+Martinez-Rueda polygon boolean operations: https://www.sciencedirect.com/science/article/abs/pii/S0965997813000379
+Polygon offsetting by computing winding numbers: https://mcmains.me.berkeley.edu/pubs/DAC05OffsetPolygon.pdf
+Polygon simplification: https://en.wikipedia.org/wiki/Visvalingam–Whyatt_algorithm
+Triangulation: https://en.wikipedia.org/wiki/Constrained_Delaunay_triangulation
