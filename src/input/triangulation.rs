@@ -1,12 +1,13 @@
 use std::collections::VecDeque;
 
+use geo_booleanop::boolean::BooleanOp;
 use geo_offset::Offset;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
 pub use geo::LineString;
 use geo::{
-    BooleanOps, Contains, Coord, CoordsIter, Intersects, MultiPolygon, Polygon as GeoPolygon,
+    Contains, Coord, CoordsIter, Intersects, MultiPolygon, Polygon as GeoPolygon,
     SimplifyVwPreserve,
 };
 use glam::{vec2, Vec2};
@@ -104,7 +105,7 @@ impl Triangulation {
                         .map(|other| GeoPolygon::new(not_intersecting.remove(*other), vec![]))
                         .collect(),
                 );
-                merged = merged.union(&GeoPolygon::new(poly, vec![]).into());
+                merged = merged.union(&GeoPolygon::new(poly, vec![]));
                 not_intersecting.push(LineString(
                     merged.exterior_coords_iter().collect::<Vec<_>>(),
                 ));
@@ -184,28 +185,40 @@ impl Triangulation {
     /// ```
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Option<Mesh> {
-        let buffered: GeoPolygon<f32> = if self.unit_radius != 0.0 {
+        if self.unit_radius != 0.0 {
             let radiused = self
                 .inner
                 .offset_with_arc_segments(-self.unit_radius, 5)
                 .unwrap();
-            radiused.0[0].simplify_vw_preserve(&(self.unit_radius / 100.0))
+            let poly = &radiused.0[0].simplify_vw_preserve(&(self.unit_radius / 100.0));
+            let cdt = Self::to_cdt(poly)?;
+            Self::cdt_to_navmesh(cdt, poly)
         } else {
-            self.inner.clone()
-        };
+            let cdt = Self::to_cdt(&self.inner)?;
+            Self::cdt_to_navmesh(cdt, &self.inner)
+        }
+    }
+
+    fn to_cdt(poly: &GeoPolygon<f32>) -> Option<ConstrainedDelaunayTriangulation<Point2<f32>>> {
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
         Triangulation::add_constraint_edges(
             &mut cdt,
-            &LineString(buffered.exterior_coords_iter().collect()),
+            &LineString::<f32>(poly.exterior_coords_iter().collect()),
         )?;
 
-        if buffered.interiors().iter().any(|obstacle| {
+        if poly.interiors().iter().any(|obstacle| {
             let obstacle = LineString::<f32>(obstacle.0.iter().cloned().collect());
             Triangulation::add_constraint_edges(&mut cdt, &obstacle).is_none()
         }) {
             return None;
         }
+        Some(cdt)
+    }
 
+    fn cdt_to_navmesh(
+        cdt: ConstrainedDelaunayTriangulation<Point2<f32>>,
+        poly: &GeoPolygon<f32>,
+    ) -> Option<Mesh> {
         #[cfg(feature = "tracing")]
         let polygon_span = tracing::info_span!("listing polygons").entered();
 
@@ -219,7 +232,7 @@ impl Triangulation {
 
                 let center = face.center();
                 let center = Coord::from((center.x, center.y));
-                buffered.contains(&center).then(|| {
+                poly.contains(&center).then(|| {
                     #[cfg(feature = "tracing")]
                     let _preparing_span = tracing::info_span!("preparing polygon").entered();
 

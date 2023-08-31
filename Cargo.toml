@@ -30,6 +30,7 @@ spade = "2.2"
 geo = "0.26.0"
 log = "0.4"
 geo-offset = { path = "../../bevy_friends/geo-offset" }
+geo-booleanop = { git = "https://github.com/21re/rust-geo-booleanop" }
 
 [dev-dependencies]
 criterion = "0.5"
