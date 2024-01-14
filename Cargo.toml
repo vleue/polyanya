@@ -27,9 +27,9 @@ smallvec = { version = "1.9", features = ["union", "const_generics"] }
 bvh2d = { version = "0.3", git = "https://github.com/mockersf/bvh2d" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 spade = "2.2"
-geo = "0.26.0"
+geo = "0.27.0"
 geo-offset = { git = "https://github.com/mockersf/geo-offset", branch = "support-f32" }
-geo-booleanop = { git = "https://github.com/21re/rust-geo-booleanop" }
+geo-clipper = "0.8.0"
 
 [dev-dependencies]
 criterion = "0.5"

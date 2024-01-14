@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use geo_booleanop::boolean::BooleanOp;
+use geo_clipper::Clipper;
 use geo_offset::Offset;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -14,6 +14,9 @@ use glam::{vec2, Vec2};
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
 use crate::{Mesh, Polygon, Vertex};
+
+/// Keep the precision of 3 digits behind the decimal point (e.g. "25.219"), when using geo-clipper calculations.
+const GEO_CLIPPER_CLIP_PRECISION: f32 = 1000.0;
 
 /// An helper to create a [`Mesh`] from a list of edges and obstacle, using a constrained Delaunay triangulation.
 #[derive(Debug, Clone)]
@@ -105,7 +108,7 @@ impl Triangulation {
                         .map(|other| GeoPolygon::new(not_intersecting.remove(*other), vec![]))
                         .collect(),
                 );
-                merged = merged.union(&GeoPolygon::new(poly, vec![]));
+                merged = merged.union(&GeoPolygon::new(poly, vec![]), GEO_CLIPPER_CLIP_PRECISION);
                 not_intersecting.push(LineString(
                     merged.exterior_coords_iter().collect::<Vec<_>>(),
                 ));
