@@ -210,7 +210,7 @@ impl Triangulation {
         )?;
 
         if poly.interiors().iter().any(|obstacle| {
-            let obstacle = LineString::<f32>(obstacle.0.iter().cloned().collect());
+            let obstacle = LineString::<f32>(obstacle.0.to_vec());
             Triangulation::add_constraint_edges(&mut cdt, &obstacle).is_none()
         }) {
             return None;
