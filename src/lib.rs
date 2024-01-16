@@ -294,7 +294,7 @@ impl Mesh {
         );
 
         // Limit search to avoid an infinite loop.
-        for _ in 0..self.polygons.len() {
+        for _ in 0..self.polygons.len() * 1000 {
             match search_instance.next() {
                 InstanceStep::Found(path) => return Some(path),
                 InstanceStep::NotFound => return None,
@@ -304,7 +304,7 @@ impl Mesh {
 
         // The above should always return a path, or find no path exists.
         // In this case, the mesh is faulty in some way.
-        // TODO: Validate mesh so this can't happen.
+        eprintln!("Mesh::path: search failed from {from} to {to}");
         None
     }
 
