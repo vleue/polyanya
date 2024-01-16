@@ -293,13 +293,19 @@ impl Mesh {
             start,
         );
 
-        loop {
+        // Limit search to avoid an infinite loop.
+        for _ in 0..self.polygons.len() {
             match search_instance.next() {
                 InstanceStep::Found(path) => return Some(path),
                 InstanceStep::NotFound => return None,
                 InstanceStep::Continue => (),
             }
         }
+
+        // The above should always return a path, or find no path exists.
+        // In this case, the mesh is faulty in some way.
+        // TODO: Validate mesh so this can't happen.
+        return None;
     }
 
     /// The delta set by [`Mesh::set_delta`]
