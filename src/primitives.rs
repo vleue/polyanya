@@ -65,12 +65,14 @@ impl Polygon {
     }
 
     pub(crate) fn using(nb: usize, data: Vec<isize>) -> Self {
-        assert!(data.len() == nb * 2);
         let (vertices, neighbours) = data.split_at(nb);
         let vertices = vertices.iter().copied().map(|v| v as u32).collect();
         let neighbours = neighbours.to_vec();
         let mut found_trav = false;
-        let mut is_one_way = true;
+        // Hack to handle case where there are no neighbours in the file. In
+        // this case we want to assume it is not a one way. The correct fix is
+        // to update the polyanya file format to include the neighbours.
+        let mut is_one_way = !neighbours.is_empty();
         for neighbour in &neighbours {
             if *neighbour != -1 {
                 if found_trav {

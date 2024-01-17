@@ -105,9 +105,10 @@ impl PolyanyaFile {
         for vertex in &self.vertices {
             bytes.extend_from_slice(
                 format!(
-                    "{} {} {}\n",
+                    "{:.06} {:.06} {} {}\n",
                     vertex.coords.x,
                     vertex.coords.y,
+                    vertex.polygons.len(),
                     vertex
                         .polygons
                         .iter()
