@@ -29,6 +29,7 @@ use glam::Vec2;
 
 use helpers::Vec2Helper;
 use instance::{EdgeSide, InstanceStep};
+use log::error;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -293,13 +294,17 @@ impl Mesh {
             start,
         );
 
-        loop {
+        // Limit search to avoid an infinite loop.
+        for _ in 0..self.polygons.len() * 1000 {
             match search_instance.next() {
                 InstanceStep::Found(path) => return Some(path),
                 InstanceStep::NotFound => return None,
                 InstanceStep::Continue => (),
             }
         }
+
+        error!("Search from {from} to {to} failed. Please check the mesh is valid as this should not happen.");
+        None
     }
 
     /// The delta set by [`Mesh::set_delta`]
