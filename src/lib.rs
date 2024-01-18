@@ -29,6 +29,7 @@ use glam::Vec2;
 
 use helpers::Vec2Helper;
 use instance::{EdgeSide, InstanceStep};
+use log::error;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -302,9 +303,7 @@ impl Mesh {
             }
         }
 
-        // The above should always return a path, or find no path exists.
-        // In this case, the mesh is faulty in some way.
-        eprintln!("Mesh::path: search failed from {from} to {to}");
+        error!("Search from {from} to {to} failed. Please check the mesh is valid as this should not happen.");
         None
     }
 
