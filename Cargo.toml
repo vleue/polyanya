@@ -12,11 +12,13 @@ documentation = "https://docs.rs/polyanya"
 categories = ["game-development"]
 
 [features]
-default = ["async"]
+default = ["async", "wasm-compatible"]
 stats = []
 verbose = []
 async = []
 no-default-baking = []
+wasm-compatible = ["dep:geo-booleanop"]
+wasm-incompatible = ["dep:geo-clipper"]
 serde = ["glam/serde", "bvh2d/serde", "dep:serde"]
 
 [dependencies]
@@ -29,7 +31,8 @@ serde = { version = "1.0", features = ["derive"], optional = true }
 spade = "2.2"
 geo = "0.27.0"
 geo-offset = { git = "https://github.com/mockersf/geo-offset", branch = "support-f32" }
-geo-clipper = "0.8.0"
+geo-booleanop = { git = "https://github.com/21re/rust-geo-booleanop", optional = true }
+geo-clipper = { version = "0.8.0", optional = true }
 
 [dev-dependencies]
 criterion = "0.5"

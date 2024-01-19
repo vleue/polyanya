@@ -1,21 +1,32 @@
-use std::collections::VecDeque;
+#[cfg(any(
+    not(any(feature = "wasm-compatible", feature = "wasm-incompatible")),
+    all(feature = "wasm-compatible", feature = "wasm-incompatible")
+))]
+compile_error!("You must choose exactly one of the features: [\"wasm-compatible\", \"wasm-incompatible\"].");
 
+#[cfg(all(feature = "wasm-incompatible", not(feature = "wasm-compatible")))]
 use geo_clipper::Clipper;
-use geo_offset::Offset;
+
+#[cfg(feature = "wasm-compatible")]
+use geo_booleanop::boolean::BooleanOp;
+
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-pub use geo::LineString;
+use std::collections::VecDeque;
+use geo_offset::Offset;
 use geo::{
     Contains, Coord, CoordsIter, Intersects, MultiPolygon, Polygon as GeoPolygon,
     SimplifyVwPreserve,
 };
 use glam::{vec2, Vec2};
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
-
 use crate::{Mesh, Polygon, Vertex};
 
+pub use geo::LineString;
+
 /// Keep the precision of 3 digits behind the decimal point (e.g. "25.219"), when using geo-clipper calculations.
+#[cfg(all(feature = "wasm-incompatible", not(feature = "wasm-compatible")))]
 const GEO_CLIPPER_CLIP_PRECISION: f32 = 1000.0;
 
 /// An helper to create a [`Mesh`] from a list of edges and obstacle, using a constrained Delaunay triangulation.
@@ -108,7 +119,15 @@ impl Triangulation {
                         .map(|other| GeoPolygon::new(not_intersecting.remove(*other), vec![]))
                         .collect(),
                 );
-                merged = merged.union(&GeoPolygon::new(poly, vec![]), GEO_CLIPPER_CLIP_PRECISION);
+
+                #[cfg(all(feature = "wasm-incompatible", not(feature = "wasm-compatible")))] {
+                    merged = merged.union(&GeoPolygon::new(poly, vec![]), GEO_CLIPPER_CLIP_PRECISION);
+                }
+
+                #[cfg(feature = "wasm-compatible")] {
+                    merged = merged.union(&GeoPolygon::new(poly, vec![]));
+                }
+
                 not_intersecting.push(LineString(
                     merged.exterior_coords_iter().collect::<Vec<_>>(),
                 ));
