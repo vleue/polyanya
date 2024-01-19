@@ -2,7 +2,9 @@
     not(any(feature = "wasm-compatible", feature = "wasm-incompatible")),
     all(feature = "wasm-compatible", feature = "wasm-incompatible")
 ))]
-compile_error!("You must choose exactly one of the features: [\"wasm-compatible\", \"wasm-incompatible\"].");
+compile_error!(
+    "You must choose exactly one of the features: [\"wasm-compatible\", \"wasm-incompatible\"]."
+);
 
 #[cfg(all(feature = "wasm-incompatible", not(feature = "wasm-compatible")))]
 use geo_clipper::Clipper;
@@ -13,15 +15,15 @@ use geo_booleanop::boolean::BooleanOp;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use std::collections::VecDeque;
-use geo_offset::Offset;
+use crate::{Mesh, Polygon, Vertex};
 use geo::{
     Contains, Coord, CoordsIter, Intersects, MultiPolygon, Polygon as GeoPolygon,
     SimplifyVwPreserve,
 };
+use geo_offset::Offset;
 use glam::{vec2, Vec2};
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
-use crate::{Mesh, Polygon, Vertex};
+use std::collections::VecDeque;
 
 pub use geo::LineString;
 
@@ -120,11 +122,14 @@ impl Triangulation {
                         .collect(),
                 );
 
-                #[cfg(all(feature = "wasm-incompatible", not(feature = "wasm-compatible")))] {
-                    merged = merged.union(&GeoPolygon::new(poly, vec![]), GEO_CLIPPER_CLIP_PRECISION);
+                #[cfg(all(feature = "wasm-incompatible", not(feature = "wasm-compatible")))]
+                {
+                    merged =
+                        merged.union(&GeoPolygon::new(poly, vec![]), GEO_CLIPPER_CLIP_PRECISION);
                 }
 
-                #[cfg(feature = "wasm-compatible")] {
+                #[cfg(feature = "wasm-compatible")]
+                {
                     merged = merged.union(&GeoPolygon::new(poly, vec![]));
                 }
 
