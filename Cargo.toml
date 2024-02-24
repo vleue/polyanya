@@ -36,9 +36,6 @@ tracing-tracy = "0.10"
 tracing-subscriber = "0.3"
 tracing = "0.1"
 
-[patch."https://github.com/mockersf/bvh2d"]
-bvh2d = { git = "https://github.com/66OJ66/bvh2d", branch = "main"}
-
 [workspace]
 members = ["examples/traced"]
 
