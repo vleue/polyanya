@@ -1,19 +1,35 @@
-use std::collections::VecDeque;
+#[cfg(any(
+    not(any(feature = "wasm-compatible", feature = "wasm-incompatible")),
+    all(feature = "wasm-compatible", feature = "wasm-incompatible")
+))]
+compile_error!(
+    "You must choose exactly one of the features: [\"wasm-compatible\", \"wasm-incompatible\"]."
+);
 
+#[cfg(all(feature = "wasm-incompatible", not(feature = "wasm-compatible")))]
+use geo_clipper::Clipper;
+
+#[cfg(feature = "wasm-compatible")]
 use geo_booleanop::boolean::BooleanOp;
-use geo_offset::Offset;
+
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-pub use geo::LineString;
+use crate::{Mesh, Polygon, Vertex};
 use geo::{
     Contains, Coord, CoordsIter, Intersects, MultiPolygon, Polygon as GeoPolygon,
     SimplifyVwPreserve,
 };
+use geo_offset::Offset;
 use glam::{vec2, Vec2};
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
+use std::collections::VecDeque;
 
-use crate::{Mesh, Polygon, Vertex};
+pub use geo::LineString;
+
+/// Keep the precision of 3 digits behind the decimal point (e.g. "25.219"), when using geo-clipper calculations.
+#[cfg(all(feature = "wasm-incompatible", not(feature = "wasm-compatible")))]
+const GEO_CLIPPER_CLIP_PRECISION: f32 = 1000.0;
 
 /// An helper to create a [`Mesh`] from a list of edges and obstacle, using a constrained Delaunay triangulation.
 #[derive(Debug, Clone)]
@@ -105,7 +121,18 @@ impl Triangulation {
                         .map(|other| GeoPolygon::new(not_intersecting.remove(*other), vec![]))
                         .collect(),
                 );
-                merged = merged.union(&GeoPolygon::new(poly, vec![]));
+
+                #[cfg(all(feature = "wasm-incompatible", not(feature = "wasm-compatible")))]
+                {
+                    merged =
+                        merged.union(&GeoPolygon::new(poly, vec![]), GEO_CLIPPER_CLIP_PRECISION);
+                }
+
+                #[cfg(feature = "wasm-compatible")]
+                {
+                    merged = merged.union(&GeoPolygon::new(poly, vec![]));
+                }
+
                 not_intersecting.push(LineString(
                     merged.exterior_coords_iter().collect::<Vec<_>>(),
                 ));
@@ -207,7 +234,7 @@ impl Triangulation {
         )?;
 
         if poly.interiors().iter().any(|obstacle| {
-            let obstacle = LineString::<f32>(obstacle.0.iter().cloned().collect());
+            let obstacle = LineString::<f32>(obstacle.0.to_vec());
             Triangulation::add_constraint_edges(&mut cdt, &obstacle).is_none()
         }) {
             return None;

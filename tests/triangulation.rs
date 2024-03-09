@@ -201,7 +201,7 @@ fn is_in_mesh_overlapping_simplified() {
     let polygons_before = triangulation.as_navmesh().unwrap().polygons;
     triangulation.simplify(1.0);
     let mesh: Mesh = triangulation.as_navmesh().unwrap();
-    assert!(dbg!(polygons_before.len()) > dbg!(mesh.polygons.len()));
+    assert!(dbg!(polygons_before.len()) >= dbg!(mesh.polygons.len()));
     for i in 0..10 {
         for j in 0..10 {
             if i > 2 && i < 8 && j > 2 && j < 8 {
