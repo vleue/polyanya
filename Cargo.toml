@@ -30,14 +30,14 @@ bvh2d = { version = "0.4", git = "https://github.com/mockersf/bvh2d" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 spade = "2.2"
 log = "0.4"
-geo = "0.27.0"
+geo = "0.28.0"
 geo-offset = { git = "https://github.com/mockersf/geo-offset", branch = "support-f32" }
 geo-booleanop = { git = "https://github.com/21re/rust-geo-booleanop", optional = true }
 geo-clipper = { version = "0.8.0", optional = true }
 
 [dev-dependencies]
 criterion = "0.5"
-tracing-tracy = "0.10"
+tracing-tracy = "0.11"
 tracing-subscriber = "0.3"
 tracing = "0.1"
 
