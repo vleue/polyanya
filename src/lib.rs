@@ -30,6 +30,7 @@ use glam::Vec2;
 use helpers::Vec2Helper;
 use instance::{EdgeSide, InstanceStep};
 use log::error;
+use thiserror::Error;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -121,6 +122,17 @@ impl Bounded for BoundedPolygon {
     }
 }
 
+/// Errors that can happen when working creating a [`Mesh`]
+#[derive(Error, Debug, Copy, Clone, PartialEq)]
+pub enum MeshError {
+    /// The mesh is empty.
+    #[error("The mesh is empty")]
+    EmptyMesh,
+    /// The mesh is invalid, such as having a vertex that does not belong to any polygon.
+    #[error("The mesh is invalid")]
+    InvalidMesh,
+}
+
 impl Mesh {
     /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
     #[inline]
@@ -208,7 +220,10 @@ impl Mesh {
     }
 
     /// Create a `Mesh` from a list of [`Vertex`] and [`Polygon`].
-    pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Mesh {
+    pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Result<Self, MeshError> {
+        if vertices.is_empty() || polygons.is_empty() {
+            return Err(MeshError::EmptyMesh);
+        }
         let mut mesh = Mesh {
             vertices,
             polygons,
@@ -219,7 +234,7 @@ impl Mesh {
         // just to not get a warning on the mut borrow. should be pretty much free anyway
         #[cfg(feature = "no-default-baking")]
         mesh.unbake();
-        mesh
+        Ok(mesh)
     }
 
     /// Compute a path between two points.
@@ -742,6 +757,12 @@ mod tests {
                     + Vec2::new(2.0, 1.0).distance(to),
             }
         );
+    }
+
+    #[test]
+    fn empty_mesh_fails() {
+        let mesh = Mesh::new(vec![], vec![]);
+        assert!(matches!(mesh, Err(crate::MeshError::EmptyMesh)));
     }
 
     fn mesh_from_paper() -> Mesh {

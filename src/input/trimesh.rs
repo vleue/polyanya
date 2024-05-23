@@ -1,4 +1,4 @@
-use crate::{Mesh, Polygon, Vertex};
+use crate::{Mesh, MeshError, Polygon, Vertex};
 use glam::Vec2;
 use std::cmp::Ordering;
 use std::iter;
@@ -48,8 +48,10 @@ pub struct Trimesh {
     pub triangles: Vec<[usize; 3]>,
 }
 
-impl From<Trimesh> for Mesh {
-    fn from(value: Trimesh) -> Self {
+impl TryFrom<Trimesh> for Mesh {
+    type Error = MeshError;
+
+    fn try_from(value: Trimesh) -> Result<Self, Self::Error> {
         let mut vertices: Vec<_> = to_vertices(&value);
         let polygons = to_polygons(value.triangles);
         let unordered_vertices = vertices.clone();
@@ -74,6 +76,10 @@ impl From<Trimesh> for Mesh {
                     Ordering::Greater
                 }
             });
+
+            if vertex.polygons.is_empty() {
+                return Err(MeshError::InvalidMesh);
+            }
 
             // Add obstacles (-1) as vertex neighbors
             let mut polygons_including_obstacles = vec![vertex.polygons[0]];
@@ -162,7 +168,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn generation_from_trimesh_is_same_as_regular() {
+    fn generation_from_trimesh_is_same_as_regular() -> Result<(), MeshError> {
         let regular_mesh = Mesh::new(
             vec![
                 Vertex::new(Vec2::new(1., 1.), vec![0, 4, -1]), // 0
@@ -179,7 +185,7 @@ mod tests {
                 Polygon::new(vec![1, 5, 3], false), // 3
                 Polygon::new(vec![0, 4, 3], false), // 4
             ],
-        );
+        )?;
         let from_trimesh: Mesh = Trimesh {
             vertices: vec![
                 Vec2::new(1., 1.),
@@ -191,7 +197,7 @@ mod tests {
             ],
             triangles: vec![[0, 1, 4], [1, 2, 5], [5, 2, 3], [1, 5, 3], [0, 4, 3]],
         }
-        .into();
+        .try_into()?;
         assert_eq!(regular_mesh.polygons, from_trimesh.polygons);
         for (index, (expected_vertex, actual_vertex)) in regular_mesh
             .vertices
@@ -227,6 +233,17 @@ mod tests {
                 regular_mesh.vertices, from_trimesh.vertices
             );
         }
+        Ok(())
+    }
+
+    #[test]
+    fn isolated_vertex_fails() {
+        let trimesh: Result<Mesh, _> = Trimesh {
+            vertices: vec![Vec2::new(1., 1.)],
+            triangles: vec![],
+        }
+        .try_into();
+        assert!(matches!(trimesh, Err(MeshError::InvalidMesh)));
     }
 
     fn wrap_to_first(polygons: &[isize], pred: impl Fn(&isize) -> bool) -> Option<Vec<isize>> {

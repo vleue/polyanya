@@ -51,7 +51,7 @@ fn main() {
             Polygon::new(vec![15, 18, 19, 16], true),          // 5
             Polygon::new(vec![11, 17, 20, 21], true),          // 6
         ],
-    );
+    ).unwrap();
 
     // Get the path between two points
     let from = Vec2::new(12.0, 0.0);

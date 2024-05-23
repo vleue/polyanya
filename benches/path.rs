@@ -13,7 +13,9 @@ macro_rules! assert_delta {
 }
 
 fn get_path(c: &mut Criterion) {
-    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh").into();
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh")
+        .try_into()
+        .unwrap();
     [
         (Vec2::new(993.0, 290.0), Vec2::new(34.0, 622.0), 1123.2226),
         (Vec2::new(356.0, 166.0), Vec2::new(661.0, 441.0), 595.041),
