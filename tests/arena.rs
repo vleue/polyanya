@@ -11,7 +11,9 @@ macro_rules! assert_delta {
 }
 
 fn arena_mesh() -> Mesh {
-    PolyanyaFile::from_file("meshes/arena.mesh").into()
+    PolyanyaFile::from_file("meshes/arena.mesh")
+        .try_into()
+        .unwrap()
 }
 
 #[test]

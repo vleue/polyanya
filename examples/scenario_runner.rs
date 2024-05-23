@@ -48,7 +48,9 @@ fn main() {
     let mut args = std::env::args();
     args.next();
 
-    let mesh: Mesh = PolyanyaFile::from_file(&args.next().unwrap()).into();
+    let mesh: Mesh = PolyanyaFile::from_file(&args.next().unwrap())
+        .try_into()
+        .unwrap();
 
     for scenario in Scenarios::from_file(&args.next().unwrap()).0 {
         mesh.path(scenario.from, scenario.to).unwrap();

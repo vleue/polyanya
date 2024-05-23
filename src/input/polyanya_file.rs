@@ -2,7 +2,7 @@ use std::io::{self, BufRead, Read, Write};
 
 use glam::Vec2;
 
-use crate::{Mesh, Polygon, Vertex};
+use crate::{Mesh, MeshError, Polygon, Vertex};
 
 /// A mesh read from a Polyanya file in the format `mesh 2`.
 ///
@@ -138,8 +138,10 @@ impl PolyanyaFile {
     }
 }
 
-impl From<PolyanyaFile> for Mesh {
-    fn from(value: PolyanyaFile) -> Self {
+impl TryFrom<PolyanyaFile> for Mesh {
+    type Error = MeshError;
+
+    fn try_from(value: PolyanyaFile) -> Result<Self, Self::Error> {
         Mesh::new(value.vertices, value.polygons)
     }
 }
