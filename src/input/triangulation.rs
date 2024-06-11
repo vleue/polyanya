@@ -70,7 +70,7 @@ impl Triangulation {
     /// otherwise it will fail.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn merge_overlapping_obstacles(&mut self) {
-        let (exterior, interiors) =
+        let (mut exterior, interiors) =
             std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
                 .into_inner();
 
@@ -83,8 +83,8 @@ impl Triangulation {
                 .map(|(i, _)| i)
                 .collect::<Vec<_>>();
 
-            if intersecting.is_empty() {
-                not_intersecting.push(poly);
+            let to_keep = if intersecting.is_empty() {
+                poly
             } else {
                 #[cfg(feature = "tracing")]
                 let _merging_span = tracing::info_span!("merging polygons").entered();
@@ -97,9 +97,34 @@ impl Triangulation {
                         .collect(),
                 );
                 merged = merged.union(&GeoPolygon::new(poly, vec![]).into());
-                not_intersecting.push(LineString(
-                    merged.exterior_coords_iter().collect::<Vec<_>>(),
-                ));
+                LineString(merged.exterior_coords_iter().collect::<Vec<_>>())
+            };
+
+            if to_keep.intersects(&exterior) {
+                let new_exterior =
+                    GeoPolygon::new(exterior, vec![]).difference(&GeoPolygon::new(to_keep, vec![]));
+                // Keep the biggest of the new exterior polygons
+                if new_exterior.0.len() > 1 {
+                    let mut biggest = 0;
+                    let mut biggest_length = 0;
+                    for (i, poly) in new_exterior.0.iter().enumerate() {
+                        let exterior_length = poly.exterior_coords_iter().len();
+                        if exterior_length > biggest_length {
+                            biggest = i;
+                            biggest_length = exterior_length;
+                        }
+                    }
+                    exterior = LineString(
+                        new_exterior.0[biggest]
+                            .exterior_coords_iter()
+                            .collect::<Vec<_>>(),
+                    );
+                } else {
+                    exterior =
+                        LineString(new_exterior.0[0].exterior_coords_iter().collect::<Vec<_>>());
+                }
+            } else {
+                not_intersecting.push(to_keep);
             }
         }
 
