@@ -61,7 +61,11 @@ impl Triangulation {
     /// Epsilon is the minimum area a point should contribute to a polygon.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn simplify(&mut self, epsilon: f32) {
-        self.inner = self.inner.simplify_vw_preserve(&epsilon);
+        self.inner.interiors_mut(|interiors| {
+            for interior in interiors {
+                *interior = interior.simplify_vw_preserve(&epsilon);
+            }
+        });
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
