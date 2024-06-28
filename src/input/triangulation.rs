@@ -4,10 +4,7 @@ use std::collections::VecDeque;
 use tracing::instrument;
 
 pub use geo::LineString;
-use geo::{
-    BooleanOps, Contains, Coord, CoordsIter, Intersects, MultiPolygon, Polygon as GeoPolygon,
-    SimplifyVwPreserve,
-};
+use geo::{Contains, Coord, Polygon as GeoPolygon, SimplifyVwPreserve};
 use glam::{vec2, Vec2};
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
@@ -31,9 +28,6 @@ impl Triangulation {
     }
 
     /// Add an obstacle delimited by the list of points on its edges.
-    ///
-    /// Obstacles *MUST NOT* overlap. If some obstacles do overlap, use [`Triangulation::merge_overlapping_obstacles`]
-    /// before calling [`Triangulation::as_navmesh`].
     pub fn add_obstacle(&mut self, edges: Vec<Vec2>) {
         self.inner.interiors_push(LineString::from(
             edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>(),
@@ -41,9 +35,6 @@ impl Triangulation {
     }
 
     /// Add obstacles delimited by the list of points on their edges.
-    ///
-    /// Obstacles *MUST NOT* overlap. If some obstacles do overlap, use [`Triangulation::merge_overlapping_obstacles`]
-    /// before calling [`Triangulation::as_navmesh`].
     pub fn add_obstacles(&mut self, obstacles: impl IntoIterator<Item = Vec<Vec2>>) {
         let (exterior, interiors) =
             std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
@@ -62,73 +53,6 @@ impl Triangulation {
                 }))
                 .collect::<Vec<_>>(),
         );
-    }
-
-    /// Merge overlapping obstacles.
-    ///
-    /// This must be called before converting the triangulation into a [`Mesh`] if there are overlapping obstacles,
-    /// otherwise it will fail.
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn merge_overlapping_obstacles(&mut self) {
-        let (mut exterior, interiors) =
-            std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
-                .into_inner();
-
-        let mut not_intersecting: Vec<LineString<f32>> = vec![];
-        for poly in interiors.into_iter() {
-            let intersecting = not_intersecting
-                .iter()
-                .enumerate()
-                .filter(|(_, other)| poly.intersects(*other))
-                .map(|(i, _)| i)
-                .collect::<Vec<_>>();
-
-            let to_keep = if intersecting.is_empty() {
-                poly
-            } else {
-                #[cfg(feature = "tracing")]
-                let _merging_span = tracing::info_span!("merging polygons").entered();
-
-                let mut merged = MultiPolygon::<f32>(
-                    intersecting
-                        .iter()
-                        .rev()
-                        .map(|other| GeoPolygon::new(not_intersecting.remove(*other), vec![]))
-                        .collect(),
-                );
-                merged = merged.union(&GeoPolygon::new(poly, vec![]).into());
-                LineString(merged.exterior_coords_iter().collect::<Vec<_>>())
-            };
-
-            if to_keep.intersects(&exterior) {
-                let new_exterior =
-                    GeoPolygon::new(exterior, vec![]).difference(&GeoPolygon::new(to_keep, vec![]));
-                // Keep the biggest of the new exterior polygons
-                if new_exterior.0.len() > 1 {
-                    let mut biggest = 0;
-                    let mut biggest_length = 0;
-                    for (i, poly) in new_exterior.0.iter().enumerate() {
-                        let exterior_length = poly.exterior_coords_iter().len();
-                        if exterior_length > biggest_length {
-                            biggest = i;
-                            biggest_length = exterior_length;
-                        }
-                    }
-                    exterior = LineString(
-                        new_exterior.0[biggest]
-                            .exterior_coords_iter()
-                            .collect::<Vec<_>>(),
-                    );
-                } else {
-                    exterior =
-                        LineString(new_exterior.0[0].exterior_coords_iter().collect::<Vec<_>>());
-                }
-            } else {
-                not_intersecting.push(to_keep);
-            }
-        }
-
-        self.inner = GeoPolygon::new(exterior, not_intersecting);
     }
 
     /// Simplify the outer edge and obstacles, using a topology-preserving variant of the

@@ -1970,8 +1970,7 @@ fn random_with_many_obstacles() -> Triangulation {
 
 fn merger_many_overlapping(c: &mut Criterion) {
     c.bench_function(&"merger many overlapping".to_string(), |b| {
-        let mut triangulation = random_with_many_obstacles();
-        triangulation.merge_overlapping_obstacles();
+        let triangulation = random_with_many_obstacles();
         let mesh: Mesh = triangulation.as_navmesh();
         b.iter(|| {
             let mut mesh = mesh.clone();
@@ -1983,8 +1982,7 @@ fn merger_many_overlapping(c: &mut Criterion) {
 
 fn merger_many_overlapping_once(c: &mut Criterion) {
     c.bench_function(&"merger many overlapping (once)".to_string(), |b| {
-        let mut triangulation = random_with_many_obstacles();
-        triangulation.merge_overlapping_obstacles();
+        let triangulation = random_with_many_obstacles();
         let mesh: Mesh = triangulation.as_navmesh();
         b.iter(|| {
             let mut mesh = mesh.clone();

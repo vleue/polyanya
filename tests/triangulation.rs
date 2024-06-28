@@ -59,7 +59,6 @@ fn is_in_mesh_4_obstacles() {
         vec2(7.5, 7.5),
         vec2(7.5, 5.0),
     ]);
-    triangulation.merge_overlapping_obstacles();
     triangulation.simplify(0.5);
     let mesh: Mesh = triangulation.as_navmesh();
 
@@ -76,7 +75,6 @@ fn is_in_mesh_4_obstacles() {
 }
 
 #[test]
-#[should_panic]
 fn is_in_mesh_overlapping() {
     let mut triangulation = Triangulation::from_outer_edges(&[
         vec2(0.0, 0.0),
@@ -152,7 +150,6 @@ fn is_in_mesh_overlapping_merged() {
         vec2(7.5, 7.5),
         vec2(7.5, 4.0),
     ]);
-    triangulation.merge_overlapping_obstacles();
     let mesh: Mesh = triangulation.as_navmesh();
     for i in 0..10 {
         for j in 0..10 {
@@ -197,7 +194,6 @@ fn is_in_mesh_overlapping_simplified() {
         vec2(7.5, 7.5),
         vec2(7.5, 4.0),
     ]);
-    triangulation.merge_overlapping_obstacles();
     let polygons_before = triangulation.as_navmesh().polygons;
     triangulation.simplify(1.0);
     let mesh: Mesh = triangulation.as_navmesh();

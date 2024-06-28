@@ -1826,7 +1826,6 @@ fn main() {
                 vec2(2.7777152, 2.6639614),
             ],
         ]);
-        triangulation.merge_overlapping_obstacles();
         triangulation.simplify(0.005);
         triangulation.as_navmesh();
     }
