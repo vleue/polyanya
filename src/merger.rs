@@ -283,7 +283,7 @@ mod test {
             Vec2::new(1., 1.),
             Vec2::new(1., -1.),
         ]);
-        let mut mesh = triangulation.as_navmesh().unwrap();
+        let mut mesh = triangulation.as_navmesh();
         // println!("{:#?}", mesh);
         while mesh.merge_polygons() {
             // println!("{:#?}", mesh);
@@ -316,7 +316,7 @@ mod test {
             ],
         ]);
         triangulation.simplify(0.001);
-        let mut mesh = triangulation.as_navmesh().unwrap();
+        let mut mesh = triangulation.as_navmesh();
 
         mesh.unbake();
         // println!("{:#?}", mesh);
