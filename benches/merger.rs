@@ -140,7 +140,7 @@ fn merger(c: &mut Criterion) {
         triangulation.add_obstacle(ARENA_OBSTACLES[2].to_vec());
         triangulation.add_obstacle(ARENA_OBSTACLES[3].to_vec());
         triangulation.add_obstacle(ARENA_OBSTACLES[4].to_vec());
-        let mesh: Mesh = triangulation.as_navmesh().unwrap();
+        let mesh: Mesh = triangulation.as_navmesh();
         b.iter(|| {
             let mut mesh = mesh.clone();
 
@@ -1972,7 +1972,7 @@ fn merger_many_overlapping(c: &mut Criterion) {
     c.bench_function(&"merger many overlapping".to_string(), |b| {
         let mut triangulation = random_with_many_obstacles();
         triangulation.merge_overlapping_obstacles();
-        let mesh: Mesh = triangulation.as_navmesh().unwrap();
+        let mesh: Mesh = triangulation.as_navmesh();
         b.iter(|| {
             let mut mesh = mesh.clone();
             while mesh.merge_polygons() {}
@@ -1985,7 +1985,7 @@ fn merger_many_overlapping_once(c: &mut Criterion) {
     c.bench_function(&"merger many overlapping (once)".to_string(), |b| {
         let mut triangulation = random_with_many_obstacles();
         triangulation.merge_overlapping_obstacles();
-        let mesh: Mesh = triangulation.as_navmesh().unwrap();
+        let mesh: Mesh = triangulation.as_navmesh();
         b.iter(|| {
             let mut mesh = mesh.clone();
             mesh.merge_polygons();

@@ -1828,6 +1828,6 @@ fn main() {
         ]);
         triangulation.merge_overlapping_obstacles();
         triangulation.simplify(0.005);
-        triangulation.as_navmesh().unwrap();
+        triangulation.as_navmesh();
     }
 }
