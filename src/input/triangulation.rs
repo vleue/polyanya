@@ -11,9 +11,22 @@ use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTria
 use crate::{Mesh, Polygon, Vertex};
 
 /// An helper to create a [`Mesh`] from a list of edges and obstacle, using a constrained Delaunay triangulation.
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Triangulation {
     inner: GeoPolygon<f32>,
+    prebuilt: Option<(
+        GeoPolygon<f32>,
+        ConstrainedDelaunayTriangulation<Point2<f32>>,
+    )>,
+}
+
+impl std::fmt::Debug for Triangulation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Triangulation")
+            .field("inner", &self.inner)
+            .field("prebuilt", &self.prebuilt.is_some())
+            .finish()
+    }
 }
 
 impl Triangulation {
@@ -24,6 +37,7 @@ impl Triangulation {
                 LineString::from(edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>()),
                 vec![],
             ),
+            prebuilt: None,
         }
     }
 
@@ -101,6 +115,29 @@ impl Triangulation {
         }
     }
 
+    /// Prebuild part of the navmesh with the already added obstacles.
+    ///
+    /// This can be used to cache part of the navmesh generation when some of the obstacles won't change.
+    pub fn prebuild(&mut self) {
+        let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
+        Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
+
+        self.inner
+            .interiors()
+            .iter()
+            .for_each(|obstacle| Triangulation::add_constraint_edges(&mut cdt, obstacle));
+
+        let exterior = self.inner.exterior().clone();
+        let mut used = std::mem::replace(&mut self.inner, GeoPolygon::new(exterior, vec![]));
+        if let Some((previous, _)) = self.prebuilt.take() {
+            let (_, inners) = previous.into_inner();
+            for interior in inners {
+                used.interiors_push(interior);
+            }
+        }
+        self.prebuilt = Some((used, cdt));
+    }
+
     /// Convert the triangulation into a [`Mesh`].
     ///
     /// Meshes generated are not [baked](Mesh::bake), as they are made of triangles and it is recommended to
@@ -120,8 +157,14 @@ impl Triangulation {
     /// ```
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Mesh {
-        let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
-        Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
+        let mut cdt = if self.prebuilt.is_none() {
+            let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
+            Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
+            cdt
+        } else {
+            self.prebuilt.as_ref().unwrap().1.clone()
+        };
+        let used = self.prebuilt.as_ref().map(|(used, _)| used);
 
         self.inner
             .interiors()
@@ -141,7 +184,9 @@ impl Triangulation {
 
                 let center = face.center();
                 let center = Coord::from((center.x, center.y));
-                self.inner.contains(&center).then(|| {
+                (used.map(|used| used.contains(&center)).unwrap_or(true)
+                    && self.inner.contains(&center))
+                .then(|| {
                     #[cfg(feature = "tracing")]
                     let _preparing_span = tracing::info_span!("preparing polygon").entered();
 
