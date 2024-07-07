@@ -62,7 +62,7 @@ fn is_in_mesh_4_obstacles() {
     triangulation.simplify(0.5);
     let mesh: Mesh = triangulation.as_navmesh();
 
-    dbg!(mesh.polygons.len());
+    dbg!(mesh.layers[0].polygons.len());
     for i in 0..10 {
         for j in 0..10 {
             if i > 2 && i < 8 && j > 2 && j < 8 {
@@ -182,10 +182,10 @@ fn is_in_mesh_simplified() {
             })
             .collect(),
     );
-    let polygons_before = triangulation.as_navmesh().polygons;
+    let polygons_before = triangulation.as_navmesh().layers[0].polygons.clone();
     triangulation.simplify(0.1);
     let mesh: Mesh = triangulation.as_navmesh();
-    assert!(dbg!(polygons_before.len()) > dbg!(mesh.polygons.len()));
+    assert!(dbg!(polygons_before.len()) > dbg!(mesh.layers[0].polygons.len()));
     for i in 0..20 {
         for j in 0..20 {
             let point = vec2(i as f32 / 2.0, j as f32 / 2.0);
@@ -228,12 +228,19 @@ fn is_in_mesh_overlapping_simplified() {
     let mesh_before = triangulation.as_navmesh();
     triangulation.simplify(0.01);
     let mesh: Mesh = triangulation.as_navmesh();
-    assert!(dbg!(mesh_before.polygons.len()) > dbg!(mesh.polygons.len()));
+    assert!(dbg!(mesh_before.layers[0].polygons.len()) > dbg!(mesh.layers[0].polygons.len()));
     let resolution = 5;
     for i in 0..(10 * resolution) {
         for j in 0..(10 * resolution) {
             let point = vec2(i as f32 / resolution as f32, j as f32 / resolution as f32);
             assert_eq!(mesh.point_in_mesh(point), mesh_before.point_in_mesh(point));
+            match (mesh.point_in_mesh(point), mesh_before.point_in_mesh(point)) {
+                (true, true) => print!(" "),
+                (true, false) => print!("."),
+                (false, true) => print!("^"),
+                (false, false) => print!("#"),
+            }
         }
+        println!("");
     }
 }

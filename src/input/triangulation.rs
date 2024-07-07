@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::{collections::VecDeque, default};
 
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -8,7 +8,7 @@ use geo::{Contains, Coord, Polygon as GeoPolygon, SimplifyVwPreserve};
 use glam::{vec2, Vec2};
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
-use crate::{Mesh, Polygon, Vertex};
+use crate::{Layer, Mesh, Polygon, Vertex};
 
 /// An helper to create a [`Mesh`] from a list of edges and obstacle, using a constrained Delaunay triangulation.
 #[derive(Clone)]
@@ -153,7 +153,7 @@ impl Triangulation {
     /// mesh.merge_polygons();
     ///
     /// // One call to merge should have reduced the number of polygons, baking will be less expensive.
-    /// mesh.bake();
+    /// mesh.layers[0].bake();
     /// ```
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Mesh {
@@ -239,8 +239,11 @@ impl Triangulation {
         drop(vertex_span);
 
         Mesh {
-            vertices,
-            polygons,
+            layers: vec![Layer {
+                vertices,
+                polygons,
+                ..Default::default()
+            }],
             ..Default::default()
         }
     }

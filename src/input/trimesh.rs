@@ -1,7 +1,7 @@
-use crate::{Mesh, MeshError, Polygon, Vertex};
+use crate::{Layer, Mesh, MeshError, Polygon, Vertex};
 use glam::Vec2;
 use std::cmp::Ordering;
-use std::iter;
+use std::{default, iter};
 
 trait Triangle {
     fn get_clockwise_neighbor(&self, index: usize) -> usize;
@@ -120,7 +120,10 @@ impl TryFrom<Trimesh> for Mesh {
             .into_iter()
             .map(|vertex| Vertex::new(vertex.coords, vertex.polygons))
             .collect();
-        Self::new(vertices, polygons)
+        Ok(Mesh {
+            layers: vec![Layer::new(vertices, polygons)?],
+            ..Default::default()
+        })
     }
 }
 
@@ -198,39 +201,42 @@ mod tests {
             triangles: vec![[0, 1, 4], [1, 2, 5], [5, 2, 3], [1, 5, 3], [0, 4, 3]],
         }
         .try_into()?;
-        assert_eq!(regular_mesh.polygons, from_trimesh.polygons);
-        for (index, (expected_vertex, actual_vertex)) in regular_mesh
+        assert_eq!(
+            regular_mesh.layers[0].polygons,
+            from_trimesh.layers[0].polygons
+        );
+        for (index, (expected_vertex, actual_vertex)) in regular_mesh.layers[0]
             .vertices
             .iter()
-            .zip(from_trimesh.vertices.iter())
+            .zip(from_trimesh.layers[0].vertices.iter())
             .enumerate()
         {
             assert_eq!(
                 expected_vertex.coords, actual_vertex.coords,
                 "\nvertex {index} does not have the expected coords.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
-                regular_mesh.vertices, from_trimesh.vertices
+                regular_mesh.layers[0].vertices, from_trimesh.layers[0].vertices
             );
 
             assert_eq!(
                 expected_vertex.is_corner, actual_vertex.is_corner,
                 "\nvertex {index} does not have the expected value for `is_corner`.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
-                regular_mesh.vertices, from_trimesh.vertices
+                regular_mesh.layers[0].vertices, from_trimesh.layers[0].vertices
             );
             let adjusted_actual = wrap_to_first(&actual_vertex.polygons, |index| *index != -1).unwrap_or_else(||
                 panic!("vertex {index}: Found only surrounded by obstacles.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
-                       regular_mesh.vertices, from_trimesh.vertices));
+                       regular_mesh.layers[0].vertices, from_trimesh.layers[0].vertices));
 
             let adjusted_expectation= wrap_to_first(&expected_vertex.polygons, |polygon| {
                 *polygon == adjusted_actual[0]
             })
                 .unwrap_or_else(||
                     panic!("vertex {index}: Failed to expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
-                           regular_mesh.vertices, from_trimesh.vertices));
+                           regular_mesh.layers[0].vertices, from_trimesh.layers[0].vertices));
 
             assert_eq!(
                 adjusted_expectation, adjusted_actual,
                 "\nvertex {index} does not have the expected polygons.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
-                regular_mesh.vertices, from_trimesh.vertices
+                regular_mesh.layers[0].vertices, from_trimesh.layers[0].vertices
             );
         }
         Ok(())

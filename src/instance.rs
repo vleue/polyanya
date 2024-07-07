@@ -75,7 +75,7 @@ impl<'m> SearchInstance<'m> {
         to: (Vec2, u32),
         #[cfg(feature = "stats")] start: Instant,
     ) -> Self {
-        let starting_polygon = &mesh.polygons[from.1 as usize];
+        let starting_polygon = &mesh.layers[0].polygons[from.1 as usize];
 
         let mut search_instance = SearchInstance {
             queue: BinaryHeap::with_capacity(15),
@@ -116,12 +116,12 @@ impl<'m> SearchInstance<'m> {
         };
 
         for edge in starting_polygon.edges_index().iter() {
-            let start = if let Some(v) = mesh.vertices.get(edge.0 as usize) {
+            let start = if let Some(v) = mesh.layers[0].vertices.get(edge.0 as usize) {
                 v
             } else {
                 continue;
             };
-            let end = if let Some(v) = mesh.vertices.get(edge.1 as usize) {
+            let end = if let Some(v) = mesh.layers[0].vertices.get(edge.1 as usize) {
                 v
             } else {
                 continue;
@@ -134,8 +134,7 @@ impl<'m> SearchInstance<'m> {
 
             if other_side == to.1 as isize
                 || (other_side != isize::MAX
-                    && !search_instance
-                        .mesh
+                    && !search_instance.mesh.layers[0]
                         .polygons
                         .get(other_side as usize)
                         .unwrap()
@@ -234,7 +233,7 @@ impl<'m> SearchInstance<'m> {
     pub(crate) fn edges_between(&self, node: &SearchNode) -> SmallVec<[Successor; 10]> {
         let mut successors = SmallVec::new();
 
-        let polygon = &self.mesh.polygons[node.polygon_to as usize];
+        let polygon = &self.mesh.layers[0].polygons[node.polygon_to as usize];
 
         // if node.interval.0.distance(node.root) < 1.0e-5
         //     || node.interval.1.distance(node.root) < 1.0e-5
@@ -259,15 +258,15 @@ impl<'m> SearchInstance<'m> {
 
         let mut ty = SuccessorType::RightNonObservable;
         for edge in &polygon.circular_edges_index(right_index..=left_index) {
-            if edge.0.max(edge.1) as usize > self.mesh.vertices.len() {
+            if edge.0.max(edge.1) as usize > self.mesh.layers[0].vertices.len() {
                 continue;
             }
             // Bounds are checked just before
             #[allow(unsafe_code)]
             let (start, end) = unsafe {
                 (
-                    self.mesh.vertices.get_unchecked(edge.0 as usize),
-                    self.mesh.vertices.get_unchecked(edge.1 as usize),
+                    self.mesh.layers[0].vertices.get_unchecked(edge.0 as usize),
+                    self.mesh.layers[0].vertices.get_unchecked(edge.1 as usize),
                 )
             };
             let mut start_point = start.coords;
@@ -503,8 +502,12 @@ impl<'m> SearchInstance<'m> {
                 #[allow(unsafe_code)]
                 let (start, end) = unsafe {
                     (
-                        self.mesh.vertices.get_unchecked(successor.edge.0 as usize),
-                        self.mesh.vertices.get_unchecked(successor.edge.1 as usize),
+                        self.mesh.layers[0]
+                            .vertices
+                            .get_unchecked(successor.edge.0 as usize),
+                        self.mesh.layers[0]
+                            .vertices
+                            .get_unchecked(successor.edge.1 as usize),
                     )
                 };
 
@@ -536,8 +539,7 @@ impl<'m> SearchInstance<'m> {
 
                 // prune edges that only lead to one other polygon, and not the target: dead end pruning
                 if self.polygon_to != other_side
-                    && self
-                        .mesh
+                    && self.mesh.layers[0]
                         .polygons
                         .get(other_side as usize)
                         .unwrap()
@@ -561,7 +563,10 @@ impl<'m> SearchInstance<'m> {
                             }
                             continue;
                         }
-                        let vertex = self.mesh.vertices.get(node.edge.0 as usize).unwrap();
+                        let vertex = self.mesh.layers[0]
+                            .vertices
+                            .get(node.edge.0 as usize)
+                            .unwrap();
                         if vertex.is_corner
                             && vertex.coords.distance_squared(node.interval.0) < EPSILON
                         {
@@ -583,7 +588,10 @@ impl<'m> SearchInstance<'m> {
                             }
                             continue;
                         }
-                        let vertex = self.mesh.vertices.get(node.edge.1 as usize).unwrap();
+                        let vertex = self.mesh.layers[0]
+                            .vertices
+                            .get(node.edge.1 as usize)
+                            .unwrap();
                         if vertex.is_corner
                             && vertex.coords.distance_squared(node.interval.1) < EPSILON
                         {

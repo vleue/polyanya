@@ -63,16 +63,33 @@ pub struct Path {
     pub path: Vec<Vec2>,
 }
 
-/// A navigation mesh
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Mesh {
+pub struct Layer {
     /// List of `Vertex` in this mesh
     pub vertices: Vec<Vertex>,
     /// List of `Polygons` in this mesh
     pub polygons: Vec<Polygon>,
     baked_polygons: Option<BVH2d>,
     islands: Option<Vec<usize>>,
+}
+
+impl Default for Layer {
+    fn default() -> Self {
+        Self {
+            vertices: Default::default(),
+            polygons: Default::default(),
+            baked_polygons: Default::default(),
+            islands: Default::default(),
+        }
+    }
+}
+
+/// A navigation mesh
+#[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct Mesh {
+    pub layers: Vec<Layer>,
     delta: f32,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
@@ -81,14 +98,21 @@ pub struct Mesh {
 impl Default for Mesh {
     fn default() -> Self {
         Self {
+            layers: vec![],
             delta: 0.1,
-            vertices: Default::default(),
-            polygons: Default::default(),
-            baked_polygons: Default::default(),
-            islands: Default::default(),
             #[cfg(feature = "stats")]
             scenarios: Cell::new(0),
         }
+    }
+}
+
+impl Mesh {
+    pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Result<Self, MeshError> {
+        let layer = Layer::new(vertices, polygons)?;
+        Ok(Mesh {
+            layers: vec![layer],
+            ..Default::default()
+        })
     }
 }
 
@@ -133,7 +157,7 @@ pub enum MeshError {
     InvalidMesh,
 }
 
-impl Mesh {
+impl Layer {
     /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
     #[inline]
     pub fn unbake(&mut self) {
@@ -224,19 +248,21 @@ impl Mesh {
         if vertices.is_empty() || polygons.is_empty() {
             return Err(MeshError::EmptyMesh);
         }
-        let mut mesh = Mesh {
+        let mut layer = Layer {
             vertices,
             polygons,
             ..Default::default()
         };
         #[cfg(not(feature = "no-default-baking"))]
-        mesh.bake();
+        layer.bake();
         // just to not get a warning on the mut borrow. should be pretty much free anyway
         #[cfg(feature = "no-default-baking")]
         mesh.unbake();
-        Ok(mesh)
+        Ok(layer)
     }
+}
 
+impl Mesh {
     /// Compute a path between two points.
     ///
     /// This method returns a `Future`, to get the path in a blocking way use [`Self::path`].
@@ -271,7 +297,7 @@ impl Mesh {
         if ending_polygon == u32::MAX {
             return None;
         }
-        if let Some(islands) = self.islands.as_ref() {
+        if let Some(islands) = self.layers[0].islands.as_ref() {
             let start_island = islands.get(starting_polygon_index as usize);
             let end_island = islands.get(ending_polygon as usize);
             if start_island.is_some() && end_island.is_some() && start_island != end_island {
@@ -310,7 +336,7 @@ impl Mesh {
         );
 
         // Limit search to avoid an infinite loop.
-        for _ in 0..self.polygons.len() * 1000 {
+        for _ in 0..self.layers[0].polygons.len() * 1000 {
             match search_instance.next() {
                 InstanceStep::Found(path) => return Some(path),
                 InstanceStep::NotFound => return None,
@@ -427,7 +453,7 @@ impl Mesh {
         ]
         .iter()
         .map(|delta| {
-            if self.baked_polygons.is_none() {
+            if self.layers[0].baked_polygons.is_none() {
                 self.get_point_location_unit(point + *delta)
             } else {
                 self.get_point_location_unit_baked(point + *delta)
@@ -439,7 +465,7 @@ impl Mesh {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location_unit(&self, point: Vec2) -> u32 {
-        for (i, polygon) in self.polygons.iter().enumerate() {
+        for (i, polygon) in self.layers[0].polygons.iter().enumerate() {
             if self.point_in_polygon(point, polygon) {
                 return i as u32;
             }
@@ -449,11 +475,12 @@ impl Mesh {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location_unit_baked(&self, point: Vec2) -> u32 {
-        self.baked_polygons
+        self.layers[0]
+            .baked_polygons
             .as_ref()
             .unwrap()
             .contains_iterator(&point)
-            .find(|index| self.point_in_polygon(point, &self.polygons[*index]))
+            .find(|index| self.point_in_polygon(point, &self.layers[0].polygons[*index]))
             .map(|index| index as u32)
             .unwrap_or(u32::MAX)
     }
@@ -463,7 +490,7 @@ impl Mesh {
     fn point_in_polygon(&self, point: Vec2, polygon: &Polygon) -> bool {
         let mut edged = false;
         for edge in polygon.edges_index().iter() {
-            if edge.0.max(edge.1) as usize >= self.vertices.len() {
+            if edge.0.max(edge.1) as usize >= self.layers[0].vertices.len() {
                 return false;
             }
             edged = true;
@@ -471,8 +498,14 @@ impl Mesh {
             #[allow(unsafe_code)]
             let (last, next) = unsafe {
                 (
-                    self.vertices.get_unchecked(edge.0 as usize).coords,
-                    self.vertices.get_unchecked(edge.1 as usize).coords,
+                    self.layers[0]
+                        .vertices
+                        .get_unchecked(edge.0 as usize)
+                        .coords,
+                    self.layers[0]
+                        .vertices
+                        .get_unchecked(edge.1 as usize)
+                        .coords,
                 )
             };
 
@@ -551,10 +584,10 @@ mod tests {
 
     use glam::Vec2;
 
-    use crate::{helpers::*, Mesh, Path, Polygon, SearchNode, Vertex};
+    use crate::{helpers::*, Layer, Mesh, Path, Polygon, SearchNode, Vertex};
 
     fn mesh_u_grid() -> Mesh {
-        Mesh {
+        let layer = Layer {
             vertices: vec![
                 Vertex::new(Vec2::new(0., 0.), vec![0, -1]),
                 Vertex::new(Vec2::new(1., 0.), vec![0, 1, -1]),
@@ -577,13 +610,17 @@ mod tests {
                 Polygon::new(vec![6, 7, 11, 10], true),
             ],
             ..Default::default()
+        };
+        Mesh {
+            layers: vec![layer],
+            ..Default::default()
         }
     }
 
     #[test]
     fn point_in_polygon() {
         let mut mesh = mesh_u_grid();
-        mesh.bake();
+        mesh.layers[0].bake();
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), 0);
         assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)), 1);
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 1.5)), 3);
@@ -761,12 +798,12 @@ mod tests {
 
     #[test]
     fn empty_mesh_fails() {
-        let mesh = Mesh::new(vec![], vec![]);
-        assert!(matches!(mesh, Err(crate::MeshError::EmptyMesh)));
+        let layer = Layer::new(vec![], vec![]);
+        assert!(matches!(layer, Err(crate::MeshError::EmptyMesh)));
     }
 
     fn mesh_from_paper() -> Mesh {
-        Mesh {
+        let layer = Layer {
             vertices: vec![
                 Vertex::new(Vec2::new(0., 6.), vec![0, -1]),    // 0
                 Vertex::new(Vec2::new(2., 5.), vec![0, -1, 2]), // 1
@@ -802,13 +839,17 @@ mod tests {
                 Polygon::new(vec![11, 17, 20, 21], true),
             ],
             ..Default::default()
+        };
+        Mesh {
+            layers: vec![layer],
+            ..Default::default()
         }
     }
 
     #[test]
     fn paper_point_in_polygon() {
         let mut mesh = mesh_from_paper();
-        mesh.bake();
+        mesh.layers[0].bake();
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), u32::MAX);
         assert_eq!(mesh.get_point_location(Vec2::new(2.0, 6.0)), 0);
         assert_eq!(mesh.get_point_location(Vec2::new(2.0, 5.1)), 0);

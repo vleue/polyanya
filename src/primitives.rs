@@ -158,7 +158,7 @@ impl Polygon {
                 self.vertices
                     .iter()
                     .map(|v| {
-                        let c = mesh.vertices[*v as usize].coords;
+                        let c = mesh.layers[0].vertices[*v as usize].coords;
                         Coord::from((c.x, c.y))
                     })
                     .collect(),

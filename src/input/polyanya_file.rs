@@ -2,7 +2,7 @@ use std::io::{self, BufRead, Read, Write};
 
 use glam::Vec2;
 
-use crate::{Mesh, MeshError, Polygon, Vertex};
+use crate::{Layer, Mesh, MeshError, Polygon, Vertex};
 
 /// A mesh read from a Polyanya file in the format `mesh 2`.
 ///
@@ -142,15 +142,19 @@ impl TryFrom<PolyanyaFile> for Mesh {
     type Error = MeshError;
 
     fn try_from(value: PolyanyaFile) -> Result<Self, Self::Error> {
-        Mesh::new(value.vertices, value.polygons)
+        Ok(Mesh {
+            layers: vec![Layer::new(value.vertices, value.polygons)?],
+            ..Default::default()
+        })
     }
 }
 
 impl From<Mesh> for PolyanyaFile {
-    fn from(mesh: Mesh) -> Self {
+    fn from(mut mesh: Mesh) -> Self {
+        let last_layer = mesh.layers.pop().unwrap();
         PolyanyaFile {
-            vertices: mesh.vertices,
-            polygons: mesh.polygons,
+            vertices: last_layer.vertices,
+            polygons: last_layer.polygons,
         }
     }
 }

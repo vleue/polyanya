@@ -10,14 +10,15 @@ impl Mesh {
     /// This merge neighbouring polygons when possible, keeping them convex.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn merge_polygons(&mut self) -> bool {
-        self.unbake();
-        let mut area = self
+        // TODO: do it for each layer, keep the stitch polygons unmerged
+        self.layers[0].unbake();
+        let mut area = self.layers[0]
             .polygons
             .iter()
             .enumerate()
             .map(|(i, poly)| (i, poly.area(self)))
             .collect::<Vec<_>>();
-        let mut union_polygons = UnionFind::new(self.polygons.len() as i32);
+        let mut union_polygons = UnionFind::new(self.layers[0].polygons.len() as i32);
 
         area.sort_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap().reverse());
 
@@ -26,14 +27,14 @@ impl Mesh {
                 // already merged
                 continue;
             }
-            let poly = &self.polygons[*poly_index];
+            let poly = &self.layers[0].polygons[*poly_index];
             for edge in poly.edges_index() {
-                let start = if let Some(v) = self.vertices.get(edge.0 as usize) {
+                let start = if let Some(v) = self.layers[0].vertices.get(edge.0 as usize) {
                     v
                 } else {
                     continue;
                 };
-                let end = if let Some(v) = self.vertices.get(edge.1 as usize) {
+                let end = if let Some(v) = self.layers[0].vertices.get(edge.1 as usize) {
                     v
                 } else {
                     continue;
@@ -52,7 +53,7 @@ impl Mesh {
                     continue;
                 }
 
-                let other_vertices = &self.polygons[other_side as usize].vertices;
+                let other_vertices = &self.layers[0].polygons[other_side as usize].vertices;
                 let mut joined_vertices_index =
                     Vec::with_capacity(poly.vertices.len() + other_vertices.len() - 2);
                 let mut joined_vertices =
@@ -65,7 +66,7 @@ impl Mesh {
                     .take_while(|i| **i != edge.0)
                 {
                     joined_vertices_index.push(*i);
-                    let c = self.vertices[*i as usize].coords;
+                    let c = self.layers[0].vertices[*i as usize].coords;
                     joined_vertices.push(geo::Coord { x: c.x, y: c.y });
                 }
                 for i in other_vertices
@@ -75,22 +76,22 @@ impl Mesh {
                     .take_while(|i| **i != edge.1)
                 {
                     joined_vertices_index.push(*i);
-                    let c = self.vertices[*i as usize].coords;
+                    let c = self.layers[0].vertices[*i as usize].coords;
                     joined_vertices.push(geo::Coord { x: c.x, y: c.y });
                 }
                 let mut line = geo::LineString(joined_vertices);
                 line.close();
                 if line.is_ccw_convex() {
                     union_polygons.union(*poly_index as i32, other_side as i32);
-                    self.polygons[*poly_index].vertices = joined_vertices_index;
+                    self.layers[0].polygons[*poly_index].vertices = joined_vertices_index;
                     // TODO: correctly set the value for merged polygon
-                    self.polygons[*poly_index].is_one_way = false;
+                    self.layers[0].polygons[*poly_index].is_one_way = false;
                     break;
                 }
             }
         }
 
-        let mut new_indexes = vec![-1; self.polygons.len()];
+        let mut new_indexes = vec![-1_isize; self.layers[0].polygons.len()];
         let mut kept = 0;
         for (i, p) in union_polygons.parent.iter().enumerate() {
             let p = union_polygons.find(*p);
@@ -102,15 +103,17 @@ impl Mesh {
             if i as i32 == p {
                 let j = new_indexes[p as usize] as usize;
                 if i != j {
-                    self.polygons.swap(i, j);
+                    self.layers[0].polygons.swap(i, j);
                 }
             } else {
                 new_indexes[i] = new_indexes[p as usize];
             }
         }
-        self.polygons.resize_with(kept as usize, || unreachable!());
+        self.layers[0]
+            .polygons
+            .resize_with(kept as usize, || unreachable!());
 
-        for vertex in self.vertices.iter_mut() {
+        for vertex in self.layers[0].vertices.iter_mut() {
             for p in vertex.polygons.iter_mut() {
                 if *p != -1 {
                     *p = new_indexes[*p as usize];
@@ -171,8 +174,8 @@ mod test {
     use crate::{Mesh, Polygon, Triangulation, Vertex};
 
     fn mesh_u_grid() -> Mesh {
-        Mesh {
-            vertices: vec![
+        Mesh::new(
+            vec![
                 Vertex::new(Vec2::new(0., 0.), vec![0, -1]),
                 Vertex::new(Vec2::new(1., 0.), vec![0, 1, -1]),
                 Vertex::new(Vec2::new(2., 0.), vec![1, 2, -1]),
@@ -190,7 +193,7 @@ mod test {
                 Vertex::new(Vec2::new(2., 3.), vec![6, -1]),
                 Vertex::new(Vec2::new(3., 3.), vec![6, -1]),
             ],
-            polygons: vec![
+            vec![
                 Polygon::new(vec![0, 1, 5, 4], false),
                 Polygon::new(vec![1, 2, 6, 5], false),
                 Polygon::new(vec![2, 3, 7, 6], false),
@@ -199,70 +202,70 @@ mod test {
                 Polygon::new(vec![8, 9, 13, 12], false),
                 Polygon::new(vec![10, 11, 15, 14], false),
             ],
-            ..Default::default()
-        }
+        )
+        .unwrap()
     }
 
     #[test]
     fn merge_u() {
         let mut mesh = mesh_u_grid();
         while mesh.merge_polygons() {}
-        mesh.bake();
-        assert_eq!(mesh.polygons.len(), 3);
+        mesh.layers[0].bake();
+        assert_eq!(mesh.layers[0].polygons.len(), 3);
     }
 
     #[test]
     fn merge_and_path() {
         let mut mesh = mesh_u_grid();
         while mesh.merge_polygons() {}
-        mesh.bake();
-        assert_eq!(mesh.polygons.len(), 3);
+        mesh.layers[0].bake();
+        assert_eq!(mesh.layers[0].polygons.len(), 3);
         assert_eq!(
-            mesh.polygons[0],
+            mesh.layers[0].polygons[0],
             Polygon::new(vec![5, 4, 0, 1, 2, 6], false)
         );
         assert_eq!(
-            mesh.polygons[1],
+            mesh.layers[0].polygons[1],
             Polygon::new(vec![10, 6, 2, 3, 7, 11, 15, 14], false)
         );
         assert_eq!(
-            mesh.polygons[2],
+            mesh.layers[0].polygons[2],
             Polygon::new(vec![8, 4, 5, 9, 13, 12], false)
         );
         assert_eq!(
-            mesh.vertices[0],
+            mesh.layers[0].vertices[0],
             Vertex::new(Vec2::new(0.0, 0.0), vec![0, -1])
         );
         assert_eq!(
-            mesh.vertices[1],
+            mesh.layers[0].vertices[1],
             Vertex::new(Vec2::new(1.0, 0.0), vec![0, -1])
         );
         assert_eq!(
-            mesh.vertices[2],
+            mesh.layers[0].vertices[2],
             Vertex::new(Vec2::new(2.0, 0.0), vec![0, 1, -1])
         );
         assert_eq!(
-            mesh.vertices[3],
+            mesh.layers[0].vertices[3],
             Vertex::new(Vec2::new(3.0, 0.0), vec![1, -1])
         );
         assert_eq!(
-            mesh.vertices[4],
+            mesh.layers[0].vertices[4],
             Vertex::new(Vec2::new(0.0, 1.0), vec![2, 0, -1])
         );
         assert_eq!(
-            mesh.vertices[5],
+            mesh.layers[0].vertices[5],
             Vertex::new(Vec2::new(1.0, 1.0), vec![2, 0, -1])
         );
         assert_eq!(
-            mesh.vertices[6],
+            mesh.layers[0].vertices[6],
             Vertex::new(Vec2::new(2.0, 1.0), vec![1, 0, -1])
         );
         assert_eq!(
-            mesh.vertices[7],
+            mesh.layers[0].vertices[7],
             Vertex::new(Vec2::new(3.0, 1.0), vec![1, -1])
         );
         assert_eq!(
-            mesh.vertices[8],
+            mesh.layers[0].vertices[8],
             Vertex::new(Vec2::new(0.0, 2.0), vec![2, -1])
         );
         dbg!(mesh.path(Vec2::new(0.5, 0.5), Vec2::new(2.5, 1.5)));
@@ -288,8 +291,8 @@ mod test {
         while mesh.merge_polygons() {
             // println!("{:#?}", mesh);
         }
-        mesh.bake();
-        assert_eq!(mesh.polygons.len(), 4);
+        mesh.layers[0].bake();
+        assert_eq!(mesh.layers[0].polygons.len(), 4);
         dbg!(mesh.path(Vec2::new(0.5, 0.5), Vec2::new(9.5, 9.5)));
     }
 
@@ -318,13 +321,13 @@ mod test {
         triangulation.simplify(0.001);
         let mut mesh = triangulation.as_navmesh();
 
-        mesh.unbake();
+        mesh.layers[0].unbake();
         // println!("{:#?}", mesh);
         while mesh.merge_polygons() {
             // println!("{:#?}", mesh);
         }
-        mesh.bake();
-        assert_eq!(mesh.polygons.len(), 6);
+        mesh.layers[0].bake();
+        assert_eq!(mesh.layers[0].polygons.len(), 6);
         dbg!(mesh.path(Vec2::new(-4.5, 4.0), Vec2::new(-4.0, -4.5)));
     }
 }
