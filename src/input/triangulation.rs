@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, default};
+use std::collections::VecDeque;
 
 #[cfg(feature = "tracing")]
 use tracing::instrument;

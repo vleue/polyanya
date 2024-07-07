@@ -1,7 +1,7 @@
 use crate::{Layer, Mesh, MeshError, Polygon, Vertex};
 use glam::Vec2;
 use std::cmp::Ordering;
-use std::{default, iter};
+use std::iter;
 
 trait Triangle {
     fn get_clockwise_neighbor(&self, index: usize) -> usize;

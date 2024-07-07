@@ -63,6 +63,7 @@ pub struct Path {
     pub path: Vec<Vec2>,
 }
 
+/// Layer of a NavMesh
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Layer {
@@ -89,6 +90,7 @@ impl Default for Layer {
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Mesh {
+    /// Layers of the NavMesh
     pub layers: Vec<Layer>,
     delta: f32,
     #[cfg(feature = "stats")]
@@ -107,6 +109,7 @@ impl Default for Mesh {
 }
 
 impl Mesh {
+    /// Create a new single layer NavMesh
     pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Result<Self, MeshError> {
         let layer = Layer::new(vertices, polygons)?;
         Ok(Mesh {
