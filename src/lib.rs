@@ -64,7 +64,7 @@ pub struct Path {
 }
 
 /// Layer of a NavMesh
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Layer {
     /// List of `Vertex` in this mesh
@@ -73,17 +73,6 @@ pub struct Layer {
     pub polygons: Vec<Polygon>,
     baked_polygons: Option<BVH2d>,
     islands: Option<Vec<usize>>,
-}
-
-impl Default for Layer {
-    fn default() -> Self {
-        Self {
-            vertices: Default::default(),
-            polygons: Default::default(),
-            baked_polygons: Default::default(),
-            islands: Default::default(),
-        }
-    }
 }
 
 /// A navigation mesh
