@@ -7,8 +7,8 @@ fn baking(c: &mut Criterion) {
         .unwrap();
     c.bench_function(&"baking".to_string(), |b| {
         b.iter(|| {
-            mesh.layers[0].unbake();
-            mesh.layers[0].bake();
+            mesh.unbake();
+            mesh.bake();
         })
     });
 }

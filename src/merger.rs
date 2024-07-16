@@ -11,7 +11,7 @@ impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn merge_polygons(&mut self) -> bool {
         // TODO: do it for each layer, keep the stitch polygons unmerged
-        self.layers[0].unbake();
+        self.unbake();
         let mut area = self.layers[0]
             .polygons
             .iter()
@@ -210,7 +210,7 @@ mod test {
     fn merge_u() {
         let mut mesh = mesh_u_grid();
         while mesh.merge_polygons() {}
-        mesh.layers[0].bake();
+        mesh.bake();
         assert_eq!(mesh.layers[0].polygons.len(), 3);
     }
 
@@ -218,7 +218,7 @@ mod test {
     fn merge_and_path() {
         let mut mesh = mesh_u_grid();
         while mesh.merge_polygons() {}
-        mesh.layers[0].bake();
+        mesh.bake();
         assert_eq!(mesh.layers[0].polygons.len(), 3);
         assert_eq!(
             mesh.layers[0].polygons[0],
@@ -291,7 +291,7 @@ mod test {
         while mesh.merge_polygons() {
             // println!("{:#?}", mesh);
         }
-        mesh.layers[0].bake();
+        mesh.bake();
         assert_eq!(mesh.layers[0].polygons.len(), 4);
         dbg!(mesh.path(Vec2::new(0.5, 0.5), Vec2::new(9.5, 9.5)));
     }
@@ -321,12 +321,12 @@ mod test {
         triangulation.simplify(0.001);
         let mut mesh = triangulation.as_navmesh();
 
-        mesh.layers[0].unbake();
+        mesh.unbake();
         // println!("{:#?}", mesh);
         while mesh.merge_polygons() {
             // println!("{:#?}", mesh);
         }
-        mesh.layers[0].bake();
+        mesh.bake();
         assert_eq!(mesh.layers[0].polygons.len(), 6);
         dbg!(mesh.path(Vec2::new(-4.5, 4.0), Vec2::new(-4.0, -4.5)));
     }

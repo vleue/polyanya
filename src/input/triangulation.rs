@@ -153,7 +153,7 @@ impl Triangulation {
     /// mesh.merge_polygons();
     ///
     /// // One call to merge should have reduced the number of polygons, baking will be less expensive.
-    /// mesh.layers[0].bake();
+    /// mesh.bake();
     /// ```
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Mesh {

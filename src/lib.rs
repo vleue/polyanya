@@ -246,7 +246,7 @@ impl Layer {
         self.baked_polygons = Some(BVH2d::build(&bounded_polygons));
     }
 
-    /// Create a `Mesh` from a list of [`Vertex`] and [`Polygon`].
+    /// Create a `Layer` from a list of [`Vertex`] and [`Polygon`].
     pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Result<Self, MeshError> {
         if vertices.is_empty() || polygons.is_empty() {
             return Err(MeshError::EmptyMesh);
@@ -266,6 +266,23 @@ impl Layer {
 }
 
 impl Mesh {
+    /// Pre-compute optimizations on the mesh
+    ///
+    /// Call [Layer::bake] on each layer.
+    pub fn bake(&mut self) {
+        for layer in self.layers.iter_mut() {
+            layer.bake();
+        }
+    }
+
+    /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
+    #[inline]
+    pub fn unbake(&mut self) {
+        for layer in self.layers.iter_mut() {
+            layer.unbake();
+        }
+    }
+
     /// Compute a path between two points.
     ///
     /// This method returns a `Future`, to get the path in a blocking way use [`Self::path`].
@@ -455,20 +472,24 @@ impl Mesh {
             Vec2::new(delta, -delta),
         ]
         .iter()
-        .map(|delta| {
-            if self.layers[0].baked_polygons.is_none() {
-                self.get_point_location_unit(point + *delta)
-            } else {
-                self.get_point_location_unit_baked(point + *delta)
-            }
+        .flat_map(|delta| {
+            self.layers.iter().map(move |layer| {
+                if layer.baked_polygons.is_none() {
+                    layer.get_point_location_unit(point + *delta)
+                } else {
+                    layer.get_point_location_unit_baked(point + *delta)
+                }
+            })
         })
         .find(|poly| *poly != u32::MAX)
         .unwrap_or(u32::MAX)
     }
+}
 
+impl Layer {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location_unit(&self, point: Vec2) -> u32 {
-        for (i, polygon) in self.layers[0].polygons.iter().enumerate() {
+        for (i, polygon) in self.polygons.iter().enumerate() {
             if self.point_in_polygon(point, polygon) {
                 return i as u32;
             }
@@ -478,12 +499,11 @@ impl Mesh {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location_unit_baked(&self, point: Vec2) -> u32 {
-        self.layers[0]
-            .baked_polygons
+        self.baked_polygons
             .as_ref()
             .unwrap()
             .contains_iterator(&point)
-            .find(|index| self.point_in_polygon(point, &self.layers[0].polygons[*index]))
+            .find(|index| self.point_in_polygon(point, &self.polygons[*index]))
             .map(|index| index as u32)
             .unwrap_or(u32::MAX)
     }
@@ -493,7 +513,7 @@ impl Mesh {
     fn point_in_polygon(&self, point: Vec2, polygon: &Polygon) -> bool {
         let mut edged = false;
         for edge in polygon.edges_index().iter() {
-            if edge.0.max(edge.1) as usize >= self.layers[0].vertices.len() {
+            if edge.0.max(edge.1) as usize >= self.vertices.len() {
                 return false;
             }
             edged = true;
@@ -501,14 +521,8 @@ impl Mesh {
             #[allow(unsafe_code)]
             let (last, next) = unsafe {
                 (
-                    self.layers[0]
-                        .vertices
-                        .get_unchecked(edge.0 as usize)
-                        .coords,
-                    self.layers[0]
-                        .vertices
-                        .get_unchecked(edge.1 as usize)
-                        .coords,
+                    self.vertices.get_unchecked(edge.0 as usize).coords,
+                    self.vertices.get_unchecked(edge.1 as usize).coords,
                 )
             };
 
@@ -623,7 +637,7 @@ mod tests {
     #[test]
     fn point_in_polygon() {
         let mut mesh = mesh_u_grid();
-        mesh.layers[0].bake();
+        mesh.bake();
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), 0);
         assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)), 1);
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 1.5)), 3);
@@ -852,7 +866,7 @@ mod tests {
     #[test]
     fn paper_point_in_polygon() {
         let mut mesh = mesh_from_paper();
-        mesh.layers[0].bake();
+        mesh.bake();
         assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), u32::MAX);
         assert_eq!(mesh.get_point_location(Vec2::new(2.0, 6.0)), 0);
         assert_eq!(mesh.get_point_location(Vec2::new(2.0, 5.1)), 0);
