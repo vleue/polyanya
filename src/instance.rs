@@ -12,7 +12,7 @@ use hashbrown::{hash_map::Entry, HashMap};
 
 use crate::{
     helpers::{heuristic, line_intersect_segment, turning_point, Vec2Helper},
-    Mesh, Path, Root, SearchNode,
+    Mesh, Path, PolygonInMesh, Root, SearchNode, POLYGON_NOT_FOUND,
 };
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -42,7 +42,7 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) root_history: HashMap<Root, f32>,
     pub(crate) from: Vec2,
     pub(crate) to: Vec2,
-    pub(crate) polygon_to: isize,
+    pub(crate) polygon_to: PolygonInMesh,
     pub(crate) mesh: &'m Mesh,
     #[cfg(feature = "stats")]
     pub(crate) start: Instant,
@@ -71,11 +71,12 @@ pub(crate) enum InstanceStep {
 impl<'m> SearchInstance<'m> {
     pub(crate) fn setup(
         mesh: &'m Mesh,
-        from: (Vec2, u32),
-        to: (Vec2, u32),
+        from: (Vec2, PolygonInMesh),
+        to: (Vec2, PolygonInMesh),
         #[cfg(feature = "stats")] start: Instant,
     ) -> Self {
-        let starting_polygon = &mesh.layers[0].polygons[from.1 as usize];
+        let starting_polygon =
+            &mesh.layers[from.1.layer as usize].polygons[from.1.polygon as usize];
 
         let mut search_instance = SearchInstance {
             queue: BinaryHeap::with_capacity(15),
@@ -83,7 +84,7 @@ impl<'m> SearchInstance<'m> {
             root_history: HashMap::with_capacity(10),
             from: from.0,
             to: to.0,
-            polygon_to: to.1 as isize,
+            polygon_to: to.1,
             mesh,
             #[cfg(feature = "stats")]
             start,
@@ -109,8 +110,8 @@ impl<'m> SearchInstance<'m> {
             root: from.0,
             interval: (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
             edge: (0, 0),
-            polygon_from: -1,
-            polygon_to: from.1 as isize,
+            polygon_from: POLYGON_NOT_FOUND,
+            polygon_to: from.1,
             f: 0.0,
             g: 0.0,
         };
@@ -126,17 +127,22 @@ impl<'m> SearchInstance<'m> {
             } else {
                 continue;
             };
-            let other_side = *start
+            let other_side = start
                 .polygons
                 .iter()
-                .find(|i| **i != -1 && **i != from.1 as isize && end.polygons.contains(*i))
-                .unwrap_or(&isize::MAX);
+                .filter(|i| **i != -1 && end.polygons.contains(*i))
+                .map(|i| PolygonInMesh {
+                    layer: (*i >> 24) as u8,
+                    polygon: ((*i << 8) >> 8) as u32,
+                })
+                .find(|poly| poly != &from.1)
+                .unwrap_or(POLYGON_NOT_FOUND);
 
-            if other_side == to.1 as isize
-                || (other_side != isize::MAX
-                    && !search_instance.mesh.layers[0]
+            if other_side == to.1
+                || (other_side != POLYGON_NOT_FOUND
+                    && !search_instance.mesh.layers[other_side.layer as usize]
                         .polygons
-                        .get(other_side as usize)
+                        .get(other_side.polygon as usize)
                         .unwrap()
                         .is_one_way)
             {
@@ -233,7 +239,8 @@ impl<'m> SearchInstance<'m> {
     pub(crate) fn edges_between(&self, node: &SearchNode) -> SmallVec<[Successor; 10]> {
         let mut successors = SmallVec::new();
 
-        let polygon = &self.mesh.layers[0].polygons[node.polygon_to as usize];
+        let polygon = &self.mesh.layers[node.polygon_to.layer as usize].polygons
+            [node.polygon_to.polygon as usize];
 
         // if node.interval.0.distance(node.root) < 1.0e-5
         //     || node.interval.1.distance(node.root) < 1.0e-5
@@ -399,7 +406,7 @@ impl<'m> SearchInstance<'m> {
     pub(crate) fn add_node(
         &mut self,
         root: Vec2,
-        other_side: isize,
+        other_side: PolygonInMesh,
         start: (Vec2, u32),
         end: (Vec2, u32),
         node: &SearchNode,
@@ -516,11 +523,18 @@ impl<'m> SearchInstance<'m> {
                     println!("v {successor:?}");
                 }
 
-                let other_side = *start
+                let other_side = start
                     .polygons
                     .iter()
-                    .find(|i| **i != -1 && **i != node.polygon_to && end.polygons.contains(*i))
-                    .unwrap_or(&isize::MAX);
+                    // .map(|i| dbg!(i))
+                    .filter(|i| **i != -1 && end.polygons.contains(*i))
+                    .map(|i| PolygonInMesh {
+                        layer: (*i >> 24) as u8,
+                        polygon: ((*i << 8) >> 8) as u32,
+                    })
+                    // .map(|i| dbg!(i))
+                    .find(|poly| poly != &node.polygon_to)
+                    .unwrap_or(POLYGON_NOT_FOUND);
 
                 #[cfg(debug_assertions)]
                 if self.debug {
@@ -528,7 +542,7 @@ impl<'m> SearchInstance<'m> {
                 }
 
                 // prune edges that don't have a polygon on the other side: cul de sac pruning
-                if other_side == isize::MAX {
+                if other_side == POLYGON_NOT_FOUND {
                     #[cfg(debug_assertions)]
                     if self.debug {
                         println!("x cul de sac");
@@ -539,9 +553,9 @@ impl<'m> SearchInstance<'m> {
 
                 // prune edges that only lead to one other polygon, and not the target: dead end pruning
                 if self.polygon_to != other_side
-                    && self.mesh.layers[0]
+                    && self.mesh.layers[other_side.layer as usize]
                         .polygons
-                        .get(other_side as usize)
+                        .get(other_side.polygon as usize)
                         .unwrap()
                         .is_one_way
                 {
