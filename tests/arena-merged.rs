@@ -203,7 +203,7 @@ fn arena_merged() {
         21.0575
     );
     assert_delta!(
-        dbg!(arena.path(Vec2::new(1.0, 10.0), Vec2::new(21.0, 2.0))),
+        arena.path(Vec2::new(1.0, 10.0), Vec2::new(21.0, 2.0)),
         21.5407
     );
     assert_delta!(
