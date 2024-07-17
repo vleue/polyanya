@@ -234,13 +234,6 @@ fn is_in_mesh_overlapping_simplified() {
         for j in 0..(10 * resolution) {
             let point = vec2(i as f32 / resolution as f32, j as f32 / resolution as f32);
             assert_eq!(mesh.point_in_mesh(point), mesh_before.point_in_mesh(point));
-            match (mesh.point_in_mesh(point), mesh_before.point_in_mesh(point)) {
-                (true, true) => print!(" "),
-                (true, false) => print!("."),
-                (false, true) => print!("^"),
-                (false, false) => print!("#"),
-            }
         }
-        println!("");
     }
 }

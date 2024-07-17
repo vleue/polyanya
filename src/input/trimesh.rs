@@ -1,4 +1,4 @@
-use crate::{Layer, Mesh, MeshError, Polygon, Vertex};
+use crate::{Mesh, MeshError, Polygon, Vertex};
 use glam::Vec2;
 use std::cmp::Ordering;
 use std::iter;
@@ -120,10 +120,7 @@ impl TryFrom<Trimesh> for Mesh {
             .into_iter()
             .map(|vertex| Vertex::new(vertex.coords, vertex.polygons))
             .collect();
-        Ok(Mesh {
-            layers: vec![Layer::new(vertices, polygons)?],
-            ..Default::default()
-        })
+        Self::new(vertices, polygons)
     }
 }
 
