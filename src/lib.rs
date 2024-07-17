@@ -415,7 +415,7 @@ impl Mesh {
             #[cfg(feature = "stats")]
             nodes_pruned_post_pop: 0,
             #[cfg(debug_assertions)]
-            debug: true,
+            debug: false,
             #[cfg(debug_assertions)]
             fail_fast: -1,
         };
@@ -493,6 +493,65 @@ impl Mesh {
         .find(|poly| poly.polygon != u32::MAX)
         .unwrap_or(POLYGON_NOT_FOUND)
     }
+
+    /// Stitch points between layers. After, the polygons neighboring the stitch points will be
+    /// marked as neighbors in both layers.
+    pub fn stitch_at_points(&mut self, stitch_points: Vec<((u8, u8), Vec<Vec2>)>) {
+        // update indexes of layers
+        for (layer_index, layer) in self.layers.iter_mut().enumerate().skip(0) {
+            for vertex in layer.vertices.iter_mut() {
+                for polygon_index in vertex.polygons.iter_mut() {
+                    if *polygon_index != -1 {
+                        *polygon_index += ((layer_index as u32) << 24) as isize;
+                    }
+                }
+            }
+        }
+        for ((from, to), stitch_points) in stitch_points {
+            for stitch_point in stitch_points {
+                let mut neighbors_to = {
+                    let vertex_from = self.layers[from as usize]
+                        .vertices
+                        .iter()
+                        .find(|v| v.coords == stitch_point)
+                        .unwrap();
+                    let mut neighbors_from = vertex_from
+                        .polygons
+                        .iter()
+                        .filter(|n| **n != -1 && (*n >> 24) as u8 == from)
+                        .cloned()
+                        .collect::<Vec<_>>();
+                    let vertex_to = self
+                        .layers
+                        .get_mut(to as usize)
+                        .unwrap()
+                        .vertices
+                        .iter_mut()
+                        .find(|v| v.coords == stitch_point)
+                        .unwrap();
+                    let neighbors_to = vertex_to
+                        .polygons
+                        .iter()
+                        .filter(|n| **n != -1 && (*n >> 24) as u8 == to)
+                        .cloned()
+                        .collect::<Vec<_>>();
+                    std::mem::swap(&mut vertex_to.polygons, &mut neighbors_from);
+                    vertex_to.polygons.append(&mut neighbors_from);
+                    neighbors_to
+                };
+                let vertex_from = self
+                    .layers
+                    .get_mut(from as usize)
+                    .unwrap()
+                    .vertices
+                    .iter_mut()
+                    .find(|v| v.coords == stitch_point)
+                    .unwrap();
+                std::mem::swap(&mut vertex_from.polygons, &mut neighbors_to);
+                vertex_from.polygons.append(&mut neighbors_to);
+            }
+        }
+    }
 }
 
 impl Layer {
@@ -558,6 +617,7 @@ struct SearchNode {
     edge: (u32, u32),
     polygon_from: PolygonInMesh,
     polygon_to: PolygonInMesh,
+    previous_polygon_layer: u8,
     f: f32,
     g: f32,
 }
@@ -673,6 +733,7 @@ mod tests {
                 layer: 0,
                 polygon: 1,
             },
+            previous_polygon_layer: 0,
             f: from.distance(to),
             g: 0.0,
         };
@@ -716,6 +777,7 @@ mod tests {
                 layer: 0,
                 polygon: 1,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -758,6 +820,7 @@ mod tests {
                 layer: 0,
                 polygon: 0,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -808,6 +871,7 @@ mod tests {
                 layer: 0,
                 polygon: 1,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -919,6 +983,7 @@ mod tests {
                 layer: 0,
                 polygon: 4,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -973,6 +1038,7 @@ mod tests {
                 layer: 0,
                 polygon: 4,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -1054,6 +1120,7 @@ mod tests {
                 layer: 0,
                 polygon: 4,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -1132,6 +1199,7 @@ mod tests {
                 layer: 0,
                 polygon: 4,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -1203,6 +1271,7 @@ mod tests {
                 layer: 0,
                 polygon: 4,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -1228,6 +1297,7 @@ mod tests {
                 layer: 0,
                 polygon: 2,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -1253,6 +1323,7 @@ mod tests {
                 layer: 0,
                 polygon: 2,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -1281,6 +1352,7 @@ mod tests {
                 layer: 0,
                 polygon: 1,
             },
+            previous_polygon_layer: 0,
             f: 0.0,
             g: 1.0,
         };
@@ -1289,6 +1361,171 @@ mod tests {
 
         for successor in &successors {
             println!("{successor:?}");
+        }
+    }
+
+    mod layer {
+        use glam::Vec2;
+
+        use crate::{
+            Layer, Mesh, Path, Polygon, PolygonInMesh, SearchNode, Vertex, POLYGON_NOT_FOUND,
+        };
+
+        fn mesh_u_grid() -> Mesh {
+            let main_layer = Layer {
+                vertices: vec![
+                    Vertex::new(Vec2::new(0., 0.), vec![0, -1]),
+                    Vertex::new(Vec2::new(1., 0.), vec![0, 1, -1]),
+                    Vertex::new(Vec2::new(2., 0.), vec![1, 2, -1]),
+                    Vertex::new(Vec2::new(3., 0.), vec![2, -1]),
+                    Vertex::new(Vec2::new(0., 1.), vec![0, -1]),
+                    Vertex::new(Vec2::new(1., 1.), vec![1, 0, -1]),
+                    Vertex::new(Vec2::new(2., 1.), vec![3, 2, 1, -1]),
+                    Vertex::new(Vec2::new(3., 1.), vec![3, 2, -1]),
+                    Vertex::new(Vec2::new(2., 2.), vec![3, -1]),
+                    Vertex::new(Vec2::new(3., 2.), vec![3, -1]),
+                ],
+                polygons: vec![
+                    Polygon::new(vec![0, 1, 5, 4], false),
+                    Polygon::new(vec![1, 2, 6, 5], false),
+                    Polygon::new(vec![2, 3, 7, 6], false),
+                    Polygon::new(vec![6, 7, 9, 8], true),
+                ],
+                ..Default::default()
+            };
+            let mut mesh = Mesh {
+                layers: vec![
+                    main_layer,
+                    Layer {
+                        vertices: vec![
+                            Vertex::new(Vec2::new(0., 1.), vec![0, -1]),
+                            Vertex::new(Vec2::new(1., 1.), vec![0, -1]),
+                            Vertex::new(Vec2::new(0., 2.), vec![0, -1]),
+                            Vertex::new(Vec2::new(1., 2.), vec![0, -1]),
+                        ],
+                        polygons: vec![Polygon::new(vec![0, 1, 3, 2], true)],
+                        ..Default::default()
+                    },
+                ],
+                ..Default::default()
+            };
+            mesh.stitch_at_points(vec![((0, 1), vec![Vec2::new(0., 1.), Vec2::new(1., 1.)])]);
+            mesh
+        }
+
+        #[test]
+        fn point_in_polygon() {
+            let mut mesh = mesh_u_grid();
+            // mesh.bake();
+            assert_eq!(
+                mesh.get_point_location(Vec2::new(0.5, 0.5)),
+                PolygonInMesh {
+                    layer: 0,
+                    polygon: 0
+                }
+            );
+            assert_eq!(
+                mesh.get_point_location(Vec2::new(1.5, 0.5)),
+                PolygonInMesh {
+                    layer: 0,
+                    polygon: 1
+                }
+            );
+            assert_eq!(
+                mesh.get_point_location(Vec2::new(0.5, 1.5)),
+                PolygonInMesh {
+                    layer: 1,
+                    polygon: 0
+                }
+            );
+            assert_eq!(
+                mesh.get_point_location(Vec2::new(1.5, 1.5)),
+                POLYGON_NOT_FOUND
+            );
+            assert_eq!(
+                mesh.get_point_location(Vec2::new(2.5, 1.5)),
+                PolygonInMesh {
+                    layer: 0,
+                    polygon: 3
+                }
+            );
+        }
+
+        #[test]
+        fn successors_straight_line() {
+            let mesh = mesh_u_grid();
+
+            let from: Vec2 = Vec2::new(0.1, 1.1);
+            let to = Vec2::new(1.1, 0.1);
+            let search_node = SearchNode {
+                path: vec![],
+                root: from,
+                interval: (Vec2::new(0.0, 1.0), Vec2::new(1.0, 1.0)),
+                edge: (0, 1),
+                polygon_from: mesh.get_point_location(from),
+                polygon_to: mesh.get_point_location(to),
+                previous_polygon_layer: 0,
+                f: 0.0,
+                g: from.distance(to),
+            };
+            let successors = dbg!(mesh.successors(search_node, to));
+            assert_eq!(successors.len(), 0);
+            assert_eq!(
+                mesh.path(from, to).unwrap(),
+                Path {
+                    path: vec![to],
+                    length: from.distance(to),
+                }
+            );
+        }
+
+        #[test]
+        fn successors_corner_first_step() {
+            let mesh = mesh_u_grid();
+
+            let from = Vec2::new(0.1, 1.9);
+            let to = Vec2::new(2.1, 1.9);
+            let search_node = SearchNode {
+                path: vec![],
+                root: from,
+                interval: (Vec2::new(0.0, 1.0), Vec2::new(1.0, 1.0)),
+                edge: (4, 5),
+                polygon_from: mesh.get_point_location(from),
+                polygon_to: PolygonInMesh {
+                    layer: 0,
+                    polygon: 0,
+                },
+                previous_polygon_layer: 0,
+                f: 0.0,
+                g: from.distance(to),
+            };
+            let successors = dbg!(mesh.successors(search_node, to));
+            assert_eq!(successors.len(), 1);
+            assert_eq!(successors[0].root, Vec2::new(2.0, 1.0));
+            assert_eq!(
+                successors[0].f,
+                from.distance(Vec2::new(1.0, 1.0))
+                    + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
+            );
+            assert_eq!(successors[0].g, Vec2::new(2.0, 1.0).distance(to));
+            assert_eq!(successors[0].polygon_from.polygon, 2);
+            assert_eq!(successors[0].polygon_to.polygon, 3);
+            assert_eq!(
+                successors[0].interval,
+                (Vec2::new(3.0, 1.0), Vec2::new(2.0, 1.0))
+            );
+            assert_eq!(successors[0].edge, (7, 6));
+            assert_eq!(successors[0].path, vec![from, Vec2::new(1.0, 1.0)]);
+
+            assert_eq!(
+                mesh.path(from, to).unwrap(),
+                Path {
+                    path: vec![Vec2::new(1.0, 1.0), Vec2::new(2.0, 1.0), to],
+                    length: from.distance(Vec2::new(1.0, 1.0))
+                        + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
+                        + Vec2::new(2.0, 1.0).distance(to),
+                }
+            );
         }
     }
 }

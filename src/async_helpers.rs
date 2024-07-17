@@ -59,7 +59,10 @@ impl<'m> Future for FuturePath<'m> {
                 return Poll::Ready(None);
             }
             if starting_polygon_index.layer == ending_polygon.layer {
-                if let Some(islands) = self.mesh.layers[0].islands.as_ref() {
+                if let Some(islands) = self.mesh.layers[starting_polygon_index.layer as usize]
+                    .islands
+                    .as_ref()
+                {
                     let start_island = islands.get(starting_polygon_index.polygon as usize);
                     let end_island = islands.get(ending_polygon.polygon as usize);
                     if start_island.is_some() && end_island.is_some() && start_island != end_island

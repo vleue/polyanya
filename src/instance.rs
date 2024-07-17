@@ -112,17 +112,24 @@ impl<'m> SearchInstance<'m> {
             edge: (0, 0),
             polygon_from: POLYGON_NOT_FOUND,
             polygon_to: from.1,
+            previous_polygon_layer: to.1.layer,
             f: 0.0,
             g: 0.0,
         };
 
         for edge in starting_polygon.edges_index().iter() {
-            let start = if let Some(v) = mesh.layers[0].vertices.get(edge.0 as usize) {
+            let start = if let Some(v) = mesh.layers[from.1.layer as usize]
+                .vertices
+                .get(edge.0 as usize)
+            {
                 v
             } else {
                 continue;
             };
-            let end = if let Some(v) = mesh.layers[0].vertices.get(edge.1 as usize) {
+            let end = if let Some(v) = mesh.layers[from.1.layer as usize]
+                .vertices
+                .get(edge.1 as usize)
+            {
                 v
             } else {
                 continue;
@@ -133,7 +140,7 @@ impl<'m> SearchInstance<'m> {
                 .filter(|i| **i != -1 && end.polygons.contains(*i))
                 .map(|i| PolygonInMesh {
                     layer: (*i >> 24) as u8,
-                    polygon: ((*i << 8) >> 8) as u32,
+                    polygon: (*i & 0b00000000111111111111111111111111) as u32,
                 })
                 .find(|poly| poly != &from.1)
                 .unwrap_or(POLYGON_NOT_FOUND);
@@ -169,6 +176,7 @@ impl<'m> SearchInstance<'m> {
             }
 
             if let Some(o) = self.root_history.get(&Root(next.root)) {
+                // TODO: revisit this for layers with different height at the same coordinates
                 if o < &next.f {
                     #[cfg(feature = "verbose")]
                     println!("node is dominated!");
@@ -256,7 +264,14 @@ impl<'m> SearchInstance<'m> {
 
         let right_index = {
             let mut temp = 0;
-            while polygon.vertices[temp] != node.edge.1 {
+            let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
+                [node.edge.1 as usize]
+                .coords;
+            while self.mesh.layers[node.polygon_to.layer as usize].vertices
+                [polygon.vertices[temp] as usize]
+                .coords
+                != edge
+            {
                 temp += 1;
             }
             temp + 1
@@ -265,15 +280,23 @@ impl<'m> SearchInstance<'m> {
 
         let mut ty = SuccessorType::RightNonObservable;
         for edge in &polygon.circular_edges_index(right_index..=left_index) {
-            if edge.0.max(edge.1) as usize > self.mesh.layers[0].vertices.len() {
+            if edge.0.max(edge.1) as usize
+                > self.mesh.layers[node.polygon_to.layer as usize]
+                    .vertices
+                    .len()
+            {
                 continue;
             }
             // Bounds are checked just before
             #[allow(unsafe_code)]
             let (start, end) = unsafe {
                 (
-                    self.mesh.layers[0].vertices.get_unchecked(edge.0 as usize),
-                    self.mesh.layers[0].vertices.get_unchecked(edge.1 as usize),
+                    self.mesh.layers[node.polygon_to.layer as usize]
+                        .vertices
+                        .get_unchecked(edge.0 as usize),
+                    self.mesh.layers[node.polygon_to.layer as usize]
+                        .vertices
+                        .get_unchecked(edge.1 as usize),
                 )
             };
             let mut start_point = start.coords;
@@ -439,6 +462,7 @@ impl<'m> SearchInstance<'m> {
             edge: (start.1, end.1),
             polygon_from: node.polygon_to,
             polygon_to: other_side,
+            previous_polygon_layer: node.polygon_to.layer,
             f: new_f,
             g: heuristic,
         };
@@ -509,10 +533,10 @@ impl<'m> SearchInstance<'m> {
                 #[allow(unsafe_code)]
                 let (start, end) = unsafe {
                     (
-                        self.mesh.layers[0]
+                        self.mesh.layers[node.polygon_to.layer as usize]
                             .vertices
                             .get_unchecked(successor.edge.0 as usize),
-                        self.mesh.layers[0]
+                        self.mesh.layers[node.polygon_to.layer as usize]
                             .vertices
                             .get_unchecked(successor.edge.1 as usize),
                     )
@@ -526,13 +550,11 @@ impl<'m> SearchInstance<'m> {
                 let other_side = start
                     .polygons
                     .iter()
-                    // .map(|i| dbg!(i))
                     .filter(|i| **i != -1 && end.polygons.contains(*i))
                     .map(|i| PolygonInMesh {
                         layer: (*i >> 24) as u8,
-                        polygon: ((*i << 8) >> 8) as u32,
+                        polygon: (*i & 0b00000000111111111111111111111111) as u32,
                     })
-                    // .map(|i| dbg!(i))
                     .find(|poly| poly != &node.polygon_to)
                     .unwrap_or(POLYGON_NOT_FOUND);
 
@@ -577,7 +599,7 @@ impl<'m> SearchInstance<'m> {
                             }
                             continue;
                         }
-                        let vertex = self.mesh.layers[0]
+                        let vertex = self.mesh.layers[node.polygon_to.layer as usize]
                             .vertices
                             .get(node.edge.0 as usize)
                             .unwrap();
@@ -602,7 +624,7 @@ impl<'m> SearchInstance<'m> {
                             }
                             continue;
                         }
-                        let vertex = self.mesh.layers[0]
+                        let vertex = self.mesh.layers[node.polygon_to.layer as usize]
                             .vertices
                             .get(node.edge.1 as usize)
                             .unwrap();
