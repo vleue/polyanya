@@ -1380,16 +1380,13 @@ mod tests {
                     Vertex::new(Vec2::new(3., 0.), vec![2, -1]),
                     Vertex::new(Vec2::new(0., 1.), vec![0, -1]),
                     Vertex::new(Vec2::new(1., 1.), vec![1, 0, -1]),
-                    Vertex::new(Vec2::new(2., 1.), vec![3, 2, 1, -1]),
-                    Vertex::new(Vec2::new(3., 1.), vec![3, 2, -1]),
-                    Vertex::new(Vec2::new(2., 2.), vec![3, -1]),
-                    Vertex::new(Vec2::new(3., 2.), vec![3, -1]),
+                    Vertex::new(Vec2::new(2., 1.), vec![2, 1, -1]),
+                    Vertex::new(Vec2::new(3., 1.), vec![2, -1]),
                 ],
                 polygons: vec![
                     Polygon::new(vec![0, 1, 5, 4], false),
                     Polygon::new(vec![1, 2, 6, 5], false),
                     Polygon::new(vec![2, 3, 7, 6], false),
-                    Polygon::new(vec![6, 7, 9, 8], true),
                 ],
                 ..Default::default()
             };
@@ -1406,10 +1403,23 @@ mod tests {
                         polygons: vec![Polygon::new(vec![0, 1, 3, 2], true)],
                         ..Default::default()
                     },
+                    Layer {
+                        vertices: vec![
+                            Vertex::new(Vec2::new(2., 1.), vec![0, -1]),
+                            Vertex::new(Vec2::new(3., 1.), vec![0, -1]),
+                            Vertex::new(Vec2::new(2., 2.), vec![0, -1]),
+                            Vertex::new(Vec2::new(3., 2.), vec![0, -1]),
+                        ],
+                        polygons: vec![Polygon::new(vec![0, 1, 3, 2], true)],
+                        ..Default::default()
+                    },
                 ],
                 ..Default::default()
             };
-            mesh.stitch_at_points(vec![((0, 1), vec![Vec2::new(0., 1.), Vec2::new(1., 1.)])]);
+            mesh.stitch_at_points(vec![
+                ((0, 1), vec![Vec2::new(0., 1.), Vec2::new(1., 1.)]),
+                ((0, 2), vec![Vec2::new(2., 1.), Vec2::new(3., 1.)]),
+            ]);
             mesh
         }
 
@@ -1445,8 +1455,8 @@ mod tests {
             assert_eq!(
                 mesh.get_point_location(Vec2::new(2.5, 1.5)),
                 PolygonInMesh {
-                    layer: 0,
-                    polygon: 3
+                    layer: 2,
+                    polygon: 0
                 }
             );
         }
@@ -1509,7 +1519,13 @@ mod tests {
             );
             assert_eq!(successors[0].g, Vec2::new(2.0, 1.0).distance(to));
             assert_eq!(successors[0].polygon_from.polygon, 2);
-            assert_eq!(successors[0].polygon_to.polygon, 3);
+            assert_eq!(
+                successors[0].polygon_to,
+                PolygonInMesh {
+                    layer: 2,
+                    polygon: 0
+                }
+            );
             assert_eq!(
                 successors[0].interval,
                 (Vec2::new(3.0, 1.0), Vec2::new(2.0, 1.0))
