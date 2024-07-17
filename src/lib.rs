@@ -498,7 +498,7 @@ impl Mesh {
     /// marked as neighbors in both layers.
     pub fn stitch_at_points(&mut self, stitch_points: Vec<((u8, u8), Vec<Vec2>)>) {
         // update indexes of layers
-        for (layer_index, layer) in self.layers.iter_mut().enumerate().skip(0) {
+        for (layer_index, layer) in self.layers.iter_mut().enumerate().skip(1) {
             for vertex in layer.vertices.iter_mut() {
                 for polygon_index in vertex.polygons.iter_mut() {
                     if *polygon_index != -1 {
