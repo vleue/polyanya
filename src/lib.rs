@@ -44,6 +44,7 @@ mod input;
 mod instance;
 mod merger;
 mod primitives;
+mod stitching;
 
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
@@ -492,65 +493,6 @@ impl Mesh {
         })
         .find(|poly| poly.polygon != u32::MAX)
         .unwrap_or(POLYGON_NOT_FOUND)
-    }
-
-    /// Stitch points between layers. After, the polygons neighboring the stitch points will be
-    /// marked as neighbors in both layers.
-    pub fn stitch_at_points(&mut self, stitch_points: Vec<((u8, u8), Vec<Vec2>)>) {
-        // update indexes of layers
-        for (layer_index, layer) in self.layers.iter_mut().enumerate().skip(1) {
-            for vertex in layer.vertices.iter_mut() {
-                for polygon_index in vertex.polygons.iter_mut() {
-                    if *polygon_index != -1 {
-                        *polygon_index += ((layer_index as u32) << 24) as isize;
-                    }
-                }
-            }
-        }
-        for ((from, to), stitch_points) in stitch_points {
-            for stitch_point in stitch_points {
-                let mut neighbors_to = {
-                    let vertex_from = self.layers[from as usize]
-                        .vertices
-                        .iter()
-                        .find(|v| v.coords == stitch_point)
-                        .unwrap();
-                    let mut neighbors_from = vertex_from
-                        .polygons
-                        .iter()
-                        .filter(|n| **n != -1 && (*n >> 24) as u8 == from)
-                        .cloned()
-                        .collect::<Vec<_>>();
-                    let vertex_to = self
-                        .layers
-                        .get_mut(to as usize)
-                        .unwrap()
-                        .vertices
-                        .iter_mut()
-                        .find(|v| v.coords == stitch_point)
-                        .unwrap();
-                    let neighbors_to = vertex_to
-                        .polygons
-                        .iter()
-                        .filter(|n| **n != -1 && (*n >> 24) as u8 == to)
-                        .cloned()
-                        .collect::<Vec<_>>();
-                    std::mem::swap(&mut vertex_to.polygons, &mut neighbors_from);
-                    vertex_to.polygons.append(&mut neighbors_from);
-                    neighbors_to
-                };
-                let vertex_from = self
-                    .layers
-                    .get_mut(from as usize)
-                    .unwrap()
-                    .vertices
-                    .iter_mut()
-                    .find(|v| v.coords == stitch_point)
-                    .unwrap();
-                std::mem::swap(&mut vertex_from.polygons, &mut neighbors_to);
-                vertex_from.polygons.append(&mut neighbors_to);
-            }
-        }
     }
 }
 
