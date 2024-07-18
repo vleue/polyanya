@@ -159,6 +159,9 @@ pub enum MeshError {
     /// The mesh is invalid, such as having a vertex that does not belong to any polygon.
     #[error("The mesh is invalid")]
     InvalidMesh,
+    /// One of the layer has too many polygons (more than 2^24-1).
+    #[error("One layer has too many polygons")]
+    TooManyPolygon,
 }
 
 impl Layer {
@@ -251,6 +254,9 @@ impl Layer {
     pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Result<Self, MeshError> {
         if vertices.is_empty() || polygons.is_empty() {
             return Err(MeshError::EmptyMesh);
+        }
+        if polygons.len() > (2_i32.pow(24) - 1) as usize {
+            return Err(MeshError::TooManyPolygon);
         }
         let mut layer = Layer {
             vertices,
