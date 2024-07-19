@@ -161,7 +161,7 @@ pub enum MeshError {
     InvalidMesh,
     /// One of the layer has too many polygons (more than 2^24-1).
     #[error("One layer has too many polygons")]
-    TooManyPolygon,
+    TooManyPolygons,
 }
 
 impl Layer {
@@ -256,7 +256,7 @@ impl Layer {
             return Err(MeshError::EmptyMesh);
         }
         if polygons.len() > (2_i32.pow(24) - 1) as usize {
-            return Err(MeshError::TooManyPolygon);
+            return Err(MeshError::TooManyPolygons);
         }
         let mut layer = Layer {
             vertices,
