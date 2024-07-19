@@ -10,7 +10,7 @@ use glam::Vec2;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use crate::Mesh;
+use crate::layers::Layer;
 
 /// A point that lies on an edge of a polygon in the navigation mesh.
 #[derive(Debug, Clone, PartialEq)]
@@ -152,13 +152,13 @@ impl Polygon {
         edges
     }
 
-    pub(crate) fn area(&self, mesh: &Mesh) -> f32 {
+    pub(crate) fn area(&self, mesh: &Layer) -> f32 {
         geo::Polygon::new(
             geo::LineString(
                 self.vertices
                     .iter()
                     .map(|v| {
-                        let c = mesh.layers[0].vertices[*v as usize].coords;
+                        let c = mesh.vertices[*v as usize].coords;
                         Coord::from((c.x, c.y))
                     })
                     .collect(),

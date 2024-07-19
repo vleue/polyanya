@@ -2,7 +2,7 @@ use geo::IsConvex;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use crate::Mesh;
+use crate::{layers::Layer, Mesh};
 
 impl Mesh {
     /// Merge polygons.
@@ -10,15 +10,28 @@ impl Mesh {
     /// This merge neighbouring polygons when possible, keeping them convex.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn merge_polygons(&mut self) -> bool {
-        // TODO: do it for each layer, keep the stitch polygons unmerged
+        self.layers
+            .iter_mut()
+            .map(|layer| layer.merge_polygons())
+            .find(|m| *m)
+            .is_some()
+    }
+}
+
+impl Layer {
+    /// Merge polygons.
+    ///
+    /// This merge neighbouring polygons when possible, keeping them convex.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn merge_polygons(&mut self) -> bool {
         self.unbake();
-        let mut area = self.layers[0]
+        let mut area = self
             .polygons
             .iter()
             .enumerate()
             .map(|(i, poly)| (i, poly.area(self)))
             .collect::<Vec<_>>();
-        let mut union_polygons = UnionFind::new(self.layers[0].polygons.len() as i32);
+        let mut union_polygons = UnionFind::new(self.polygons.len() as i32);
 
         area.sort_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap().reverse());
 
@@ -27,14 +40,14 @@ impl Mesh {
                 // already merged
                 continue;
             }
-            let poly = &self.layers[0].polygons[*poly_index];
+            let poly = &self.polygons[*poly_index];
             for edge in poly.edges_index() {
-                let start = if let Some(v) = self.layers[0].vertices.get(edge.0 as usize) {
+                let start = if let Some(v) = self.vertices.get(edge.0 as usize) {
                     v
                 } else {
                     continue;
                 };
-                let end = if let Some(v) = self.layers[0].vertices.get(edge.1 as usize) {
+                let end = if let Some(v) = self.vertices.get(edge.1 as usize) {
                     v
                 } else {
                     continue;
@@ -55,7 +68,7 @@ impl Mesh {
                     continue;
                 }
 
-                let other_vertices = &self.layers[0].polygons[other_side as usize].vertices;
+                let other_vertices = &self.polygons[other_side as usize].vertices;
                 let mut joined_vertices_index =
                     Vec::with_capacity(poly.vertices.len() + other_vertices.len() - 2);
                 let mut joined_vertices =
@@ -68,7 +81,7 @@ impl Mesh {
                     .take_while(|i| **i != edge.0)
                 {
                     joined_vertices_index.push(*i);
-                    let c = self.layers[0].vertices[*i as usize].coords;
+                    let c = self.vertices[*i as usize].coords;
                     joined_vertices.push(geo::Coord { x: c.x, y: c.y });
                 }
                 for i in other_vertices
@@ -78,22 +91,22 @@ impl Mesh {
                     .take_while(|i| **i != edge.1)
                 {
                     joined_vertices_index.push(*i);
-                    let c = self.layers[0].vertices[*i as usize].coords;
+                    let c = self.vertices[*i as usize].coords;
                     joined_vertices.push(geo::Coord { x: c.x, y: c.y });
                 }
                 let mut line = geo::LineString(joined_vertices);
                 line.close();
                 if line.is_ccw_convex() {
                     union_polygons.union(*poly_index as i32, other_side as i32);
-                    self.layers[0].polygons[*poly_index].vertices = joined_vertices_index;
+                    self.polygons[*poly_index].vertices = joined_vertices_index;
                     // TODO: correctly set the value for merged polygon
-                    self.layers[0].polygons[*poly_index].is_one_way = false;
+                    self.polygons[*poly_index].is_one_way = false;
                     break;
                 }
             }
         }
 
-        let mut new_indexes = vec![u32::MAX; self.layers[0].polygons.len()];
+        let mut new_indexes = vec![u32::MAX; self.polygons.len()];
         let mut kept = 0;
         for (i, p) in union_polygons.parent.iter().enumerate() {
             let p = union_polygons.find(*p);
@@ -105,17 +118,15 @@ impl Mesh {
             if i as i32 == p {
                 let j = new_indexes[p as usize] as usize;
                 if i != j {
-                    self.layers[0].polygons.swap(i, j);
+                    self.polygons.swap(i, j);
                 }
             } else {
                 new_indexes[i] = new_indexes[p as usize];
             }
         }
-        self.layers[0]
-            .polygons
-            .resize_with(kept as usize, || unreachable!());
+        self.polygons.resize_with(kept as usize, || unreachable!());
 
-        for vertex in self.layers[0].vertices.iter_mut() {
+        for vertex in self.vertices.iter_mut() {
             for p in vertex.polygons.iter_mut() {
                 if *p != u32::MAX {
                     *p = new_indexes[*p as usize];
