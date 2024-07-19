@@ -326,36 +326,38 @@ impl Mesh {
         self.get_point_location(point).polygon != u32::MAX
     }
 
+    /// Check if a given point is in a `Mesh` on a given `Layer`
+    pub fn point_in_mesh_on_layer(&self, point: Vec2, layer: u8) -> bool {
+        self.get_point_location_on_layer(point, layer).polygon != u32::MAX
+    }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location(&self, point: Vec2) -> PolygonInMesh {
-        let delta = self.delta;
-        [
-            Vec2::new(0.0, 0.0),
-            Vec2::new(delta, 0.0),
-            Vec2::new(delta, delta),
-            Vec2::new(0.0, delta),
-            Vec2::new(-delta, delta),
-            Vec2::new(-delta, 0.0),
-            Vec2::new(-delta, -delta),
-            Vec2::new(0.0, -delta),
-            Vec2::new(delta, -delta),
-        ]
-        .iter()
-        .flat_map(|delta| {
-            self.layers
-                .iter()
-                .enumerate()
-                .map(move |(index, layer)| PolygonInMesh {
+        self.layers
+            .iter()
+            .enumerate()
+            .flat_map(|(index, layer)| {
+                Some(PolygonInMesh {
                     layer: index as u8,
-                    polygon: if layer.baked_polygons.is_none() {
-                        layer.get_point_location_unit(point + *delta)
-                    } else {
-                        layer.get_point_location_unit_baked(point + *delta)
-                    },
+                    polygon: layer.get_point_location(point, self.delta)?,
                 })
-        })
-        .find(|poly| poly.polygon != u32::MAX)
-        .unwrap_or(POLYGON_NOT_FOUND)
+            })
+            .find(|poly| poly.polygon != u32::MAX)
+            .unwrap_or(POLYGON_NOT_FOUND)
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    fn get_point_location_on_layer(&self, point: Vec2, layer_index: u8) -> PolygonInMesh {
+        let delta = self.delta;
+        self.layers
+            .get(layer_index as usize)
+            .and_then(|layer| {
+                Some(PolygonInMesh {
+                    layer: layer_index,
+                    polygon: layer.get_point_location(point, delta)?,
+                })
+            })
+            .unwrap_or(POLYGON_NOT_FOUND)
     }
 }
 

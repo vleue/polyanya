@@ -179,6 +179,30 @@ impl Layer {
         }
         false
     }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub(crate) fn get_point_location(&self, point: Vec2, delta: f32) -> Option<u32> {
+        [
+            Vec2::new(0.0, 0.0),
+            Vec2::new(delta, 0.0),
+            Vec2::new(delta, delta),
+            Vec2::new(0.0, delta),
+            Vec2::new(-delta, delta),
+            Vec2::new(-delta, 0.0),
+            Vec2::new(-delta, -delta),
+            Vec2::new(0.0, -delta),
+            Vec2::new(delta, -delta),
+        ]
+        .iter()
+        .map(|delta| {
+            if self.baked_polygons.is_none() {
+                self.get_point_location_unit(point + *delta)
+            } else {
+                self.get_point_location_unit_baked(point + *delta)
+            }
+        })
+        .find(|poly| *poly != u32::MAX)
+    }
 }
 
 #[cfg(test)]
@@ -424,5 +448,24 @@ mod tests {
             let path = dbg!(mesh.path(from, to).unwrap());
             assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]);
         }
+    }
+
+    #[test]
+    fn find_point_on_layer() {
+        let mesh = mesh_overlapping_layers();
+        assert_eq!(
+            mesh.get_point_location_on_layer(vec2(2.5, 1.5), 0),
+            PolygonInMesh {
+                layer: 0,
+                polygon: 1,
+            }
+        );
+        assert_eq!(
+            mesh.get_point_location_on_layer(vec2(2.5, 1.5), 1),
+            PolygonInMesh {
+                layer: 1,
+                polygon: 0,
+            }
+        );
     }
 }
