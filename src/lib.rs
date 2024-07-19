@@ -174,6 +174,8 @@ impl Layer {
 
     /// Pre-compute optimizations on the mesh
     ///
+    /// Must be called on an unstitched layer.
+    ///
     /// Optimisations available are:
     /// - [`Self::bake_polygon_finder`]
     /// - [`Self::bake_islands_detection`]
@@ -275,7 +277,7 @@ impl Layer {
 impl Mesh {
     /// Pre-compute optimizations on the mesh
     ///
-    /// Call [Layer::bake] on each layer.
+    /// Call [Layer::bake] on each layer. If the mesh has several layers, it must be called before stitching.
     pub fn bake(&mut self) {
         for layer in self.layers.iter_mut() {
             layer.bake();
@@ -1364,6 +1366,7 @@ mod tests {
                 ],
                 ..Default::default()
             };
+            mesh.bake();
             mesh.stitch_at_points(vec![
                 ((0, 1), vec![Vec2::new(0., 1.), Vec2::new(1., 1.)]),
                 ((0, 2), vec![Vec2::new(2., 1.), Vec2::new(3., 1.)]),
@@ -1373,8 +1376,7 @@ mod tests {
 
         #[test]
         fn point_in_polygon() {
-            let mut mesh = mesh_u_grid();
-            // mesh.bake();
+            let mesh = mesh_u_grid();
             assert_eq!(
                 mesh.get_point_location(Vec2::new(0.5, 0.5)),
                 PolygonInMesh {
