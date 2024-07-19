@@ -21,16 +21,16 @@ pub struct Vertex {
     /// Indices of the neighbouring polygons, in a counter clockwise order.
     ///
     /// `-1` marks a neighbouring spot outside the navigation mesh.
-    pub polygons: Vec<isize>,
+    pub polygons: Vec<u32>,
     pub(crate) is_corner: bool,
 }
 
 impl Vertex {
     /// Create a new `Vertex`.
-    pub fn new(coords: Vec2, polygons: Vec<isize>) -> Self {
+    pub fn new(coords: Vec2, polygons: Vec<u32>) -> Self {
         Self {
             coords,
-            is_corner: polygons.contains(&-1),
+            is_corner: polygons.contains(&u32::MAX),
             polygons,
         }
     }

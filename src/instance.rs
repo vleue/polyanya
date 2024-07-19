@@ -157,10 +157,10 @@ impl<'m> SearchInstance<'m> {
             let other_side = start
                 .polygons
                 .iter()
-                .filter(|i| **i != -1 && end.polygons.contains(*i))
+                .filter(|i| **i != u32::MAX && end.polygons.contains(*i))
                 .map(|i| PolygonInMesh {
                     layer: (*i >> 24) as u8,
-                    polygon: (*i & 0b00000000111111111111111111111111) as u32,
+                    polygon: *i & 0b00000000111111111111111111111111,
                 })
                 .find(|poly| poly != &from.1)
                 .unwrap_or(POLYGON_NOT_FOUND);
@@ -570,10 +570,10 @@ impl<'m> SearchInstance<'m> {
                 let other_side = start
                     .polygons
                     .iter()
-                    .filter(|i| **i != -1 && end.polygons.contains(*i))
+                    .filter(|i| **i != u32::MAX && end.polygons.contains(*i))
                     .map(|i| PolygonInMesh {
                         layer: (*i >> 24) as u8,
-                        polygon: (*i & 0b00000000111111111111111111111111) as u32,
+                        polygon: *i & 0b00000000111111111111111111111111,
                     })
                     .find(|poly| poly != &node.polygon_to)
                     .unwrap_or(POLYGON_NOT_FOUND);

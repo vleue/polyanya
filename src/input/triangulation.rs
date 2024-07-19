@@ -174,7 +174,7 @@ impl Triangulation {
         #[cfg(feature = "tracing")]
         let polygon_span = tracing::info_span!("listing polygons").entered();
 
-        let mut face_to_polygon: Vec<isize> = vec![-1; cdt.all_faces().len()];
+        let mut face_to_polygon: Vec<u32> = vec![u32::MAX; cdt.all_faces().len()];
         let mut i = 0;
         let polygons = cdt
             .inner_faces()
@@ -220,16 +220,17 @@ impl Triangulation {
                     .out_edges()
                     .map(|out_edge| face_to_polygon[out_edge.face().index()])
                     .collect::<VecDeque<_>>();
-                let neighbour_polygons: Vec<_> = if neighbour_polygons.iter().all(|i| *i == -1) {
-                    vec![-1]
-                } else {
-                    while neighbour_polygons[0] == -1 {
-                        neighbour_polygons.rotate_left(1);
-                    }
-                    let mut neighbour_polygons: Vec<_> = neighbour_polygons.into();
-                    neighbour_polygons.dedup();
-                    neighbour_polygons
-                };
+                let neighbour_polygons: Vec<_> =
+                    if neighbour_polygons.iter().all(|i| *i == u32::MAX) {
+                        vec![u32::MAX]
+                    } else {
+                        while neighbour_polygons[0] == u32::MAX {
+                            neighbour_polygons.rotate_left(1);
+                        }
+                        let mut neighbour_polygons: Vec<_> = neighbour_polygons.into();
+                        neighbour_polygons.dedup();
+                        neighbour_polygons
+                    };
                 let point = point.position();
                 Vertex::new(vec2(point.x, point.y), neighbour_polygons)
             })

@@ -59,8 +59,8 @@ impl TryFrom<Trimesh> for Mesh {
         // Order vertex polygon neighbors counterclockwise
         for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
             vertex.polygons.sort_by(|index_a, index_b| {
-                let get_counterclockwise_edge = |index: isize| {
-                    // No -1 present yet, so the unwrap is safe
+                let get_counterclockwise_edge = |index: u32| {
+                    // No u32::MAX present yet, so the unwrap is safe
                     let index = usize::try_from(index).unwrap();
                     let neighbor_index = polygons[index]
                         .vertices
@@ -91,11 +91,11 @@ impl TryFrom<Trimesh> for Mesh {
                 .chain(iter::once(polygons_including_obstacles[0]))
             {
                 let last_index = *polygons_including_obstacles.last().unwrap();
-                if last_index == -1 {
+                if last_index == u32::MAX {
                     polygons_including_obstacles.push(polygon_index);
                     continue;
                 }
-                let triangle_at = |index: isize| {
+                let triangle_at = |index: u32| {
                     let polygon = &polygons[usize::try_from(index).unwrap()];
                     &polygon.vertices
                 };
@@ -107,7 +107,7 @@ impl TryFrom<Trimesh> for Mesh {
 
                 if last_counterclockwise_neighbor != next_clockwise_neighbor {
                     // The edges don't align; there's an obstacle here
-                    polygons_including_obstacles.push(-1);
+                    polygons_including_obstacles.push(u32::MAX);
                 }
                 polygons_including_obstacles.push(polygon_index);
             }
@@ -139,7 +139,7 @@ fn to_vertices(trimesh: &Trimesh) -> Vec<Vertex> {
                         .contains(&vertex_index)
                         .then_some(polygon_index)
                 })
-                .map(|index| isize::try_from(index).unwrap())
+                .map(|index| index as u32)
                 .collect();
             Vertex::new(*coords, neighbor_indices)
         })
@@ -171,12 +171,12 @@ mod tests {
     fn generation_from_trimesh_is_same_as_regular() -> Result<(), MeshError> {
         let regular_mesh = Mesh::new(
             vec![
-                Vertex::new(Vec2::new(1., 1.), vec![0, 4, -1]), // 0
-                Vertex::new(Vec2::new(5., 1.), vec![-1, 1, 3, -1, 0]), // 1
-                Vertex::new(Vec2::new(5., 4.), vec![-1, 2, 1]), // 2
-                Vertex::new(Vec2::new(1., 4.), vec![-1, 4, -1, 3, 2]), // 3
-                Vertex::new(Vec2::new(2., 2.), vec![-1, 4, 0]), // 4
-                Vertex::new(Vec2::new(4., 3.), vec![1, 2, 3]),  // 5
+                Vertex::new(Vec2::new(1., 1.), vec![0, 4, u32::MAX]), // 0
+                Vertex::new(Vec2::new(5., 1.), vec![u32::MAX, 1, 3, u32::MAX, 0]), // 1
+                Vertex::new(Vec2::new(5., 4.), vec![u32::MAX, 2, 1]), // 2
+                Vertex::new(Vec2::new(1., 4.), vec![u32::MAX, 4, u32::MAX, 3, 2]), // 3
+                Vertex::new(Vec2::new(2., 2.), vec![u32::MAX, 4, 0]), // 4
+                Vertex::new(Vec2::new(4., 3.), vec![1, 2, 3]),        // 5
             ],
             vec![
                 Polygon::new(vec![0, 1, 4], false), // 0
@@ -219,7 +219,7 @@ mod tests {
                 "\nvertex {index} does not have the expected value for `is_corner`.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                 regular_mesh.layers[0].vertices, from_trimesh.layers[0].vertices
             );
-            let adjusted_actual = wrap_to_first(&actual_vertex.polygons, |index| *index != -1).unwrap_or_else(||
+            let adjusted_actual = wrap_to_first(&actual_vertex.polygons, |index| *index != u32::MAX).unwrap_or_else(||
                 panic!("vertex {index}: Found only surrounded by obstacles.\nExpected vertices: {0:?}\nGot vertices: {1:?}",
                        regular_mesh.layers[0].vertices, from_trimesh.layers[0].vertices));
 
@@ -249,7 +249,7 @@ mod tests {
         assert!(matches!(trimesh, Err(MeshError::InvalidMesh)));
     }
 
-    fn wrap_to_first(polygons: &[isize], pred: impl Fn(&isize) -> bool) -> Option<Vec<isize>> {
+    fn wrap_to_first(polygons: &[u32], pred: impl Fn(&u32) -> bool) -> Option<Vec<u32>> {
         let offset = polygons.iter().position(pred)?;
         Some(
             polygons

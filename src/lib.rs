@@ -427,18 +427,18 @@ mod tests {
     fn mesh_u_grid() -> Mesh {
         let layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 0.), vec![0, -1]),
-                Vertex::new(Vec2::new(1., 0.), vec![0, 1, -1]),
-                Vertex::new(Vec2::new(2., 0.), vec![1, 2, -1]),
-                Vertex::new(Vec2::new(3., 0.), vec![2, -1]),
-                Vertex::new(Vec2::new(0., 1.), vec![3, 0, -1]),
-                Vertex::new(Vec2::new(1., 1.), vec![3, 1, 0, -1]),
-                Vertex::new(Vec2::new(2., 1.), vec![4, 2, 1, -1]),
-                Vertex::new(Vec2::new(3., 1.), vec![4, 2, -1]),
-                Vertex::new(Vec2::new(0., 2.), vec![3, -1]),
-                Vertex::new(Vec2::new(1., 2.), vec![3, -1]),
-                Vertex::new(Vec2::new(2., 2.), vec![4, -1]),
-                Vertex::new(Vec2::new(3., 2.), vec![4, -1]),
+                Vertex::new(Vec2::new(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(1., 0.), vec![0, 1, u32::MAX]),
+                Vertex::new(Vec2::new(2., 0.), vec![1, 2, u32::MAX]),
+                Vertex::new(Vec2::new(3., 0.), vec![2, u32::MAX]),
+                Vertex::new(Vec2::new(0., 1.), vec![3, 0, u32::MAX]),
+                Vertex::new(Vec2::new(1., 1.), vec![3, 1, 0, u32::MAX]),
+                Vertex::new(Vec2::new(2., 1.), vec![4, 2, 1, u32::MAX]),
+                Vertex::new(Vec2::new(3., 1.), vec![4, 2, u32::MAX]),
+                Vertex::new(Vec2::new(0., 2.), vec![3, u32::MAX]),
+                Vertex::new(Vec2::new(1., 2.), vec![3, u32::MAX]),
+                Vertex::new(Vec2::new(2., 2.), vec![4, u32::MAX]),
+                Vertex::new(Vec2::new(3., 2.), vec![4, u32::MAX]),
             ],
             polygons: vec![
                 Polygon::new(vec![0, 1, 5, 4], false),
@@ -664,29 +664,29 @@ mod tests {
     fn mesh_from_paper() -> Mesh {
         let layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 6.), vec![0, -1]),    // 0
-                Vertex::new(Vec2::new(2., 5.), vec![0, -1, 2]), // 1
-                Vertex::new(Vec2::new(5., 7.), vec![0, 2, -1]), // 2
-                Vertex::new(Vec2::new(5., 8.), vec![0, -1]),    // 3
-                Vertex::new(Vec2::new(0., 8.), vec![0, -1]),    // 4
-                Vertex::new(Vec2::new(1., 4.), vec![1, -1]),    // 5
-                Vertex::new(Vec2::new(2., 1.), vec![1, -1]),    // 6
-                Vertex::new(Vec2::new(4., 1.), vec![1, -1]),    // 7
-                Vertex::new(Vec2::new(4., 2.), vec![1, -1, 2]), // 8
-                Vertex::new(Vec2::new(2., 4.), vec![1, 2, -1]), // 9
-                Vertex::new(Vec2::new(7., 4.), vec![2, -1, 4]), // 10
-                Vertex::new(Vec2::new(10., 7.), vec![2, 4, 6, -1, 3]), // 11
-                Vertex::new(Vec2::new(7., 7.), vec![2, 3, -1]), // 12
-                Vertex::new(Vec2::new(11., 8.), vec![3, -1]),   // 13
-                Vertex::new(Vec2::new(7., 8.), vec![3, -1]),    // 14
-                Vertex::new(Vec2::new(7., 0.), vec![5, 4, -1]), // 15
-                Vertex::new(Vec2::new(11., 3.), vec![4, 5, -1]), // 16
-                Vertex::new(Vec2::new(11., 5.), vec![4, -1, 6]), // 17
-                Vertex::new(Vec2::new(12., 0.), vec![5, -1]),   // 18
-                Vertex::new(Vec2::new(12., 3.), vec![5, -1]),   // 19
-                Vertex::new(Vec2::new(13., 5.), vec![6, -1]),   // 20
-                Vertex::new(Vec2::new(13., 7.), vec![6, -1]),   // 21
-                Vertex::new(Vec2::new(1., 3.), vec![1, -1]),    // 22
+                Vertex::new(Vec2::new(0., 6.), vec![0, u32::MAX]), // 0
+                Vertex::new(Vec2::new(2., 5.), vec![0, u32::MAX, 2]), // 1
+                Vertex::new(Vec2::new(5., 7.), vec![0, 2, u32::MAX]), // 2
+                Vertex::new(Vec2::new(5., 8.), vec![0, u32::MAX]), // 3
+                Vertex::new(Vec2::new(0., 8.), vec![0, u32::MAX]), // 4
+                Vertex::new(Vec2::new(1., 4.), vec![1, u32::MAX]), // 5
+                Vertex::new(Vec2::new(2., 1.), vec![1, u32::MAX]), // 6
+                Vertex::new(Vec2::new(4., 1.), vec![1, u32::MAX]), // 7
+                Vertex::new(Vec2::new(4., 2.), vec![1, u32::MAX, 2]), // 8
+                Vertex::new(Vec2::new(2., 4.), vec![1, 2, u32::MAX]), // 9
+                Vertex::new(Vec2::new(7., 4.), vec![2, u32::MAX, 4]), // 10
+                Vertex::new(Vec2::new(10., 7.), vec![2, 4, 6, u32::MAX, 3]), // 11
+                Vertex::new(Vec2::new(7., 7.), vec![2, 3, u32::MAX]), // 12
+                Vertex::new(Vec2::new(11., 8.), vec![3, u32::MAX]), // 13
+                Vertex::new(Vec2::new(7., 8.), vec![3, u32::MAX]), // 14
+                Vertex::new(Vec2::new(7., 0.), vec![5, 4, u32::MAX]), // 15
+                Vertex::new(Vec2::new(11., 3.), vec![4, 5, u32::MAX]), // 16
+                Vertex::new(Vec2::new(11., 5.), vec![4, u32::MAX, 6]), // 17
+                Vertex::new(Vec2::new(12., 0.), vec![5, u32::MAX]), // 18
+                Vertex::new(Vec2::new(12., 3.), vec![5, u32::MAX]), // 19
+                Vertex::new(Vec2::new(13., 5.), vec![6, u32::MAX]), // 20
+                Vertex::new(Vec2::new(13., 7.), vec![6, u32::MAX]), // 21
+                Vertex::new(Vec2::new(1., 3.), vec![1, u32::MAX]), // 22
             ],
             polygons: vec![
                 Polygon::new(vec![0, 1, 2, 3, 4], true),

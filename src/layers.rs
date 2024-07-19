@@ -61,7 +61,13 @@ impl Layer {
                             .vertices
                             .iter()
                             .flat_map(|v| self.vertices[*v as usize].polygons.iter())
-                            .filter_map(|i| if *i != -1 { Some(*i as usize) } else { None }),
+                            .filter_map(|i| {
+                                if *i != u32::MAX {
+                                    Some(*i as usize)
+                                } else {
+                                    None
+                                }
+                            }),
                     );
                 }
             }
@@ -214,14 +220,14 @@ mod tests {
     fn mesh_u_grid() -> Mesh {
         let main_layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 0.), vec![0, -1]),
-                Vertex::new(Vec2::new(1., 0.), vec![0, 1, -1]),
-                Vertex::new(Vec2::new(2., 0.), vec![1, 2, -1]),
-                Vertex::new(Vec2::new(3., 0.), vec![2, -1]),
-                Vertex::new(Vec2::new(0., 1.), vec![0, -1]),
-                Vertex::new(Vec2::new(1., 1.), vec![1, 0, -1]),
-                Vertex::new(Vec2::new(2., 1.), vec![2, 1, -1]),
-                Vertex::new(Vec2::new(3., 1.), vec![2, -1]),
+                Vertex::new(Vec2::new(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(1., 0.), vec![0, 1, u32::MAX]),
+                Vertex::new(Vec2::new(2., 0.), vec![1, 2, u32::MAX]),
+                Vertex::new(Vec2::new(3., 0.), vec![2, u32::MAX]),
+                Vertex::new(Vec2::new(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(1., 1.), vec![1, 0, u32::MAX]),
+                Vertex::new(Vec2::new(2., 1.), vec![2, 1, u32::MAX]),
+                Vertex::new(Vec2::new(3., 1.), vec![2, u32::MAX]),
             ],
             polygons: vec![
                 Polygon::new(vec![0, 1, 5, 4], false),
@@ -235,20 +241,20 @@ mod tests {
                 main_layer,
                 Layer {
                     vertices: vec![
-                        Vertex::new(Vec2::new(0., 1.), vec![0, -1]),
-                        Vertex::new(Vec2::new(1., 1.), vec![0, -1]),
-                        Vertex::new(Vec2::new(0., 2.), vec![0, -1]),
-                        Vertex::new(Vec2::new(1., 2.), vec![0, -1]),
+                        Vertex::new(Vec2::new(0., 1.), vec![0, u32::MAX]),
+                        Vertex::new(Vec2::new(1., 1.), vec![0, u32::MAX]),
+                        Vertex::new(Vec2::new(0., 2.), vec![0, u32::MAX]),
+                        Vertex::new(Vec2::new(1., 2.), vec![0, u32::MAX]),
                     ],
                     polygons: vec![Polygon::new(vec![0, 1, 3, 2], true)],
                     ..Default::default()
                 },
                 Layer {
                     vertices: vec![
-                        Vertex::new(Vec2::new(2., 1.), vec![0, -1]),
-                        Vertex::new(Vec2::new(3., 1.), vec![0, -1]),
-                        Vertex::new(Vec2::new(2., 2.), vec![0, -1]),
-                        Vertex::new(Vec2::new(3., 2.), vec![0, -1]),
+                        Vertex::new(Vec2::new(2., 1.), vec![0, u32::MAX]),
+                        Vertex::new(Vec2::new(3., 1.), vec![0, u32::MAX]),
+                        Vertex::new(Vec2::new(2., 2.), vec![0, u32::MAX]),
+                        Vertex::new(Vec2::new(3., 2.), vec![0, u32::MAX]),
                     ],
                     polygons: vec![Polygon::new(vec![0, 1, 3, 2], true)],
                     ..Default::default()
@@ -386,18 +392,18 @@ mod tests {
     fn mesh_overlapping_layers() -> Mesh {
         let main_layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 3.), vec![0, -1]),
-                Vertex::new(Vec2::new(3., 3.), vec![0, -1]),
-                Vertex::new(Vec2::new(0., 2.), vec![0, -1]),
-                Vertex::new(Vec2::new(1., 2.), vec![0, -1]),
-                Vertex::new(Vec2::new(2., 2.), vec![0, 1, -1]),
-                Vertex::new(Vec2::new(3., 2.), vec![0, 1, -1]),
-                Vertex::new(Vec2::new(2., 1.), vec![1, 2, -1]),
-                Vertex::new(Vec2::new(3., 1.), vec![1, 2, -1]),
-                Vertex::new(Vec2::new(4., 1.), vec![2, -1]),
-                Vertex::new(Vec2::new(5., 1.), vec![2, -1]),
-                Vertex::new(Vec2::new(2., 0.), vec![2, -1]),
-                Vertex::new(Vec2::new(5., 0.), vec![2, -1]),
+                Vertex::new(Vec2::new(0., 3.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(3., 3.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(0., 2.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(1., 2.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(2., 2.), vec![0, 1, u32::MAX]),
+                Vertex::new(Vec2::new(3., 2.), vec![0, 1, u32::MAX]),
+                Vertex::new(Vec2::new(2., 1.), vec![1, 2, u32::MAX]),
+                Vertex::new(Vec2::new(3., 1.), vec![1, 2, u32::MAX]),
+                Vertex::new(Vec2::new(4., 1.), vec![2, u32::MAX]),
+                Vertex::new(Vec2::new(5., 1.), vec![2, u32::MAX]),
+                Vertex::new(Vec2::new(2., 0.), vec![2, u32::MAX]),
+                Vertex::new(Vec2::new(5., 0.), vec![2, u32::MAX]),
             ],
             polygons: vec![
                 Polygon::new(vec![2, 3, 4, 5, 1, 0], false),
@@ -408,12 +414,12 @@ mod tests {
         };
         let overlapping_layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 2.), vec![0, -1]),
-                Vertex::new(Vec2::new(1., 2.), vec![0, -1]),
-                Vertex::new(Vec2::new(5., 2.), vec![0, -1]),
-                Vertex::new(Vec2::new(0., 1.), vec![0, -1]),
-                Vertex::new(Vec2::new(4., 1.), vec![0, -1]),
-                Vertex::new(Vec2::new(5., 1.), vec![0, -1]),
+                Vertex::new(Vec2::new(0., 2.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(1., 2.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(5., 2.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(4., 1.), vec![0, u32::MAX]),
+                Vertex::new(Vec2::new(5., 1.), vec![0, u32::MAX]),
             ],
             polygons: vec![Polygon::new(vec![3, 4, 5, 2, 1, 0], false)],
             ..Default::default()

@@ -60,7 +60,7 @@ impl PolyanyaFile {
                     let _ = values.next();
                     let vertex = Vertex::new(
                         Vec2::new(x, y),
-                        values.map(|v| v.parse().unwrap()).collect(),
+                        values.map(|v| v.parse().unwrap_or(u32::MAX)).collect(),
                     );
                     mesh.vertices.push(vertex);
                 } else {
