@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use glam::Vec2;
 
 use crate::Mesh;
@@ -144,6 +146,36 @@ impl Mesh {
         stitch_points: Vec<((u8, u8), Vec<Vec2>)>,
     ) {
         self.stitch_internals(Some(target_layer), stitch_points);
+    }
+
+    /// Find stitch points between layers, and stitch them.
+    /// 
+    /// Returns the stitch points found for reuse.
+    /// 
+    /// This is slower than stitching with specified stitch points, as every vertex of every layer need to be compared with every others.
+    /// 
+    /// It can also produce invalid results if some layers are overlapping, for example when they represent different levels/floors of the same area.
+    pub fn auto_stitch(&mut self) -> Vec<((u8, u8), Vec<Vec2>)> {
+        let mut stitch_points: HashMap<(u8, u8), Vec<Vec2>> = HashMap::new();
+        for (layer_index, layer) in self.layers.iter().enumerate() {
+            for vertex in layer.vertices.iter() {
+                for (layer_index_b, layer_b) in self.layers.iter().enumerate().skip(layer_index + 1)
+                {
+                    for vertex_b in layer_b.vertices.iter() {
+                        if vertex.coords == vertex_b.coords {
+                            stitch_points
+                                .entry((layer_index as u8, layer_index_b as u8))
+                                .or_default()
+                                .push(vertex.coords);
+                        }
+                    }
+                }
+            }
+        }
+        let mut stitch_points: Vec<_> = stitch_points.into_iter().collect();
+        stitch_points.sort_by_key(|((a, b), _)| (*a, *b));
+        self.stitch_internals(None, stitch_points.clone());
+        stitch_points
     }
 }
 
@@ -326,6 +358,45 @@ mod tests {
         assert_eq!(
             mesh.layers[0].vertices[2].polygons,
             vec![16777216, 33554432, 0, -1]
+        );
+        assert_eq!(mesh.layers[0].vertices[3].polygons, vec![33554432, 0, -1]);
+
+        assert_eq!(mesh.layers[1].vertices[0].polygons, vec![16777216, -1]);
+        assert_eq!(mesh.layers[1].vertices[1].polygons, vec![0, 16777216, -1]);
+        assert_eq!(mesh.layers[1].vertices[2].polygons, vec![16777216, -1]);
+        assert_eq!(
+            mesh.layers[1].vertices[3].polygons,
+            vec![33554432, 0, 16777216, -1]
+        );
+
+        assert_eq!(
+            mesh.layers[2].vertices[0].polygons,
+            vec![16777216, 0, 33554432, -1]
+        );
+        assert_eq!(mesh.layers[2].vertices[1].polygons, vec![0, 33554432, -1]);
+        assert_eq!(mesh.layers[2].vertices[2].polygons, vec![33554432, -1]);
+        assert_eq!(mesh.layers[2].vertices[3].polygons, vec![33554432, -1]);
+    }
+
+    #[test]
+    fn auto_stitch() {
+        let mut mesh = basic_mesh_with_layers();
+        let points = mesh.auto_stitch();
+
+        assert_eq!(
+            points,
+            vec![
+                ((0, 1), vec![Vec2::new(1., 0.), Vec2::new(1., 1.)]),
+                ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
+                ((1, 2), vec![Vec2::new(1., 1.)]),
+            ]
+        );
+
+        assert_eq!(mesh.layers[0].vertices[0].polygons, vec![16777216, 0, -1]);
+        assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, -1]);
+        assert_eq!(
+            mesh.layers[0].vertices[2].polygons,
+            vec![33554432, 16777216, 0, -1]
         );
         assert_eq!(mesh.layers[0].vertices[3].polygons, vec![33554432, 0, -1]);
 
