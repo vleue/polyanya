@@ -5,8 +5,8 @@ use std::{fmt, future::Future, task::Poll};
 use glam::Vec2;
 
 use crate::{
-    instance::{InstanceStep, SearchInstance},
-    Mesh, Path, PolygonInMesh, POLYGON_NOT_FOUND,
+    instance::{InstanceStep, SearchInstance, U32Layer},
+    Mesh, Path,
 };
 
 /// A future that will resolve to a [`Option<Path>`].
@@ -17,7 +17,7 @@ pub struct FuturePath<'m> {
     pub(crate) to: Vec2,
     pub(crate) mesh: &'m Mesh,
     pub(crate) instance: Option<SearchInstance<'m>>,
-    pub(crate) ending_polygon: PolygonInMesh,
+    pub(crate) ending_polygon: u32,
 }
 
 impl<'m> fmt::Debug for FuturePath<'m> {
@@ -51,20 +51,20 @@ impl<'m> Future for FuturePath<'m> {
             let start = Instant::now();
 
             let starting_polygon_index = self.mesh.get_point_location(self.from);
-            if starting_polygon_index == POLYGON_NOT_FOUND {
+            if starting_polygon_index == u32::MAX {
                 return Poll::Ready(None);
             }
             let ending_polygon = self.mesh.get_point_location(self.to);
-            if ending_polygon == POLYGON_NOT_FOUND {
+            if ending_polygon == u32::MAX {
                 return Poll::Ready(None);
             }
-            if starting_polygon_index.layer == ending_polygon.layer {
-                if let Some(islands) = self.mesh.layers[starting_polygon_index.layer as usize]
+            if starting_polygon_index.layer() == ending_polygon.layer() {
+                if let Some(islands) = self.mesh.layers[starting_polygon_index.layer() as usize]
                     .islands
                     .as_ref()
                 {
-                    let start_island = islands.get(starting_polygon_index.polygon as usize);
-                    let end_island = islands.get(ending_polygon.polygon as usize);
+                    let start_island = islands.get(starting_polygon_index as usize);
+                    let end_island = islands.get(ending_polygon as usize);
                     if start_island.is_some() && end_island.is_some() && start_island != end_island
                     {
                         return Poll::Ready(None);

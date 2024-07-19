@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use glam::Vec2;
 
-use crate::Mesh;
+use crate::{instance::U32Layer, Mesh};
 
 impl Mesh {
     fn stitch_internals(
@@ -41,7 +41,7 @@ impl Mesh {
                     let mut neighbors_from = vertex_from
                         .polygons
                         .iter()
-                        .filter(|n| **n != u32::MAX && (*n >> 24) as u8 == from)
+                        .filter(|n| **n != u32::MAX && n.layer() == from)
                         .cloned()
                         .collect::<Vec<_>>();
                     let vertex_to = self
@@ -55,7 +55,7 @@ impl Mesh {
                     let neighbors_to = vertex_to
                         .polygons
                         .iter()
-                        .filter(|n| **n != u32::MAX && (*n >> 24) as u8 == to)
+                        .filter(|n| **n != u32::MAX && n.layer() == to)
                         .cloned()
                         .collect::<Vec<_>>();
                     std::mem::swap(&mut vertex_to.polygons, &mut neighbors_from);
@@ -92,8 +92,8 @@ impl Mesh {
                     if *p == u32::MAX {
                         return true;
                     }
-                    if (*p >> 24) as u8 == layer_index as u8 {
-                        *p &= 0b00000000111111111111111111111111;
+                    if p.layer() == layer_index as u8 {
+                        *p = p.polygon();
                         true
                     } else {
                         false
@@ -115,8 +115,8 @@ impl Mesh {
                         if *p == u32::MAX {
                             return true;
                         }
-                        if (*p >> 24) as u8 == layer_index as u8 {
-                            *p &= 0b00000000111111111111111111111111;
+                        if p.layer() == layer_index as u8 {
+                            *p = p.polygon();
                             true
                         } else {
                             false
@@ -128,7 +128,7 @@ impl Mesh {
                         if *p == u32::MAX {
                             return true;
                         }
-                        (*p >> 24) as u8 != target_layer
+                        p.layer() != target_layer
                     })
                 }
             }

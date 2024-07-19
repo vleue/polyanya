@@ -23,7 +23,7 @@ use std::{
 use bvh2d::aabb::{Bounded, AABB};
 use glam::Vec2;
 
-use instance::InstanceStep;
+use instance::{InstanceStep, U32Layer};
 use layers::Layer;
 use log::error;
 use thiserror::Error;
@@ -60,18 +60,6 @@ pub struct Path {
     /// Coordinates for each step of the path. The destination is the last step.
     pub path: Vec<Vec2>,
 }
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct PolygonInMesh {
-    layer: u8,
-    polygon: u32,
-}
-
-const POLYGON_NOT_FOUND: PolygonInMesh = PolygonInMesh {
-    layer: 0,
-    polygon: u32::MAX,
-};
-
 /// A navigation mesh
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -158,7 +146,7 @@ impl Mesh {
             to,
             mesh: self,
             instance: None,
-            ending_polygon: POLYGON_NOT_FOUND,
+            ending_polygon: u32::MAX,
         }
     }
 
@@ -174,20 +162,20 @@ impl Mesh {
         let start = Instant::now();
 
         let starting_polygon_index = self.get_point_location(from);
-        if starting_polygon_index.polygon == u32::MAX {
+        if starting_polygon_index == u32::MAX {
             return None;
         }
         let ending_polygon = self.get_point_location(to);
-        if ending_polygon.polygon == u32::MAX {
+        if ending_polygon == u32::MAX {
             return None;
         }
-        if starting_polygon_index.layer == ending_polygon.layer {
-            if let Some(islands) = self.layers[starting_polygon_index.layer as usize]
+        if starting_polygon_index.layer() == ending_polygon.layer() {
+            if let Some(islands) = self.layers[starting_polygon_index.layer() as usize]
                 .islands
                 .as_ref()
             {
-                let start_island = islands.get(starting_polygon_index.polygon as usize);
-                let end_island = islands.get(ending_polygon.polygon as usize);
+                let start_island = islands.get(starting_polygon_index.polygon() as usize);
+                let end_island = islands.get(ending_polygon.polygon() as usize);
                 if start_island.is_some() && end_island.is_some() && start_island != end_island {
                     return None;
                 }
@@ -323,41 +311,40 @@ impl Mesh {
 
     /// Check if a given point is in a `Mesh`
     pub fn point_in_mesh(&self, point: Vec2) -> bool {
-        self.get_point_location(point).polygon != u32::MAX
+        self.get_point_location(point) != u32::MAX
     }
 
     /// Check if a given point is in a `Mesh` on a given `Layer`
     pub fn point_in_mesh_on_layer(&self, point: Vec2, layer: u8) -> bool {
-        self.get_point_location_on_layer(point, layer).polygon != u32::MAX
+        self.get_point_location_on_layer(point, layer) != u32::MAX
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location(&self, point: Vec2) -> PolygonInMesh {
+    fn get_point_location(&self, point: Vec2) -> u32 {
         self.layers
             .iter()
             .enumerate()
             .flat_map(|(index, layer)| {
-                Some(PolygonInMesh {
-                    layer: index as u8,
-                    polygon: layer.get_point_location(point, self.delta)?,
-                })
+                Some(U32Layer::from_layer_and_polygon(
+                    index as u8,
+                    layer.get_point_location(point, self.delta)?,
+                ))
             })
-            .find(|poly| poly.polygon != u32::MAX)
-            .unwrap_or(POLYGON_NOT_FOUND)
+            .find(|poly| poly != &u32::MAX)
+            .unwrap_or(u32::MAX)
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location_on_layer(&self, point: Vec2, layer_index: u8) -> PolygonInMesh {
-        let delta = self.delta;
+    fn get_point_location_on_layer(&self, point: Vec2, layer_index: u8) -> u32 {
         self.layers
             .get(layer_index as usize)
             .and_then(|layer| {
-                Some(PolygonInMesh {
-                    layer: layer_index,
-                    polygon: layer.get_point_location(point, delta)?,
-                })
+                Some(U32Layer::from_layer_and_polygon(
+                    layer_index,
+                    layer.get_point_location(point, self.delta)?,
+                ))
             })
-            .unwrap_or(POLYGON_NOT_FOUND)
+            .unwrap_or(u32::MAX)
     }
 }
 
@@ -367,8 +354,8 @@ struct SearchNode {
     root: Vec2,
     interval: (Vec2, Vec2),
     edge: (u32, u32),
-    polygon_from: PolygonInMesh,
-    polygon_to: PolygonInMesh,
+    polygon_from: u32,
+    polygon_to: u32,
     previous_polygon_layer: u8,
     f: f32,
     g: f32,
@@ -422,7 +409,7 @@ mod tests {
 
     use glam::Vec2;
 
-    use crate::{helpers::*, Layer, Mesh, Path, Polygon, PolygonInMesh, SearchNode, Vertex};
+    use crate::{helpers::*, Layer, Mesh, Path, Polygon, SearchNode, Vertex};
 
     fn mesh_u_grid() -> Mesh {
         let layer = Layer {
@@ -459,14 +446,11 @@ mod tests {
     fn point_in_polygon() {
         let mut mesh = mesh_u_grid();
         mesh.bake();
-        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)).polygon, 0);
-        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)).polygon, 1);
-        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 1.5)).polygon, 3);
-        assert_eq!(
-            mesh.get_point_location(Vec2::new(1.5, 1.5)).polygon,
-            u32::MAX
-        );
-        assert_eq!(mesh.get_point_location(Vec2::new(2.5, 1.5)).polygon, 4);
+        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), 0);
+        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)), 1);
+        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 1.5)), 3);
+        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 1.5)), u32::MAX);
+        assert_eq!(mesh.get_point_location(Vec2::new(2.5, 1.5)), 4);
     }
 
     #[test]
@@ -481,10 +465,7 @@ mod tests {
             interval: (Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0)),
             edge: (1, 5),
             polygon_from: mesh.get_point_location(from),
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 1,
-            },
+            polygon_to: 1,
             previous_polygon_layer: 0,
             f: from.distance(to),
             g: 0.0,
@@ -494,8 +475,8 @@ mod tests {
         assert_eq!(successors[0].root, from);
         assert_eq!(successors[0].f, from.distance(to));
         assert_eq!(successors[0].g, from.distance(to));
-        assert_eq!(successors[0].polygon_from.polygon, 1);
-        assert_eq!(successors[0].polygon_to.polygon, 2);
+        assert_eq!(successors[0].polygon_from, 1);
+        assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(
             successors[0].interval,
             (Vec2::new(2.0, 0.0), Vec2::new(2.0, 1.0))
@@ -525,10 +506,7 @@ mod tests {
             interval: (Vec2::new(2.0, 1.0), Vec2::new(2.0, 0.0)),
             edge: (6, 2),
             polygon_from: mesh.get_point_location(from),
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 1,
-            },
+            polygon_to: 1,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -538,8 +516,8 @@ mod tests {
         assert_eq!(successors[0].root, from);
         assert_eq!(successors[0].f, 0.0);
         assert_eq!(successors[0].g, to.distance(from));
-        assert_eq!(successors[0].polygon_from.polygon, 1);
-        assert_eq!(successors[0].polygon_to.polygon, 0);
+        assert_eq!(successors[0].polygon_from, 1);
+        assert_eq!(successors[0].polygon_to, 0);
         assert_eq!(
             successors[0].interval,
             (Vec2::new(1.0, 1.0), Vec2::new(1.0, 0.0))
@@ -568,10 +546,7 @@ mod tests {
             interval: (Vec2::new(0.0, 1.0), Vec2::new(1.0, 1.0)),
             edge: (4, 5),
             polygon_from: mesh.get_point_location(from),
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 0,
-            },
+            polygon_to: 0,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -584,8 +559,8 @@ mod tests {
             from.distance(Vec2::new(1.0, 1.0)) + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
         );
         assert_eq!(successors[0].g, Vec2::new(2.0, 1.0).distance(to));
-        assert_eq!(successors[0].polygon_from.polygon, 2);
-        assert_eq!(successors[0].polygon_to.polygon, 4);
+        assert_eq!(successors[0].polygon_from, 2);
+        assert_eq!(successors[0].polygon_to, 4);
         assert_eq!(
             successors[0].interval,
             (Vec2::new(3.0, 1.0), Vec2::new(2.0, 1.0))
@@ -615,14 +590,8 @@ mod tests {
             root: from,
             interval: (Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0)),
             edge: (1, 5),
-            polygon_from: PolygonInMesh {
-                layer: 0,
-                polygon: 0,
-            },
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 1,
-            },
+            polygon_from: 0,
+            polygon_to: 1,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -635,8 +604,8 @@ mod tests {
             from.distance(Vec2::new(1.0, 1.0)) + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
         );
         assert_eq!(successors[0].g, Vec2::new(2.0, 1.0).distance(to));
-        assert_eq!(successors[0].polygon_from.polygon, 2);
-        assert_eq!(successors[0].polygon_to.polygon, 4);
+        assert_eq!(successors[0].polygon_from, 2);
+        assert_eq!(successors[0].polygon_to, 4);
         assert_eq!(
             successors[0].interval,
             (Vec2::new(3.0, 1.0), Vec2::new(2.0, 1.0))
@@ -709,14 +678,11 @@ mod tests {
     fn paper_point_in_polygon() {
         let mut mesh = mesh_from_paper();
         mesh.bake();
-        assert_eq!(
-            mesh.get_point_location(Vec2::new(0.5, 0.5)).polygon,
-            u32::MAX
-        );
-        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 6.0)).polygon, 0);
-        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 5.1)).polygon, 0);
-        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 1.5)).polygon, 1);
-        assert_eq!(mesh.get_point_location(Vec2::new(4.0, 2.1)).polygon, 2);
+        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), u32::MAX);
+        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 6.0)), 0);
+        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 5.1)), 0);
+        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 1.5)), 1);
+        assert_eq!(mesh.get_point_location(Vec2::new(4.0, 2.1)), 2);
     }
 
     #[test]
@@ -731,10 +697,7 @@ mod tests {
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
             polygon_from: mesh.get_point_location(from),
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 4,
-            },
+            polygon_to: 4,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -749,8 +712,8 @@ mod tests {
             Vec2::new(11.0, 3.0).distance(Vec2::new(9.75, 6.75))
                 + Vec2::new(9.75, 6.75).distance(to)
         );
-        assert_eq!(successors[1].polygon_from.polygon, 4);
-        assert_eq!(successors[1].polygon_to.polygon, 2);
+        assert_eq!(successors[1].polygon_from, 4);
+        assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(
             successors[1].interval,
             (Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))
@@ -761,8 +724,8 @@ mod tests {
         assert_eq!(successors[0].root, from);
         assert_eq!(successors[0].f, 0.0);
         assert_eq!(successors[0].g, from.distance(to));
-        assert_eq!(successors[0].polygon_from.polygon, 4);
-        assert_eq!(successors[0].polygon_to.polygon, 2);
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(
             successors[0].interval,
             (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))
@@ -786,10 +749,7 @@ mod tests {
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
             polygon_from: mesh.get_point_location(from),
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 4,
-            },
+            polygon_to: 4,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -803,8 +763,8 @@ mod tests {
             successors[0].g,
             Vec2::new(11.0, 3.0).distance(Vec2::new(11.0, 5.0)) + Vec2::new(11.0, 5.0).distance(to)
         );
-        assert_eq!(successors[0].polygon_from.polygon, 4);
-        assert_eq!(successors[0].polygon_to.polygon, 6);
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 6);
         assert_eq!(
             successors[0].interval,
             (Vec2::new(11.0, 5.0), Vec2::new(10.0, 7.0))
@@ -818,8 +778,8 @@ mod tests {
             successors[1].g,
             Vec2::new(11.0, 3.0).distance(to.mirror((Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))))
         );
-        assert_eq!(successors[1].polygon_from.polygon, 4);
-        assert_eq!(successors[1].polygon_to.polygon, 2);
+        assert_eq!(successors[1].polygon_from, 4);
+        assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(
             successors[1].interval,
             (Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))
@@ -835,8 +795,8 @@ mod tests {
                 + Vec2::new(9.75, 6.75)
                     .distance(to.mirror((Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))))
         );
-        assert_eq!(successors[2].polygon_from.polygon, 4);
-        assert_eq!(successors[2].polygon_to.polygon, 2);
+        assert_eq!(successors[2].polygon_from, 4);
+        assert_eq!(successors[2].polygon_to, 2);
         assert_eq!(
             successors[2].interval,
             (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))
@@ -868,10 +828,7 @@ mod tests {
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
             polygon_from: mesh.get_point_location(from),
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 4,
-            },
+            polygon_to: 4,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -886,8 +843,8 @@ mod tests {
             Vec2::new(11.0, 3.0).distance(Vec2::new(9.75, 6.75))
                 + Vec2::new(9.75, 6.75).distance(to)
         );
-        assert_eq!(successors[1].polygon_from.polygon, 4);
-        assert_eq!(successors[1].polygon_to.polygon, 2);
+        assert_eq!(successors[1].polygon_from, 4);
+        assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(
             successors[1].interval,
             (Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))
@@ -901,8 +858,8 @@ mod tests {
             successors[0].g,
             from.distance(Vec2::new(7.0, 4.0)) + Vec2::new(7.0, 4.0).distance(to)
         );
-        assert_eq!(successors[0].polygon_from.polygon, 4);
-        assert_eq!(successors[0].polygon_to.polygon, 2);
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(
             successors[0].interval,
             (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))
@@ -947,10 +904,7 @@ mod tests {
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
             polygon_from: mesh.get_point_location(from),
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 4,
-            },
+            polygon_to: 4,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -965,8 +919,8 @@ mod tests {
             Vec2::new(11.0, 3.0).distance(Vec2::new(9.75, 6.75))
                 + Vec2::new(9.75, 6.75).distance(to)
         );
-        assert_eq!(successors[1].polygon_from.polygon, 4);
-        assert_eq!(successors[1].polygon_to.polygon, 2);
+        assert_eq!(successors[1].polygon_from, 4);
+        assert_eq!(successors[1].polygon_to, 2);
         assert_eq!(
             successors[1].interval,
             (Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))
@@ -980,8 +934,8 @@ mod tests {
             successors[0].g,
             from.distance(Vec2::new(7.0, 4.0)) + Vec2::new(7.0, 4.0).distance(to)
         );
-        assert_eq!(successors[0].polygon_from.polygon, 4);
-        assert_eq!(successors[0].polygon_to.polygon, 2);
+        assert_eq!(successors[0].polygon_from, 4);
+        assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(
             successors[0].interval,
             (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))
@@ -1019,10 +973,7 @@ mod tests {
             interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
             edge: (16, 15),
             polygon_from: mesh.get_point_location(from),
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 4,
-            },
+            polygon_to: 4,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -1041,14 +992,8 @@ mod tests {
             root: from,
             interval: (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0)),
             edge: (11, 10),
-            polygon_from: PolygonInMesh {
-                layer: 0,
-                polygon: 4,
-            },
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 2,
-            },
+            polygon_from: 4,
+            polygon_to: 2,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -1067,14 +1012,8 @@ mod tests {
             root: Vec2::new(11.0, 3.0),
             interval: (Vec2::new(10.0, 7.0), Vec2::new(7.0, 4.0)),
             edge: (11, 10),
-            polygon_from: PolygonInMesh {
-                layer: 0,
-                polygon: 4,
-            },
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 2,
-            },
+            polygon_from: 4,
+            polygon_to: 2,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -1096,14 +1035,8 @@ mod tests {
             root: Vec2::new(0.0, 0.0),
             interval: (Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0)),
             edge: (1, 5),
-            polygon_from: PolygonInMesh {
-                layer: 0,
-                polygon: 0,
-            },
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 1,
-            },
+            polygon_from: 0,
+            polygon_to: 1,
             previous_polygon_layer: 0,
             f: 0.0,
             g: 1.0,

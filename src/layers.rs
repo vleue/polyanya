@@ -215,7 +215,7 @@ impl Layer {
 mod tests {
     use glam::{vec2, Vec2};
 
-    use crate::{Layer, Mesh, Path, Polygon, PolygonInMesh, SearchNode, Vertex, POLYGON_NOT_FOUND};
+    use crate::{instance::U32Layer, Layer, Mesh, Path, Polygon, SearchNode, Vertex};
 
     fn mesh_u_grid() -> Mesh {
         let main_layer = Layer {
@@ -273,37 +273,16 @@ mod tests {
     #[test]
     fn point_in_polygon() {
         let mesh = mesh_u_grid();
-        assert_eq!(
-            mesh.get_point_location(Vec2::new(0.5, 0.5)),
-            PolygonInMesh {
-                layer: 0,
-                polygon: 0
-            }
-        );
-        assert_eq!(
-            mesh.get_point_location(Vec2::new(1.5, 0.5)),
-            PolygonInMesh {
-                layer: 0,
-                polygon: 1
-            }
-        );
+        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), 0);
+        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)), 1);
         assert_eq!(
             mesh.get_point_location(Vec2::new(0.5, 1.5)),
-            PolygonInMesh {
-                layer: 1,
-                polygon: 0
-            }
+            u32::from_layer_and_polygon(1, 0)
         );
-        assert_eq!(
-            mesh.get_point_location(Vec2::new(1.5, 1.5)),
-            POLYGON_NOT_FOUND
-        );
+        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 1.5)), u32::MAX);
         assert_eq!(
             mesh.get_point_location(Vec2::new(2.5, 1.5)),
-            PolygonInMesh {
-                layer: 2,
-                polygon: 0
-            }
+            u32::from_layer_and_polygon(2, 0)
         );
     }
 
@@ -347,10 +326,7 @@ mod tests {
             interval: (Vec2::new(0.0, 1.0), Vec2::new(1.0, 1.0)),
             edge: (4, 5),
             polygon_from: mesh.get_point_location(from),
-            polygon_to: PolygonInMesh {
-                layer: 0,
-                polygon: 0,
-            },
+            polygon_to: 0,
             previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
@@ -363,14 +339,8 @@ mod tests {
             from.distance(Vec2::new(1.0, 1.0)) + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
         );
         assert_eq!(successors[0].g, Vec2::new(2.0, 1.0).distance(to));
-        assert_eq!(successors[0].polygon_from.polygon, 2);
-        assert_eq!(
-            successors[0].polygon_to,
-            PolygonInMesh {
-                layer: 2,
-                polygon: 0
-            }
-        );
+        assert_eq!(successors[0].polygon_from.polygon(), 2);
+        assert_eq!(successors[0].polygon_to, u32::from_layer_and_polygon(2, 0));
         assert_eq!(
             successors[0].interval,
             (Vec2::new(3.0, 1.0), Vec2::new(2.0, 1.0))
@@ -459,19 +429,10 @@ mod tests {
     #[test]
     fn find_point_on_layer() {
         let mesh = mesh_overlapping_layers();
-        assert_eq!(
-            mesh.get_point_location_on_layer(vec2(2.5, 1.5), 0),
-            PolygonInMesh {
-                layer: 0,
-                polygon: 1,
-            }
-        );
+        assert_eq!(mesh.get_point_location_on_layer(vec2(2.5, 1.5), 0), 1);
         assert_eq!(
             mesh.get_point_location_on_layer(vec2(2.5, 1.5), 1),
-            PolygonInMesh {
-                layer: 1,
-                polygon: 0,
-            }
+            u32::from_layer_and_polygon(1, 0)
         );
     }
 }
