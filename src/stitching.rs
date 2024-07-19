@@ -327,7 +327,7 @@ mod tests {
         assert_eq!(mesh.layers[1].vertices[2].polygons, vec![16777216, -1]);
         assert_eq!(mesh.layers[1].vertices[3].polygons, vec![0, 16777216, -1]);
 
-        // this are not logical, `restitch_layer_at_points` should not be used to stitch a layer with other layers that haven't been stitched in already
+        // these are not logical, `restitch_layer_at_points` should not be used to stitch a layer with other layers that haven't been stitched in already
         assert_eq!(mesh.layers[2].vertices[0].polygons, vec![16777216, 0, -1]);
         assert_eq!(mesh.layers[2].vertices[1].polygons, vec![0, -1]);
         assert_eq!(mesh.layers[2].vertices[2].polygons, vec![0, -1]);
