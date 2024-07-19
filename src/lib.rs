@@ -18,7 +18,6 @@ use std::{cell::Cell, time::Instant};
 use std::{
     cmp::Ordering,
     fmt::{self, Debug, Display},
-    hash::Hash,
 };
 
 use bvh2d::aabb::{Bounded, AABB};
@@ -103,26 +102,6 @@ impl Mesh {
             layers: vec![layer],
             ..Default::default()
         })
-    }
-}
-
-struct Root(Vec2);
-
-impl PartialEq for Root {
-    #[inline(always)]
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
-    }
-}
-
-impl Eq for Root {}
-
-impl Hash for Root {
-    #[inline(always)]
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        ((self.0.x * PRECISION) as i32).hash(state);
-        ((self.0.y * PRECISION) as i32).hash(state);
-        state.finish();
     }
 }
 
