@@ -215,7 +215,7 @@ impl Layer {
 mod tests {
     use glam::{vec2, Vec2};
 
-    use crate::{instance::U32Layer, Layer, Mesh, Path, Polygon, SearchNode, Vertex};
+    use crate::{instance::U32Layer, Coords, Layer, Mesh, Path, Polygon, SearchNode, Vertex};
 
     fn mesh_u_grid() -> Mesh {
         let main_layer = Layer {
@@ -359,6 +359,15 @@ mod tests {
         );
     }
 
+    /// layer 1:
+    /// 000
+    ///   1
+    ///   222
+    ///
+    /// layer 2:
+    ///
+    /// 00000
+    ///
     fn mesh_overlapping_layers() -> Mesh {
         let main_layer = Layer {
             vertices: vec![
@@ -429,9 +438,18 @@ mod tests {
     #[test]
     fn find_point_on_layer() {
         let mesh = mesh_overlapping_layers();
-        assert_eq!(mesh.get_point_location_on_layer(vec2(2.5, 1.5), 0), 1);
         assert_eq!(
-            mesh.get_point_location_on_layer(vec2(2.5, 1.5), 1),
+            mesh.get_point_location(Coords {
+                pos: vec2(2.5, 1.5),
+                layer: Some(0)
+            }),
+            1
+        );
+        assert_eq!(
+            mesh.get_point_location(Coords {
+                pos: vec2(2.5, 1.5),
+                layer: Some(1)
+            }),
             u32::from_layer_and_polygon(1, 0)
         );
     }

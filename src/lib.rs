@@ -71,6 +71,36 @@ pub struct Mesh {
     pub(crate) scenarios: Cell<u32>,
 }
 
+/// A point in the navigation mesh
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub struct Coords {
+    /// The position
+    pub pos: Vec2,
+    /// The layer
+    ///
+    /// If specified, the point will be searched in that layer only.
+    pub layer: Option<u8>,
+}
+
+impl Into<Coords> for Vec2 {
+    fn into(self) -> Coords {
+        Coords {
+            pos: self,
+            layer: None,
+        }
+    }
+}
+
+impl Display for Coords {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(layer) = self.layer {
+            write!(f, "({}, {})[{}]", self.pos.x, self.pos.y, layer)
+        } else {
+            write!(f, "({}, {})", self.pos.x, self.pos.y)
+        }
+    }
+}
+
 impl Default for Mesh {
     fn default() -> Self {
         Self {
@@ -157,9 +187,12 @@ impl Mesh {
     /// This method is blocking, to get the path in an async way use [`Self::get_path`].
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub fn path(&self, from: Vec2, to: Vec2) -> Option<Path> {
+    pub fn path(&self, from: impl Into<Coords>, to: impl Into<Coords>) -> Option<Path> {
         #[cfg(feature = "stats")]
         let start = Instant::now();
+
+        let from = from.into();
+        let to = to.into();
 
         let starting_polygon_index = self.get_point_location(from);
         if starting_polygon_index == u32::MAX {
@@ -199,15 +232,15 @@ impl Mesh {
                 self.scenarios.set(self.scenarios.get() + 1);
             }
             return Some(Path {
-                length: from.distance(to),
-                path: vec![to],
+                length: from.pos.distance(to.pos),
+                path: vec![to.pos],
             });
         }
 
         let mut search_instance = SearchInstance::setup(
             self,
-            (from, starting_polygon_index),
-            (to, ending_polygon),
+            (from.pos, starting_polygon_index),
+            (to.pos, ending_polygon),
             #[cfg(feature = "stats")]
             start,
         );
@@ -310,41 +343,36 @@ impl Mesh {
     }
 
     /// Check if a given point is in a `Mesh`
-    pub fn point_in_mesh(&self, point: Vec2) -> bool {
+    pub fn point_in_mesh(&self, point: impl Into<Coords>) -> bool {
         self.get_point_location(point) != u32::MAX
     }
 
-    /// Check if a given point is in a `Mesh` on a given `Layer`
-    pub fn point_in_mesh_on_layer(&self, point: Vec2, layer: u8) -> bool {
-        self.get_point_location_on_layer(point, layer) != u32::MAX
-    }
-
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location(&self, point: Vec2) -> u32 {
-        self.layers
-            .iter()
-            .enumerate()
-            .flat_map(|(index, layer)| {
-                Some(U32Layer::from_layer_and_polygon(
-                    index as u8,
-                    layer.get_point_location(point, self.delta)?,
-                ))
-            })
-            .find(|poly| poly != &u32::MAX)
-            .unwrap_or(u32::MAX)
-    }
-
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location_on_layer(&self, point: Vec2, layer_index: u8) -> u32 {
-        self.layers
-            .get(layer_index as usize)
-            .and_then(|layer| {
-                Some(U32Layer::from_layer_and_polygon(
-                    layer_index,
-                    layer.get_point_location(point, self.delta)?,
-                ))
-            })
-            .unwrap_or(u32::MAX)
+    fn get_point_location(&self, point: impl Into<Coords>) -> u32 {
+        let point = point.into();
+        if let Some(layer_index) = point.layer {
+            self.layers
+                .get(layer_index as usize)
+                .and_then(|layer| {
+                    Some(U32Layer::from_layer_and_polygon(
+                        layer_index,
+                        layer.get_point_location(point.pos, self.delta)?,
+                    ))
+                })
+                .unwrap_or(u32::MAX)
+        } else {
+            self.layers
+                .iter()
+                .enumerate()
+                .flat_map(|(index, layer)| {
+                    Some(U32Layer::from_layer_and_polygon(
+                        index as u8,
+                        layer.get_point_location(point.pos, self.delta)?,
+                    ))
+                })
+                .find(|poly| poly != &u32::MAX)
+                .unwrap_or(u32::MAX)
+        }
     }
 }
 
