@@ -93,7 +93,7 @@ impl Mesh {
                         return true;
                     }
                     if (*p >> 24) as u8 == layer_index as u8 {
-                        *p = *p & 0b00000000111111111111111111111111;
+                        *p &= 0b00000000111111111111111111111111;
                         true
                     } else {
                         false
@@ -116,7 +116,7 @@ impl Mesh {
                             return true;
                         }
                         if (*p >> 24) as u8 == layer_index as u8 {
-                            *p = *p & 0b00000000111111111111111111111111;
+                            *p &= 0b00000000111111111111111111111111;
                             true
                         } else {
                             false
