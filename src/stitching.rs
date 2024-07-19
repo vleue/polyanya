@@ -148,14 +148,12 @@ impl Mesh {
         self.stitch_internals(Some(target_layer), stitch_points);
     }
 
-    /// Find stitch points between layers, and stitch them.
-    /// 
-    /// Returns the stitch points found for reuse.
-    /// 
-    /// This is slower than stitching with specified stitch points, as every vertex of every layer need to be compared with every others.
-    /// 
+    /// Find stitch points between layers.
+    ///
+    /// This can be slow, as every vertex of every layer need to be compared with every others.
+    ///
     /// It can also produce invalid results if some layers are overlapping, for example when they represent different levels/floors of the same area.
-    pub fn auto_stitch(&mut self) -> Vec<((u8, u8), Vec<Vec2>)> {
+    pub fn find_stitch_points(&mut self) -> Vec<((u8, u8), Vec<Vec2>)> {
         let mut stitch_points: HashMap<(u8, u8), Vec<Vec2>> = HashMap::new();
         for (layer_index, layer) in self.layers.iter().enumerate() {
             for vertex in layer.vertices.iter() {
@@ -174,7 +172,6 @@ impl Mesh {
         }
         let mut stitch_points: Vec<_> = stitch_points.into_iter().collect();
         stitch_points.sort_by_key(|((a, b), _)| (*a, *b));
-        self.stitch_internals(None, stitch_points.clone());
         stitch_points
     }
 }
@@ -381,7 +378,8 @@ mod tests {
     #[test]
     fn auto_stitch() {
         let mut mesh = basic_mesh_with_layers();
-        let points = mesh.auto_stitch();
+        let points = mesh.find_stitch_points();
+        mesh.stitch_at_points(points.clone());
 
         assert_eq!(
             points,
