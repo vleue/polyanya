@@ -20,7 +20,7 @@ pub struct Vertex {
     pub coords: Vec2,
     /// Indices of the neighbouring polygons, in a counter clockwise order.
     ///
-    /// `-1` marks a neighbouring spot outside the navigation mesh.
+    /// `u32::MAX` marks a neighbouring spot outside the navigation mesh.
     pub polygons: Vec<u32>,
     pub(crate) is_corner: bool,
 }
