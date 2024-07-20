@@ -13,8 +13,7 @@ impl Mesh {
         self.layers
             .iter_mut()
             .map(|layer| layer.merge_polygons())
-            .find(|m| *m)
-            .is_some()
+            .any(|m| m)
     }
 }
 

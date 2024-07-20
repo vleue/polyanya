@@ -82,10 +82,10 @@ pub struct Coords {
     pub layer: Option<u8>,
 }
 
-impl Into<Coords> for Vec2 {
-    fn into(self) -> Coords {
+impl From<Vec2> for Coords {
+    fn from(value: Vec2) -> Self {
         Coords {
-            pos: self,
+            pos: value,
             layer: None,
         }
     }
