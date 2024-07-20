@@ -285,7 +285,7 @@ impl Mesh {
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
-            from: Vec2::ZERO,
+            from: node.root,
             to,
             polygon_to: self.get_point_location(to),
             mesh: self,

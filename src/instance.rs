@@ -155,9 +155,9 @@ impl<'m> SearchInstance<'m> {
             root: from.0,
             interval: (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
             edge: (0, 0),
-            polygon_from: u32::MAX,
+            polygon_from: from.1,
             polygon_to: from.1,
-            previous_polygon_layer: to.1.layer(),
+            previous_polygon_layer: from.1.layer(),
             f: 0.0,
             g: 0.0,
         };
@@ -620,7 +620,7 @@ impl<'m> SearchInstance<'m> {
                             }
                             continue;
                         }
-                        let vertex = self.mesh.layers[node.polygon_to.layer() as usize]
+                        let vertex = self.mesh.layers[node.previous_polygon_layer as usize]
                             .vertices
                             .get(node.edge.0 as usize)
                             .unwrap();
@@ -645,7 +645,7 @@ impl<'m> SearchInstance<'m> {
                             }
                             continue;
                         }
-                        let vertex = self.mesh.layers[node.polygon_to.layer() as usize]
+                        let vertex = self.mesh.layers[node.previous_polygon_layer as usize]
                             .vertices
                             .get(node.edge.1 as usize)
                             .unwrap();

@@ -436,24 +436,34 @@ mod tests {
     }
 
     #[test]
-    fn take_long_way() {
+    fn shortcut_with_corner() {
         let mesh = mesh_overlapping_layers();
         for i in 7..15 {
             let from = Vec2::new(i as f32 / 10.0, 2.1);
             let to = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
             let path = dbg!(mesh.path(from, to).unwrap());
-            assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]);
+            match i {
+                7 => assert_eq!(path.path, vec![vec2(1.0, 2.0), to]),
+                _ if i < 11 => assert_eq!(path.path, vec![vec2(1.0, 2.0), vec2(4.0, 1.0), to]),
+                _ if i < 15 => assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]),
+                _ => unreachable!(),
+            }
         }
     }
 
     #[test]
-    fn take_long_way_back() {
+    fn shortcut_with_corner_back() {
         let mesh = mesh_overlapping_layers();
         for i in 7..15 {
             let from = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
             let to = Vec2::new(i as f32 / 10.0, 2.1);
             let path = dbg!(mesh.path(from, to).unwrap());
-            assert_eq!(path.path, vec![vec2(3.0, 1.0), vec2(2.0, 2.0), to]);
+            match i {
+                7 => assert_eq!(path.path, vec![vec2(4.0, 1.0), to]),
+                _ if i < 11 => assert_eq!(path.path, vec![vec2(4.0, 1.0), vec2(1.0, 2.0), to]),
+                _ if i < 15 => assert_eq!(path.path, vec![vec2(3.0, 1.0), vec2(2.0, 2.0), to]),
+                _ => unreachable!(),
+            }
         }
     }
 
