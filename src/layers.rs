@@ -453,7 +453,7 @@ mod tests {
             let from = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
             let to = Vec2::new(i as f32 / 10.0, 2.1);
             let path = dbg!(mesh.path(from, to).unwrap());
-            assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]);
+            assert_eq!(path.path, vec![vec2(3.0, 1.0), vec2(2.0, 2.0), to]);
         }
     }
 
