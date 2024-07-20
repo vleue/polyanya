@@ -417,8 +417,19 @@ mod tests {
     fn take_shortcut() {
         let mesh = mesh_overlapping_layers();
         for i in 0..6 {
-            let from = Vec2::new(0.0 + i as f32 / 10.0, 2.1);
+            let from = Vec2::new(i as f32 / 10.0, 2.1);
             let to = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
+            let path = dbg!(mesh.path(from, to).unwrap());
+            assert_eq!(path.path, vec![to]);
+        }
+    }
+
+    #[test]
+    fn take_shortcut_back() {
+        let mesh = mesh_overlapping_layers();
+        for i in 0..6 {
+            let from = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
+            let to = Vec2::new(i as f32 / 10.0, 2.1);
             let path = dbg!(mesh.path(from, to).unwrap());
             assert_eq!(path.path, vec![to]);
         }
@@ -428,11 +439,60 @@ mod tests {
     fn take_long_way() {
         let mesh = mesh_overlapping_layers();
         for i in 7..15 {
-            let from = Vec2::new(0.0 + i as f32 / 10.0, 2.1);
+            let from = Vec2::new(i as f32 / 10.0, 2.1);
             let to = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
             let path = dbg!(mesh.path(from, to).unwrap());
             assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]);
         }
+    }
+
+    #[test]
+    fn take_long_way_back() {
+        let mesh = mesh_overlapping_layers();
+        for i in 7..15 {
+            let from = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
+            let to = Vec2::new(i as f32 / 10.0, 2.1);
+            let path = dbg!(mesh.path(from, to).unwrap());
+            assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]);
+        }
+    }
+
+    #[test]
+    fn from_one_to_the_other() {
+        let mesh = mesh_overlapping_layers();
+        let path = dbg!(mesh
+            .path(
+                Coords {
+                    pos: vec2(2.5, 1.5),
+                    layer: Some(0)
+                },
+                Coords {
+                    pos: vec2(2.5, 1.5),
+                    layer: Some(1)
+                },
+            )
+            .unwrap());
+        assert_eq!(
+            path.path,
+            vec![vec2(3.0, 1.0,), vec2(4.0, 1.0,), vec2(2.5, 1.5,),],
+        );
+
+        let path_back = dbg!(mesh
+            .path(
+                Coords {
+                    pos: vec2(2.5, 1.5),
+                    layer: Some(1)
+                },
+                Coords {
+                    pos: vec2(2.5, 1.5),
+                    layer: Some(0)
+                },
+            )
+            .unwrap());
+        assert_eq!(
+            path_back.path,
+            vec![vec2(4.0, 1.0,), vec2(3.0, 1.0,), vec2(2.5, 1.5,),],
+        );
     }
 
     #[test]
