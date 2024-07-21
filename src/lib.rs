@@ -59,6 +59,8 @@ pub struct Path {
     pub length: f32,
     /// Coordinates for each step of the path. The destination is the last step.
     pub path: Vec<Vec2>,
+    /// Coordinates for each step of the path, including when changing layer. The destination is the last step.
+    pub path_with_layers: Vec<(Vec2, u8)>,
 }
 /// A navigation mesh
 #[derive(Debug, Clone)]
@@ -234,6 +236,7 @@ impl Mesh {
             return Some(Path {
                 length: from.pos.distance(to.pos),
                 path: vec![to.pos],
+                path_with_layers: vec![(to.pos, ending_polygon.layer())],
             });
         }
 
@@ -285,6 +288,7 @@ impl Mesh {
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
+            from: node.root,
             to,
             polygon_to: self.get_point_location(to),
             mesh: self,
@@ -320,7 +324,8 @@ impl Mesh {
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
-            to: vec2(0.0, 0.0),
+            from: Vec2::ZERO,
+            to: Vec2::ZERO,
             polygon_to: self.get_point_location(vec2(0.0, 0.0)),
             mesh: self,
             #[cfg(feature = "stats")]
@@ -378,6 +383,7 @@ impl Mesh {
 #[derive(PartialEq, Debug)]
 struct SearchNode {
     path: Vec<Vec2>,
+    path_with_layers: Vec<(Vec2, Vec2, u8)>,
     root: Vec2,
     interval: (Vec2, Vec2),
     edge: (u32, u32),
@@ -490,6 +496,7 @@ mod tests {
         let to = vec2(2.9, 0.9);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
@@ -516,6 +523,7 @@ mod tests {
             Path {
                 path: vec![to],
                 length: from.distance(to),
+                path_with_layers: vec![(to, 0)],
             }
         );
     }
@@ -528,6 +536,7 @@ mod tests {
         let from = vec2(2.9, 0.9);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(2.0, 1.0), vec2(2.0, 0.0)),
             edge: (6, 2),
@@ -553,6 +562,7 @@ mod tests {
             Path {
                 path: vec![to],
                 length: from.distance(to),
+                path_with_layers: vec![(to, 0)],
             }
         );
     }
@@ -565,6 +575,7 @@ mod tests {
         let to = vec2(2.1, 1.9);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
@@ -595,6 +606,7 @@ mod tests {
                 length: from.distance(vec2(1.0, 1.0))
                     + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
                     + vec2(2.0, 1.0).distance(to),
+                path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 0), (to, 0)],
             }
         );
     }
@@ -607,6 +619,7 @@ mod tests {
         let to = vec2(2.1, 1.9);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
@@ -637,6 +650,7 @@ mod tests {
                 length: from.distance(vec2(1.0, 1.0))
                     + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
                     + vec2(2.0, 1.0).distance(to),
+                path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 0), (to, 0)],
             }
         );
     }
@@ -710,6 +724,7 @@ mod tests {
         let to = vec2(7.0, 6.9);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -755,6 +770,7 @@ mod tests {
         let to = vec2(13.0, 6.0);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -824,6 +840,7 @@ mod tests {
         let to = vec2(5.0, 3.0);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -890,6 +907,7 @@ mod tests {
         let to = vec2(3.0, 1.0);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -952,6 +970,7 @@ mod tests {
         let to = vec2(3.0, 1.0);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -972,6 +991,7 @@ mod tests {
 
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(9.75, 6.75), vec2(7.0, 4.0)),
             edge: (11, 10),
@@ -992,6 +1012,7 @@ mod tests {
 
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: vec2(11.0, 3.0),
             interval: (vec2(10.0, 7.0), vec2(7.0, 4.0)),
             edge: (11, 10),
@@ -1015,6 +1036,7 @@ mod tests {
 
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: vec2(0.0, 0.0),
             interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),

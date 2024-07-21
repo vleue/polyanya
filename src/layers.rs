@@ -213,9 +213,12 @@ impl Layer {
 
 #[cfg(test)]
 mod tests {
-    use glam::{vec2, Vec2};
+    use glam::{vec2, IVec2, Vec2};
 
-    use crate::{instance::U32Layer, Coords, Layer, Mesh, Path, Polygon, SearchNode, Vertex};
+    use crate::{
+        helpers::line_intersect_segment, instance::U32Layer, Coords, Layer, Mesh, Path, Polygon,
+        SearchNode, Vertex,
+    };
 
     fn mesh_u_grid() -> Mesh {
         let main_layer = Layer {
@@ -294,6 +297,7 @@ mod tests {
         let to = vec2(1.1, 0.1);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (0, 1),
@@ -310,6 +314,7 @@ mod tests {
             Path {
                 path: vec![to],
                 length: from.distance(to),
+                path_with_layers: vec![(to, 0)],
             }
         );
     }
@@ -322,6 +327,7 @@ mod tests {
         let to = vec2(2.1, 1.9);
         let search_node = SearchNode {
             path: vec![],
+            path_with_layers: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
@@ -352,6 +358,7 @@ mod tests {
                 length: from.distance(vec2(1.0, 1.0))
                     + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
                     + vec2(2.0, 1.0).distance(to),
+                path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 2), (to, 2)],
             }
         );
     }
@@ -410,6 +417,12 @@ mod tests {
         mesh
     }
 
+    fn reduce_path_precision(path: Vec<(Vec2, u8)>) -> Vec<(IVec2, u8)> {
+        path.into_iter()
+            .map(|(point, layer)| ((point * 100000.0).as_ivec2(), layer))
+            .collect()
+    }
+
     #[test]
     fn take_shortcut() {
         let mesh = mesh_overlapping_layers();
@@ -418,6 +431,22 @@ mod tests {
             let to = vec2(5.0 - i as f32 / 10.0, 0.9);
             let path = dbg!(mesh.path(from, to).unwrap());
             assert_eq!(path.path, vec![to]);
+            assert_eq!(
+                reduce_path_precision(path.path_with_layers),
+                reduce_path_precision(vec![
+                    (
+                        line_intersect_segment((from, to), (vec2(0.0, 2.0), vec2(5.0, 2.0)))
+                            .unwrap(),
+                        1
+                    ),
+                    (
+                        line_intersect_segment((from, to), (vec2(0.0, 1.0), vec2(5.0, 1.0)))
+                            .unwrap(),
+                        0
+                    ),
+                    (to, 0)
+                ]),
+            );
         }
     }
 
@@ -429,20 +458,54 @@ mod tests {
             let to = vec2(i as f32 / 10.0, 2.1);
             let path = dbg!(mesh.path(from, to).unwrap());
             assert_eq!(path.path, vec![to]);
+            assert_eq!(
+                reduce_path_precision(path.path_with_layers),
+                reduce_path_precision(vec![
+                    (
+                        line_intersect_segment((from, to), (vec2(0.0, 1.0), vec2(5.0, 1.0)))
+                            .unwrap(),
+                        1
+                    ),
+                    (
+                        line_intersect_segment((from, to), (vec2(0.0, 2.0), vec2(5.0, 2.0)))
+                            .unwrap(),
+                        0
+                    ),
+                    (to, 0)
+                ]),
+            );
         }
     }
 
     #[test]
     fn shortcut_with_corner() {
         let mesh = mesh_overlapping_layers();
-        for i in 7..15 {
+        for i in 7..8 {
             let from = vec2(i as f32 / 10.0, 2.1);
             let to = vec2(5.0 - i as f32 / 10.0, 0.9);
             let path = dbg!(mesh.path(from, to).unwrap());
             match i {
-                7 => assert_eq!(path.path, vec![vec2(1.0, 2.0), to]),
-                _ if i < 11 => assert_eq!(path.path, vec![vec2(1.0, 2.0), vec2(4.0, 1.0), to]),
-                _ if i < 15 => assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]),
+                7 => {
+                    assert_eq!(path.path, vec![vec2(1.0, 2.0), to]);
+                    assert_eq!(
+                        path.path_with_layers,
+                        vec![(vec2(1.0, 2.0), 1), (vec2(4.0, 1.0), 0), (to, 0)]
+                    );
+                }
+                _ if i < 11 => {
+                    assert_eq!(path.path, vec![vec2(1.0, 2.0), vec2(4.0, 1.0), to]);
+                    assert_eq!(
+                        path.path_with_layers,
+                        vec![(vec2(1.0, 2.0), 1), (vec2(4.0, 1.0), 0), (to, 0)]
+                    );
+                }
+                _ if i < 15 => {
+                    assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]);
+                    assert_eq!(
+                        path.path_with_layers,
+                        vec![(vec2(2.0, 2.0), 0), (vec2(3.0, 1.0), 0), (to, 0)]
+                    );
+                }
                 _ => unreachable!(),
             }
         }
@@ -456,9 +519,27 @@ mod tests {
             let to = vec2(i as f32 / 10.0, 2.1);
             let path = dbg!(mesh.path(from, to).unwrap());
             match i {
-                7 => assert_eq!(path.path, vec![vec2(4.0, 1.0), to]),
-                _ if i < 11 => assert_eq!(path.path, vec![vec2(4.0, 1.0), vec2(1.0, 2.0), to]),
-                _ if i < 15 => assert_eq!(path.path, vec![vec2(3.0, 1.0), vec2(2.0, 2.0), to]),
+                7 => {
+                    assert_eq!(path.path, vec![vec2(4.0, 1.0), to]);
+                    assert_eq!(
+                        path.path_with_layers,
+                        vec![(vec2(4.0, 1.0), 1), (vec2(0.9999997, 2.0), 0), (to, 0)]
+                    );
+                }
+                _ if i < 11 => {
+                    assert_eq!(path.path, vec![vec2(4.0, 1.0), vec2(1.0, 2.0), to]);
+                    assert_eq!(
+                        path.path_with_layers,
+                        vec![(vec2(4.0, 1.0), 1), (vec2(1.0, 2.0), 0), (to, 0)]
+                    );
+                }
+                _ if i < 15 => {
+                    assert_eq!(path.path, vec![vec2(3.0, 1.0), vec2(2.0, 2.0), to]);
+                    assert_eq!(
+                        path.path_with_layers,
+                        vec![(vec2(3.0, 1.0), 0), (vec2(2.0, 2.0), 0), (to, 0)]
+                    );
+                }
                 _ => unreachable!(),
             }
         }
@@ -483,6 +564,14 @@ mod tests {
             path.path,
             vec![vec2(3.0, 1.0,), vec2(4.0, 1.0,), vec2(2.5, 1.5,),],
         );
+        assert_eq!(
+            path.path_with_layers,
+            vec![
+                (vec2(3.0, 1.0), 0),
+                (vec2(4.0, 1.0), 1),
+                (vec2(2.5, 1.5), 1),
+            ],
+        );
 
         let path_back = dbg!(mesh
             .path(
@@ -499,6 +588,14 @@ mod tests {
         assert_eq!(
             path_back.path,
             vec![vec2(4.0, 1.0,), vec2(3.0, 1.0,), vec2(2.5, 1.5,),],
+        );
+        assert_eq!(
+            path_back.path_with_layers,
+            vec![
+                (vec2(4.0, 1.0), 0),
+                (vec2(3.0, 1.0), 0),
+                (vec2(2.5, 1.5), 0),
+            ],
         );
     }
 

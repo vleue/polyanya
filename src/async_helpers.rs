@@ -91,6 +91,7 @@ impl<'m> Future for FuturePath<'m> {
                 return Poll::Ready(Some(Path {
                     length: self.from.distance(self.to),
                     path: vec![self.to],
+                    path_with_layers: vec![(self.to, ending_polygon.layer())],
                 }));
             }
 
