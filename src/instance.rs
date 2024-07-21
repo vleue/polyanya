@@ -60,7 +60,6 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) queue: BinaryHeap<SearchNode>,
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
-    pub(crate) from: Vec2,
     pub(crate) to: Vec2,
     pub(crate) polygon_to: u32,
     pub(crate) mesh: &'m Mesh,
@@ -127,7 +126,6 @@ impl<'m> SearchInstance<'m> {
             queue: BinaryHeap::with_capacity(15),
             node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
-            from: from.0,
             to: to.0,
             polygon_to: to.1,
             mesh,
@@ -247,15 +245,7 @@ impl<'m> SearchInstance<'m> {
                     );
                     self.mesh.scenarios.set(self.mesh.scenarios.get() + 1);
                 }
-                let mut path = next
-                    .path
-                    .split_first()
-                    .map(|(_, p)| p)
-                    .unwrap_or(&[])
-                    .to_vec();
-                if next.root != self.from {
-                    path.push(next.root);
-                }
+                let mut path = next.path;
                 if let Some(turn) = turning_point(next.root, self.to, next.interval) {
                     path.push(turn);
                 }
@@ -467,7 +457,7 @@ impl<'m> SearchInstance<'m> {
 
         let mut path = node.path.clone();
         if root != node.root {
-            path.push(node.root);
+            path.push(root);
         }
 
         let heuristic = heuristic(root, self.to, (start.0, end.0));

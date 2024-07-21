@@ -2,7 +2,7 @@
 use tracing::instrument;
 
 use bvh2d::bvh2d::BVH2d;
-use glam::Vec2;
+use glam::{vec2, Vec2};
 
 use crate::{helpers::Vec2Helper, instance::EdgeSide, BoundedPolygon, MeshError, Polygon, Vertex};
 
@@ -87,7 +87,7 @@ impl Layer {
             .iter_mut()
             .map(|polygon| BoundedPolygon {
                 aabb: polygon.vertices.iter().fold(
-                    (Vec2::new(f32::MAX, f32::MAX), Vec2::ZERO),
+                    (vec2(f32::MAX, f32::MAX), Vec2::ZERO),
                     |mut aabb, v| {
                         if let Some(v) = self.vertices.get(*v as usize) {
                             if v.coords.x < aabb.0.x {
@@ -189,15 +189,15 @@ impl Layer {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub(crate) fn get_point_location(&self, point: Vec2, delta: f32) -> Option<u32> {
         [
-            Vec2::new(0.0, 0.0),
-            Vec2::new(delta, 0.0),
-            Vec2::new(delta, delta),
-            Vec2::new(0.0, delta),
-            Vec2::new(-delta, delta),
-            Vec2::new(-delta, 0.0),
-            Vec2::new(-delta, -delta),
-            Vec2::new(0.0, -delta),
-            Vec2::new(delta, -delta),
+            vec2(0.0, 0.0),
+            vec2(delta, 0.0),
+            vec2(delta, delta),
+            vec2(0.0, delta),
+            vec2(-delta, delta),
+            vec2(-delta, 0.0),
+            vec2(-delta, -delta),
+            vec2(0.0, -delta),
+            vec2(delta, -delta),
         ]
         .iter()
         .map(|delta| {
@@ -220,14 +220,14 @@ mod tests {
     fn mesh_u_grid() -> Mesh {
         let main_layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 0.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(1., 0.), vec![0, 1, u32::MAX]),
-                Vertex::new(Vec2::new(2., 0.), vec![1, 2, u32::MAX]),
-                Vertex::new(Vec2::new(3., 0.), vec![2, u32::MAX]),
-                Vertex::new(Vec2::new(0., 1.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(1., 1.), vec![1, 0, u32::MAX]),
-                Vertex::new(Vec2::new(2., 1.), vec![2, 1, u32::MAX]),
-                Vertex::new(Vec2::new(3., 1.), vec![2, u32::MAX]),
+                Vertex::new(vec2(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 0.), vec![0, 1, u32::MAX]),
+                Vertex::new(vec2(2., 0.), vec![1, 2, u32::MAX]),
+                Vertex::new(vec2(3., 0.), vec![2, u32::MAX]),
+                Vertex::new(vec2(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 1.), vec![1, 0, u32::MAX]),
+                Vertex::new(vec2(2., 1.), vec![2, 1, u32::MAX]),
+                Vertex::new(vec2(3., 1.), vec![2, u32::MAX]),
             ],
             polygons: vec![
                 Polygon::new(vec![0, 1, 5, 4], false),
@@ -241,20 +241,20 @@ mod tests {
                 main_layer,
                 Layer {
                     vertices: vec![
-                        Vertex::new(Vec2::new(0., 1.), vec![0, u32::MAX]),
-                        Vertex::new(Vec2::new(1., 1.), vec![0, u32::MAX]),
-                        Vertex::new(Vec2::new(0., 2.), vec![0, u32::MAX]),
-                        Vertex::new(Vec2::new(1., 2.), vec![0, u32::MAX]),
+                        Vertex::new(vec2(0., 1.), vec![0, u32::MAX]),
+                        Vertex::new(vec2(1., 1.), vec![0, u32::MAX]),
+                        Vertex::new(vec2(0., 2.), vec![0, u32::MAX]),
+                        Vertex::new(vec2(1., 2.), vec![0, u32::MAX]),
                     ],
                     polygons: vec![Polygon::new(vec![0, 1, 3, 2], true)],
                     ..Default::default()
                 },
                 Layer {
                     vertices: vec![
-                        Vertex::new(Vec2::new(2., 1.), vec![0, u32::MAX]),
-                        Vertex::new(Vec2::new(3., 1.), vec![0, u32::MAX]),
-                        Vertex::new(Vec2::new(2., 2.), vec![0, u32::MAX]),
-                        Vertex::new(Vec2::new(3., 2.), vec![0, u32::MAX]),
+                        Vertex::new(vec2(2., 1.), vec![0, u32::MAX]),
+                        Vertex::new(vec2(3., 1.), vec![0, u32::MAX]),
+                        Vertex::new(vec2(2., 2.), vec![0, u32::MAX]),
+                        Vertex::new(vec2(3., 2.), vec![0, u32::MAX]),
                     ],
                     polygons: vec![Polygon::new(vec![0, 1, 3, 2], true)],
                     ..Default::default()
@@ -264,8 +264,8 @@ mod tests {
         };
         mesh.bake();
         mesh.stitch_at_points(vec![
-            ((0, 1), vec![Vec2::new(0., 1.), Vec2::new(1., 1.)]),
-            ((0, 2), vec![Vec2::new(2., 1.), Vec2::new(3., 1.)]),
+            ((0, 1), vec![vec2(0., 1.), vec2(1., 1.)]),
+            ((0, 2), vec![vec2(2., 1.), vec2(3., 1.)]),
         ]);
         mesh
     }
@@ -273,15 +273,15 @@ mod tests {
     #[test]
     fn point_in_polygon() {
         let mesh = mesh_u_grid();
-        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), 0);
-        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)), 1);
+        assert_eq!(mesh.get_point_location(vec2(0.5, 0.5)), 0);
+        assert_eq!(mesh.get_point_location(vec2(1.5, 0.5)), 1);
         assert_eq!(
-            mesh.get_point_location(Vec2::new(0.5, 1.5)),
+            mesh.get_point_location(vec2(0.5, 1.5)),
             u32::from_layer_and_polygon(1, 0)
         );
-        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 1.5)), u32::MAX);
+        assert_eq!(mesh.get_point_location(vec2(1.5, 1.5)), u32::MAX);
         assert_eq!(
-            mesh.get_point_location(Vec2::new(2.5, 1.5)),
+            mesh.get_point_location(vec2(2.5, 1.5)),
             u32::from_layer_and_polygon(2, 0)
         );
     }
@@ -290,12 +290,12 @@ mod tests {
     fn successors_straight_line() {
         let mesh = mesh_u_grid();
 
-        let from: Vec2 = Vec2::new(0.1, 1.1);
-        let to = Vec2::new(1.1, 0.1);
+        let from: Vec2 = vec2(0.1, 1.1);
+        let to = vec2(1.1, 0.1);
         let search_node = SearchNode {
             path: vec![],
             root: from,
-            interval: (Vec2::new(0.0, 1.0), Vec2::new(1.0, 1.0)),
+            interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (0, 1),
             polygon_from: mesh.get_point_location(from),
             polygon_to: mesh.get_point_location(to),
@@ -318,12 +318,12 @@ mod tests {
     fn successors_corner_first_step() {
         let mesh = mesh_u_grid();
 
-        let from = Vec2::new(0.1, 1.9);
-        let to = Vec2::new(2.1, 1.9);
+        let from = vec2(0.1, 1.9);
+        let to = vec2(2.1, 1.9);
         let search_node = SearchNode {
             path: vec![],
             root: from,
-            interval: (Vec2::new(0.0, 1.0), Vec2::new(1.0, 1.0)),
+            interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
             polygon_from: mesh.get_point_location(from),
             polygon_to: 0,
@@ -333,28 +333,25 @@ mod tests {
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].root, Vec2::new(2.0, 1.0));
+        assert_eq!(successors[0].root, vec2(2.0, 1.0));
         assert_eq!(
             successors[0].f,
-            from.distance(Vec2::new(1.0, 1.0)) + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
+            from.distance(vec2(1.0, 1.0)) + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
         );
-        assert_eq!(successors[0].g, Vec2::new(2.0, 1.0).distance(to));
+        assert_eq!(successors[0].g, vec2(2.0, 1.0).distance(to));
         assert_eq!(successors[0].polygon_from.polygon(), 2);
         assert_eq!(successors[0].polygon_to, u32::from_layer_and_polygon(2, 0));
-        assert_eq!(
-            successors[0].interval,
-            (Vec2::new(3.0, 1.0), Vec2::new(2.0, 1.0))
-        );
+        assert_eq!(successors[0].interval, (vec2(3.0, 1.0), vec2(2.0, 1.0)));
         assert_eq!(successors[0].edge, (7, 6));
-        assert_eq!(successors[0].path, vec![from, Vec2::new(1.0, 1.0)]);
+        assert_eq!(successors[0].path, vec![vec2(1.0, 1.0), vec2(2.0, 1.0)]);
 
         assert_eq!(
             mesh.path(from, to).unwrap(),
             Path {
-                path: vec![Vec2::new(1.0, 1.0), Vec2::new(2.0, 1.0), to],
-                length: from.distance(Vec2::new(1.0, 1.0))
-                    + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
-                    + Vec2::new(2.0, 1.0).distance(to),
+                path: vec![vec2(1.0, 1.0), vec2(2.0, 1.0), to],
+                length: from.distance(vec2(1.0, 1.0))
+                    + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
+                    + vec2(2.0, 1.0).distance(to),
             }
         );
     }
@@ -371,18 +368,18 @@ mod tests {
     fn mesh_overlapping_layers() -> Mesh {
         let main_layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 3.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(3., 3.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(0., 2.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(1., 2.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(2., 2.), vec![0, 1, u32::MAX]),
-                Vertex::new(Vec2::new(3., 2.), vec![0, 1, u32::MAX]),
-                Vertex::new(Vec2::new(2., 1.), vec![1, 2, u32::MAX]),
-                Vertex::new(Vec2::new(3., 1.), vec![1, 2, u32::MAX]),
-                Vertex::new(Vec2::new(4., 1.), vec![2, u32::MAX]),
-                Vertex::new(Vec2::new(5., 1.), vec![2, u32::MAX]),
-                Vertex::new(Vec2::new(2., 0.), vec![2, u32::MAX]),
-                Vertex::new(Vec2::new(5., 0.), vec![2, u32::MAX]),
+                Vertex::new(vec2(0., 3.), vec![0, u32::MAX]),
+                Vertex::new(vec2(3., 3.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 2.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 2.), vec![0, u32::MAX]),
+                Vertex::new(vec2(2., 2.), vec![0, 1, u32::MAX]),
+                Vertex::new(vec2(3., 2.), vec![0, 1, u32::MAX]),
+                Vertex::new(vec2(2., 1.), vec![1, 2, u32::MAX]),
+                Vertex::new(vec2(3., 1.), vec![1, 2, u32::MAX]),
+                Vertex::new(vec2(4., 1.), vec![2, u32::MAX]),
+                Vertex::new(vec2(5., 1.), vec![2, u32::MAX]),
+                Vertex::new(vec2(2., 0.), vec![2, u32::MAX]),
+                Vertex::new(vec2(5., 0.), vec![2, u32::MAX]),
             ],
             polygons: vec![
                 Polygon::new(vec![2, 3, 4, 5, 1, 0], false),
@@ -393,12 +390,12 @@ mod tests {
         };
         let overlapping_layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 2.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(1., 2.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(5., 2.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(0., 1.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(4., 1.), vec![0, u32::MAX]),
-                Vertex::new(Vec2::new(5., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 2.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 2.), vec![0, u32::MAX]),
+                Vertex::new(vec2(5., 2.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(4., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(5., 1.), vec![0, u32::MAX]),
             ],
             polygons: vec![Polygon::new(vec![3, 4, 5, 2, 1, 0], false)],
             ..Default::default()
@@ -417,8 +414,8 @@ mod tests {
     fn take_shortcut() {
         let mesh = mesh_overlapping_layers();
         for i in 0..6 {
-            let from = Vec2::new(i as f32 / 10.0, 2.1);
-            let to = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
+            let from = vec2(i as f32 / 10.0, 2.1);
+            let to = vec2(5.0 - i as f32 / 10.0, 0.9);
             let path = dbg!(mesh.path(from, to).unwrap());
             assert_eq!(path.path, vec![to]);
         }
@@ -428,8 +425,8 @@ mod tests {
     fn take_shortcut_back() {
         let mesh = mesh_overlapping_layers();
         for i in 0..6 {
-            let from = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
-            let to = Vec2::new(i as f32 / 10.0, 2.1);
+            let from = vec2(5.0 - i as f32 / 10.0, 0.9);
+            let to = vec2(i as f32 / 10.0, 2.1);
             let path = dbg!(mesh.path(from, to).unwrap());
             assert_eq!(path.path, vec![to]);
         }
@@ -439,8 +436,8 @@ mod tests {
     fn shortcut_with_corner() {
         let mesh = mesh_overlapping_layers();
         for i in 7..15 {
-            let from = Vec2::new(i as f32 / 10.0, 2.1);
-            let to = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
+            let from = vec2(i as f32 / 10.0, 2.1);
+            let to = vec2(5.0 - i as f32 / 10.0, 0.9);
             let path = dbg!(mesh.path(from, to).unwrap());
             match i {
                 7 => assert_eq!(path.path, vec![vec2(1.0, 2.0), to]),
@@ -455,8 +452,8 @@ mod tests {
     fn shortcut_with_corner_back() {
         let mesh = mesh_overlapping_layers();
         for i in 7..15 {
-            let from = Vec2::new(5.0 - i as f32 / 10.0, 0.9);
-            let to = Vec2::new(i as f32 / 10.0, 2.1);
+            let from = vec2(5.0 - i as f32 / 10.0, 0.9);
+            let to = vec2(i as f32 / 10.0, 2.1);
             let path = dbg!(mesh.path(from, to).unwrap());
             match i {
                 7 => assert_eq!(path.path, vec![vec2(4.0, 1.0), to]),
