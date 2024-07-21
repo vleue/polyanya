@@ -172,7 +172,7 @@ pub(crate) fn intersection_time(line: (Vec2, Vec2), segment: (Vec2, Vec2)) -> f3
 pub(crate) fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) -> Option<Vec2> {
     let intersection_time = intersection_time(line, segment);
 
-    if !(0.0..=1.0).contains(&intersection_time) || intersection_time.is_nan() {
+    if !(-EPSILON..=(1.0 + EPSILON)).contains(&intersection_time) || intersection_time.is_nan() {
         None
     } else {
         Some(segment.0 + intersection_time * (segment.1 - segment.0))
