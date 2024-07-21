@@ -17,6 +17,7 @@ const PRECISION: f32 = 1000.0;
 use std::{cell::Cell, time::Instant};
 use std::{
     cmp::Ordering,
+    collections::HashSet,
     fmt::{self, Debug, Display},
 };
 
@@ -190,6 +191,22 @@ impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     pub fn path(&self, from: impl Into<Coords>, to: impl Into<Coords>) -> Option<Path> {
+        self.path_on_layers(from, to, HashSet::default())
+    }
+
+    /// Compute a path between two points.
+    ///
+    /// This will be a [`Path`] if a path is found, or `None` if not.
+    ///
+    /// This method is blocking, to get the path in an async way use [`Self::get_path`].
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
+    pub fn path_on_layers(
+        &self,
+        from: impl Into<Coords>,
+        to: impl Into<Coords>,
+        blocked_layers: HashSet<u8>,
+    ) -> Option<Path> {
         #[cfg(feature = "stats")]
         let start = Instant::now();
 
@@ -244,6 +261,7 @@ impl Mesh {
             self,
             (from.pos, starting_polygon_index),
             (to.pos, ending_polygon),
+            blocked_layers,
             #[cfg(feature = "stats")]
             start,
         );
@@ -292,6 +310,7 @@ impl Mesh {
             to,
             polygon_to: self.get_point_location(to),
             mesh: self,
+            blocked_layers: HashSet::default(),
             #[cfg(feature = "stats")]
             pushed: 0,
             #[cfg(feature = "stats")]
@@ -328,6 +347,7 @@ impl Mesh {
             to: Vec2::ZERO,
             polygon_to: self.get_point_location(vec2(0.0, 0.0)),
             mesh: self,
+            blocked_layers: HashSet::default(),
             #[cfg(feature = "stats")]
             pushed: 0,
             #[cfg(feature = "stats")]

@@ -3,7 +3,7 @@ use smallvec::SmallVec;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use std::collections::BinaryHeap;
+use std::collections::{BinaryHeap, HashSet};
 
 #[cfg(feature = "stats")]
 use std::time::Instant;
@@ -65,6 +65,7 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) to: Vec2,
     pub(crate) polygon_to: u32,
     pub(crate) mesh: &'m Mesh,
+    pub(crate) blocked_layers: HashSet<u8>,
     #[cfg(feature = "stats")]
     pub(crate) start: Instant,
     #[cfg(feature = "stats")]
@@ -119,6 +120,7 @@ impl<'m> SearchInstance<'m> {
         mesh: &'m Mesh,
         from: (Vec2, u32),
         to: (Vec2, u32),
+        blocked_layers: HashSet<u8>,
         #[cfg(feature = "stats")] start: Instant,
     ) -> Self {
         let starting_polygon =
@@ -132,6 +134,7 @@ impl<'m> SearchInstance<'m> {
             to: to.0,
             polygon_to: to.1,
             mesh,
+            blocked_layers,
             #[cfg(feature = "stats")]
             start,
             #[cfg(feature = "stats")]
@@ -183,6 +186,10 @@ impl<'m> SearchInstance<'m> {
                 .filter(|i| **i != u32::MAX && end.polygons.contains(*i))
                 .find(|poly| *poly != &from.1)
                 .unwrap_or(&u32::MAX);
+
+            if search_instance.blocked_layers.contains(&other_side.layer()) {
+                continue;
+            }
 
             if other_side == &to.1
                 || (other_side != &u32::MAX
@@ -632,6 +639,15 @@ impl<'m> SearchInstance<'m> {
                     #[cfg(debug_assertions)]
                     if self.debug {
                         println!("x cul de sac");
+                    }
+
+                    continue;
+                }
+
+                if self.blocked_layers.contains(&other_side.layer()) {
+                    #[cfg(debug_assertions)]
+                    if self.debug {
+                        println!("x blocked layer");
                     }
 
                     continue;

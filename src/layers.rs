@@ -213,6 +213,8 @@ impl Layer {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use glam::{vec2, IVec2, Vec2};
 
     use crate::{
@@ -421,6 +423,23 @@ mod tests {
         path.into_iter()
             .map(|(point, layer)| ((point * 100000.0).as_ivec2(), layer))
             .collect()
+    }
+
+    #[test]
+    fn shortcut_blocked() {
+        let mesh = mesh_overlapping_layers();
+        for i in 0..15 {
+            let from = vec2(i as f32 / 10.0, 2.1);
+            let to = vec2(5.0 - i as f32 / 10.0, 0.9);
+            let mut blocked = HashSet::default();
+            blocked.insert(1);
+            let path = dbg!(mesh.path_on_layers(from, to, blocked).unwrap());
+            assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]);
+            assert_eq!(
+                path.path_with_layers,
+                vec![(vec2(2.0, 2.0), 0), (vec2(3.0, 1.0), 0), (to, 0)]
+            );
+        }
     }
 
     #[test]

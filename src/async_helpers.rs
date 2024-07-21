@@ -1,6 +1,6 @@
 #[cfg(feature = "stats")]
 use std::time::Instant;
-use std::{fmt, future::Future, task::Poll};
+use std::{collections::HashSet, fmt, future::Future, task::Poll};
 
 use glam::Vec2;
 
@@ -99,6 +99,7 @@ impl<'m> Future for FuturePath<'m> {
                 self.mesh,
                 (self.from, starting_polygon_index),
                 (self.to, ending_polygon),
+                HashSet::default(),
                 #[cfg(feature = "stats")]
                 start,
             ));
