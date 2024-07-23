@@ -215,12 +215,10 @@ impl Layer {
 mod tests {
     use std::collections::HashSet;
 
+    #[cfg(feature = "detailed-layers")]
+    use crate::helpers::line_intersect_segment;
+    use crate::{instance::U32Layer, Coords, Layer, Mesh, Path, Polygon, SearchNode, Vertex};
     use glam::{vec2, IVec2, Vec2};
-
-    use crate::{
-        helpers::line_intersect_segment, instance::U32Layer, Coords, Layer, Mesh, Path, Polygon,
-        SearchNode, Vertex,
-    };
 
     fn mesh_u_grid() -> Mesh {
         let main_layer = Layer {
@@ -299,6 +297,7 @@ mod tests {
         let to = vec2(1.1, 0.1);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
@@ -316,6 +315,7 @@ mod tests {
             Path {
                 path: vec![to],
                 length: from.distance(to),
+                #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(to, 0)],
             }
         );
@@ -329,6 +329,7 @@ mod tests {
         let to = vec2(2.1, 1.9);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
@@ -360,6 +361,7 @@ mod tests {
                 length: from.distance(vec2(1.0, 1.0))
                     + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
                     + vec2(2.0, 1.0).distance(to),
+                #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 2), (to, 2)],
             }
         );
@@ -435,6 +437,7 @@ mod tests {
             blocked.insert(1);
             let path = dbg!(mesh.path_on_layers(from, to, blocked).unwrap());
             assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]);
+            #[cfg(feature = "detailed-layers")]
             assert_eq!(
                 path.path_with_layers,
                 vec![(vec2(2.0, 2.0), 0), (vec2(3.0, 1.0), 0), (to, 0)]
@@ -450,6 +453,7 @@ mod tests {
             let to = vec2(5.0 - i as f32 / 10.0, 0.9);
             let path = dbg!(mesh.path(from, to).unwrap());
             assert_eq!(path.path, vec![to]);
+            #[cfg(feature = "detailed-layers")]
             assert_eq!(
                 reduce_path_precision(path.path_with_layers),
                 reduce_path_precision(vec![
@@ -477,6 +481,7 @@ mod tests {
             let to = vec2(i as f32 / 10.0, 2.1);
             let path = dbg!(mesh.path(from, to).unwrap());
             assert_eq!(path.path, vec![to]);
+            #[cfg(feature = "detailed-layers")]
             assert_eq!(
                 reduce_path_precision(path.path_with_layers),
                 reduce_path_precision(vec![
@@ -506,6 +511,7 @@ mod tests {
             match i {
                 7 => {
                     assert_eq!(path.path, vec![vec2(1.0, 2.0), to]);
+                    #[cfg(feature = "detailed-layers")]
                     assert_eq!(
                         path.path_with_layers,
                         vec![(vec2(1.0, 2.0), 1), (vec2(4.0, 1.0), 0), (to, 0)]
@@ -513,6 +519,7 @@ mod tests {
                 }
                 _ if i < 11 => {
                     assert_eq!(path.path, vec![vec2(1.0, 2.0), vec2(4.0, 1.0), to]);
+                    #[cfg(feature = "detailed-layers")]
                     assert_eq!(
                         path.path_with_layers,
                         vec![(vec2(1.0, 2.0), 1), (vec2(4.0, 1.0), 0), (to, 0)]
@@ -520,6 +527,7 @@ mod tests {
                 }
                 _ if i < 15 => {
                     assert_eq!(path.path, vec![vec2(2.0, 2.0), vec2(3.0, 1.0), to]);
+                    #[cfg(feature = "detailed-layers")]
                     assert_eq!(
                         path.path_with_layers,
                         vec![(vec2(2.0, 2.0), 0), (vec2(3.0, 1.0), 0), (to, 0)]
@@ -540,6 +548,7 @@ mod tests {
             match i {
                 7 => {
                     assert_eq!(path.path, vec![vec2(4.0, 1.0), to]);
+                    #[cfg(feature = "detailed-layers")]
                     assert_eq!(
                         path.path_with_layers,
                         vec![(vec2(4.0, 1.0), 1), (vec2(0.9999997, 2.0), 0), (to, 0)]
@@ -547,6 +556,7 @@ mod tests {
                 }
                 _ if i < 11 => {
                     assert_eq!(path.path, vec![vec2(4.0, 1.0), vec2(1.0, 2.0), to]);
+                    #[cfg(feature = "detailed-layers")]
                     assert_eq!(
                         path.path_with_layers,
                         vec![(vec2(4.0, 1.0), 1), (vec2(1.0, 2.0), 0), (to, 0)]
@@ -554,6 +564,7 @@ mod tests {
                 }
                 _ if i < 15 => {
                     assert_eq!(path.path, vec![vec2(3.0, 1.0), vec2(2.0, 2.0), to]);
+                    #[cfg(feature = "detailed-layers")]
                     assert_eq!(
                         path.path_with_layers,
                         vec![(vec2(3.0, 1.0), 0), (vec2(2.0, 2.0), 0), (to, 0)]
@@ -583,6 +594,7 @@ mod tests {
             path.path,
             vec![vec2(3.0, 1.0,), vec2(4.0, 1.0,), vec2(2.5, 1.5,),],
         );
+        #[cfg(feature = "detailed-layers")]
         assert_eq!(
             path.path_with_layers,
             vec![
@@ -608,6 +620,7 @@ mod tests {
             path_back.path,
             vec![vec2(4.0, 1.0,), vec2(3.0, 1.0,), vec2(2.5, 1.5,),],
         );
+        #[cfg(feature = "detailed-layers")]
         assert_eq!(
             path_back.path_with_layers,
             vec![

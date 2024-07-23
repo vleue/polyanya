@@ -5,7 +5,7 @@ use tracing::instrument;
 
 use crate::instance::EdgeSide;
 
-const EPSILON: f32 = 1e-4;
+pub(crate) const EPSILON: f32 = 1e-4;
 
 pub(crate) trait Vec2Helper {
     fn side(self, edge: (Vec2, Vec2)) -> EdgeSide;

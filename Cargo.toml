@@ -17,6 +17,7 @@ stats = []
 verbose = []
 async = []
 no-default-baking = []
+detailed-layers = []
 serde = ["glam/serde", "bvh2d/serde", "dep:serde"]
 
 [dependencies]

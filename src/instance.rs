@@ -1,4 +1,3 @@
-use bvh2d::EPSILON;
 use smallvec::SmallVec;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -11,6 +10,8 @@ use std::time::Instant;
 use glam::Vec2;
 use hashbrown::{hash_map::Entry, HashMap};
 
+#[cfg(feature = "detailed-layers")]
+use crate::helpers::EPSILON;
 use crate::{
     helpers::{heuristic, line_intersect_segment, turning_point, Vec2Helper},
     Mesh, Path, SearchNode, PRECISION,
@@ -61,6 +62,7 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) queue: BinaryHeap<SearchNode>,
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
+    #[cfg(feature = "detailed-layers")]
     pub(crate) from: Vec2,
     pub(crate) to: Vec2,
     pub(crate) polygon_to: u32,
@@ -130,6 +132,7 @@ impl<'m> SearchInstance<'m> {
             queue: BinaryHeap::with_capacity(15),
             node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
+            #[cfg(feature = "detailed-layers")]
             from: from.0,
             to: to.0,
             polygon_to: to.1,
@@ -156,6 +159,7 @@ impl<'m> SearchInstance<'m> {
 
         let empty_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
             root: from.0,
             interval: (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
@@ -268,45 +272,49 @@ impl<'m> SearchInstance<'m> {
                     path.push(self.to);
                     path_with_layers_end.push((self.to, next.polygon_to.layer()));
                 }
-
-                let mut path_with_layers = vec![];
-                let mut from = self.from;
-                for (index, potential_point) in next.path_with_layers.iter().enumerate() {
-                    if potential_point.0 == potential_point.1 {
-                        from = potential_point.0;
-                        path_with_layers.push((potential_point.0, potential_point.2));
-                    } else {
-                        // look for next fixed point to find the intersection
-                        let to = next
-                            .path_with_layers
-                            .iter()
-                            .skip(index + 1)
-                            .find(|point| point.0 == point.1)
-                            .map(|point| point.0)
-                            .unwrap_or(path_with_layers_end[0].0);
-                        if let Some(intersection) = line_intersect_segment(
-                            (from, to),
-                            (potential_point.0, potential_point.1),
-                        ) {
-                            from = intersection;
-                            path_with_layers.push((intersection, potential_point.2));
+                #[cfg(feature = "detailed-layers")]
+                let path_with_layers = {
+                    let mut path_with_layers = vec![];
+                    let mut from = self.from;
+                    for (index, potential_point) in next.path_with_layers.iter().enumerate() {
+                        if potential_point.0 == potential_point.1 {
+                            from = potential_point.0;
+                            path_with_layers.push((potential_point.0, potential_point.2));
+                        } else {
+                            // look for next fixed point to find the intersection
+                            let to = next
+                                .path_with_layers
+                                .iter()
+                                .skip(index + 1)
+                                .find(|point| point.0 == point.1)
+                                .map(|point| point.0)
+                                .unwrap_or(path_with_layers_end[0].0);
+                            if let Some(intersection) = line_intersect_segment(
+                                (from, to),
+                                (potential_point.0, potential_point.1),
+                            ) {
+                                from = intersection;
+                                path_with_layers.push((intersection, potential_point.2));
+                            }
                         }
                     }
-                }
-                path_with_layers.extend(path_with_layers_end);
-                let mut path_with_layers_peekable = path_with_layers.iter().peekable();
-                let mut path_with_layers = vec![];
-                while let Some(p) = path_with_layers_peekable.next() {
-                    if let Some(n) = path_with_layers_peekable.peek() {
-                        if p.0.distance_squared(n.0) < EPSILON {
-                            continue;
+                    path_with_layers.extend(path_with_layers_end);
+                    let mut path_with_layers_peekable = path_with_layers.iter().peekable();
+                    let mut path_with_layers = vec![];
+                    while let Some(p) = path_with_layers_peekable.next() {
+                        if let Some(n) = path_with_layers_peekable.peek() {
+                            if p.0.distance_squared(n.0) < EPSILON {
+                                continue;
+                            }
                         }
+                        path_with_layers.push(*p);
                     }
-                    path_with_layers.push(*p);
-                }
+                    path_with_layers
+                };
                 return InstanceStep::Found(Path {
                     path,
                     length: next.f + next.g,
+                    #[cfg(feature = "detailed-layers")]
                     path_with_layers,
                 });
             }
@@ -508,11 +516,14 @@ impl<'m> SearchInstance<'m> {
         }
 
         let mut path = node.path.clone();
+        #[cfg(feature = "detailed-layers")]
         let mut path_with_layers = node.path_with_layers.clone();
         if root != node.root {
             path.push(root);
+            #[cfg(feature = "detailed-layers")]
             path_with_layers.push((root, root, node.polygon_to.layer()));
         }
+        #[cfg(feature = "detailed-layers")]
         if other_side.layer() != node.polygon_to.layer() {
             path_with_layers.push((start.0, end.0, other_side.layer()));
         }
@@ -530,6 +541,7 @@ impl<'m> SearchInstance<'m> {
 
         let new_node = SearchNode {
             path,
+            #[cfg(feature = "detailed-layers")]
             path_with_layers,
             root,
             interval: (start.0, end.0),
