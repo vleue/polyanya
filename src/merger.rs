@@ -10,14 +10,61 @@ impl Mesh {
     /// This merge neighbouring polygons when possible, keeping them convex.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn merge_polygons(&mut self) -> bool {
-        self.layers
+        !self
+            .layers
             .iter_mut()
             .map(|layer| layer.merge_polygons())
-            .any(|m| m)
+            .all(|m| !m)
+    }
+
+    /// Remove vertices that are not used by any polygon, and update indexes.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn remove_useless_vertices(&mut self) -> bool {
+        !self
+            .layers
+            .iter_mut()
+            .map(|layer| layer.remove_useless_vertices())
+            .all(|m| !m)
     }
 }
 
 impl Layer {
+    /// Remove vertices that are not used by any polygon, and update indexes.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn remove_useless_vertices(&mut self) -> bool {
+        let mut removed = false;
+        let mut new_indexes = vec![u32::MAX; self.vertices.len()];
+        let mut kept = 0;
+        for (i, vertex) in self.vertices.iter().enumerate() {
+            if vertex.polygons.len() == 0 {
+                removed = true;
+            } else if vertex.polygons == [u32::MAX] {
+                removed = true;
+            } else {
+                new_indexes[i] = kept;
+                kept += 1;
+            }
+        }
+        for polygon in self.polygons.iter_mut() {
+            for vertex in polygon.vertices.iter_mut() {
+                *vertex = new_indexes[*vertex as usize];
+            }
+        }
+        self.vertices = self
+            .vertices
+            .iter()
+            .enumerate()
+            .filter_map(|(i, _)| {
+                if new_indexes[i] != u32::MAX {
+                    Some(self.vertices[i].clone())
+                } else {
+                    None
+                }
+            })
+            .collect();
+        removed
+    }
+
     /// Merge polygons.
     ///
     /// This merge neighbouring polygons when possible, keeping them convex.
