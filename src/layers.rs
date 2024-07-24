@@ -129,7 +129,7 @@ impl Layer {
         layer.bake();
         // just to not get a warning on the mut borrow. should be pretty much free anyway
         #[cfg(feature = "no-default-baking")]
-        mesh.unbake();
+        layer.unbake();
         Ok(layer)
     }
 
