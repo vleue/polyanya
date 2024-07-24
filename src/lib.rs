@@ -25,7 +25,6 @@ use bvh2d::aabb::{Bounded, AABB};
 use glam::Vec2;
 
 use instance::{InstanceStep, U32Layer};
-use layers::Layer;
 use log::error;
 use thiserror::Error;
 #[cfg(feature = "tracing")]
@@ -49,6 +48,7 @@ pub use async_helpers::FuturePath;
 pub use input::polyanya_file::PolyanyaFile;
 pub use input::triangulation::Triangulation;
 pub use input::trimesh::Trimesh;
+pub use layers::Layer;
 pub use primitives::{Polygon, Vertex};
 
 use crate::instance::SearchInstance;
@@ -70,7 +70,8 @@ pub struct Path {
 pub struct Mesh {
     /// Layers of the NavMesh
     pub layers: Vec<Layer>,
-    delta: f32,
+    /// Variation used when checking if a point is in a mesh
+    pub delta: f32,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
 }

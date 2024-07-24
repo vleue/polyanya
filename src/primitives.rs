@@ -22,7 +22,8 @@ pub struct Vertex {
     ///
     /// `u32::MAX` marks a neighbouring spot outside the navigation mesh.
     pub polygons: Vec<u32>,
-    pub(crate) is_corner: bool,
+    /// Is this vertex a corner of one of its polygons?
+    pub is_corner: bool,
 }
 
 impl Vertex {
