@@ -563,7 +563,7 @@ impl<'m> SearchInstance<'m> {
                 } else {
                     #[cfg(debug_assertions)]
                     if self.debug {
-                        println!("o added!");
+                        println!("o replaced with {}! ({:?})", new_node.f, new_node);
                     }
                     o.insert(new_node.f);
                     self.node_buffer.push(new_node);
@@ -572,7 +572,7 @@ impl<'m> SearchInstance<'m> {
             Entry::Vacant(v) => {
                 #[cfg(debug_assertions)]
                 if self.debug {
-                    println!("o added!");
+                    println!("o added with {}! ({:?})", new_node.f, new_node);
                 }
                 v.insert(new_node.f);
                 self.node_buffer.push(new_node);
