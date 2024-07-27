@@ -114,6 +114,7 @@ impl Mesh {
         &mut self,
         target_layer: Option<u8>,
         stitch_points: Vec<((u8, u8), Vec<Vec2>)>,
+        one_way: bool,
     ) {
         // update indexes of layers
         for (layer_index, layer) in self.layers.iter_mut().enumerate() {
@@ -163,8 +164,9 @@ impl Mesh {
                         .filter(|n| **n != u32::MAX && n.layer() == to)
                         .cloned()
                         .collect::<Vec<_>>();
-                    std::mem::swap(&mut vertex_to.polygons, &mut neighbors_from);
-                    vertex_to.polygons.append(&mut neighbors_from);
+                    if !one_way {
+                        vertex_to.polygons.append(&mut neighbors_from);
+                    }
                     neighbors_to
                 };
                 let vertex_from = self
@@ -175,7 +177,6 @@ impl Mesh {
                     .iter_mut()
                     .find(|v| v.coords == stitch_point)
                     .unwrap();
-                std::mem::swap(&mut vertex_from.polygons, &mut neighbors_to);
                 vertex_from.polygons.append(&mut neighbors_to);
             }
         }
@@ -184,8 +185,8 @@ impl Mesh {
 
     /// Stitch points between layers. After, the polygons neighboring the stitch points will be
     /// marked as neighbors in both layers.
-    pub fn stitch_at_points(&mut self, stitch_points: Vec<((u8, u8), Vec<Vec2>)>) {
-        self.stitch_internals(None, stitch_points);
+    pub fn stitch_at_points(&mut self, stitch_points: Vec<((u8, u8), Vec<Vec2>)>, one_way: bool) {
+        self.stitch_internals(None, stitch_points, one_way);
     }
 
     /// Remove all stitches between layers.
@@ -250,8 +251,9 @@ impl Mesh {
         &mut self,
         target_layer: u8,
         stitch_points: Vec<((u8, u8), Vec<Vec2>)>,
+        one_way: bool,
     ) {
-        self.stitch_internals(Some(target_layer), stitch_points);
+        self.stitch_internals(Some(target_layer), stitch_points, one_way);
     }
 
     /// Find stitch points between layers.
@@ -328,11 +330,14 @@ mod tests {
     #[test]
     fn stitch_at_points() {
         let mut mesh = basic_mesh_with_layers();
-        mesh.stitch_at_points(vec![
-            ((0, 1), vec![Vec2::new(1., 0.), Vec2::new(1., 1.)]),
-            ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
-            ((1, 2), vec![Vec2::new(1., 1.)]),
-        ]);
+        mesh.stitch_at_points(
+            vec![
+                ((0, 1), vec![Vec2::new(1., 0.), Vec2::new(1., 1.)]),
+                ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
+                ((1, 2), vec![Vec2::new(1., 1.)]),
+            ],
+            false,
+        );
         assert_eq!(
             mesh.layers[0].vertices[0].polygons,
             vec![16777216, 0, u32::MAX]
@@ -385,11 +390,14 @@ mod tests {
     #[test]
     fn remove_stitches() {
         let mut mesh = basic_mesh_with_layers();
-        mesh.stitch_at_points(vec![
-            ((0, 1), vec![Vec2::new(1., 0.), Vec2::new(1., 1.)]),
-            ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
-            ((1, 2), vec![Vec2::new(1., 1.)]),
-        ]);
+        mesh.stitch_at_points(
+            vec![
+                ((0, 1), vec![Vec2::new(1., 0.), Vec2::new(1., 1.)]),
+                ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
+                ((1, 2), vec![Vec2::new(1., 1.)]),
+            ],
+            false,
+        );
         mesh.remove_stitches();
         assert_eq!(mesh.layers[0].vertices[0].polygons, vec![0, u32::MAX]);
         assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
@@ -410,11 +418,14 @@ mod tests {
     #[test]
     fn unstitch_layer() {
         let mut mesh = basic_mesh_with_layers();
-        mesh.stitch_at_points(vec![
-            ((0, 1), vec![Vec2::new(1., 0.), Vec2::new(1., 1.)]),
-            ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
-            ((1, 2), vec![Vec2::new(1., 1.)]),
-        ]);
+        mesh.stitch_at_points(
+            vec![
+                ((0, 1), vec![Vec2::new(1., 0.), Vec2::new(1., 1.)]),
+                ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
+                ((1, 2), vec![Vec2::new(1., 1.)]),
+            ],
+            false,
+        );
         mesh.remove_stitches_to_layer(1);
         assert_eq!(mesh.layers[0].vertices[0].polygons, vec![0, u32::MAX]);
         assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
@@ -459,6 +470,7 @@ mod tests {
                 ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
                 ((1, 2), vec![Vec2::new(1., 1.)]),
             ],
+            false,
         );
 
         assert_eq!(
@@ -503,11 +515,14 @@ mod tests {
     #[test]
     fn restitch_single_layer() {
         let mut mesh = basic_mesh_with_layers();
-        mesh.stitch_at_points(vec![
-            ((0, 1), vec![Vec2::new(1., 0.), Vec2::new(1., 1.)]),
-            ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
-            ((1, 2), vec![Vec2::new(1., 1.)]),
-        ]);
+        mesh.stitch_at_points(
+            vec![
+                ((0, 1), vec![Vec2::new(1., 0.), Vec2::new(1., 1.)]),
+                ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
+                ((1, 2), vec![Vec2::new(1., 1.)]),
+            ],
+            false,
+        );
         mesh.remove_stitches_to_layer(1);
         mesh.restitch_layer_at_points(
             1,
@@ -516,6 +531,7 @@ mod tests {
                 ((0, 2), vec![Vec2::new(1., 1.), Vec2::new(2., 1.)]),
                 ((1, 2), vec![Vec2::new(1., 1.)]),
             ],
+            false,
         );
 
         assert_eq!(
@@ -572,7 +588,7 @@ mod tests {
     fn auto_stitch() {
         let mut mesh = basic_mesh_with_layers();
         let points = mesh.find_stitch_points();
-        mesh.stitch_at_points(points.clone());
+        mesh.stitch_at_points(points.clone(), false);
 
         assert_eq!(
             points,
