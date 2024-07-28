@@ -40,6 +40,7 @@ mod input;
 mod instance;
 mod layers;
 mod merger;
+mod mesh_cleanup;
 mod primitives;
 mod stitching;
 
