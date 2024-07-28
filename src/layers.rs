@@ -266,10 +266,13 @@ mod tests {
             ..Default::default()
         };
         mesh.bake();
-        mesh.stitch_at_points(vec![
-            ((0, 1), vec![vec2(0., 1.), vec2(1., 1.)]),
-            ((0, 2), vec![vec2(2., 1.), vec2(3., 1.)]),
-        ]);
+        mesh.stitch_at_points(
+            vec![
+                ((0, 1), vec![vec2(0., 1.), vec2(1., 1.)]),
+                ((0, 2), vec![vec2(2., 1.), vec2(3., 1.)]),
+            ],
+            false,
+        );
         mesh
     }
 
@@ -417,10 +420,11 @@ mod tests {
         };
         mesh.bake();
         let points = dbg!(mesh.find_stitch_points());
-        mesh.stitch_at_points(points);
+        mesh.stitch_at_points(points, false);
         mesh
     }
 
+    #[cfg(feature = "detailed-layers")]
     fn reduce_path_precision(path: Vec<(Vec2, u8)>) -> Vec<(IVec2, u8)> {
         path.into_iter()
             .map(|(point, layer)| ((point * 100000.0).as_ivec2(), layer))

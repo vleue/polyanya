@@ -235,12 +235,12 @@ mod tests {
         );
         assert_eq!(
             mesh.layers[0].vertices[0].polygons,
-            vec![16777216, 0, u32::MAX]
+            vec![0, 16777216, u32::MAX]
         );
         assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
         assert_eq!(
             mesh.layers[0].vertices[2].polygons,
-            vec![33554432, 16777216, 0, u32::MAX]
+            vec![0, 33554432, u32::MAX, 16777216]
         );
         assert_eq!(
             mesh.layers[0].vertices[3].polygons,
@@ -261,16 +261,16 @@ mod tests {
         );
         assert_eq!(
             mesh.layers[1].vertices[3].polygons,
-            vec![33554432, 0, 16777216, u32::MAX]
+            vec![0, 33554432, u32::MAX, 16777216]
         );
 
         assert_eq!(
             mesh.layers[2].vertices[0].polygons,
-            vec![16777216, 0, 33554432, u32::MAX]
+            vec![0, 33554432, u32::MAX, 16777216]
         );
         assert_eq!(
             mesh.layers[2].vertices[1].polygons,
-            vec![0, 33554432, u32::MAX]
+            vec![33554432, 0, u32::MAX]
         );
         assert_eq!(
             mesh.layers[2].vertices[2].polygons,
@@ -302,7 +302,7 @@ mod tests {
         assert_eq!(mesh.layers[1].vertices[0].polygons, vec![0, u32::MAX]);
         assert_eq!(mesh.layers[1].vertices[1].polygons, vec![0, u32::MAX]);
         assert_eq!(mesh.layers[1].vertices[2].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[1].vertices[3].polygons, vec![0, u32::MAX]);
+        assert_eq!(mesh.layers[1].vertices[3].polygons, vec![u32::MAX, 0]);
 
         assert_eq!(mesh.layers[2].vertices[0].polygons, vec![0, u32::MAX]);
         assert_eq!(mesh.layers[2].vertices[1].polygons, vec![0, u32::MAX]);
@@ -326,7 +326,7 @@ mod tests {
         assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
         assert_eq!(
             mesh.layers[0].vertices[2].polygons,
-            vec![33554432, 0, u32::MAX]
+            vec![0, 33554432, u32::MAX]
         );
         assert_eq!(
             mesh.layers[0].vertices[3].polygons,
@@ -336,7 +336,7 @@ mod tests {
         assert_eq!(mesh.layers[1].vertices[0].polygons, vec![0, u32::MAX]);
         assert_eq!(mesh.layers[1].vertices[1].polygons, vec![0, u32::MAX]);
         assert_eq!(mesh.layers[1].vertices[2].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[1].vertices[3].polygons, vec![0, u32::MAX]);
+        assert_eq!(mesh.layers[1].vertices[3].polygons, vec![u32::MAX, 0]);
 
         assert_eq!(
             mesh.layers[2].vertices[0].polygons,
@@ -344,7 +344,7 @@ mod tests {
         );
         assert_eq!(
             mesh.layers[2].vertices[1].polygons,
-            vec![0, 33554432, u32::MAX]
+            vec![33554432, 0, u32::MAX]
         );
         assert_eq!(
             mesh.layers[2].vertices[2].polygons,
@@ -370,13 +370,12 @@ mod tests {
 
         assert_eq!(
             mesh.layers[0].vertices[0].polygons,
-            vec![16777216, 0, u32::MAX]
+            vec![0, 16777216, u32::MAX]
         );
         assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
-        // order different from previous test
         assert_eq!(
             mesh.layers[0].vertices[2].polygons,
-            vec![16777216, 0, u32::MAX]
+            vec![0, u32::MAX, 16777216]
         );
         assert_eq!(mesh.layers[0].vertices[3].polygons, vec![0, u32::MAX]);
 
@@ -394,13 +393,13 @@ mod tests {
         );
         assert_eq!(
             mesh.layers[1].vertices[3].polygons,
-            vec![0, 16777216, u32::MAX]
+            vec![0, u32::MAX, 16777216]
         );
 
         // these are not logical, `restitch_layer_at_points` should not be used to stitch a layer with other layers that haven't been stitched in already
         assert_eq!(
             mesh.layers[2].vertices[0].polygons,
-            vec![16777216, 0, u32::MAX]
+            vec![0, u32::MAX, 16777216]
         );
         assert_eq!(mesh.layers[2].vertices[1].polygons, vec![0, u32::MAX]);
         assert_eq!(mesh.layers[2].vertices[2].polygons, vec![0, u32::MAX]);
@@ -431,13 +430,12 @@ mod tests {
 
         assert_eq!(
             mesh.layers[0].vertices[0].polygons,
-            vec![16777216, 0, u32::MAX]
+            vec![0, 16777216, u32::MAX]
         );
         assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
-        // order different from previous test
         assert_eq!(
             mesh.layers[0].vertices[2].polygons,
-            vec![16777216, 33554432, 0, u32::MAX]
+            vec![0, 33554432, u32::MAX, 16777216]
         );
         assert_eq!(
             mesh.layers[0].vertices[3].polygons,
@@ -458,16 +456,16 @@ mod tests {
         );
         assert_eq!(
             mesh.layers[1].vertices[3].polygons,
-            vec![33554432, 0, 16777216, u32::MAX]
+            vec![0, 33554432, u32::MAX, 16777216]
         );
 
         assert_eq!(
             mesh.layers[2].vertices[0].polygons,
-            vec![16777216, 0, 33554432, u32::MAX]
+            vec![0, 33554432, u32::MAX, 16777216]
         );
         assert_eq!(
             mesh.layers[2].vertices[1].polygons,
-            vec![0, 33554432, u32::MAX]
+            vec![33554432, 0, u32::MAX]
         );
         assert_eq!(
             mesh.layers[2].vertices[2].polygons,
@@ -496,12 +494,12 @@ mod tests {
 
         assert_eq!(
             mesh.layers[0].vertices[0].polygons,
-            vec![16777216, 0, u32::MAX]
+            vec![0, 16777216, u32::MAX]
         );
         assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
         assert_eq!(
             mesh.layers[0].vertices[2].polygons,
-            vec![33554432, 16777216, 0, u32::MAX]
+            vec![0, 33554432, u32::MAX, 16777216]
         );
         assert_eq!(
             mesh.layers[0].vertices[3].polygons,
@@ -522,16 +520,16 @@ mod tests {
         );
         assert_eq!(
             mesh.layers[1].vertices[3].polygons,
-            vec![33554432, 0, 16777216, u32::MAX]
+            vec![0, 33554432, u32::MAX, 16777216]
         );
 
         assert_eq!(
             mesh.layers[2].vertices[0].polygons,
-            vec![16777216, 0, 33554432, u32::MAX]
+            vec![0, 33554432, u32::MAX, 16777216]
         );
         assert_eq!(
             mesh.layers[2].vertices[1].polygons,
-            vec![0, 33554432, u32::MAX]
+            vec![33554432, 0, u32::MAX]
         );
         assert_eq!(
             mesh.layers[2].vertices[2].polygons,
