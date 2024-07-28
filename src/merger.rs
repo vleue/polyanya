@@ -36,9 +36,7 @@ impl Layer {
         let mut new_indexes = vec![u32::MAX; self.vertices.len()];
         let mut kept = 0;
         for (i, vertex) in self.vertices.iter().enumerate() {
-            if vertex.polygons.len() == 0 {
-                removed = true;
-            } else if vertex.polygons == [u32::MAX] {
+            if vertex.polygons.is_empty() || vertex.polygons == [u32::MAX] {
                 removed = true;
             } else {
                 new_indexes[i] = kept;
