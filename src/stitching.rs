@@ -105,6 +105,7 @@ impl Mesh {
         }
         for (layer, new) in self.layers.iter_mut().zip(reordered_neighbors.into_iter()) {
             for (vertex, new) in layer.vertices.iter_mut().zip(new.into_iter()) {
+                vertex.is_corner = new.contains(&u32::MAX);
                 vertex.polygons = new;
             }
         }
