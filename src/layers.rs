@@ -218,7 +218,9 @@ mod tests {
     #[cfg(feature = "detailed-layers")]
     use crate::helpers::line_intersect_segment;
     use crate::{instance::U32Layer, Coords, Layer, Mesh, Path, Polygon, SearchNode, Vertex};
-    use glam::{vec2, IVec2, Vec2};
+    #[cfg(feature = "detailed-layers")]
+    use glam::IVec2;
+    use glam::{vec2, Vec2};
 
     fn mesh_u_grid() -> Mesh {
         let main_layer = Layer {

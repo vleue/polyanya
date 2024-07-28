@@ -693,10 +693,11 @@ impl<'m> SearchInstance<'m> {
                             .vertices
                             .get(node.edge.0 as usize)
                             .unwrap();
-                        if vertex
-                            .polygons
-                            .iter()
-                            .any(|p| *p == u32::MAX || self.blocked_layers.contains(&p.layer()))
+                        if (vertex.is_corner
+                            || (!self.blocked_layers.is_empty()
+                                && vertex.polygons.iter().any(|p| {
+                                    *p == u32::MAX || self.blocked_layers.contains(&p.layer())
+                                })))
                             && vertex.coords.distance_squared(node.interval.0) < EPSILON
                         {
                             node.interval.0
@@ -721,10 +722,11 @@ impl<'m> SearchInstance<'m> {
                             .vertices
                             .get(node.edge.1 as usize)
                             .unwrap();
-                        if vertex
-                            .polygons
-                            .iter()
-                            .any(|p| *p == u32::MAX || self.blocked_layers.contains(&p.layer()))
+                        if (vertex.is_corner
+                            || (!self.blocked_layers.is_empty()
+                                && vertex.polygons.iter().any(|p| {
+                                    *p == u32::MAX || self.blocked_layers.contains(&p.layer())
+                                })))
                             && vertex.coords.distance_squared(node.interval.1) < EPSILON
                         {
                             node.interval.1
