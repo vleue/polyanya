@@ -173,13 +173,13 @@ impl<'m> SearchInstance<'m> {
 
         let from_layer = &mesh.layers[from.1.layer() as usize];
 
-        for edge in starting_polygon.edges_index().iter() {
-            let start = if let Some(v) = from_layer.vertices.get(edge.0 as usize) {
+        for edge in starting_polygon.edges_index() {
+            let start = if let Some(v) = from_layer.vertices.get(edge[0] as usize) {
                 v
             } else {
                 continue;
             };
-            let end = if let Some(v) = from_layer.vertices.get(edge.1 as usize) {
+            let end = if let Some(v) = from_layer.vertices.get(edge[1] as usize) {
                 v
             } else {
                 continue;
@@ -206,8 +206,8 @@ impl<'m> SearchInstance<'m> {
                 search_instance.add_node(
                     from.0,
                     *other_side,
-                    (start.coords, edge.0),
-                    (end.coords, edge.1),
+                    (start.coords, edge[0]),
+                    (end.coords, edge[1]),
                     &empty_node,
                 );
             }

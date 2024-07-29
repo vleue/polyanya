@@ -41,13 +41,13 @@ impl Layer {
                 continue;
             }
             let poly = &self.polygons[*poly_index];
-            for edge in poly.edges_index() {
-                let start = if let Some(v) = self.vertices.get(edge.0 as usize) {
+            for edge in poly.edges_index().collect::<Vec<_>>() {
+                let start = if let Some(v) = self.vertices.get(edge[0] as usize) {
                     v
                 } else {
                     continue;
                 };
-                let end = if let Some(v) = self.vertices.get(edge.1 as usize) {
+                let end = if let Some(v) = self.vertices.get(edge[1] as usize) {
                     v
                 } else {
                     continue;
@@ -77,8 +77,8 @@ impl Layer {
                     .vertices
                     .iter()
                     .chain(poly.vertices.iter())
-                    .skip_while(|i| **i != edge.1)
-                    .take_while(|i| **i != edge.0)
+                    .skip_while(|i| **i != edge[1])
+                    .take_while(|i| **i != edge[0])
                 {
                     joined_vertices_index.push(*i);
                     let c = self.vertices[*i as usize].coords;
@@ -87,8 +87,8 @@ impl Layer {
                 for i in other_vertices
                     .iter()
                     .chain(other_vertices.iter())
-                    .skip_while(|i| **i != edge.0)
-                    .take_while(|i| **i != edge.1)
+                    .skip_while(|i| **i != edge[0])
+                    .take_while(|i| **i != edge[1])
                 {
                     joined_vertices_index.push(*i);
                     let c = self.vertices[*i as usize].coords;

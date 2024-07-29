@@ -92,15 +92,14 @@ impl Polygon {
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub(crate) fn edges_index(&self) -> SmallVec<[(u32, u32); 10]> {
-        let mut edges = SmallVec::with_capacity(self.vertices.len());
-        let mut last = self.vertices[0];
-        for vertex in self.vertices.iter().skip(1) {
-            edges.push((last, *vertex));
-            last = *vertex;
-        }
-        edges.push((last, self.vertices[0]));
-        edges
+    pub(crate) fn edges_index(&self) -> impl Iterator<Item = [u32; 2]> + '_ {
+        self.vertices
+            .windows(2)
+            .map(|pair| [pair[0], pair[1]])
+            .chain(std::iter::once([
+                self.vertices[self.vertices.len() - 1],
+                self.vertices[0],
+            ]))
     }
 
     #[cfg(test)]
