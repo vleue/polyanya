@@ -44,6 +44,20 @@ jobs:
       - name: Run tests
         run: |
           cargo test
+ 
+  tests-detailed-layers:
+    name: Tests (detailed layers)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run tests
+        run: |
+          cargo test --features detailed-layers
 
   tests-aurora:
     name: Tests Aurora Map

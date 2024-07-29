@@ -60,7 +60,7 @@ impl PolyanyaFile {
                     let _ = values.next();
                     let vertex = Vertex::new(
                         Vec2::new(x, y),
-                        values.map(|v| v.parse().unwrap()).collect(),
+                        values.map(|v| v.parse().unwrap_or(u32::MAX)).collect(),
                     );
                     mesh.vertices.push(vertex);
                 } else {
@@ -147,10 +147,11 @@ impl TryFrom<PolyanyaFile> for Mesh {
 }
 
 impl From<Mesh> for PolyanyaFile {
-    fn from(mesh: Mesh) -> Self {
+    fn from(mut mesh: Mesh) -> Self {
+        let last_layer = mesh.layers.pop().unwrap();
         PolyanyaFile {
-            vertices: mesh.vertices,
-            polygons: mesh.polygons,
+            vertices: last_layer.vertices,
+            polygons: last_layer.polygons,
         }
     }
 }

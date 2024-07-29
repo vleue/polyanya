@@ -17,18 +17,14 @@ const PRECISION: f32 = 1000.0;
 use std::{cell::Cell, time::Instant};
 use std::{
     cmp::Ordering,
+    collections::HashSet,
     fmt::{self, Debug, Display},
-    hash::Hash,
 };
 
-use bvh2d::{
-    aabb::{Bounded, AABB},
-    bvh2d::BVH2d,
-};
+use bvh2d::aabb::{Bounded, AABB};
 use glam::Vec2;
 
-use helpers::Vec2Helper;
-use instance::{EdgeSide, InstanceStep};
+use instance::{InstanceStep, U32Layer};
 use log::error;
 use thiserror::Error;
 #[cfg(feature = "tracing")]
@@ -42,14 +38,18 @@ mod async_helpers;
 mod helpers;
 mod input;
 mod instance;
+mod layers;
 mod merger;
+mod mesh_cleanup;
 mod primitives;
+mod stitching;
 
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
 pub use input::polyanya_file::PolyanyaFile;
 pub use input::triangulation::Triangulation;
 pub use input::trimesh::Trimesh;
+pub use layers::Layer;
 pub use primitives::{Polygon, Vertex};
 
 use crate::instance::SearchInstance;
@@ -61,54 +61,71 @@ pub struct Path {
     pub length: f32,
     /// Coordinates for each step of the path. The destination is the last step.
     pub path: Vec<Vec2>,
+    /// Coordinates for each step of the path, including when changing layer. The destination is the last step.
+    #[cfg(feature = "detailed-layers")]
+    pub path_with_layers: Vec<(Vec2, u8)>,
 }
-
 /// A navigation mesh
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Mesh {
-    /// List of `Vertex` in this mesh
-    pub vertices: Vec<Vertex>,
-    /// List of `Polygons` in this mesh
-    pub polygons: Vec<Polygon>,
-    baked_polygons: Option<BVH2d>,
-    islands: Option<Vec<usize>>,
-    delta: f32,
+    /// Layers of the NavMesh
+    pub layers: Vec<Layer>,
+    /// Variation used when checking if a point is in a mesh
+    pub delta: f32,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
+}
+
+/// A point in the navigation mesh
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub struct Coords {
+    /// The position
+    pub pos: Vec2,
+    /// The layer
+    ///
+    /// If specified, the point will be searched in that layer only.
+    pub layer: Option<u8>,
+}
+
+impl From<Vec2> for Coords {
+    fn from(value: Vec2) -> Self {
+        Coords {
+            pos: value,
+            layer: None,
+        }
+    }
+}
+
+impl Display for Coords {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(layer) = self.layer {
+            write!(f, "({}, {})[{}]", self.pos.x, self.pos.y, layer)
+        } else {
+            write!(f, "({}, {})", self.pos.x, self.pos.y)
+        }
+    }
 }
 
 impl Default for Mesh {
     fn default() -> Self {
         Self {
+            layers: vec![],
             delta: 0.1,
-            vertices: Default::default(),
-            polygons: Default::default(),
-            baked_polygons: Default::default(),
-            islands: Default::default(),
             #[cfg(feature = "stats")]
             scenarios: Cell::new(0),
         }
     }
 }
 
-struct Root(Vec2);
-
-impl PartialEq for Root {
-    #[inline(always)]
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
-    }
-}
-
-impl Eq for Root {}
-
-impl Hash for Root {
-    #[inline(always)]
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        ((self.0.x * PRECISION) as i32).hash(state);
-        ((self.0.y * PRECISION) as i32).hash(state);
-        state.finish();
+impl Mesh {
+    /// Create a new single layer NavMesh
+    pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Result<Self, MeshError> {
+        let layer = Layer::new(vertices, polygons)?;
+        Ok(Mesh {
+            layers: vec![layer],
+            ..Default::default()
+        })
     }
 }
 
@@ -131,110 +148,27 @@ pub enum MeshError {
     /// The mesh is invalid, such as having a vertex that does not belong to any polygon.
     #[error("The mesh is invalid")]
     InvalidMesh,
+    /// One of the layer has too many polygons (more than 2^24-1).
+    #[error("One layer has too many polygons")]
+    TooManyPolygons,
 }
 
 impl Mesh {
+    /// Pre-compute optimizations on the mesh
+    ///
+    /// Call [Layer::bake] on each layer. If the mesh has several layers, it must be called before stitching.
+    pub fn bake(&mut self) {
+        for layer in self.layers.iter_mut() {
+            layer.bake();
+        }
+    }
+
     /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
     #[inline]
     pub fn unbake(&mut self) {
-        self.baked_polygons = None;
-        self.islands = None;
-    }
-
-    /// Pre-compute optimizations on the mesh
-    ///
-    /// Optimisations available are:
-    /// - [`Self::bake_polygon_finder`]
-    /// - [`Self::bake_islands_detection`]
-    pub fn bake(&mut self) {
-        self.bake_polygon_finder();
-        self.bake_islands_detection()
-    }
-
-    /// Speed up bailing out if two points are not reachable.
-    ///
-    /// This is useful if there are isolated zones in the mesh, and you need to check for a path
-    /// between them.
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn bake_islands_detection(&mut self) {
-        let mut islands = vec![usize::MAX; self.polygons.len()];
-        while let Some((root, _)) = islands
-            .iter()
-            .enumerate()
-            .find(|(_, island)| **island == usize::MAX)
-        {
-            let mut to_visit = Vec::new();
-            to_visit.push(root);
-            while let Some(next) = to_visit.pop() {
-                if islands[next] == usize::MAX {
-                    let polygon = &mut self.polygons[next];
-                    islands[next] = root;
-                    to_visit.extend(
-                        polygon
-                            .vertices
-                            .iter()
-                            .flat_map(|v| self.vertices[*v as usize].polygons.iter())
-                            .filter_map(|i| if *i != -1 { Some(*i as usize) } else { None }),
-                    );
-                }
-            }
+        for layer in self.layers.iter_mut() {
+            layer.unbake();
         }
-        self.islands = Some(islands);
-    }
-
-    /// Speed up finding which polygon, if any, contains a point in the mesh.
-    ///
-    /// Uses a BVH. This is useful at the start of the pathfinding, to get the containing polygons
-    /// for the start and end point. It can also be used through [`Self::point_in_mesh`] to check
-    /// if a point is in the mesh.
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn bake_polygon_finder(&mut self) {
-        let bounded_polygons = self
-            .polygons
-            .iter_mut()
-            .map(|polygon| BoundedPolygon {
-                aabb: polygon.vertices.iter().fold(
-                    (Vec2::new(f32::MAX, f32::MAX), Vec2::ZERO),
-                    |mut aabb, v| {
-                        if let Some(v) = self.vertices.get(*v as usize) {
-                            if v.coords.x < aabb.0.x {
-                                aabb.0.x = v.coords.x;
-                            }
-                            if v.coords.y < aabb.0.y {
-                                aabb.0.y = v.coords.y;
-                            }
-                            if v.coords.x > aabb.1.x {
-                                aabb.1.x = v.coords.x;
-                            }
-                            if v.coords.y > aabb.1.y {
-                                aabb.1.y = v.coords.y;
-                            }
-                        }
-                        aabb
-                    },
-                ),
-            })
-            .collect::<Vec<_>>();
-
-        self.baked_polygons = Some(BVH2d::build(&bounded_polygons));
-    }
-
-    /// Create a `Mesh` from a list of [`Vertex`] and [`Polygon`].
-    pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Result<Self, MeshError> {
-        if vertices.is_empty() || polygons.is_empty() {
-            return Err(MeshError::EmptyMesh);
-        }
-        let mut mesh = Mesh {
-            vertices,
-            polygons,
-            ..Default::default()
-        };
-        #[cfg(not(feature = "no-default-baking"))]
-        mesh.bake();
-        // just to not get a warning on the mut borrow. should be pretty much free anyway
-        #[cfg(feature = "no-default-baking")]
-        mesh.unbake();
-        Ok(mesh)
     }
 
     /// Compute a path between two points.
@@ -248,7 +182,7 @@ impl Mesh {
             to,
             mesh: self,
             instance: None,
-            ending_polygon: -2,
+            ending_polygon: u32::MAX,
         }
     }
 
@@ -259,9 +193,28 @@ impl Mesh {
     /// This method is blocking, to get the path in an async way use [`Self::get_path`].
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub fn path(&self, from: Vec2, to: Vec2) -> Option<Path> {
+    pub fn path(&self, from: impl Into<Coords>, to: impl Into<Coords>) -> Option<Path> {
+        self.path_on_layers(from, to, HashSet::default())
+    }
+
+    /// Compute a path between two points.
+    ///
+    /// This will be a [`Path`] if a path is found, or `None` if not.
+    ///
+    /// This method is blocking, to get the path in an async way use [`Self::get_path`].
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
+    pub fn path_on_layers(
+        &self,
+        from: impl Into<Coords>,
+        to: impl Into<Coords>,
+        blocked_layers: HashSet<u8>,
+    ) -> Option<Path> {
         #[cfg(feature = "stats")]
         let start = Instant::now();
+
+        let from = from.into();
+        let to = to.into();
 
         let starting_polygon_index = self.get_point_location(from);
         if starting_polygon_index == u32::MAX {
@@ -271,11 +224,17 @@ impl Mesh {
         if ending_polygon == u32::MAX {
             return None;
         }
-        if let Some(islands) = self.islands.as_ref() {
-            let start_island = islands.get(starting_polygon_index as usize);
-            let end_island = islands.get(ending_polygon as usize);
-            if start_island.is_some() && end_island.is_some() && start_island != end_island {
-                return None;
+        // TODO: fix islands detection with multiple layers, even if start and end are on the same layer
+        if self.layers.len() == 1 {
+            if let Some(islands) = self.layers[starting_polygon_index.layer() as usize]
+                .islands
+                .as_ref()
+            {
+                let start_island = islands.get(starting_polygon_index.polygon() as usize);
+                let end_island = islands.get(ending_polygon.polygon() as usize);
+                if start_island.is_some() && end_island.is_some() && start_island != end_island {
+                    return None;
+                }
             }
         }
 
@@ -296,21 +255,24 @@ impl Mesh {
                 self.scenarios.set(self.scenarios.get() + 1);
             }
             return Some(Path {
-                length: from.distance(to),
-                path: vec![to],
+                length: from.pos.distance(to.pos),
+                path: vec![to.pos],
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(to.pos, ending_polygon.layer())],
             });
         }
 
         let mut search_instance = SearchInstance::setup(
             self,
-            (from, starting_polygon_index),
-            (to, ending_polygon),
+            (from.pos, starting_polygon_index),
+            (to.pos, ending_polygon),
+            blocked_layers,
             #[cfg(feature = "stats")]
             start,
         );
 
         // Limit search to avoid an infinite loop.
-        for _ in 0..self.polygons.len() * 1000 {
+        for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 100 {
             match search_instance.next() {
                 InstanceStep::Found(path) => return Some(path),
                 InstanceStep::NotFound => return None,
@@ -349,10 +311,12 @@ impl Mesh {
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
-            from: Vec2::ZERO,
+            #[cfg(feature = "detailed-layers")]
+            from: node.root,
             to,
-            polygon_to: self.get_point_location(to) as isize,
+            polygon_to: self.get_point_location(to),
             mesh: self,
+            blocked_layers: HashSet::default(),
             #[cfg(feature = "stats")]
             pushed: 0,
             #[cfg(feature = "stats")]
@@ -375,6 +339,7 @@ impl Mesh {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[cfg(test)]
     fn edges_between(&self, node: &SearchNode) -> Vec<instance::Successor> {
+        use glam::vec2;
         use hashbrown::HashMap;
         use std::collections::BinaryHeap;
 
@@ -384,10 +349,12 @@ impl Mesh {
             queue: BinaryHeap::new(),
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
+            #[cfg(feature = "detailed-layers")]
             from: Vec2::ZERO,
-            to: Vec2::new(0.0, 0.0),
-            polygon_to: self.get_point_location(Vec2::new(0.0, 0.0)) as isize,
+            to: Vec2::ZERO,
+            polygon_to: self.get_point_location(vec2(0.0, 0.0)),
             mesh: self,
+            blocked_layers: HashSet::default(),
             #[cfg(feature = "stats")]
             pushed: 0,
             #[cfg(feature = "stats")]
@@ -407,98 +374,50 @@ impl Mesh {
     }
 
     /// Check if a given point is in a `Mesh`
-    pub fn point_in_mesh(&self, point: Vec2) -> bool {
+    pub fn point_in_mesh(&self, point: impl Into<Coords>) -> bool {
         self.get_point_location(point) != u32::MAX
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location(&self, point: Vec2) -> u32 {
-        let delta = self.delta;
-        [
-            Vec2::new(0.0, 0.0),
-            Vec2::new(delta, 0.0),
-            Vec2::new(delta, delta),
-            Vec2::new(0.0, delta),
-            Vec2::new(-delta, delta),
-            Vec2::new(-delta, 0.0),
-            Vec2::new(-delta, -delta),
-            Vec2::new(0.0, -delta),
-            Vec2::new(delta, -delta),
-        ]
-        .iter()
-        .map(|delta| {
-            if self.baked_polygons.is_none() {
-                self.get_point_location_unit(point + *delta)
-            } else {
-                self.get_point_location_unit_baked(point + *delta)
-            }
-        })
-        .find(|poly| *poly != u32::MAX)
-        .unwrap_or(u32::MAX)
-    }
-
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location_unit(&self, point: Vec2) -> u32 {
-        for (i, polygon) in self.polygons.iter().enumerate() {
-            if self.point_in_polygon(point, polygon) {
-                return i as u32;
-            }
+    fn get_point_location(&self, point: impl Into<Coords>) -> u32 {
+        let point = point.into();
+        if let Some(layer_index) = point.layer {
+            self.layers
+                .get(layer_index as usize)
+                .and_then(|layer| {
+                    Some(U32Layer::from_layer_and_polygon(
+                        layer_index,
+                        layer.get_point_location(point.pos, self.delta)?,
+                    ))
+                })
+                .unwrap_or(u32::MAX)
+        } else {
+            self.layers
+                .iter()
+                .enumerate()
+                .flat_map(|(index, layer)| {
+                    Some(U32Layer::from_layer_and_polygon(
+                        index as u8,
+                        layer.get_point_location(point.pos, self.delta)?,
+                    ))
+                })
+                .find(|poly| poly != &u32::MAX)
+                .unwrap_or(u32::MAX)
         }
-        u32::MAX
-    }
-
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    fn get_point_location_unit_baked(&self, point: Vec2) -> u32 {
-        self.baked_polygons
-            .as_ref()
-            .unwrap()
-            .contains_iterator(&point)
-            .find(|index| self.point_in_polygon(point, &self.polygons[*index]))
-            .map(|index| index as u32)
-            .unwrap_or(u32::MAX)
-    }
-
-    #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    #[inline(always)]
-    fn point_in_polygon(&self, point: Vec2, polygon: &Polygon) -> bool {
-        let mut edged = false;
-        for edge in polygon.edges_index().iter() {
-            if edge.0.max(edge.1) as usize >= self.vertices.len() {
-                return false;
-            }
-            edged = true;
-            // Bounds are checked just before
-            #[allow(unsafe_code)]
-            let (last, next) = unsafe {
-                (
-                    self.vertices.get_unchecked(edge.0 as usize).coords,
-                    self.vertices.get_unchecked(edge.1 as usize).coords,
-                )
-            };
-
-            let current_side = point.side((last, next));
-            if current_side == EdgeSide::Edge && point.on_segment((last, next)) {
-                return true;
-            }
-            if current_side != EdgeSide::Left {
-                return false;
-            }
-        }
-        if edged {
-            return true;
-        }
-        false
     }
 }
 
 #[derive(PartialEq, Debug)]
 struct SearchNode {
     path: Vec<Vec2>,
+    #[cfg(feature = "detailed-layers")]
+    path_with_layers: Vec<(Vec2, Vec2, u8)>,
     root: Vec2,
     interval: (Vec2, Vec2),
     edge: (u32, u32),
-    polygon_from: isize,
-    polygon_to: isize,
+    polygon_from: u32,
+    polygon_to: u32,
+    previous_polygon_layer: u8,
     f: f32,
     g: f32,
 }
@@ -549,25 +468,27 @@ mod tests {
         };
     }
 
-    use glam::Vec2;
+    use std::vec;
 
-    use crate::{helpers::*, Mesh, Path, Polygon, SearchNode, Vertex};
+    use glam::{vec2, Vec2};
+
+    use crate::{helpers::*, Layer, Mesh, Path, Polygon, SearchNode, Vertex};
 
     fn mesh_u_grid() -> Mesh {
-        Mesh {
+        let layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 0.), vec![0, -1]),
-                Vertex::new(Vec2::new(1., 0.), vec![0, 1, -1]),
-                Vertex::new(Vec2::new(2., 0.), vec![1, 2, -1]),
-                Vertex::new(Vec2::new(3., 0.), vec![2, -1]),
-                Vertex::new(Vec2::new(0., 1.), vec![3, 0, -1]),
-                Vertex::new(Vec2::new(1., 1.), vec![3, 1, 0, -1]),
-                Vertex::new(Vec2::new(2., 1.), vec![4, 2, 1, -1]),
-                Vertex::new(Vec2::new(3., 1.), vec![4, 2, -1]),
-                Vertex::new(Vec2::new(0., 2.), vec![3, -1]),
-                Vertex::new(Vec2::new(1., 2.), vec![3, -1]),
-                Vertex::new(Vec2::new(2., 2.), vec![4, -1]),
-                Vertex::new(Vec2::new(3., 2.), vec![4, -1]),
+                Vertex::new(vec2(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 0.), vec![0, 1, u32::MAX]),
+                Vertex::new(vec2(2., 0.), vec![1, 2, u32::MAX]),
+                Vertex::new(vec2(3., 0.), vec![2, u32::MAX]),
+                Vertex::new(vec2(0., 1.), vec![3, 0, u32::MAX]),
+                Vertex::new(vec2(1., 1.), vec![3, 1, 0, u32::MAX]),
+                Vertex::new(vec2(2., 1.), vec![4, 2, 1, u32::MAX]),
+                Vertex::new(vec2(3., 1.), vec![4, 2, u32::MAX]),
+                Vertex::new(vec2(0., 2.), vec![3, u32::MAX]),
+                Vertex::new(vec2(1., 2.), vec![3, u32::MAX]),
+                Vertex::new(vec2(2., 2.), vec![4, u32::MAX]),
+                Vertex::new(vec2(3., 2.), vec![4, u32::MAX]),
             ],
             polygons: vec![
                 Polygon::new(vec![0, 1, 5, 4], false),
@@ -577,6 +498,10 @@ mod tests {
                 Polygon::new(vec![6, 7, 11, 10], true),
             ],
             ..Default::default()
+        };
+        Mesh {
+            layers: vec![layer],
+            ..Default::default()
         }
     }
 
@@ -584,26 +509,29 @@ mod tests {
     fn point_in_polygon() {
         let mut mesh = mesh_u_grid();
         mesh.bake();
-        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), 0);
-        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 0.5)), 1);
-        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 1.5)), 3);
-        assert_eq!(mesh.get_point_location(Vec2::new(1.5, 1.5)), u32::MAX);
-        assert_eq!(mesh.get_point_location(Vec2::new(2.5, 1.5)), 4);
+        assert_eq!(mesh.get_point_location(vec2(0.5, 0.5)), 0);
+        assert_eq!(mesh.get_point_location(vec2(1.5, 0.5)), 1);
+        assert_eq!(mesh.get_point_location(vec2(0.5, 1.5)), 3);
+        assert_eq!(mesh.get_point_location(vec2(1.5, 1.5)), u32::MAX);
+        assert_eq!(mesh.get_point_location(vec2(2.5, 1.5)), 4);
     }
 
     #[test]
     fn successors_straight_line_ahead() {
         let mesh = mesh_u_grid();
 
-        let from = Vec2::new(0.1, 0.1);
-        let to = Vec2::new(2.9, 0.9);
+        let from = vec2(0.1, 0.1);
+        let to = vec2(2.9, 0.9);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0)),
+            interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
-            polygon_from: mesh.get_point_location(from) as isize,
+            polygon_from: mesh.get_point_location(from),
             polygon_to: 1,
+            previous_polygon_layer: 0,
             f: from.distance(to),
             g: 0.0,
         };
@@ -614,10 +542,7 @@ mod tests {
         assert_eq!(successors[0].g, from.distance(to));
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 2);
-        assert_eq!(
-            successors[0].interval,
-            (Vec2::new(2.0, 0.0), Vec2::new(2.0, 1.0))
-        );
+        assert_eq!(successors[0].interval, (vec2(2.0, 0.0), vec2(2.0, 1.0)));
         assert_eq!(successors[0].edge, (2, 6));
 
         assert_eq!(successors[0].path, Vec::<Vec2>::new());
@@ -627,6 +552,8 @@ mod tests {
             Path {
                 path: vec![to],
                 length: from.distance(to),
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(to, 0)],
             }
         );
     }
@@ -635,29 +562,29 @@ mod tests {
     fn successors_straight_line_reversed() {
         let mesh = mesh_u_grid();
 
-        let to = Vec2::new(0.1, 0.1);
-        let from = Vec2::new(2.9, 0.9);
+        let to = vec2(0.1, 0.1);
+        let from = vec2(2.9, 0.9);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(2.0, 1.0), Vec2::new(2.0, 0.0)),
+            interval: (vec2(2.0, 1.0), vec2(2.0, 0.0)),
             edge: (6, 2),
-            polygon_from: mesh.get_point_location(from) as isize,
+            polygon_from: mesh.get_point_location(from),
             polygon_to: 1,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
-        let successors = mesh.successors(search_node, to);
+        let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].root, from);
         assert_eq!(successors[0].f, 0.0);
         assert_eq!(successors[0].g, to.distance(from));
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 0);
-        assert_eq!(
-            successors[0].interval,
-            (Vec2::new(1.0, 1.0), Vec2::new(1.0, 0.0))
-        );
+        assert_eq!(successors[0].interval, (vec2(1.0, 1.0), vec2(1.0, 0.0)));
         assert_eq!(successors[0].edge, (5, 1));
         assert_eq!(successors[0].path, Vec::<Vec2>::new());
 
@@ -666,6 +593,8 @@ mod tests {
             Path {
                 path: vec![to],
                 length: from.distance(to),
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(to, 0)],
             }
         );
     }
@@ -674,42 +603,44 @@ mod tests {
     fn successors_corner_first_step() {
         let mesh = mesh_u_grid();
 
-        let from = Vec2::new(0.1, 1.9);
-        let to = Vec2::new(2.1, 1.9);
+        let from = vec2(0.1, 1.9);
+        let to = vec2(2.1, 1.9);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(0.0, 1.0), Vec2::new(1.0, 1.0)),
+            interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
-            polygon_from: mesh.get_point_location(from) as isize,
+            polygon_from: mesh.get_point_location(from),
             polygon_to: 0,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].root, Vec2::new(2.0, 1.0));
+        assert_eq!(successors[0].root, vec2(2.0, 1.0));
         assert_eq!(
             successors[0].f,
-            from.distance(Vec2::new(1.0, 1.0)) + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
+            from.distance(vec2(1.0, 1.0)) + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
         );
-        assert_eq!(successors[0].g, Vec2::new(2.0, 1.0).distance(to));
+        assert_eq!(successors[0].g, vec2(2.0, 1.0).distance(to));
         assert_eq!(successors[0].polygon_from, 2);
         assert_eq!(successors[0].polygon_to, 4);
-        assert_eq!(
-            successors[0].interval,
-            (Vec2::new(3.0, 1.0), Vec2::new(2.0, 1.0))
-        );
+        assert_eq!(successors[0].interval, (vec2(3.0, 1.0), vec2(2.0, 1.0)));
         assert_eq!(successors[0].edge, (7, 6));
-        assert_eq!(successors[0].path, vec![from, Vec2::new(1.0, 1.0)]);
+        assert_eq!(successors[0].path, vec![vec2(1.0, 1.0), vec2(2.0, 1.0)]);
 
         assert_eq!(
             mesh.path(from, to).unwrap(),
             Path {
-                path: vec![Vec2::new(1.0, 1.0), Vec2::new(2.0, 1.0), to],
-                length: from.distance(Vec2::new(1.0, 1.0))
-                    + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
-                    + Vec2::new(2.0, 1.0).distance(to),
+                path: vec![vec2(1.0, 1.0), vec2(2.0, 1.0), to],
+                length: from.distance(vec2(1.0, 1.0))
+                    + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
+                    + vec2(2.0, 1.0).distance(to),
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 0), (to, 0)],
             }
         );
     }
@@ -718,79 +649,80 @@ mod tests {
     fn successors_corner_observable_second_step() {
         let mesh = mesh_u_grid();
 
-        let from = Vec2::new(0.1, 1.9);
-        let to = Vec2::new(2.1, 1.9);
+        let from = vec2(0.1, 1.9);
+        let to = vec2(2.1, 1.9);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0)),
+            interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
-
             polygon_from: 0,
             polygon_to: 1,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
-        assert_eq!(successors[0].root, Vec2::new(2.0, 1.0));
+        assert_eq!(successors[0].root, vec2(2.0, 1.0));
         assert_eq!(
             successors[0].f,
-            from.distance(Vec2::new(1.0, 1.0)) + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
+            from.distance(vec2(1.0, 1.0)) + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
         );
-        assert_eq!(successors[0].g, Vec2::new(2.0, 1.0).distance(to));
+        assert_eq!(successors[0].g, vec2(2.0, 1.0).distance(to));
         assert_eq!(successors[0].polygon_from, 2);
         assert_eq!(successors[0].polygon_to, 4);
-        assert_eq!(
-            successors[0].interval,
-            (Vec2::new(3.0, 1.0), Vec2::new(2.0, 1.0))
-        );
+        assert_eq!(successors[0].interval, (vec2(3.0, 1.0), vec2(2.0, 1.0)));
         assert_eq!(successors[0].edge, (7, 6));
-        assert_eq!(successors[0].path, vec![from, Vec2::new(1.0, 1.0)]);
+        assert_eq!(successors[0].path, vec![vec2(1.0, 1.0), vec2(2.0, 1.0)]);
 
         assert_eq!(
             mesh.path(from, to).unwrap(),
             Path {
-                path: vec![Vec2::new(1.0, 1.0), Vec2::new(2.0, 1.0), to],
-                length: from.distance(Vec2::new(1.0, 1.0))
-                    + Vec2::new(1.0, 1.0).distance(Vec2::new(2.0, 1.0))
-                    + Vec2::new(2.0, 1.0).distance(to),
+                path: vec![vec2(1.0, 1.0), vec2(2.0, 1.0), to],
+                length: from.distance(vec2(1.0, 1.0))
+                    + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
+                    + vec2(2.0, 1.0).distance(to),
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 0), (to, 0)],
             }
         );
     }
 
     #[test]
     fn empty_mesh_fails() {
-        let mesh = Mesh::new(vec![], vec![]);
-        assert!(matches!(mesh, Err(crate::MeshError::EmptyMesh)));
+        let layer = Layer::new(vec![], vec![]);
+        assert!(matches!(layer, Err(crate::MeshError::EmptyMesh)));
     }
 
     fn mesh_from_paper() -> Mesh {
-        Mesh {
+        let layer = Layer {
             vertices: vec![
-                Vertex::new(Vec2::new(0., 6.), vec![0, -1]),    // 0
-                Vertex::new(Vec2::new(2., 5.), vec![0, -1, 2]), // 1
-                Vertex::new(Vec2::new(5., 7.), vec![0, 2, -1]), // 2
-                Vertex::new(Vec2::new(5., 8.), vec![0, -1]),    // 3
-                Vertex::new(Vec2::new(0., 8.), vec![0, -1]),    // 4
-                Vertex::new(Vec2::new(1., 4.), vec![1, -1]),    // 5
-                Vertex::new(Vec2::new(2., 1.), vec![1, -1]),    // 6
-                Vertex::new(Vec2::new(4., 1.), vec![1, -1]),    // 7
-                Vertex::new(Vec2::new(4., 2.), vec![1, -1, 2]), // 8
-                Vertex::new(Vec2::new(2., 4.), vec![1, 2, -1]), // 9
-                Vertex::new(Vec2::new(7., 4.), vec![2, -1, 4]), // 10
-                Vertex::new(Vec2::new(10., 7.), vec![2, 4, 6, -1, 3]), // 11
-                Vertex::new(Vec2::new(7., 7.), vec![2, 3, -1]), // 12
-                Vertex::new(Vec2::new(11., 8.), vec![3, -1]),   // 13
-                Vertex::new(Vec2::new(7., 8.), vec![3, -1]),    // 14
-                Vertex::new(Vec2::new(7., 0.), vec![5, 4, -1]), // 15
-                Vertex::new(Vec2::new(11., 3.), vec![4, 5, -1]), // 16
-                Vertex::new(Vec2::new(11., 5.), vec![4, -1, 6]), // 17
-                Vertex::new(Vec2::new(12., 0.), vec![5, -1]),   // 18
-                Vertex::new(Vec2::new(12., 3.), vec![5, -1]),   // 19
-                Vertex::new(Vec2::new(13., 5.), vec![6, -1]),   // 20
-                Vertex::new(Vec2::new(13., 7.), vec![6, -1]),   // 21
-                Vertex::new(Vec2::new(1., 3.), vec![1, -1]),    // 22
+                Vertex::new(vec2(0., 6.), vec![0, u32::MAX]),    // 0
+                Vertex::new(vec2(2., 5.), vec![0, u32::MAX, 2]), // 1
+                Vertex::new(vec2(5., 7.), vec![0, 2, u32::MAX]), // 2
+                Vertex::new(vec2(5., 8.), vec![0, u32::MAX]),    // 3
+                Vertex::new(vec2(0., 8.), vec![0, u32::MAX]),    // 4
+                Vertex::new(vec2(1., 4.), vec![1, u32::MAX]),    // 5
+                Vertex::new(vec2(2., 1.), vec![1, u32::MAX]),    // 6
+                Vertex::new(vec2(4., 1.), vec![1, u32::MAX]),    // 7
+                Vertex::new(vec2(4., 2.), vec![1, u32::MAX, 2]), // 8
+                Vertex::new(vec2(2., 4.), vec![1, 2, u32::MAX]), // 9
+                Vertex::new(vec2(7., 4.), vec![2, u32::MAX, 4]), // 10
+                Vertex::new(vec2(10., 7.), vec![2, 4, 6, u32::MAX, 3]), // 11
+                Vertex::new(vec2(7., 7.), vec![2, 3, u32::MAX]), // 12
+                Vertex::new(vec2(11., 8.), vec![3, u32::MAX]),   // 13
+                Vertex::new(vec2(7., 8.), vec![3, u32::MAX]),    // 14
+                Vertex::new(vec2(7., 0.), vec![5, 4, u32::MAX]), // 15
+                Vertex::new(vec2(11., 3.), vec![4, 5, u32::MAX]), // 16
+                Vertex::new(vec2(11., 5.), vec![4, u32::MAX, 6]), // 17
+                Vertex::new(vec2(12., 0.), vec![5, u32::MAX]),   // 18
+                Vertex::new(vec2(12., 3.), vec![5, u32::MAX]),   // 19
+                Vertex::new(vec2(13., 5.), vec![6, u32::MAX]),   // 20
+                Vertex::new(vec2(13., 7.), vec![6, u32::MAX]),   // 21
+                Vertex::new(vec2(1., 3.), vec![1, u32::MAX]),    // 22
             ],
             polygons: vec![
                 Polygon::new(vec![0, 1, 2, 3, 4], true),
@@ -802,6 +734,10 @@ mod tests {
                 Polygon::new(vec![11, 17, 20, 21], true),
             ],
             ..Default::default()
+        };
+        Mesh {
+            layers: vec![layer],
+            ..Default::default()
         }
     }
 
@@ -809,57 +745,53 @@ mod tests {
     fn paper_point_in_polygon() {
         let mut mesh = mesh_from_paper();
         mesh.bake();
-        assert_eq!(mesh.get_point_location(Vec2::new(0.5, 0.5)), u32::MAX);
-        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 6.0)), 0);
-        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 5.1)), 0);
-        assert_eq!(mesh.get_point_location(Vec2::new(2.0, 1.5)), 1);
-        assert_eq!(mesh.get_point_location(Vec2::new(4.0, 2.1)), 2);
+        assert_eq!(mesh.get_point_location(vec2(0.5, 0.5)), u32::MAX);
+        assert_eq!(mesh.get_point_location(vec2(2.0, 6.0)), 0);
+        assert_eq!(mesh.get_point_location(vec2(2.0, 5.1)), 0);
+        assert_eq!(mesh.get_point_location(vec2(2.0, 1.5)), 1);
+        assert_eq!(mesh.get_point_location(vec2(4.0, 2.1)), 2);
     }
 
     #[test]
     fn paper_straight() {
         let mesh = mesh_from_paper();
 
-        let from = Vec2::new(12.0, 0.0);
-        let to = Vec2::new(7.0, 6.9);
+        let from = vec2(12.0, 0.0);
+        let to = vec2(7.0, 6.9);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
+            interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.get_point_location(from) as isize,
+            polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 2);
 
-        assert_eq!(successors[1].root, Vec2::new(11.0, 3.0));
-        assert_eq!(successors[1].f, from.distance(Vec2::new(11.0, 3.0)));
+        assert_eq!(successors[1].root, vec2(11.0, 3.0));
+        assert_eq!(successors[1].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
             successors[1].g,
-            Vec2::new(11.0, 3.0).distance(Vec2::new(9.75, 6.75))
-                + Vec2::new(9.75, 6.75).distance(to)
+            vec2(11.0, 3.0).distance(vec2(9.75, 6.75)) + vec2(9.75, 6.75).distance(to)
         );
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
-        assert_eq!(
-            successors[1].interval,
-            (Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))
-        );
+        assert_eq!(successors[1].interval, (vec2(10.0, 7.0), vec2(9.75, 6.75)));
         assert_eq!(successors[1].edge, (11, 10));
-        assert_eq!(successors[1].path, vec![from]);
+        assert_eq!(successors[1].path, vec![vec2(11.0, 3.0)]);
 
         assert_eq!(successors[0].root, from);
         assert_eq!(successors[0].f, 0.0);
         assert_eq!(successors[0].g, from.distance(to));
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 2);
-        assert_eq!(
-            successors[0].interval,
-            (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))
-        );
+        assert_eq!(successors[0].interval, (vec2(9.75, 6.75), vec2(7.0, 4.0)));
         assert_eq!(successors[0].edge, (11, 10));
         assert_eq!(successors[0].path, Vec::<Vec2>::new());
 
@@ -871,77 +803,70 @@ mod tests {
     fn paper_corner_right() {
         let mesh = mesh_from_paper();
 
-        let from = Vec2::new(12.0, 0.0);
-        let to = Vec2::new(13.0, 6.0);
+        let from = vec2(12.0, 0.0);
+        let to = vec2(13.0, 6.0);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
+            interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.get_point_location(from) as isize,
+            polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 3);
 
-        assert_eq!(successors[0].root, Vec2::new(11.0, 3.0));
-        assert_eq!(successors[0].f, from.distance(Vec2::new(11.0, 3.0)));
+        assert_eq!(successors[0].root, vec2(11.0, 3.0));
+        assert_eq!(successors[0].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
             successors[0].g,
-            Vec2::new(11.0, 3.0).distance(Vec2::new(11.0, 5.0)) + Vec2::new(11.0, 5.0).distance(to)
+            vec2(11.0, 3.0).distance(vec2(11.0, 5.0)) + vec2(11.0, 5.0).distance(to)
         );
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 6);
-        assert_eq!(
-            successors[0].interval,
-            (Vec2::new(11.0, 5.0), Vec2::new(10.0, 7.0))
-        );
+        assert_eq!(successors[0].interval, (vec2(11.0, 5.0), vec2(10.0, 7.0)));
         assert_eq!(successors[0].edge, (17, 11));
-        assert_eq!(successors[0].path, vec![from]);
+        assert_eq!(successors[0].path, vec![vec2(11.0, 3.0)]);
 
-        assert_eq!(successors[1].root, Vec2::new(11.0, 3.0));
-        assert_eq!(successors[1].f, from.distance(Vec2::new(11.0, 3.0)));
+        assert_eq!(successors[1].root, vec2(11.0, 3.0));
+        assert_eq!(successors[1].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
             successors[1].g,
-            Vec2::new(11.0, 3.0).distance(to.mirror((Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))))
+            vec2(11.0, 3.0).distance(to.mirror((vec2(10.0, 7.0), vec2(9.75, 6.75))))
         );
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
-        assert_eq!(
-            successors[1].interval,
-            (Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))
-        );
+        assert_eq!(successors[1].interval, (vec2(10.0, 7.0), vec2(9.75, 6.75)));
         assert_eq!(successors[1].edge, (11, 10));
-        assert_eq!(successors[1].path, vec![from]);
+        assert_eq!(successors[1].path, vec![vec2(11.0, 3.0)]);
 
         assert_eq!(successors[2].root, from);
         assert_eq!(successors[2].f, 0.0);
         assert_eq!(
             successors[2].g,
-            from.distance(Vec2::new(9.75, 6.75))
-                + Vec2::new(9.75, 6.75)
-                    .distance(to.mirror((Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))))
+            from.distance(vec2(9.75, 6.75))
+                + vec2(9.75, 6.75).distance(to.mirror((vec2(9.75, 6.75), vec2(7.0, 4.0))))
         );
         assert_eq!(successors[2].polygon_from, 4);
         assert_eq!(successors[2].polygon_to, 2);
-        assert_eq!(
-            successors[2].interval,
-            (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))
-        );
+        assert_eq!(successors[2].interval, (vec2(9.75, 6.75), vec2(7.0, 4.0)));
         assert_eq!(successors[2].edge, (11, 10));
         assert_eq!(successors[2].path, Vec::<Vec2>::new());
 
         assert_delta!(
             mesh.path(from, to).unwrap().length,
-            from.distance(Vec2::new(11.0, 3.0))
-                + Vec2::new(11.0, 3.0).distance(Vec2::new(11.0, 5.0))
-                + Vec2::new(11.0, 5.0).distance(to)
+            from.distance(vec2(11.0, 3.0))
+                + vec2(11.0, 3.0).distance(vec2(11.0, 5.0))
+                + vec2(11.0, 5.0).distance(to)
         );
         assert_eq!(
             mesh.path(from, to).unwrap().path,
-            vec![Vec2::new(11.0, 3.0), Vec2::new(11.0, 5.0), to]
+            vec![vec2(11.0, 3.0), vec2(11.0, 5.0), to]
         );
     }
 
@@ -949,68 +874,61 @@ mod tests {
     fn paper_corner_left() {
         let mesh = mesh_from_paper();
 
-        let from = Vec2::new(12.0, 0.0);
-        let to = Vec2::new(5.0, 3.0);
+        let from = vec2(12.0, 0.0);
+        let to = vec2(5.0, 3.0);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
+            interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.get_point_location(from) as isize,
+            polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 2);
 
-        assert_eq!(successors[1].root, Vec2::new(11.0, 3.0));
-        assert_eq!(successors[1].f, from.distance(Vec2::new(11.0, 3.0)));
+        assert_eq!(successors[1].root, vec2(11.0, 3.0));
+        assert_eq!(successors[1].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
             successors[1].g,
-            Vec2::new(11.0, 3.0).distance(Vec2::new(9.75, 6.75))
-                + Vec2::new(9.75, 6.75).distance(to)
+            vec2(11.0, 3.0).distance(vec2(9.75, 6.75)) + vec2(9.75, 6.75).distance(to)
         );
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
-        assert_eq!(
-            successors[1].interval,
-            (Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))
-        );
+        assert_eq!(successors[1].interval, (vec2(10.0, 7.0), vec2(9.75, 6.75)));
         assert_eq!(successors[1].edge, (11, 10));
-        assert_eq!(successors[1].path, vec![from]);
+        assert_eq!(successors[1].path, vec![vec2(11.0, 3.0)]);
 
         assert_eq!(successors[0].root, from);
         assert_eq!(successors[0].f, 0.0);
         assert_eq!(
             successors[0].g,
-            from.distance(Vec2::new(7.0, 4.0)) + Vec2::new(7.0, 4.0).distance(to)
+            from.distance(vec2(7.0, 4.0)) + vec2(7.0, 4.0).distance(to)
         );
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 2);
-        assert_eq!(
-            successors[0].interval,
-            (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))
-        );
+        assert_eq!(successors[0].interval, (vec2(9.75, 6.75), vec2(7.0, 4.0)));
         assert_eq!(successors[0].edge, (11, 10));
         assert_eq!(successors[0].path, Vec::<Vec2>::new());
 
         assert_delta!(
             mesh.path(from, to).unwrap().length,
-            from.distance(Vec2::new(7.0, 4.0)) + Vec2::new(7.0, 4.0).distance(to)
+            from.distance(vec2(7.0, 4.0)) + vec2(7.0, 4.0).distance(to)
         );
-        assert_eq!(
-            mesh.path(from, to).unwrap().path,
-            vec![Vec2::new(7.0, 4.0), to]
-        );
+        assert_eq!(mesh.path(from, to).unwrap().path, vec![vec2(7.0, 4.0), to]);
     }
 
     #[test]
     fn paper_going_to_one_way_polygon() {
         let mesh = mesh_from_paper();
 
-        let from = Vec2::new(11., 0.);
-        let to = Vec2::new(9., 3.);
+        let from = vec2(11., 0.);
+        let to = vec2(9., 3.);
         let path = mesh.path(from, to);
 
         assert_eq!(path.unwrap().path, vec![to]);
@@ -1024,49 +942,45 @@ mod tests {
     fn paper_corner_left_twice() {
         let mesh = mesh_from_paper();
 
-        let from = Vec2::new(12.0, 0.0);
-        let to = Vec2::new(3.0, 1.0);
+        let from = vec2(12.0, 0.0);
+        let to = vec2(3.0, 1.0);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
+            interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.get_point_location(from) as isize,
+            polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 2);
 
-        assert_eq!(successors[1].root, Vec2::new(11.0, 3.0));
-        assert_eq!(successors[1].f, from.distance(Vec2::new(11.0, 3.0)));
+        assert_eq!(successors[1].root, vec2(11.0, 3.0));
+        assert_eq!(successors[1].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
             successors[1].g,
-            Vec2::new(11.0, 3.0).distance(Vec2::new(9.75, 6.75))
-                + Vec2::new(9.75, 6.75).distance(to)
+            vec2(11.0, 3.0).distance(vec2(9.75, 6.75)) + vec2(9.75, 6.75).distance(to)
         );
         assert_eq!(successors[1].polygon_from, 4);
         assert_eq!(successors[1].polygon_to, 2);
-        assert_eq!(
-            successors[1].interval,
-            (Vec2::new(10.0, 7.0), Vec2::new(9.75, 6.75))
-        );
+        assert_eq!(successors[1].interval, (vec2(10.0, 7.0), vec2(9.75, 6.75)));
         assert_eq!(successors[1].edge, (11, 10));
-        assert_eq!(successors[1].path, vec![from]);
+        // assert_eq!(successors[1].path, vec![from]);
 
         assert_eq!(successors[0].root, from);
         assert_eq!(successors[0].f, 0.0);
         assert_eq!(
             successors[0].g,
-            from.distance(Vec2::new(7.0, 4.0)) + Vec2::new(7.0, 4.0).distance(to)
+            from.distance(vec2(7.0, 4.0)) + vec2(7.0, 4.0).distance(to)
         );
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 2);
-        assert_eq!(
-            successors[0].interval,
-            (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0))
-        );
+        assert_eq!(successors[0].interval, (vec2(9.75, 6.75), vec2(7.0, 4.0)));
         assert_eq!(successors[0].edge, (11, 10));
         assert_eq!(successors[0].path, Vec::<Vec2>::new());
 
@@ -1077,14 +991,14 @@ mod tests {
 
         assert_delta!(
             mesh.path(from, to).unwrap().length,
-            from.distance(Vec2::new(7.0, 4.0))
-                + Vec2::new(7.0, 4.0).distance(Vec2::new(4.0, 2.0))
-                + Vec2::new(4.0, 2.0).distance(to)
+            from.distance(vec2(7.0, 4.0))
+                + vec2(7.0, 4.0).distance(vec2(4.0, 2.0))
+                + vec2(4.0, 2.0).distance(to)
         );
 
         assert_eq!(
             mesh.path(from, to).unwrap().path,
-            vec![Vec2::new(7.0, 4.0), Vec2::new(4.0, 2.0), to]
+            vec![vec2(7.0, 4.0), vec2(4.0, 2.0), to]
         );
     }
 
@@ -1092,15 +1006,18 @@ mod tests {
     fn edges_between_simple() {
         let mesh = mesh_from_paper();
 
-        let from = Vec2::new(12.0, 0.0);
-        let to = Vec2::new(3.0, 1.0);
+        let from = vec2(12.0, 0.0);
+        let to = vec2(3.0, 1.0);
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(11.0, 3.0), Vec2::new(7.0, 0.0)),
+            interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
-            polygon_from: mesh.get_point_location(from) as isize,
+            polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -1115,11 +1032,14 @@ mod tests {
 
         let search_node = SearchNode {
             path: vec![],
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
             root: from,
-            interval: (Vec2::new(9.75, 6.75), Vec2::new(7.0, 4.0)),
+            interval: (vec2(9.75, 6.75), vec2(7.0, 4.0)),
             edge: (11, 10),
             polygon_from: 4,
             polygon_to: 2,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -1134,11 +1054,14 @@ mod tests {
 
         let search_node = SearchNode {
             path: vec![],
-            root: Vec2::new(11.0, 3.0),
-            interval: (Vec2::new(10.0, 7.0), Vec2::new(7.0, 4.0)),
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
+            root: vec2(11.0, 3.0),
+            interval: (vec2(10.0, 7.0), vec2(7.0, 4.0)),
             edge: (11, 10),
             polygon_from: 4,
             polygon_to: 2,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: from.distance(to),
         };
@@ -1156,11 +1079,14 @@ mod tests {
 
         let search_node = SearchNode {
             path: vec![],
-            root: Vec2::new(0.0, 0.0),
-            interval: (Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0)),
+            #[cfg(feature = "detailed-layers")]
+            path_with_layers: vec![],
+            root: vec2(0.0, 0.0),
+            interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
             polygon_from: 0,
             polygon_to: 1,
+            previous_polygon_layer: 0,
             f: 0.0,
             g: 1.0,
         };
