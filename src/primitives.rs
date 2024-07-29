@@ -1,7 +1,6 @@
 use std::ops::RangeInclusive;
 
 use geo::{Area, Coord};
-use smallvec::SmallVec;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -103,7 +102,7 @@ impl Polygon {
     }
 
     #[cfg(test)]
-    pub(crate) fn double_edges_index(&self) -> SmallVec<[(u32, u32); 20]> {
+    pub(crate) fn double_edges_index(&self) -> smallvec::SmallVec<[(u32, u32); 20]> {
         use smallvec::smallvec;
         let mut edges = smallvec![(u32::MAX, u32::MAX); self.vertices.len() * 2];
         let mut last = self.vertices[0];
@@ -122,34 +121,11 @@ impl Polygon {
     pub(crate) fn circular_edges_index(
         &self,
         bounds: RangeInclusive<usize>,
-    ) -> SmallVec<[(u32, u32); 10]> {
-        let mut edges = SmallVec::with_capacity(self.vertices.len());
-        if *bounds.start() < self.vertices.len() {
-            let mut last = self.vertices[*bounds.start() % self.vertices.len()];
-            for vertex in self.vertices.iter().skip(1 + bounds.start()) {
-                edges.push((last, *vertex));
-                last = *vertex;
-            }
-            edges.push((last, self.vertices[0]));
-        }
-        if *bounds.end() + 1 > self.vertices.len() {
-            let start = bounds.start().saturating_sub(self.vertices.len());
-            let mut last = self.vertices[0.max(start)];
-            for vertex in self.vertices.iter().skip(0.max(start) + 1).take(
-                bounds
-                    .end()
-                    .saturating_sub(self.vertices.len().max(*bounds.start())),
-            ) {
-                edges.push((last, *vertex));
-                last = *vertex;
-            }
-            edges.push((
-                last,
-                self.vertices[(*bounds.end() + 1) % self.vertices.len()],
-            ));
-        }
-
-        edges
+    ) -> impl Iterator<Item = [u32; 2]> + '_ {
+        self.edges_index()
+            .chain(self.edges_index())
+            .skip(*bounds.start())
+            .take(*bounds.end() + 1 - *bounds.start())
     }
 
     pub(crate) fn area(&self, mesh: &Layer) -> f32 {
@@ -185,7 +161,10 @@ mod tests {
                 eprintln!("{start} -> {end}");
                 assert_eq!(
                     polygon.double_edges_index()[start..=end],
-                    polygon.circular_edges_index(start..=end)[..]
+                    polygon
+                        .circular_edges_index(start..=end)
+                        .map(|[a, b]| (a, b))
+                        .collect::<Vec<_>>()
                 );
             }
         }

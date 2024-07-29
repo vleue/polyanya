@@ -54,7 +54,7 @@ enum SuccessorType {
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub(crate) struct Successor {
     interval: (Vec2, Vec2),
-    edge: (u32, u32),
+    edge: [u32; 2],
     ty: SuccessorType,
 }
 
@@ -363,16 +363,16 @@ impl<'m> SearchInstance<'m> {
         let left_index = polygon.vertices.len() + right_index - 2;
 
         let mut ty = SuccessorType::RightNonObservable;
-        for edge in &polygon.circular_edges_index(right_index..=left_index) {
-            if edge.0.max(edge.1) as usize > target_layer.vertices.len() {
+        for edge in polygon.circular_edges_index(right_index..=left_index) {
+            if edge[0].max(edge[1]) as usize > target_layer.vertices.len() {
                 continue;
             }
             // Bounds are checked just before
             #[allow(unsafe_code)]
             let (start, end) = unsafe {
                 (
-                    target_layer.vertices.get_unchecked(edge.0 as usize),
-                    target_layer.vertices.get_unchecked(edge.1 as usize),
+                    target_layer.vertices.get_unchecked(edge[0] as usize),
+                    target_layer.vertices.get_unchecked(edge[1] as usize),
                 )
             };
             let mut start_point = start.coords;
@@ -413,7 +413,7 @@ impl<'m> SearchInstance<'m> {
                         {
                             successors.push(Successor {
                                 interval: (start_point, intersect),
-                                edge: *edge,
+                                edge,
                                 ty,
                             });
                             start_point = intersect;
@@ -471,7 +471,7 @@ impl<'m> SearchInstance<'m> {
             }
             successors.push(Successor {
                 interval: (start_point, end_intersection_p.unwrap_or(end_point)),
-                edge: *edge,
+                edge,
                 ty,
             });
             match end_root_int1 {
@@ -482,7 +482,7 @@ impl<'m> SearchInstance<'m> {
                     if let Some(intersect) = end_intersection_p {
                         successors.push(Successor {
                             interval: (intersect, end_point),
-                            edge: *edge,
+                            edge,
                             ty,
                         });
                     }
@@ -622,10 +622,10 @@ impl<'m> SearchInstance<'m> {
                     (
                         target_layer
                             .vertices
-                            .get_unchecked(successor.edge.0 as usize),
+                            .get_unchecked(successor.edge[0] as usize),
                         target_layer
                             .vertices
-                            .get_unchecked(successor.edge.1 as usize),
+                            .get_unchecked(successor.edge[1] as usize),
                     )
                 };
 
@@ -748,8 +748,8 @@ impl<'m> SearchInstance<'m> {
                 self.add_node(
                     root,
                     *other_side,
-                    (successor.interval.0, successor.edge.0),
-                    (successor.interval.1, successor.edge.1),
+                    (successor.interval.0, successor.edge[0]),
+                    (successor.interval.1, successor.edge[1]),
                     &node,
                 )
             }
