@@ -224,7 +224,8 @@ impl Mesh {
         if ending_polygon == u32::MAX {
             return None;
         }
-        if starting_polygon_index.layer() == ending_polygon.layer() {
+        // TODO: fix islands detection with multiple layers, even if start and end are on the same layer
+        if self.layers.len() == 1 {
             if let Some(islands) = self.layers[starting_polygon_index.layer() as usize]
                 .islands
                 .as_ref()
