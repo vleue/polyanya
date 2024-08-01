@@ -18,6 +18,7 @@ pub struct Triangulation {
         GeoPolygon<f32>,
         ConstrainedDelaunayTriangulation<Point2<f32>>,
     )>,
+    base_layer: Option<Layer>,
 }
 
 impl std::fmt::Debug for Triangulation {
@@ -38,6 +39,25 @@ impl Triangulation {
                 vec![],
             ),
             prebuilt: None,
+            base_layer: None,
+        }
+    }
+
+    /// Create a new triangulation from an existing `Mesh`, cloning the specified [`Layer`].
+    pub fn from_mesh(mesh: &Mesh, layer: u8) -> Triangulation {
+        Self {
+            inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
+            prebuilt: None,
+            base_layer: Some(mesh.layers[layer as usize].clone()),
+        }
+    }
+
+    /// Create a new triangulation from an existing `Layer` of a [`Mesh`].
+    pub fn from_mesh_layer(layer: Layer) -> Triangulation {
+        Self {
+            inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
+            prebuilt: None,
+            base_layer: Some(layer),
         }
     }
 
@@ -88,6 +108,9 @@ impl Triangulation {
         cdt: &mut ConstrainedDelaunayTriangulation<Point2<f32>>,
         edges: &LineString<f32>,
     ) {
+        if edges.0.is_empty() {
+            return;
+        }
         let mut edge_iter = edges.coords().peekable();
         let mut next_point = None;
         loop {
@@ -119,6 +142,9 @@ impl Triangulation {
     ///
     /// This can be used to cache part of the navmesh generation when some of the obstacles won't change.
     pub fn prebuild(&mut self) {
+        if self.base_layer.is_some() {
+            return;
+        }
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
         Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
 
@@ -166,6 +192,26 @@ impl Triangulation {
         };
         let used = self.prebuilt.as_ref().map(|(used, _)| used);
 
+        if let Some(base_layer) = &self.base_layer {
+            for polygon in &base_layer.polygons {
+                polygon.edges_index().for_each(|[p0, p1]| {
+                    let p0 = cdt
+                        .insert(Point2 {
+                            x: base_layer.vertices[p0 as usize].coords.x,
+                            y: base_layer.vertices[p0 as usize].coords.y,
+                        })
+                        .unwrap();
+                    let p1 = cdt
+                        .insert(Point2 {
+                            x: base_layer.vertices[p1 as usize].coords.x,
+                            y: base_layer.vertices[p1 as usize].coords.y,
+                        })
+                        .unwrap();
+                    cdt.add_constraint_and_split(p0, p1, |v| v);
+                });
+            }
+        }
+
         self.inner
             .interiors()
             .iter()
@@ -184,8 +230,22 @@ impl Triangulation {
 
                 let center = face.center();
                 let center = Coord::from((center.x, center.y));
-                (used.map(|used| used.contains(&center)).unwrap_or(true)
+
+                ((used.map(|used| used.contains(&center)).unwrap_or(true)
                     && self.inner.contains(&center))
+                    || (self.base_layer.is_some()
+                        && self
+                            .base_layer
+                            .as_ref()
+                            .map(|base_layer| {
+                                base_layer
+                                    .get_point_location(vec2(center.x, center.y), 0.0)
+                                    .is_some()
+                            })
+                            .unwrap_or(true)
+                        && !self.inner.interiors().iter().any(|obstacle| {
+                            GeoPolygon::new(obstacle.clone(), vec![]).contains(&center)
+                        })))
                 .then(|| {
                     #[cfg(feature = "tracing")]
                     let _preparing_span = tracing::info_span!("preparing polygon").entered();
@@ -247,5 +307,184 @@ impl Triangulation {
             }],
             ..Default::default()
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn triangulation() {
+        let mut triangulation = Triangulation::from_outer_edges(&[
+            vec2(0.0, 0.0),
+            vec2(1.0, 0.0),
+            vec2(1.0, 1.0),
+            vec2(0.0, 1.0),
+        ]);
+        triangulation.add_obstacle(vec![
+            vec2(0.0, 0.25),
+            vec2(0.25, 0.25),
+            vec2(0.25, 0.0),
+            vec2(0.0, 0.0),
+        ]);
+        triangulation.add_obstacle(vec![
+            vec2(1.0, 0.75),
+            vec2(0.75, 0.75),
+            vec2(0.75, 1.0),
+            vec2(1.0, 1.0),
+        ]);
+        let mesh = triangulation.as_navmesh();
+        assert_eq!(
+            mesh.layers[0]
+                .vertices
+                .iter()
+                .map(|v| v.coords)
+                .collect::<Vec<_>>(),
+            vec![
+                vec2(0.0, 0.0),
+                vec2(1.0, 0.0),
+                vec2(1.0, 1.0),
+                vec2(0.0, 1.0),
+                vec2(0.0, 0.25),
+                vec2(0.25, 0.25),
+                vec2(0.25, 0.0),
+                vec2(1.0, 0.75),
+                vec2(0.75, 0.75),
+                vec2(0.75, 1.0)
+            ]
+        );
+        assert_eq!(
+            mesh.layers[0]
+                .polygons
+                .iter()
+                .map(|v| v.vertices.clone())
+                .collect::<Vec<_>>(),
+            vec![
+                [5, 1, 8],
+                [4, 5, 3],
+                [5, 6, 1],
+                [8, 3, 5],
+                [7, 8, 1],
+                [8, 9, 3]
+            ]
+        );
+    }
+
+    #[test]
+    fn triangulation_prebuilt() {
+        let mut triangulation = Triangulation::from_outer_edges(&[
+            vec2(0.0, 0.0),
+            vec2(1.0, 0.0),
+            vec2(1.0, 1.0),
+            vec2(0.0, 1.0),
+        ]);
+        triangulation.add_obstacle(vec![
+            vec2(0.0, 0.25),
+            vec2(0.25, 0.25),
+            vec2(0.25, 0.0),
+            vec2(0.0, 0.0),
+        ]);
+        triangulation.prebuild();
+        triangulation.add_obstacle(vec![
+            vec2(1.0, 0.75),
+            vec2(0.75, 0.75),
+            vec2(0.75, 1.0),
+            vec2(1.0, 1.0),
+        ]);
+        let mesh = triangulation.as_navmesh();
+        assert_eq!(
+            mesh.layers[0]
+                .vertices
+                .iter()
+                .map(|v| v.coords)
+                .collect::<Vec<_>>(),
+            vec![
+                vec2(0.0, 0.0),
+                vec2(1.0, 0.0),
+                vec2(1.0, 1.0),
+                vec2(0.0, 1.0),
+                vec2(0.0, 0.25),
+                vec2(0.25, 0.25),
+                vec2(0.25, 0.0),
+                vec2(1.0, 0.75),
+                vec2(0.75, 0.75),
+                vec2(0.75, 1.0)
+            ]
+        );
+        assert_eq!(
+            mesh.layers[0]
+                .polygons
+                .iter()
+                .map(|v| v.vertices.clone())
+                .collect::<Vec<_>>(),
+            vec![
+                [5, 1, 8],
+                [4, 5, 3],
+                [5, 6, 1],
+                [8, 3, 5],
+                [7, 8, 1],
+                [8, 9, 3]
+            ]
+        );
+    }
+
+    #[test]
+    fn triangulation_existing_mesh() {
+        let mut base_triangulation = Triangulation::from_outer_edges(&[
+            vec2(0.0, 0.0),
+            vec2(1.0, 0.0),
+            vec2(1.0, 1.0),
+            vec2(0.0, 1.0),
+        ]);
+        base_triangulation.add_obstacle(vec![
+            vec2(0.0, 0.25),
+            vec2(0.25, 0.25),
+            vec2(0.25, 0.0),
+            vec2(0.0, 0.0),
+        ]);
+        let mesh = base_triangulation.as_navmesh();
+
+        let mut triangulation = Triangulation::from_mesh(&mesh, 0);
+        triangulation.add_obstacle(vec![
+            vec2(1.0, 0.75),
+            vec2(0.75, 0.75),
+            vec2(0.75, 1.0),
+            vec2(1.0, 1.0),
+        ]);
+        let mesh = triangulation.as_navmesh();
+        assert_eq!(
+            mesh.layers[0]
+                .vertices
+                .iter()
+                .map(|v| v.coords)
+                .collect::<Vec<_>>(),
+            vec![
+                vec2(1.0, 1.0),
+                vec2(0.0, 1.0),
+                vec2(0.25, 0.25),
+                vec2(1.0, 0.0),
+                vec2(0.0, 0.25),
+                vec2(0.25, 0.0),
+                vec2(1.0, 0.75),
+                vec2(0.75, 0.75),
+                vec2(0.75, 1.0)
+            ]
+        );
+        assert_eq!(
+            mesh.layers[0]
+                .polygons
+                .iter()
+                .map(|v| v.vertices.clone())
+                .collect::<Vec<_>>(),
+            vec![
+                [2, 3, 7],
+                [4, 2, 1],
+                [3, 2, 5],
+                [1, 2, 7],
+                [6, 7, 3],
+                [7, 8, 1]
+            ]
+        );
     }
 }
