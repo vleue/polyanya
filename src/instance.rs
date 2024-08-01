@@ -344,10 +344,12 @@ impl<'m> SearchInstance<'m> {
         // {
         //     // println!("collinear");
         //     // TODO: possible optimisation
+        //     // https://bitbucket.org/dharabor/pathfinding/src/624a6abe8777d14d0753e847b0970e74a7913b45/anyangle/polyanya/search/expansion.cpp#lines-156
         // }
         // if polygon.vertices.len() == 3 {
         //     // println!("triangle");
         //     // TODO: possible optimisation
+        //     // https://bitbucket.org/dharabor/pathfinding/src/624a6abe8777d14d0753e847b0970e74a7913b45/anyangle/polyanya/search/expansion.cpp#lines-220
         // }
 
         let right_index = {
