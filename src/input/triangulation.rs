@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::collections::{HashMap, HashSet, VecDeque};
 
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -193,21 +193,34 @@ impl Triangulation {
         let used = self.prebuilt.as_ref().map(|(used, _)| used);
 
         if let Some(base_layer) = &self.base_layer {
+            let mut added_vertices = HashMap::new();
+            let mut added_edges = HashSet::new();
             for polygon in &base_layer.polygons {
                 polygon.edges_index().for_each(|[p0, p1]| {
-                    let p0 = cdt
-                        .insert(Point2 {
-                            x: base_layer.vertices[p0 as usize].coords.x,
-                            y: base_layer.vertices[p0 as usize].coords.y,
-                        })
-                        .unwrap();
-                    let p1 = cdt
-                        .insert(Point2 {
-                            x: base_layer.vertices[p1 as usize].coords.x,
-                            y: base_layer.vertices[p1 as usize].coords.y,
-                        })
-                        .unwrap();
-                    cdt.add_constraint_and_split(p0, p1, |v| v);
+                    if !added_edges.insert((p0, p1)) || !added_edges.insert((p1, p0)) {
+                    } else {
+                        let p0 = added_vertices
+                            .entry(p0)
+                            .or_insert_with(|| {
+                                cdt.insert(Point2 {
+                                    x: base_layer.vertices[p0 as usize].coords.x,
+                                    y: base_layer.vertices[p0 as usize].coords.y,
+                                })
+                                .unwrap()
+                            })
+                            .clone();
+                        let p1 = added_vertices
+                            .entry(p1)
+                            .or_insert_with(|| {
+                                cdt.insert(Point2 {
+                                    x: base_layer.vertices[p1 as usize].coords.x,
+                                    y: base_layer.vertices[p1 as usize].coords.y,
+                                })
+                                .unwrap()
+                            })
+                            .clone();
+                        cdt.add_constraint_and_split(p0, p1, |v| v);
+                    }
                 });
             }
         }
