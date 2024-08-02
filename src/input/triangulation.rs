@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use tracing::instrument;
 
 pub use geo::LineString;
-use geo::{Contains, Coord, Polygon as GeoPolygon, SimplifyVwPreserve};
+use geo::{Contains, Coord, Line, Polygon as GeoPolygon, SimplifyVwPreserve};
 use glam::{vec2, Vec2};
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
@@ -111,28 +111,25 @@ impl Triangulation {
         if edges.0.is_empty() {
             return;
         }
-        let mut edge_iter = edges.coords().peekable();
-        let mut next_point = None;
-        loop {
-            let from = edge_iter.next().unwrap();
-            let next = edge_iter.peek();
+        for line in edges.lines().chain(std::iter::once(Line::new(
+            edges.0[edges.0.len() - 1],
+            edges.0[0],
+        ))) {
+            let from = line.start;
+            let next = line.end;
 
-            let point_a = next_point.unwrap_or_else(|| {
-                cdt.insert(Point2 {
+            let point_a = cdt
+                .insert(Point2 {
                     x: from.x,
                     y: from.y,
                 })
-                .unwrap()
-            });
-            let point_b = if let Some(next) = next {
-                cdt.insert(Point2 {
+                .unwrap();
+            let point_b = cdt
+                .insert(Point2 {
                     x: next.x,
                     y: next.y,
                 })
-                .unwrap()
-            } else {
-                break;
-            };
+                .unwrap();
             #[cfg(feature = "debug-print-triangulation")]
             println!(
                 "a {:?} -> {:?}",
@@ -140,7 +137,6 @@ impl Triangulation {
                 (next.unwrap().x, next.unwrap().y)
             );
             cdt.add_constraint_and_split(point_a, point_b, |v| v);
-            next_point = Some(point_b);
         }
     }
 
