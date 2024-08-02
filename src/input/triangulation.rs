@@ -131,11 +131,7 @@ impl Triangulation {
                 })
                 .unwrap();
             #[cfg(feature = "debug-print-triangulation")]
-            println!(
-                "a {:?} -> {:?}",
-                (from.x, from.y),
-                (next.unwrap().x, next.unwrap().y)
-            );
+            println!("a {:?} -> {:?}", (from.x, from.y), (next.x, next.y));
             cdt.add_constraint_and_split(point_a, point_b, |v| v);
         }
     }
