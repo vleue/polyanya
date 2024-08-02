@@ -19,6 +19,7 @@ async = []
 no-default-baking = []
 detailed-layers = []
 serde = ["glam/serde", "bvh2d/serde", "dep:serde"]
+debug-print-triangulation = []
 
 [dependencies]
 tracing = { version = "0.1", optional = true }

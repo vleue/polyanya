@@ -133,6 +133,12 @@ impl Triangulation {
             } else {
                 break;
             };
+            #[cfg(feature = "debug-print-triangulation")]
+            println!(
+                "a {:?} -> {:?}",
+                (from.x, from.y),
+                (next.unwrap().x, next.unwrap().y)
+            );
             cdt.add_constraint_and_split(point_a, point_b, |v| v);
             next_point = Some(point_b);
         }
@@ -199,6 +205,18 @@ impl Triangulation {
                 polygon.edges_index().for_each(|[p0, p1]| {
                     if !added_edges.insert((p0, p1)) || !added_edges.insert((p1, p0)) {
                     } else {
+                        #[cfg(feature = "debug-print-triangulation")]
+                        println!(
+                            "b {:?} -> {:?}",
+                            (
+                                base_layer.vertices[p0 as usize].coords.x,
+                                base_layer.vertices[p0 as usize].coords.y
+                            ),
+                            (
+                                base_layer.vertices[p1 as usize].coords.x,
+                                base_layer.vertices[p1 as usize].coords.y
+                            ),
+                        );
                         let p0 = added_vertices
                             .entry(p0)
                             .or_insert_with(|| {
