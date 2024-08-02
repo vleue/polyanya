@@ -192,26 +192,20 @@ impl Triangulation {
                 polygon.edges_index().for_each(|[p0, p1]| {
                     if !added_edges.insert((p0, p1)) || !added_edges.insert((p1, p0)) {
                     } else {
-                        let p0 = added_vertices
-                            .entry(p0)
-                            .or_insert_with(|| {
-                                cdt.insert(Point2 {
-                                    x: base_layer.vertices[p0 as usize].coords.x as f64,
-                                    y: base_layer.vertices[p0 as usize].coords.y as f64,
-                                })
-                                .unwrap()
+                        let p0 = *added_vertices.entry(p0).or_insert_with(|| {
+                            cdt.insert(Point2 {
+                                x: base_layer.vertices[p0 as usize].coords.x as f64,
+                                y: base_layer.vertices[p0 as usize].coords.y as f64,
                             })
-                            .clone();
-                        let p1 = added_vertices
-                            .entry(p1)
-                            .or_insert_with(|| {
-                                cdt.insert(Point2 {
-                                    x: base_layer.vertices[p1 as usize].coords.x as f64,
-                                    y: base_layer.vertices[p1 as usize].coords.y as f64,
-                                })
-                                .unwrap()
+                            .unwrap()
+                        });
+                        let p1 = *added_vertices.entry(p1).or_insert_with(|| {
+                            cdt.insert(Point2 {
+                                x: base_layer.vertices[p1 as usize].coords.x as f64,
+                                y: base_layer.vertices[p1 as usize].coords.y as f64,
                             })
-                            .clone();
+                            .unwrap()
+                        });
                         cdt.add_constraint_and_split(p0, p1, |v| v);
                     }
                 });
