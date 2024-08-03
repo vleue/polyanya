@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::collections::{HashMap, HashSet, VecDeque};
 
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -16,7 +16,7 @@ pub struct Triangulation {
     inner: GeoPolygon<f32>,
     prebuilt: Option<(
         GeoPolygon<f32>,
-        ConstrainedDelaunayTriangulation<Point2<f32>>,
+        ConstrainedDelaunayTriangulation<Point2<f64>>,
     )>,
     base_layer: Option<Layer>,
 }
@@ -105,36 +105,29 @@ impl Triangulation {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline]
     fn add_constraint_edges(
-        cdt: &mut ConstrainedDelaunayTriangulation<Point2<f32>>,
+        cdt: &mut ConstrainedDelaunayTriangulation<Point2<f64>>,
         edges: &LineString<f32>,
     ) {
         if edges.0.is_empty() {
             return;
         }
-        let mut edge_iter = edges.coords().peekable();
-        let mut next_point = None;
-        loop {
-            let from = edge_iter.next().unwrap();
-            let next = edge_iter.peek();
+        for line in edges.lines() {
+            let from = line.start;
+            let next = line.end;
 
-            let point_a = next_point.unwrap_or_else(|| {
-                cdt.insert(Point2 {
-                    x: from.x,
-                    y: from.y,
+            let point_a = cdt
+                .insert(Point2 {
+                    x: from.x as f64,
+                    y: from.y as f64,
                 })
-                .unwrap()
-            });
-            let point_b = if let Some(next) = next {
-                cdt.insert(Point2 {
-                    x: next.x,
-                    y: next.y,
+                .unwrap();
+            let point_b = cdt
+                .insert(Point2 {
+                    x: next.x as f64,
+                    y: next.y as f64,
                 })
-                .unwrap()
-            } else {
-                break;
-            };
+                .unwrap();
             cdt.add_constraint_and_split(point_a, point_b, |v| v);
-            next_point = Some(point_b);
         }
     }
 
@@ -145,7 +138,7 @@ impl Triangulation {
         if self.base_layer.is_some() {
             return;
         }
-        let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
+        let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f64>>::new();
         Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
 
         self.inner
@@ -184,7 +177,7 @@ impl Triangulation {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Mesh {
         let mut cdt = if self.prebuilt.is_none() {
-            let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f32>>::new();
+            let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f64>>::new();
             Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
             cdt
         } else {
@@ -193,21 +186,28 @@ impl Triangulation {
         let used = self.prebuilt.as_ref().map(|(used, _)| used);
 
         if let Some(base_layer) = &self.base_layer {
+            let mut added_vertices = HashMap::new();
+            let mut added_edges = HashSet::new();
             for polygon in &base_layer.polygons {
                 polygon.edges_index().for_each(|[p0, p1]| {
-                    let p0 = cdt
-                        .insert(Point2 {
-                            x: base_layer.vertices[p0 as usize].coords.x,
-                            y: base_layer.vertices[p0 as usize].coords.y,
-                        })
-                        .unwrap();
-                    let p1 = cdt
-                        .insert(Point2 {
-                            x: base_layer.vertices[p1 as usize].coords.x,
-                            y: base_layer.vertices[p1 as usize].coords.y,
-                        })
-                        .unwrap();
-                    cdt.add_constraint_and_split(p0, p1, |v| v);
+                    if !added_edges.insert((p0, p1)) || !added_edges.insert((p1, p0)) {
+                    } else {
+                        let p0 = *added_vertices.entry(p0).or_insert_with(|| {
+                            cdt.insert(Point2 {
+                                x: base_layer.vertices[p0 as usize].coords.x as f64,
+                                y: base_layer.vertices[p0 as usize].coords.y as f64,
+                            })
+                            .unwrap()
+                        });
+                        let p1 = *added_vertices.entry(p1).or_insert_with(|| {
+                            cdt.insert(Point2 {
+                                x: base_layer.vertices[p1 as usize].coords.x as f64,
+                                y: base_layer.vertices[p1 as usize].coords.y as f64,
+                            })
+                            .unwrap()
+                        });
+                        cdt.add_constraint_and_split(p0, p1, |v| v);
+                    }
                 });
             }
         }
@@ -229,7 +229,7 @@ impl Triangulation {
                 let _checking_span = tracing::info_span!("checking polygon").entered();
 
                 let center = face.center();
-                let center = Coord::from((center.x, center.y));
+                let center = Coord::from((center.x as f32, center.y as f32));
 
                 ((used.map(|used| used.contains(&center)).unwrap_or(true)
                     && self.inner.contains(&center))
@@ -292,7 +292,7 @@ impl Triangulation {
                         neighbour_polygons
                     };
                 let point = point.position();
-                Vertex::new(vec2(point.x, point.y), neighbour_polygons)
+                Vertex::new(vec2(point.x as f32, point.y as f32), neighbour_polygons)
             })
             .collect::<Vec<_>>();
 
