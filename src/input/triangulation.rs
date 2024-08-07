@@ -176,6 +176,15 @@ impl Triangulation {
     /// ```
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_navmesh(&self) -> Mesh {
+        Mesh {
+            layers: vec![self.as_layer()],
+            ..Default::default()
+        }
+    }
+
+    /// Convert the triangulation into a [`Layer`].
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn as_layer(&self) -> Layer {
         let mut cdt = if self.prebuilt.is_none() {
             let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f64>>::new();
             Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
@@ -301,12 +310,9 @@ impl Triangulation {
         #[cfg(feature = "tracing")]
         drop(vertex_span);
 
-        Mesh {
-            layers: vec![Layer {
-                vertices,
-                polygons,
-                ..Default::default()
-            }],
+        Layer {
+            vertices,
+            polygons,
             ..Default::default()
         }
     }
