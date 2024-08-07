@@ -101,6 +101,16 @@ impl Mesh {
         self.stitch_internals(None, stitch_vertices, one_way);
     }
 
+    /// Stitch vertices between layers. After, the polygons neighboring the stitch points will be
+    /// marked as neighbors in both layers.
+    pub fn stitch_at_vertices(
+        &mut self,
+        stitch_vertices: Vec<((u8, u8), Vec<(usize, usize)>)>,
+        one_way: bool,
+    ) {
+        self.stitch_internals(None, stitch_vertices, one_way);
+    }
+
     /// Remove all stitches between layers.
     ///
     /// This can be useful when updating the NavMesh after obstacles changed, and stitches need to be redone.
@@ -186,6 +196,20 @@ impl Mesh {
             })
             .collect();
 
+        self.stitch_internals(Some(target_layer), stitch_vertices, one_way);
+    }
+
+    /// Restitch vertices targeting a specific layer.
+    ///
+    /// This can be useful when updating the NavMesh after obstacles changed, and changes are limited to a single layer.
+    ///
+    /// This will produce an invalid NavMesh if one of the stitch points target a layer that hasn't been stitched already.
+    pub fn restitch_layer_at_vertices(
+        &mut self,
+        target_layer: u8,
+        stitch_vertices: Vec<((u8, u8), Vec<(usize, usize)>)>,
+        one_way: bool,
+    ) {
         self.stitch_internals(Some(target_layer), stitch_vertices, one_way);
     }
 
@@ -598,6 +622,7 @@ mod tests {
                 Vertex::new(vec2(1., 1.), vec![0, u32::MAX]),
             ],
             polygons: vec![Polygon::new(vec![0, 1, 3, 2], false)],
+            offset: vec2(1.0, 0.0),
             ..Default::default()
         };
         Mesh {
@@ -608,6 +633,37 @@ mod tests {
 
     #[test]
     fn stitch_layers_different_coordinates() {
-        let mesh = layers_different_coordinates();
+        let mut mesh = layers_different_coordinates();
+        let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
+        let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
+
+        let stitch_indices = indices_from
+            .into_iter()
+            .zip(indices_to.into_iter())
+            .collect();
+
+        mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
+
+        assert_eq!(mesh.layers[0].vertices[0].polygons, vec![0, u32::MAX]);
+        assert_eq!(
+            mesh.layers[0].vertices[1].polygons,
+            vec![1 << 24, 0, u32::MAX]
+        );
+        assert_eq!(mesh.layers[0].vertices[2].polygons, vec![0, u32::MAX,]);
+        assert_eq!(
+            mesh.layers[0].vertices[3].polygons,
+            vec![1 << 24, u32::MAX, 0]
+        );
+
+        assert_eq!(
+            mesh.layers[1].vertices[0].polygons,
+            vec![1 << 24, 0, u32::MAX]
+        );
+        assert_eq!(mesh.layers[1].vertices[1].polygons, vec![1 << 24, u32::MAX]);
+        assert_eq!(
+            mesh.layers[1].vertices[2].polygons,
+            vec![1 << 24, u32::MAX, 0]
+        );
+        assert_eq!(mesh.layers[1].vertices[3].polygons, vec![1 << 24, u32::MAX]);
     }
 }

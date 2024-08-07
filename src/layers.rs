@@ -14,6 +14,8 @@ pub struct Layer {
     pub vertices: Vec<Vertex>,
     /// List of `Polygons` in this mesh
     pub polygons: Vec<Polygon>,
+    /// Offset of the layer
+    pub offset: Vec2,
     pub(crate) baked_polygons: Option<BVH2d>,
     pub(crate) islands: Option<Vec<usize>>,
 }
@@ -210,7 +212,8 @@ impl Layer {
         .find(|poly| *poly != u32::MAX)
     }
 
-    fn get_vertices_on_segment(&self, start: Vec2, end: Vec2) -> Vec<usize> {
+    /// Get all the vertices in a layer that are on a segment.
+    pub fn get_vertices_on_segment(&self, start: Vec2, end: Vec2) -> Vec<usize> {
         self.vertices
             .iter()
             .enumerate()
