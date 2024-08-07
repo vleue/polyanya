@@ -206,8 +206,8 @@ impl<'m> SearchInstance<'m> {
                 search_instance.add_node(
                     from.0,
                     *other_side,
-                    (start.coords, edge[0]),
-                    (end.coords, edge[1]),
+                    (start.coords + from_layer.offset, edge[0]),
+                    (end.coords + from_layer.offset, edge[1]),
                     &empty_node,
                 );
             }
@@ -356,8 +356,12 @@ impl<'m> SearchInstance<'m> {
             let mut temp = 0;
             let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
                 [node.edge.1 as usize]
-                .coords;
-            while target_layer.vertices[polygon.vertices[temp] as usize].coords != edge {
+                .coords
+                + self.mesh.layers[node.previous_polygon_layer as usize].offset;
+            while target_layer.vertices[polygon.vertices[temp] as usize].coords
+                + target_layer.offset
+                != edge
+            {
                 temp += 1;
             }
             temp + 1
@@ -377,8 +381,8 @@ impl<'m> SearchInstance<'m> {
                     target_layer.vertices.get_unchecked(edge[1] as usize),
                 )
             };
-            let mut start_point = start.coords;
-            let end_point = end.coords;
+            let mut start_point = start.coords + target_layer.offset;
+            let end_point = end.coords + target_layer.offset;
 
             #[cfg(debug_assertions)]
             if self.debug {
@@ -617,10 +621,10 @@ impl<'m> SearchInstance<'m> {
                 self.fail_fast = 3;
             }
             for successor in self.edges_between(&node).iter() {
+                let target_layer = &self.mesh.layers[node.polygon_to.layer() as usize];
                 // we know they exist, it's checked in `edges_between`
                 #[allow(unsafe_code)]
                 let (start, end) = unsafe {
-                    let target_layer = &self.mesh.layers[node.polygon_to.layer() as usize];
                     (
                         target_layer
                             .vertices
@@ -684,7 +688,12 @@ impl<'m> SearchInstance<'m> {
                 const EPSILON: f32 = 1.0e-10;
                 let root = match successor.ty {
                     SuccessorType::RightNonObservable => {
-                        if successor.interval.0.distance_squared(start.coords) > EPSILON {
+                        if successor
+                            .interval
+                            .0
+                            .distance_squared(start.coords + target_layer.offset)
+                            > EPSILON
+                        {
                             #[cfg(debug_assertions)]
                             if self.debug {
                                 println!("x non observable on an intersection");
@@ -700,7 +709,10 @@ impl<'m> SearchInstance<'m> {
                                 && vertex.polygons.iter().any(|p| {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
-                            && vertex.coords.distance_squared(node.interval.0) < EPSILON
+                            && vertex
+                                .coords
+                                .distance_squared(node.interval.0 + target_layer.offset)
+                                < EPSILON
                         {
                             node.interval.0
                         } else {

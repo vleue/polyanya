@@ -243,7 +243,7 @@ impl Mesh {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Layer, Mesh, Polygon, Vertex};
+    use crate::{Layer, Mesh, Path, Polygon, Vertex};
     use glam::{vec2, Vec2};
 
     fn basic_mesh_with_layers() -> Mesh {
@@ -668,5 +668,28 @@ mod tests {
 
         assert!(mesh.point_in_mesh(vec2(0.5, 0.5)));
         assert!(mesh.point_in_mesh(vec2(1.5, 0.5)));
+    }
+
+    #[test]
+    fn path_stitch_layers_different_coordinates() {
+        let mut mesh = layers_different_coordinates();
+        let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
+        let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
+
+        let stitch_indices = indices_from
+            .into_iter()
+            .zip(indices_to.into_iter())
+            .collect();
+
+        mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
+
+        let path = mesh.path(vec2(0.5, 0.5), vec2(1.5, 0.5)).unwrap();
+        assert_eq!(
+            path,
+            Path {
+                length: 1.0,
+                path: vec![vec2(1.5, 0.5)]
+            }
+        )
     }
 }
