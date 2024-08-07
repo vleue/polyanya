@@ -387,7 +387,7 @@ impl Mesh {
                 .and_then(|layer| {
                     Some(U32Layer::from_layer_and_polygon(
                         layer_index,
-                        layer.get_point_location(point.pos, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
                     ))
                 })
                 .unwrap_or(u32::MAX)
@@ -398,7 +398,7 @@ impl Mesh {
                 .flat_map(|(index, layer)| {
                     Some(U32Layer::from_layer_and_polygon(
                         index as u8,
-                        layer.get_point_location(point.pos, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
                     ))
                 })
                 .find(|poly| poly != &u32::MAX)

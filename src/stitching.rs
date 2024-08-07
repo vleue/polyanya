@@ -665,5 +665,8 @@ mod tests {
             vec![1 << 24, u32::MAX, 0]
         );
         assert_eq!(mesh.layers[1].vertices[3].polygons, vec![1 << 24, u32::MAX]);
+
+        assert!(mesh.point_in_mesh(vec2(0.5, 0.5)));
+        assert!(mesh.point_in_mesh(vec2(1.5, 0.5)));
     }
 }
