@@ -209,6 +209,20 @@ impl Layer {
         })
         .find(|poly| *poly != u32::MAX)
     }
+
+    fn get_vertices_on_segment(&self, start: Vec2, end: Vec2) -> Vec<usize> {
+        self.vertices
+            .iter()
+            .enumerate()
+            .filter_map(|(idx, v)| {
+                if v.coords.on_segment((start, end)) {
+                    Some(idx)
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
 }
 
 #[cfg(test)]
@@ -653,6 +667,19 @@ mod tests {
                 layer: Some(1)
             }),
             u32::from_layer_and_polygon(1, 0)
+        );
+    }
+
+    #[test]
+    fn find_vertices_on_segment() {
+        let mesh = mesh_u_grid();
+        assert_eq!(
+            mesh.layers[0].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0)),
+            vec![0, 4]
+        );
+        assert_eq!(
+            mesh.layers[0].get_vertices_on_segment(vec2(0.0, 0.0), vec2(4.0, 0.0)),
+            vec![0, 1, 2, 3]
         );
     }
 }
