@@ -47,7 +47,6 @@ impl Mesh {
                         .map(|pair| [pair[0], pair[1]])
                         .chain(std::iter::once([last, first]))
                         .flat_map(|pair| {
-                            println!("    {:?}", pair);
                             let layer0 = &self.layers[pair[0].layer() as usize];
                             let layer1 = &self.layers[pair[1].layer() as usize];
                             let mut polygon0 =
