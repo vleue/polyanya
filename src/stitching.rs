@@ -688,7 +688,9 @@ mod tests {
             path,
             Path {
                 length: 1.0,
-                path: vec![vec2(1.5, 0.5)]
+                path: vec![vec2(1.5, 0.5)],
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.0, 0.5), 1), (vec2(1.5, 0.5), 1)],
             }
         )
     }

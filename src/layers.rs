@@ -4,6 +4,9 @@ use tracing::instrument;
 use bvh2d::bvh2d::BVH2d;
 use glam::{vec2, Vec2};
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::{helpers::Vec2Helper, instance::EdgeSide, BoundedPolygon, MeshError, Polygon, Vertex};
 
 /// Layer of a NavMesh

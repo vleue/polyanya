@@ -250,7 +250,7 @@ impl Mesh {
                     "{};{};0;0;0;0;0;{}",
                     self.scenarios.get(),
                     start.elapsed().as_secs_f32() * 1_000_000.0,
-                    from.distance(to),
+                    from.pos.distance(to.pos),
                 );
                 self.scenarios.set(self.scenarios.get() + 1);
             }
