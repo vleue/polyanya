@@ -243,7 +243,7 @@ impl Mesh {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Layer, Mesh, Path, Polygon, Vertex};
+    use crate::{Layer, Mesh, Path, Polygon, Triangulation, Vertex};
     use glam::{vec2, Vec2};
 
     fn basic_mesh_with_layers() -> Mesh {
@@ -692,6 +692,88 @@ mod tests {
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 0.5), 1), (vec2(1.5, 0.5), 1)],
             }
-        )
+        );
+        let path = mesh.path(vec2(1.5, 0.5), vec2(0.5, 0.5)).unwrap();
+        assert_eq!(
+            path,
+            Path {
+                length: 1.0,
+                path: vec![vec2(0.5, 0.5)],
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.0, 0.5), 0), (vec2(0.5, 0.5), 0)],
+            }
+        );
+    }
+
+    #[test]
+    fn path_with_obstacle_stitch_layers_different_coordinates() {
+        let base_mesh = layers_different_coordinates();
+
+        let mut triangulation_a = Triangulation::from_mesh(&base_mesh, 0);
+        let mut triangulation_b = Triangulation::from_mesh(&base_mesh, 1);
+        for obstacle in [
+            // on the boundary
+            vec![
+                vec2(0.75, 0.25),
+                vec2(0.75, 0.75),
+                vec2(1.25, 0.75),
+                vec2(1.25, 0.25),
+            ],
+            // on layer 0
+            vec![vec2(0.0, 0.0), vec2(0.0, 0.25), vec2(0.25, 0.0)],
+            vec![vec2(0.0, 1.0), vec2(0.0, 0.75), vec2(0.25, 1.0)],
+            // on layer 1
+            vec![vec2(2.0, 0.0), vec2(2.0, 0.25), vec2(1.75, 0.0)],
+            vec![vec2(2.0, 2.0), vec2(2.0, 1.75), vec2(1.75, 2.0)],
+        ] {
+            triangulation_a.add_obstacle(obstacle.clone());
+            triangulation_b
+                .add_obstacle(obstacle.into_iter().map(|v| v - vec2(1.0, 0.0)).collect());
+        }
+        let mut mesh = Mesh::default();
+        let mut layer_a = triangulation_a.as_layer();
+        layer_a.remove_useless_vertices();
+        mesh.layers.push(layer_a);
+        let mut layer_b = triangulation_b.as_layer();
+        layer_b.remove_useless_vertices();
+        layer_b.offset = vec2(1.0, 0.0);
+        mesh.layers.push(layer_b);
+
+        for layer in &mesh.layers {
+            println!("====================");
+            println!(
+                "{:?}",
+                layer.vertices.iter().map(|v| v.coords).collect::<Vec<_>>()
+            );
+            println!(
+                "{:?}",
+                layer
+                    .polygons
+                    .iter()
+                    .map(|p| &p.vertices)
+                    .collect::<Vec<_>>()
+            );
+        }
+
+        let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
+        let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
+
+        let stitch_indices = indices_from
+            .into_iter()
+            .zip(indices_to.into_iter())
+            .collect();
+
+        mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
+
+        let path = mesh.path(vec2(0.5, 0.5), vec2(1.5, 0.5)).unwrap();
+        assert_eq!(
+            path.path,
+            vec![vec2(0.75, 0.75), vec2(1.25, 0.75), vec2(1.5, 0.5)]
+        );
+        let path = mesh.path(vec2(1.5, 0.5), vec2(0.5, 0.5)).unwrap();
+        assert_eq!(
+            path.path,
+            vec![vec2(1.25, 0.75), vec2(0.75, 0.75), vec2(0.5, 0.5)]
+        );
     }
 }

@@ -358,9 +358,10 @@ impl<'m> SearchInstance<'m> {
                 [node.edge.1 as usize]
                 .coords
                 + self.mesh.layers[node.previous_polygon_layer as usize].offset;
-            while target_layer.vertices[polygon.vertices[temp] as usize].coords
-                + target_layer.offset
-                != edge
+            while (target_layer.vertices[polygon.vertices[temp] as usize].coords
+                + target_layer.offset)
+                .distance_squared(edge)
+                > 0.001
             {
                 temp += 1;
             }
@@ -649,7 +650,14 @@ impl<'m> SearchInstance<'m> {
 
                 #[cfg(debug_assertions)]
                 if self.debug {
-                    println!("| going to {other_side:?}");
+                    match other_side {
+                        &u32::MAX => println!("| going to u32::MAX"),
+                        _ => println!(
+                            "| going to {:?} / {:?}",
+                            other_side.layer(),
+                            other_side.polygon()
+                        ),
+                    }
                 }
 
                 // prune edges that don't have a polygon on the other side: cul de sac pruning
@@ -696,7 +704,7 @@ impl<'m> SearchInstance<'m> {
                         {
                             #[cfg(debug_assertions)]
                             if self.debug {
-                                println!("x non observable on an intersection");
+                                println!("x non observable on an intersection (right)");
                             }
                             continue;
                         }
@@ -709,9 +717,9 @@ impl<'m> SearchInstance<'m> {
                                 && vertex.polygons.iter().any(|p| {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
-                            && vertex
-                                .coords
-                                .distance_squared(node.interval.0 + target_layer.offset)
+                            && (vertex.coords
+                                + self.mesh.layers[node.previous_polygon_layer as usize].offset)
+                                .distance_squared(node.interval.0)
                                 < EPSILON
                         {
                             node.interval.0
@@ -725,10 +733,12 @@ impl<'m> SearchInstance<'m> {
                     }
                     SuccessorType::Observable => node.root,
                     SuccessorType::LeftNonObservable => {
-                        if successor.interval.1.distance_squared(end.coords) > EPSILON {
+                        if (successor.interval.1).distance_squared(end.coords + target_layer.offset)
+                            > EPSILON
+                        {
                             #[cfg(debug_assertions)]
                             if self.debug {
-                                println!("x non observable on an intersection");
+                                println!("x non observable on an intersection (left)");
                             }
                             continue;
                         }
@@ -741,7 +751,10 @@ impl<'m> SearchInstance<'m> {
                                 && vertex.polygons.iter().any(|p| {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
-                            && vertex.coords.distance_squared(node.interval.1) < EPSILON
+                            && (vertex.coords
+                                + self.mesh.layers[node.previous_polygon_layer as usize].offset)
+                                .distance_squared(node.interval.1)
+                                < EPSILON
                         {
                             node.interval.1
                         } else {
@@ -771,7 +784,12 @@ impl<'m> SearchInstance<'m> {
             if self.node_buffer.len() == 1 && self.node_buffer[0].polygon_to != self.polygon_to {
                 #[cfg(feature = "verbose")]
                 for new_node in &self.node_buffer {
-                    println!("        intermediate: {}", new_node);
+                    println!(
+                        "        intermediate: {} -> to polygon {}/{}",
+                        new_node,
+                        new_node.polygon_to.layer(),
+                        new_node.polygon_to.polygon()
+                    );
                 }
                 node = self.node_buffer.drain(..).next().unwrap();
                 #[cfg(debug_assertions)]
