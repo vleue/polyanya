@@ -33,7 +33,7 @@ impl Mesh {
                     let angle = Vec2::Y.angle_between(direction);
                     (angle * 100000.0) as i32
                 });
-                if polygons.len() == 0 {
+                if polygons.is_empty() {
                     reordered_neighbors_in_layer.push(vec![u32::MAX]);
                 } else {
                     // Reintroduce empty markers

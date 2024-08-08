@@ -4,11 +4,14 @@ use glam::Vec2;
 
 use crate::{instance::U32Layer, Mesh};
 
+type StitchVertices = Vec<((u8, u8), Vec<(usize, usize)>)>;
+type StitchPoints = Vec<((u8, u8), Vec<Vec2>)>;
+
 impl Mesh {
     fn stitch_internals(
         &mut self,
         target_layer: Option<u8>,
-        stitch_vertices: Vec<((u8, u8), Vec<(usize, usize)>)>,
+        stitch_vertices: StitchVertices,
         one_way: bool,
     ) {
         // update indexes of layers
@@ -77,7 +80,7 @@ impl Mesh {
 
     /// Stitch points between layers. After, the polygons neighboring the stitch points will be
     /// marked as neighbors in both layers.
-    pub fn stitch_at_points(&mut self, stitch_points: Vec<((u8, u8), Vec<Vec2>)>, one_way: bool) {
+    pub fn stitch_at_points(&mut self, stitch_points: StitchPoints, one_way: bool) {
         let stitch_vertices = stitch_points
             .into_iter()
             .map(|((from, to), points)| {
@@ -103,11 +106,7 @@ impl Mesh {
 
     /// Stitch vertices between layers. After, the polygons neighboring the stitch points will be
     /// marked as neighbors in both layers.
-    pub fn stitch_at_vertices(
-        &mut self,
-        stitch_vertices: Vec<((u8, u8), Vec<(usize, usize)>)>,
-        one_way: bool,
-    ) {
+    pub fn stitch_at_vertices(&mut self, stitch_vertices: StitchVertices, one_way: bool) {
         self.stitch_internals(None, stitch_vertices, one_way);
     }
 
@@ -172,7 +171,7 @@ impl Mesh {
     pub fn restitch_layer_at_points(
         &mut self,
         target_layer: u8,
-        stitch_points: Vec<((u8, u8), Vec<Vec2>)>,
+        stitch_points: StitchPoints,
         one_way: bool,
     ) {
         let stitch_vertices = stitch_points
@@ -207,7 +206,7 @@ impl Mesh {
     pub fn restitch_layer_at_vertices(
         &mut self,
         target_layer: u8,
-        stitch_vertices: Vec<((u8, u8), Vec<(usize, usize)>)>,
+        stitch_vertices: StitchVertices,
         one_way: bool,
     ) {
         self.stitch_internals(Some(target_layer), stitch_vertices, one_way);
@@ -218,7 +217,7 @@ impl Mesh {
     /// This can be slow, as every vertex of every layer need to be compared with every others.
     ///
     /// It can also produce invalid results if some layers are overlapping, for example when they represent different levels/floors of the same area.
-    pub fn find_stitch_points(&mut self) -> Vec<((u8, u8), Vec<Vec2>)> {
+    pub fn find_stitch_points(&mut self) -> StitchPoints {
         let mut stitch_points: HashMap<(u8, u8), Vec<Vec2>> = HashMap::new();
         for (layer_index, layer) in self.layers.iter().enumerate() {
             for vertex in layer.vertices.iter() {
