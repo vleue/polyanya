@@ -4,11 +4,14 @@ use glam::Vec2;
 
 use crate::{instance::U32Layer, Mesh};
 
+type StitchVertices = Vec<((u8, u8), Vec<(usize, usize)>)>;
+type StitchPoints = Vec<((u8, u8), Vec<Vec2>)>;
+
 impl Mesh {
     fn stitch_internals(
         &mut self,
         target_layer: Option<u8>,
-        stitch_points: Vec<((u8, u8), Vec<Vec2>)>,
+        stitch_vertices: StitchVertices,
         one_way: bool,
     ) {
         // update indexes of layers
@@ -26,18 +29,17 @@ impl Mesh {
                 }
             }
         }
-        for ((from, to), stitch_points) in stitch_points {
+        for ((from, to), stitch_vertices) in stitch_vertices {
             if let Some(target_layer) = target_layer {
                 if target_layer != from && target_layer != to {
                     continue;
                 }
             }
-            for stitch_point in stitch_points {
+            for (stitch_from, stitch_to) in stitch_vertices {
                 let mut neighbors_to = {
                     let vertex_from = self.layers[from as usize]
                         .vertices
-                        .iter()
-                        .find(|v| v.coords == stitch_point)
+                        .get(stitch_from)
                         .unwrap();
                     let mut neighbors_from = vertex_from
                         .polygons
@@ -50,8 +52,7 @@ impl Mesh {
                         .get_mut(to as usize)
                         .unwrap()
                         .vertices
-                        .iter_mut()
-                        .find(|v| v.coords == stitch_point)
+                        .get_mut(stitch_to)
                         .unwrap();
                     let neighbors_to = vertex_to
                         .polygons
@@ -69,8 +70,7 @@ impl Mesh {
                     .get_mut(from as usize)
                     .unwrap()
                     .vertices
-                    .iter_mut()
-                    .find(|v| v.coords == stitch_point)
+                    .get_mut(stitch_from)
                     .unwrap();
                 vertex_from.polygons.append(&mut neighbors_to);
             }
@@ -80,8 +80,34 @@ impl Mesh {
 
     /// Stitch points between layers. After, the polygons neighboring the stitch points will be
     /// marked as neighbors in both layers.
-    pub fn stitch_at_points(&mut self, stitch_points: Vec<((u8, u8), Vec<Vec2>)>, one_way: bool) {
-        self.stitch_internals(None, stitch_points, one_way);
+    pub fn stitch_at_points(&mut self, stitch_points: StitchPoints, one_way: bool) {
+        let stitch_vertices = stitch_points
+            .into_iter()
+            .map(|((from, to), points)| {
+                let mut stitch_vertices = Vec::new();
+                for point in points {
+                    let stitch_from = self.layers[from as usize]
+                        .vertices
+                        .iter()
+                        .position(|v| v.coords == point)
+                        .unwrap();
+                    let stitch_to = self.layers[to as usize]
+                        .vertices
+                        .iter()
+                        .position(|v| v.coords == point)
+                        .unwrap();
+                    stitch_vertices.push((stitch_from, stitch_to));
+                }
+                ((from, to), stitch_vertices)
+            })
+            .collect();
+        self.stitch_internals(None, stitch_vertices, one_way);
+    }
+
+    /// Stitch vertices between layers. After, the polygons neighboring the stitch points will be
+    /// marked as neighbors in both layers.
+    pub fn stitch_at_vertices(&mut self, stitch_vertices: StitchVertices, one_way: bool) {
+        self.stitch_internals(None, stitch_vertices, one_way);
     }
 
     /// Remove all stitches between layers.
@@ -145,10 +171,45 @@ impl Mesh {
     pub fn restitch_layer_at_points(
         &mut self,
         target_layer: u8,
-        stitch_points: Vec<((u8, u8), Vec<Vec2>)>,
+        stitch_points: StitchPoints,
         one_way: bool,
     ) {
-        self.stitch_internals(Some(target_layer), stitch_points, one_way);
+        let stitch_vertices = stitch_points
+            .into_iter()
+            .map(|((from, to), points)| {
+                let mut stitch_vertices = Vec::new();
+                for point in points {
+                    let stitch_from = self.layers[from as usize]
+                        .vertices
+                        .iter()
+                        .position(|v| v.coords == point)
+                        .unwrap();
+                    let stitch_to = self.layers[to as usize]
+                        .vertices
+                        .iter()
+                        .position(|v| v.coords == point)
+                        .unwrap();
+                    stitch_vertices.push((stitch_from, stitch_to));
+                }
+                ((from, to), stitch_vertices)
+            })
+            .collect();
+
+        self.stitch_internals(Some(target_layer), stitch_vertices, one_way);
+    }
+
+    /// Restitch vertices targeting a specific layer.
+    ///
+    /// This can be useful when updating the NavMesh after obstacles changed, and changes are limited to a single layer.
+    ///
+    /// This will produce an invalid NavMesh if one of the stitch points target a layer that hasn't been stitched already.
+    pub fn restitch_layer_at_vertices(
+        &mut self,
+        target_layer: u8,
+        stitch_vertices: StitchVertices,
+        one_way: bool,
+    ) {
+        self.stitch_internals(Some(target_layer), stitch_vertices, one_way);
     }
 
     /// Find stitch points between layers.
@@ -156,7 +217,7 @@ impl Mesh {
     /// This can be slow, as every vertex of every layer need to be compared with every others.
     ///
     /// It can also produce invalid results if some layers are overlapping, for example when they represent different levels/floors of the same area.
-    pub fn find_stitch_points(&mut self) -> Vec<((u8, u8), Vec<Vec2>)> {
+    pub fn find_stitch_points(&mut self) -> StitchPoints {
         let mut stitch_points: HashMap<(u8, u8), Vec<Vec2>> = HashMap::new();
         for (layer_index, layer) in self.layers.iter().enumerate() {
             for vertex in layer.vertices.iter() {
@@ -181,8 +242,8 @@ impl Mesh {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Layer, Mesh, Polygon, Vertex};
-    use glam::Vec2;
+    use crate::{Layer, Mesh, Path, Polygon, Triangulation, Vertex};
+    use glam::{vec2, Vec2};
 
     fn basic_mesh_with_layers() -> Mesh {
         Mesh {
@@ -538,6 +599,180 @@ mod tests {
         assert_eq!(
             mesh.layers[2].vertices[3].polygons,
             vec![33554432, u32::MAX]
+        );
+    }
+
+    fn layers_different_coordinates() -> Mesh {
+        let layer_a = Layer {
+            vertices: vec![
+                Vertex::new(vec2(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 1.), vec![0, u32::MAX]),
+            ],
+            polygons: vec![Polygon::new(vec![0, 1, 3, 2], false)],
+            ..Default::default()
+        };
+        let layer_b = Layer {
+            vertices: vec![
+                Vertex::new(vec2(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 1.), vec![0, u32::MAX]),
+            ],
+            polygons: vec![Polygon::new(vec![0, 1, 3, 2], false)],
+            offset: vec2(1.0, 0.0),
+            ..Default::default()
+        };
+        Mesh {
+            layers: vec![layer_a, layer_b],
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn stitch_layers_different_coordinates() {
+        let mut mesh = layers_different_coordinates();
+        let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
+        let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
+
+        let stitch_indices = indices_from
+            .into_iter()
+            .zip(indices_to.into_iter())
+            .collect();
+
+        mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
+
+        assert_eq!(mesh.layers[0].vertices[0].polygons, vec![0, u32::MAX]);
+        assert_eq!(
+            mesh.layers[0].vertices[1].polygons,
+            vec![1 << 24, 0, u32::MAX]
+        );
+        assert_eq!(mesh.layers[0].vertices[2].polygons, vec![0, u32::MAX,]);
+        assert_eq!(
+            mesh.layers[0].vertices[3].polygons,
+            vec![1 << 24, u32::MAX, 0]
+        );
+
+        assert_eq!(
+            mesh.layers[1].vertices[0].polygons,
+            vec![1 << 24, 0, u32::MAX]
+        );
+        assert_eq!(mesh.layers[1].vertices[1].polygons, vec![1 << 24, u32::MAX]);
+        assert_eq!(
+            mesh.layers[1].vertices[2].polygons,
+            vec![1 << 24, u32::MAX, 0]
+        );
+        assert_eq!(mesh.layers[1].vertices[3].polygons, vec![1 << 24, u32::MAX]);
+
+        assert!(mesh.point_in_mesh(vec2(0.5, 0.5)));
+        assert!(mesh.point_in_mesh(vec2(1.5, 0.5)));
+    }
+
+    #[test]
+    fn path_stitch_layers_different_coordinates() {
+        let mut mesh = layers_different_coordinates();
+        let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
+        let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
+
+        let stitch_indices = indices_from
+            .into_iter()
+            .zip(indices_to.into_iter())
+            .collect();
+
+        mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
+
+        let path = mesh.path(vec2(0.5, 0.5), vec2(1.5, 0.5)).unwrap();
+        assert_eq!(
+            path,
+            Path {
+                length: 1.0,
+                path: vec![vec2(1.5, 0.5)],
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.0, 0.5), 1), (vec2(1.5, 0.5), 1)],
+            }
+        );
+        let path = mesh.path(vec2(1.5, 0.5), vec2(0.5, 0.5)).unwrap();
+        assert_eq!(
+            path,
+            Path {
+                length: 1.0,
+                path: vec![vec2(0.5, 0.5)],
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.0, 0.5), 0), (vec2(0.5, 0.5), 0)],
+            }
+        );
+    }
+
+    #[test]
+    fn path_with_obstacle_stitch_layers_different_coordinates() {
+        let base_mesh = layers_different_coordinates();
+
+        let mut triangulation_a = Triangulation::from_mesh(&base_mesh, 0);
+        let mut triangulation_b = Triangulation::from_mesh(&base_mesh, 1);
+        for obstacle in [
+            // on the boundary
+            vec![
+                vec2(0.75, 0.25),
+                vec2(0.75, 0.75),
+                vec2(1.25, 0.75),
+                vec2(1.25, 0.25),
+            ],
+            // on layer 0
+            vec![vec2(0.0, 0.0), vec2(0.0, 0.25), vec2(0.25, 0.0)],
+            vec![vec2(0.0, 1.0), vec2(0.0, 0.75), vec2(0.25, 1.0)],
+            // on layer 1
+            vec![vec2(2.0, 0.0), vec2(2.0, 0.25), vec2(1.75, 0.0)],
+            vec![vec2(2.0, 2.0), vec2(2.0, 1.75), vec2(1.75, 2.0)],
+        ] {
+            triangulation_a.add_obstacle(obstacle.clone());
+            triangulation_b
+                .add_obstacle(obstacle.into_iter().map(|v| v - vec2(1.0, 0.0)).collect());
+        }
+        let mut mesh = Mesh::default();
+        let mut layer_a = triangulation_a.as_layer();
+        layer_a.remove_useless_vertices();
+        mesh.layers.push(layer_a);
+        let mut layer_b = triangulation_b.as_layer();
+        layer_b.remove_useless_vertices();
+        layer_b.offset = vec2(1.0, 0.0);
+        mesh.layers.push(layer_b);
+
+        for layer in &mesh.layers {
+            println!("====================");
+            println!(
+                "{:?}",
+                layer.vertices.iter().map(|v| v.coords).collect::<Vec<_>>()
+            );
+            println!(
+                "{:?}",
+                layer
+                    .polygons
+                    .iter()
+                    .map(|p| &p.vertices)
+                    .collect::<Vec<_>>()
+            );
+        }
+
+        let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
+        let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
+
+        let stitch_indices = indices_from
+            .into_iter()
+            .zip(indices_to.into_iter())
+            .collect();
+
+        mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
+
+        let path = mesh.path(vec2(0.5, 0.5), vec2(1.5, 0.5)).unwrap();
+        assert_eq!(
+            path.path,
+            vec![vec2(0.75, 0.75), vec2(1.25, 0.75), vec2(1.5, 0.5)]
+        );
+        let path = mesh.path(vec2(1.5, 0.5), vec2(0.5, 0.5)).unwrap();
+        assert_eq!(
+            path.path,
+            vec![vec2(1.25, 0.75), vec2(0.75, 0.75), vec2(0.5, 0.5)]
         );
     }
 }

@@ -250,7 +250,7 @@ impl Mesh {
                     "{};{};0;0;0;0;0;{}",
                     self.scenarios.get(),
                     start.elapsed().as_secs_f32() * 1_000_000.0,
-                    from.distance(to),
+                    from.pos.distance(to.pos),
                 );
                 self.scenarios.set(self.scenarios.get() + 1);
             }
@@ -272,7 +272,7 @@ impl Mesh {
         );
 
         // Limit search to avoid an infinite loop.
-        for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 100 {
+        for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 10 {
             match search_instance.next() {
                 InstanceStep::Found(path) => return Some(path),
                 InstanceStep::NotFound => return None,
@@ -387,7 +387,7 @@ impl Mesh {
                 .and_then(|layer| {
                     Some(U32Layer::from_layer_and_polygon(
                         layer_index,
-                        layer.get_point_location(point.pos, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
                     ))
                 })
                 .unwrap_or(u32::MAX)
@@ -398,7 +398,7 @@ impl Mesh {
                 .flat_map(|(index, layer)| {
                     Some(U32Layer::from_layer_and_polygon(
                         index as u8,
-                        layer.get_point_location(point.pos, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
                     ))
                 })
                 .find(|poly| poly != &u32::MAX)

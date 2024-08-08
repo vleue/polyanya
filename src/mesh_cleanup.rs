@@ -11,6 +11,7 @@ impl Mesh {
         for layer in self.layers.iter() {
             let mut reordered_neighbors_in_layer = vec![];
             for vertex in &layer.vertices {
+                let vertex_coords = vertex.coords + layer.offset;
                 // For each polygon using a vertex, sort them in CCW order
                 let mut polygons = vertex
                     .polygons
@@ -26,80 +27,100 @@ impl Mesh {
                         .iter()
                         .map(|v| self.layers[p.layer() as usize].vertices[*v as usize].coords)
                         .sum::<Vec2>()
-                        / vertices.len() as f32;
-                    let direction = center - vertex.coords;
+                        / vertices.len() as f32
+                        + self.layers[p.layer() as usize].offset;
+                    let direction = center - vertex_coords;
                     let angle = Vec2::Y.angle_between(direction);
                     (angle * 100000.0) as i32
                 });
-
-                // Reintroduce empty markers
-                // For two following polygons on a vertex, check their previous / next vertices
-                // If they are different, there is a hole between them
-                let first = polygons[0];
-                let last = *polygons.last().unwrap();
-                if first == last {
-                    polygons.push(u32::MAX);
+                if polygons.is_empty() {
+                    reordered_neighbors_in_layer.push(vec![u32::MAX]);
                 } else {
-                    polygons = polygons
-                        .windows(2)
-                        .map(|pair| [pair[0], pair[1]])
-                        .chain(std::iter::once([last, first]))
-                        .flat_map(|pair| {
-                            let mut polygon_a = self.layers[pair[0].layer() as usize].polygons
-                                [pair[0].polygon() as usize]
-                                .vertices
-                                .clone();
-                            polygon_a.reverse();
-                            let mut found = false;
-                            let previous_a = polygon_a
-                                .iter()
-                                .cycle()
-                                .find(|v| {
-                                    if found {
-                                        return true;
-                                    }
-                                    if self.layers[pair[0].layer() as usize].vertices[**v as usize]
-                                        .coords
-                                        == vertex.coords
-                                    {
-                                        found = true;
-                                    }
-                                    false
-                                })
-                                .unwrap();
-                            let polygon_b = &self.layers[pair[1].layer() as usize].polygons
-                                [pair[1].polygon() as usize]
-                                .vertices;
-                            let mut found = false;
-                            let next_b = polygon_b
-                                .iter()
-                                .cycle()
-                                .find(|v| {
-                                    if found {
-                                        return true;
-                                    }
-                                    if self.layers[pair[1].layer() as usize].vertices[**v as usize]
-                                        .coords
-                                        == vertex.coords
-                                    {
-                                        found = true;
-                                    }
-                                    false
-                                })
-                                .unwrap();
-                            if self.layers[pair[0].layer() as usize].vertices[*previous_a as usize]
-                                .coords
-                                != self.layers[pair[1].layer() as usize].vertices[*next_b as usize]
-                                    .coords
-                            {
-                                vec![pair[0], u32::MAX]
-                            } else {
-                                vec![pair[0]]
-                            }
-                        })
-                        .collect();
+                    // Reintroduce empty markers
+                    // For two following polygons on a vertex, check their previous / next vertices
+                    // If they are different, there is a hole between them
+                    let first = polygons[0];
+                    let last = *polygons.last().unwrap();
+                    if first == last {
+                        polygons.push(u32::MAX);
+                    } else {
+                        polygons = polygons
+                            .windows(2)
+                            .map(|pair| [pair[0], pair[1]])
+                            .chain(std::iter::once([last, first]))
+                            .flat_map(|pair| {
+                                let layer0 = &self.layers[pair[0].layer() as usize];
+                                let layer1 = &self.layers[pair[1].layer() as usize];
+                                let mut polygon0 =
+                                    layer0.polygons[pair[0].polygon() as usize].vertices.clone();
+                                polygon0.reverse();
+                                let mut found = false;
+                                let Some(previous0) =
+                                    polygon0.iter().cycle().take(polygon0.len() * 2).find(|v| {
+                                        if found {
+                                            return true;
+                                        }
+                                        if (layer0.vertices[**v as usize].coords + layer0.offset)
+                                            .distance_squared(vertex_coords)
+                                            < 0.0001
+                                        {
+                                            found = true;
+                                        }
+                                        false
+                                    })
+                                else {
+                                    // println!(
+                                    //     "searching for {:?} in {:?}",
+                                    //     vertex_coords,
+                                    //     polygon0
+                                    //         .iter()
+                                    //         .map(|v| layer0.vertices[*v as usize].coords
+                                    //             + layer0.offset)
+                                    //         .collect::<Vec<_>>()
+                                    // );
+                                    return vec![u32::MAX];
+                                };
+                                let polygon1 =
+                                    &layer1.polygons[pair[1].polygon() as usize].vertices;
+                                let mut found = false;
+                                let Some(next1) =
+                                    polygon1.iter().cycle().take(polygon1.len() * 2).find(|v| {
+                                        if found {
+                                            return true;
+                                        }
+                                        if (layer1.vertices[**v as usize].coords + layer1.offset)
+                                            .distance_squared(vertex_coords)
+                                            < 0.0001
+                                        {
+                                            found = true;
+                                        }
+                                        false
+                                    })
+                                else {
+                                    // println!(
+                                    //     "searching for {:?} in {:?}",
+                                    //     vertex_coords,
+                                    //     polygon1
+                                    //         .iter()
+                                    //         .map(|v| layer1.vertices[*v as usize].coords
+                                    //             + layer1.offset)
+                                    //         .collect::<Vec<_>>()
+                                    // );
+                                    return vec![u32::MAX];
+                                };
+
+                                if layer0.vertices[*previous0 as usize].coords + layer0.offset
+                                    != layer1.vertices[*next1 as usize].coords + layer1.offset
+                                {
+                                    vec![pair[0], u32::MAX]
+                                } else {
+                                    vec![pair[0]]
+                                }
+                            })
+                            .collect();
+                    }
+                    reordered_neighbors_in_layer.push(polygons);
                 }
-                reordered_neighbors_in_layer.push(polygons);
             }
 
             reordered_neighbors.push(reordered_neighbors_in_layer);
