@@ -272,7 +272,7 @@ impl Mesh {
         );
 
         // Limit search to avoid an infinite loop.
-        for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 100 {
+        for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 10 {
             match search_instance.next() {
                 InstanceStep::Found(path) => return Some(path),
                 InstanceStep::NotFound => return None,
