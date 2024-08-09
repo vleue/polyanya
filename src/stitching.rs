@@ -14,6 +14,9 @@ impl Mesh {
         stitch_vertices: StitchVertices,
         one_way: bool,
     ) {
+        if stitch_vertices.is_empty() {
+            return;
+        }
         // update indexes of layers
         for (layer_index, layer) in self.layers.iter_mut().enumerate() {
             if let Some(target_layer) = target_layer {
