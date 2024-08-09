@@ -206,8 +206,8 @@ impl<'m> SearchInstance<'m> {
                 search_instance.add_node(
                     from.0,
                     *other_side,
-                    (start.coords + from_layer.offset, edge[0]),
-                    (end.coords + from_layer.offset, edge[1]),
+                    (start.coords * from_layer.scale + from_layer.offset, edge[0]),
+                    (end.coords * from_layer.scale + from_layer.offset, edge[1]),
                     &empty_node,
                 );
             }
@@ -357,8 +357,10 @@ impl<'m> SearchInstance<'m> {
             let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
                 [node.edge.1 as usize]
                 .coords
+                * self.mesh.layers[node.previous_polygon_layer as usize].scale
                 + self.mesh.layers[node.previous_polygon_layer as usize].offset;
             while (target_layer.vertices[polygon.vertices[temp] as usize].coords
+                * target_layer.scale
                 + target_layer.offset)
                 .distance_squared(edge)
                 > 0.001
@@ -382,8 +384,8 @@ impl<'m> SearchInstance<'m> {
                     target_layer.vertices.get_unchecked(edge[1] as usize),
                 )
             };
-            let mut start_point = start.coords + target_layer.offset;
-            let end_point = end.coords + target_layer.offset;
+            let mut start_point = start.coords * target_layer.scale + target_layer.offset;
+            let end_point = end.coords * target_layer.scale + target_layer.offset;
 
             #[cfg(debug_assertions)]
             if self.debug {
@@ -696,11 +698,9 @@ impl<'m> SearchInstance<'m> {
                 const EPSILON: f32 = 1.0e-10;
                 let root = match successor.ty {
                     SuccessorType::RightNonObservable => {
-                        if successor
-                            .interval
-                            .0
-                            .distance_squared(start.coords + target_layer.offset)
-                            > EPSILON
+                        if successor.interval.0.distance_squared(
+                            start.coords * target_layer.scale + target_layer.offset,
+                        ) > EPSILON
                         {
                             #[cfg(debug_assertions)]
                             if self.debug {
@@ -718,6 +718,7 @@ impl<'m> SearchInstance<'m> {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
                             && (vertex.coords
+                                * self.mesh.layers[node.previous_polygon_layer as usize].scale
                                 + self.mesh.layers[node.previous_polygon_layer as usize].offset)
                                 .distance_squared(node.interval.0)
                                 < EPSILON
@@ -733,7 +734,8 @@ impl<'m> SearchInstance<'m> {
                     }
                     SuccessorType::Observable => node.root,
                     SuccessorType::LeftNonObservable => {
-                        if (successor.interval.1).distance_squared(end.coords + target_layer.offset)
+                        if (successor.interval.1)
+                            .distance_squared(end.coords * target_layer.scale + target_layer.offset)
                             > EPSILON
                         {
                             #[cfg(debug_assertions)]
@@ -752,6 +754,7 @@ impl<'m> SearchInstance<'m> {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
                             && (vertex.coords
+                                * self.mesh.layers[node.previous_polygon_layer as usize].scale
                                 + self.mesh.layers[node.previous_polygon_layer as usize].offset)
                                 .distance_squared(node.interval.1)
                                 < EPSILON

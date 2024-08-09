@@ -775,4 +775,96 @@ mod tests {
             vec![vec2(1.25, 0.75), vec2(0.75, 0.75), vec2(0.5, 0.5)]
         );
     }
+
+    #[test]
+    fn path_stitch_layers_different_coordinates_with_scale() {
+        let base_mesh = layers_different_coordinates();
+        let triangulation_a = Triangulation::from_mesh(&base_mesh, 0);
+        let triangulation_b = Triangulation::from_mesh(&base_mesh, 0);
+        let triangulation_c = Triangulation::from_mesh(&base_mesh, 0);
+
+        let mut mesh = Mesh::default();
+
+        let mut layer_a = triangulation_a.as_layer();
+        layer_a.remove_useless_vertices();
+        layer_a.merge_polygons();
+        mesh.layers.push(layer_a);
+
+        let mut layer_b = triangulation_b.as_layer();
+        layer_b.remove_useless_vertices();
+        layer_b.offset = vec2(1.0, 0.0);
+        layer_b.scale = vec2(0.5, 1.0);
+        layer_b.merge_polygons();
+        mesh.layers.push(layer_b);
+
+        let mut layer_c = triangulation_c.as_layer();
+        layer_c.remove_useless_vertices();
+        layer_c.offset = vec2(1.5, 0.0);
+        layer_c.merge_polygons();
+        mesh.layers.push(layer_c);
+
+        let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
+        let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
+        let stitch_indices_0_1 = indices_from
+            .into_iter()
+            .zip(indices_to.into_iter())
+            .collect();
+
+        let indices_from = mesh.layers[1].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
+        let indices_to = mesh.layers[2].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
+        let stitch_indices_1_2 = indices_from
+            .into_iter()
+            .zip(indices_to.into_iter())
+            .collect();
+
+        mesh.stitch_at_vertices(
+            vec![
+                ((0, 1), dbg!(stitch_indices_0_1)),
+                ((1, 2), dbg!(stitch_indices_1_2)),
+            ],
+            false,
+        );
+
+        assert_eq!(mesh.get_point_location(vec2(0.5, 0.5)), 0);
+        assert_eq!(mesh.get_point_location(vec2(1.25, 0.5)), 1 << 24);
+        assert_eq!(mesh.get_point_location(vec2(1.75, 0.5)), 2 << 24);
+
+        for layer in &mesh.layers {
+            println!(
+                "{:?}",
+                // layer.vertices.iter().map(|v| v.coords).collect::<Vec<_>>()
+                layer.vertices
+            );
+            println!(
+                "{:?}",
+                layer
+                    .polygons
+                    .iter()
+                    .map(|p| &p.vertices)
+                    .collect::<Vec<_>>()
+            );
+        }
+
+        assert_eq!(
+            mesh.path(vec2(0.5, 0.5), vec2(1.25, 0.5)).unwrap(),
+            Path {
+                length: 0.75,
+                path: vec![vec2(1.25, 0.5)],
+            }
+        );
+        assert_eq!(
+            mesh.path(vec2(1.25, 0.5), vec2(1.75, 0.5)).unwrap(),
+            Path {
+                length: 0.5,
+                path: vec![vec2(1.75, 0.5)],
+            }
+        );
+        assert_eq!(
+            mesh.path(vec2(0.5, 0.5), vec2(1.75, 0.5)).unwrap(),
+            Path {
+                length: 1.25,
+                path: vec![vec2(1.75, 0.5)]
+            }
+        );
+    }
 }

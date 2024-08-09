@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use crate::{helpers::Vec2Helper, instance::EdgeSide, BoundedPolygon, MeshError, Polygon, Vertex};
 
 /// Layer of a NavMesh
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Layer {
     /// List of `Vertex` in this mesh
@@ -19,8 +19,23 @@ pub struct Layer {
     pub polygons: Vec<Polygon>,
     /// Offset of the layer
     pub offset: Vec2,
+    /// Scale of the layer
+    pub scale: Vec2,
     pub(crate) baked_polygons: Option<BVH2d>,
     pub(crate) islands: Option<Vec<usize>>,
+}
+
+impl Default for Layer {
+    fn default() -> Self {
+        Self {
+            vertices: vec![],
+            polygons: vec![],
+            offset: Vec2::ZERO,
+            scale: Vec2::ONE,
+            baked_polygons: None,
+            islands: None,
+        }
+    }
 }
 
 impl Layer {
