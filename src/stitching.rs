@@ -17,6 +17,7 @@ impl Mesh {
         if stitch_vertices.is_empty() {
             return;
         }
+        println!("{:?}", stitch_vertices);
         // update indexes of layers
         for (layer_index, layer) in self.layers.iter_mut().enumerate() {
             if let Some(target_layer) = target_layer {
@@ -853,6 +854,8 @@ mod tests {
             Path {
                 length: 0.75,
                 path: vec![vec2(1.25, 0.5)],
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.0, 0.5), 1), (vec2(1.25, 0.5), 1)],
             }
         );
         assert_eq!(
@@ -860,13 +863,34 @@ mod tests {
             Path {
                 length: 0.5,
                 path: vec![vec2(1.75, 0.5)],
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.5, 0.5), 2), (vec2(1.75, 0.5), 2)],
             }
         );
         assert_eq!(
             mesh.path(vec2(0.5, 0.5), vec2(1.75, 0.5)).unwrap(),
             Path {
                 length: 1.25,
-                path: vec![vec2(1.75, 0.5)]
+                path: vec![vec2(1.75, 0.5)],
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![
+                    (vec2(1.0, 0.5), 1),
+                    (vec2(1.5, 0.5), 2),
+                    (vec2(1.75, 0.5), 2)
+                ],
+            }
+        );
+        assert_eq!(
+            mesh.path(vec2(1.75, 0.5), vec2(0.5, 0.5)).unwrap(),
+            Path {
+                length: 1.25,
+                path: vec![vec2(0.5, 0.5)],
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![
+                    (vec2(1.5, 0.5), 1),
+                    (vec2(1.0, 0.5), 0),
+                    (vec2(0.5, 0.5), 0)
+                ],
             }
         );
     }
