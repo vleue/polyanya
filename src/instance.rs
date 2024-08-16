@@ -539,6 +539,7 @@ impl<'m> SearchInstance<'m> {
             {
                 new_f += node
                     .root
+                    .distance(root * self.mesh.layers[node.polygon_to.layer() as usize].scale);
             }
         }
         #[cfg(feature = "detailed-layers")]
