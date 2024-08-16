@@ -378,6 +378,21 @@ impl Mesh {
         self.get_point_location(point) != u32::MAX
     }
 
+    /// Get the positions of a point, including its layer.
+    ///
+    /// If the point can be in multiple layers, in case of overlapping layers, returns all possible layers.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn get_point_layer(&self, point: impl Into<Coords>) -> Vec<Coords> {
+        let coords = point.into();
+        self.get_point_locations(coords)
+            .iter()
+            .map(|p| Coords {
+                pos: coords.pos,
+                layer: Some(p.layer()),
+            })
+            .collect()
+    }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location(&self, point: impl Into<Coords>) -> u32 {
         let point = point.into();
@@ -403,6 +418,35 @@ impl Mesh {
                 })
                 .find(|poly| poly != &u32::MAX)
                 .unwrap_or(u32::MAX)
+        }
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    fn get_point_locations(&self, point: impl Into<Coords>) -> Vec<u32> {
+        let point = point.into();
+        if let Some(layer_index) = point.layer {
+            self.layers
+                .get(layer_index as usize)
+                .and_then(|layer| {
+                    Some(U32Layer::from_layer_and_polygon(
+                        layer_index,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
+                    ))
+                })
+                .into_iter()
+                .collect()
+        } else {
+            self.layers
+                .iter()
+                .enumerate()
+                .flat_map(|(index, layer)| {
+                    Some(U32Layer::from_layer_and_polygon(
+                        index as u8,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
+                    ))
+                })
+                .filter(|poly| poly != &u32::MAX)
+                .collect()
         }
     }
 }
