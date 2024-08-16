@@ -11,7 +11,7 @@ impl Mesh {
         for layer in self.layers.iter() {
             let mut reordered_neighbors_in_layer = vec![];
             for vertex in &layer.vertices {
-                let vertex_coords = vertex.coords * layer.scale + layer.offset;
+                let vertex_coords = vertex.coords + layer.offset;
                 // For each polygon using a vertex, sort them in CCW order
                 let mut polygons = vertex
                     .polygons
@@ -28,12 +28,12 @@ impl Mesh {
                         .map(|v| self.layers[p.layer() as usize].vertices[*v as usize].coords)
                         .sum::<Vec2>()
                         / vertices.len() as f32
-                        * self.layers[p.layer() as usize].scale
                         + self.layers[p.layer() as usize].offset;
                     let direction = center - vertex_coords;
                     let angle = Vec2::Y.angle_between(direction);
                     (angle * 100000.0) as i32
                 });
+                polygons.dedup();
                 if polygons.is_empty() {
                     reordered_neighbors_in_layer.push(vec![u32::MAX]);
                 } else {
@@ -61,8 +61,7 @@ impl Mesh {
                                         if found {
                                             return true;
                                         }
-                                        if (layer0.vertices[**v as usize].coords * layer0.scale
-                                            + layer0.offset)
+                                        if (layer0.vertices[**v as usize].coords + layer0.offset)
                                             .distance_squared(vertex_coords)
                                             < 0.0001
                                         {
@@ -90,8 +89,7 @@ impl Mesh {
                                         if found {
                                             return true;
                                         }
-                                        if (layer1.vertices[**v as usize].coords * layer1.scale
-                                            + layer1.offset)
+                                        if (layer1.vertices[**v as usize].coords + layer1.offset)
                                             .distance_squared(vertex_coords)
                                             < 0.0001
                                         {
@@ -112,10 +110,8 @@ impl Mesh {
                                     return vec![u32::MAX];
                                 };
 
-                                if layer0.vertices[*previous0 as usize].coords * layer0.scale
-                                    + layer0.offset
-                                    != layer1.vertices[*next1 as usize].coords * layer1.scale
-                                        + layer1.offset
+                                if layer0.vertices[*previous0 as usize].coords + layer0.offset
+                                    != layer1.vertices[*next1 as usize].coords + layer1.offset
                                 {
                                     vec![pair[0], u32::MAX]
                                 } else {

@@ -20,6 +20,7 @@ pub struct Layer {
     /// Offset of the layer
     pub offset: Vec2,
     /// Scale of the layer
+    #[cfg(feature = "detailed-layers")]
     pub scale: Vec2,
     pub(crate) baked_polygons: Option<BVH2d>,
     pub(crate) islands: Option<Vec<usize>>,
@@ -31,6 +32,7 @@ impl Default for Layer {
             vertices: vec![],
             polygons: vec![],
             offset: Vec2::ZERO,
+            #[cfg(feature = "detailed-layers")]
             scale: Vec2::ONE,
             baked_polygons: None,
             islands: None,
@@ -345,8 +347,8 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: mesh.get_point_location(to),
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 0);
@@ -377,17 +379,17 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 0,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].root, vec2(2.0, 1.0));
         assert_eq!(
-            successors[0].f,
+            successors[0].distance_start_to_root,
             from.distance(vec2(1.0, 1.0)) + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
         );
-        assert_eq!(successors[0].g, vec2(2.0, 1.0).distance(to));
+        assert_eq!(successors[0].heuristic, vec2(2.0, 1.0).distance(to));
         assert_eq!(successors[0].polygon_from.polygon(), 2);
         assert_eq!(successors[0].polygon_to, u32::from_layer_and_polygon(2, 0));
         assert_eq!(successors[0].interval, (vec2(3.0, 1.0), vec2(2.0, 1.0)));
