@@ -63,7 +63,7 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
     #[cfg(feature = "detailed-layers")]
-    pub(crate) from: Vec2,
+    pub(crate) from: (Vec2, u8),
     pub(crate) to: Vec2,
     pub(crate) polygon_to: u32,
     pub(crate) mesh: &'m Mesh,
@@ -133,7 +133,7 @@ impl<'m> SearchInstance<'m> {
             node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
             #[cfg(feature = "detailed-layers")]
-            from: from.0,
+            from: (from.0, from.1.layer()),
             to: to.0,
             polygon_to: to.1,
             mesh,
@@ -275,7 +275,7 @@ impl<'m> SearchInstance<'m> {
                 #[cfg(feature = "detailed-layers")]
                 let path_with_layers = {
                     let mut path_with_layers = vec![];
-                    let mut from = self.from;
+                    let mut from = self.from.0;
                     for (index, potential_point) in next.path_with_layers.iter().enumerate() {
                         if potential_point.0 == potential_point.1 {
                             from = potential_point.0;
@@ -311,9 +311,20 @@ impl<'m> SearchInstance<'m> {
                     }
                     path_with_layers
                 };
+
                 return InstanceStep::Found(Path {
                     path,
-                    length: next.distance_start_to_root + dbg!(next.heuristic),
+                    #[cfg(not(feature = "detailed-layers"))]
+                    length: next.distance_start_to_root + next.heuristic,
+                    #[cfg(feature = "detailed-layers")]
+                    length: {
+                        let a = path_with_layers.iter().fold((0.0, self.from), |acc, p| {
+                            let scale = self.mesh.layers[acc.1 .1 as usize].scale;
+                            let to_point = (acc.1 .0 * scale).distance(p.0 * scale);
+                            (acc.0 + to_point, *p)
+                        });
+                        a.0
+                    },
                     #[cfg(feature = "detailed-layers")]
                     path_with_layers,
                 });
@@ -556,8 +567,7 @@ impl<'m> SearchInstance<'m> {
         {
             heuristic_to_end = heuristic(
                 root,
-                // self.to, //* self.mesh.layers[other_side.layer() as usize].scale,
-                self.to, //* scale_of_path,
+                self.to,
                 (
                     start.0 * self.mesh.layers[start.1.layer() as usize].scale,
                     end.0 * self.mesh.layers[end.1.layer() as usize].scale,
@@ -811,7 +821,7 @@ impl<'m> SearchInstance<'m> {
                     (successor.interval.0, successor.edge[0]),
                     (successor.interval.1, successor.edge[1]),
                     &node,
-                )
+                );
             }
 
             if self.node_buffer.len() == 1 && self.node_buffer[0].polygon_to != self.polygon_to {

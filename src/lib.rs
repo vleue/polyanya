@@ -271,17 +271,36 @@ impl Mesh {
             start,
         );
 
+        let mut paths: Vec<Path> = vec![];
         // Limit search to avoid an infinite loop.
         for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 10 {
-            match search_instance.next() {
+            let potential_path = match search_instance.next() {
+                #[cfg(not(feature = "detailed-layers"))]
                 InstanceStep::Found(path) => return Some(path),
-                InstanceStep::NotFound => return None,
-                InstanceStep::Continue => (),
+                #[cfg(feature = "detailed-layers")]
+                InstanceStep::Found(path) => Some(path),
+                InstanceStep::NotFound => {
+                    if paths.is_empty() {
+                        None
+                    } else {
+                        Some(paths.remove(0))
+                    }
+                }
+                InstanceStep::Continue => None,
+            };
+            #[cfg(feature = "detailed-layers")]
+            if let Some(path) = potential_path {
+                paths.push(path);
             }
         }
-
-        error!("Search from {from} to {to} failed. Please check the mesh is valid as this should not happen.");
-        None
+        #[cfg(feature = "detailed-layers")]
+        paths.sort_by(|p1, p2| p1.length.partial_cmp(&p2.length).unwrap());
+        if paths.is_empty() {
+            error!("Search from {from} to {to} failed. Please check the mesh is valid as this should not happen.");
+            None
+        } else {
+            Some(paths.remove(0))
+        }
     }
 
     /// The delta set by [`Mesh::set_delta`]
@@ -312,7 +331,7 @@ impl Mesh {
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
             #[cfg(feature = "detailed-layers")]
-            from: node.root,
+            from: (node.root, 0),
             to,
             polygon_to: self.get_point_location(to),
             mesh: self,
@@ -350,7 +369,7 @@ impl Mesh {
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
             #[cfg(feature = "detailed-layers")]
-            from: Vec2::ZERO,
+            from: (Vec2::ZERO, 0),
             to: Vec2::ZERO,
             polygon_to: self.get_point_location(vec2(0.0, 0.0)),
             mesh: self,

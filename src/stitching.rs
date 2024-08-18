@@ -17,7 +17,6 @@ impl Mesh {
         if stitch_vertices.is_empty() {
             return;
         }
-        println!("{:?}", stitch_vertices);
         // update indexes of layers
         for (layer_index, layer) in self.layers.iter_mut().enumerate() {
             if let Some(target_layer) = target_layer {
@@ -797,13 +796,16 @@ mod tests {
         let mut layer_b = triangulation_b.as_layer();
         layer_b.remove_useless_vertices();
         layer_b.offset = vec2(1.0, 0.0);
-        layer_b.scale = vec2(0.5, 1.0);
+        #[cfg(feature = "detailed-layers")]
+        {
+            layer_b.scale = vec2(0.5, 1.0);
+        }
         layer_b.merge_polygons();
         mesh.layers.push(layer_b);
 
         let mut layer_c = triangulation_c.as_layer();
         layer_c.remove_useless_vertices();
-        layer_c.offset = vec2(1.5, 0.0);
+        layer_c.offset = vec2(2.0, 0.0);
         layer_c.merge_polygons();
         mesh.layers.push(layer_c);
 
@@ -830,8 +832,8 @@ mod tests {
         );
 
         assert_eq!(mesh.get_point_location(vec2(0.5, 0.5)), 0);
-        assert_eq!(mesh.get_point_location(vec2(1.25, 0.5)), 1 << 24);
-        assert_eq!(mesh.get_point_location(vec2(1.75, 0.5)), 2 << 24);
+        assert_eq!(mesh.get_point_location(vec2(1.5, 0.5)), 1 << 24);
+        assert_eq!(mesh.get_point_location(vec2(2.5, 0.5)), 2 << 24);
 
         for layer in &mesh.layers {
             println!(
@@ -852,8 +854,11 @@ mod tests {
         assert_eq!(
             mesh.path(vec2(0.5, 0.5), vec2(1.25, 0.5)).unwrap(),
             Path {
+                #[cfg(not(feature = "detailed-layers"))]
                 length: 0.75,
                 path: vec![vec2(1.25, 0.5)],
+                #[cfg(feature = "detailed-layers")]
+                length: 0.625,
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 0.5), 1), (vec2(1.25, 0.5), 1)],
             }
@@ -864,34 +869,274 @@ mod tests {
                 length: 0.5,
                 path: vec![vec2(1.75, 0.5)],
                 #[cfg(feature = "detailed-layers")]
-                path_with_layers: vec![(vec2(1.5, 0.5), 2), (vec2(1.75, 0.5), 2)],
+                path_with_layers: vec![(vec2(1.75, 0.5), 1)],
             }
         );
         assert_eq!(
             mesh.path(vec2(0.5, 0.5), vec2(1.75, 0.5)).unwrap(),
             Path {
+                #[cfg(not(feature = "detailed-layers"))]
                 length: 1.25,
                 path: vec![vec2(1.75, 0.5)],
                 #[cfg(feature = "detailed-layers")]
-                path_with_layers: vec![
-                    (vec2(1.0, 0.5), 1),
-                    (vec2(1.5, 0.5), 2),
-                    (vec2(1.75, 0.5), 2)
-                ],
+                length: 0.875,
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.0, 0.5), 1), (vec2(1.75, 0.5), 1)],
             }
         );
         assert_eq!(
             mesh.path(vec2(1.75, 0.5), vec2(0.5, 0.5)).unwrap(),
             Path {
+                #[cfg(not(feature = "detailed-layers"))]
                 length: 1.25,
                 path: vec![vec2(0.5, 0.5)],
                 #[cfg(feature = "detailed-layers")]
-                path_with_layers: vec![
-                    (vec2(1.5, 0.5), 1),
-                    (vec2(1.0, 0.5), 0),
-                    (vec2(0.5, 0.5), 0)
-                ],
+                length: 0.875,
+                #[cfg(feature = "detailed-layers")]
+                path_with_layers: vec![(vec2(1.0, 0.5), 0), (vec2(0.5, 0.5), 0)],
             }
         );
+    }
+
+    #[test]
+    fn path_with_different_scales() {
+        let _scale = vec2(1.0, 1.1);
+        let layer_start = Layer {
+            vertices: vec![
+                Vertex::new(vec2(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(2., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(2., 1.), vec![0, u32::MAX]),
+            ],
+            polygons: vec![Polygon::new(vec![0, 1, 4, 3, 2], false)],
+            ..Default::default()
+        };
+        let layer_up = Layer {
+            vertices: vec![
+                Vertex::new(vec2(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 1.), vec![0, u32::MAX]),
+            ],
+            polygons: vec![Polygon::new(vec![0, 1, 3, 2], false)],
+            offset: vec2(0.0, 1.0),
+            #[cfg(feature = "detailed-layers")]
+            scale: _scale,
+            ..Default::default()
+        };
+        let layer_down = Layer {
+            vertices: vec![
+                Vertex::new(vec2(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 1.), vec![0, u32::MAX]),
+            ],
+            polygons: vec![Polygon::new(vec![0, 1, 3, 2], false)],
+            offset: vec2(0.0, 2.0),
+            #[cfg(feature = "detailed-layers")]
+            scale: _scale,
+            ..Default::default()
+        };
+        let layer_flat = Layer {
+            vertices: vec![
+                Vertex::new(vec2(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 2.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 2.), vec![0, u32::MAX]),
+            ],
+            polygons: vec![Polygon::new(vec![0, 1, 3, 2], false)],
+            offset: vec2(1.0, 1.0),
+            ..Default::default()
+        };
+        let layer_end = Layer {
+            vertices: vec![
+                Vertex::new(vec2(0., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(1., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(2., 0.), vec![0, u32::MAX]),
+                Vertex::new(vec2(0., 1.), vec![0, u32::MAX]),
+                Vertex::new(vec2(2., 1.), vec![0, u32::MAX]),
+            ],
+            polygons: vec![Polygon::new(vec![0, 1, 2, 4, 3], false)],
+            offset: vec2(0.0, 3.0),
+            ..Default::default()
+        };
+        let mut mesh = Mesh {
+            layers: vec![layer_start, layer_up, layer_down, layer_flat, layer_end],
+            ..Default::default()
+        };
+        mesh.stitch_at_vertices(
+            vec![
+                ((0, 1), vec![(2, 0), (3, 1)]),
+                ((1, 2), vec![(2, 0), (3, 1)]),
+                ((0, 3), vec![(3, 0), (4, 1)]),
+                ((2, 4), vec![(2, 0), (3, 1)]),
+                ((3, 4), vec![(2, 1), (3, 2)]),
+            ],
+            false,
+        );
+
+        println!("========================================");
+        for layer in &mesh.layers {
+            println!("{:?}", layer.vertices);
+            println!(
+                "{:?}",
+                layer
+                    .polygons
+                    .iter()
+                    .map(|p| &p.vertices)
+                    .collect::<Vec<_>>()
+            );
+        }
+        println!("========================================");
+
+        for i in 0..20 {
+            let x = i as f32 / 10.0;
+            let path = mesh.path(vec2(x, 0.1), vec2(x, 3.9)).unwrap();
+            #[cfg(feature = "detailed-layers")]
+            {
+                println!("{:?}", x);
+                println!("  - {:?}", path.length);
+                println!("  - {:?}", path.path);
+                println!("  - {:?}", path.path_with_layers);
+
+                println!(
+                    "   - direct length: {:?}",
+                    vec2(x, 0.1).distance(vec2(x, 3.9))
+                );
+                println!("   - with hill: {:?}", 0.9 * 2.0 + 1.0 * _scale.y * 2.0,);
+                println!(
+                    "   - with long way: {:?}",
+                    vec2(x, 0.1).distance(Vec2::ONE) * 2.0 + 2.0,
+                );
+                println!(
+                    "  - should take: {:?}",
+                    if x >= 1.0 {
+                        "direct path"
+                    } else if 0.9 * 2.0 + 1.0 * _scale.y * 2.0
+                        < vec2(x, 0.1).distance(Vec2::ONE) * 2.0 + 2.0
+                    {
+                        "hill"
+                    } else {
+                        "long way"
+                    }
+                );
+                if x < 0.6 {
+                    println!(" -> taking hill");
+                    // direct path with hill
+                    assert_eq!(
+                        path.path_with_layers
+                            .iter()
+                            .map(|(v, l)| (v.y, *l))
+                            .collect::<Vec<_>>(),
+                        vec![(1.0, 1), (2.0, 2), (3.0, 4), (3.9, 4)]
+                    );
+                    assert!((dbg!(path.length) - 4.0).abs() < 0.1);
+                } else if x < 1.0 {
+                    println!(" -> taking long way");
+                    // path that avoids hill
+                    assert_eq!(
+                        path.path_with_layers
+                            .iter()
+                            .map(|(v, l)| (v.y, *l))
+                            .collect::<Vec<_>>(),
+                        vec![(1.0, 3), (3.0, 4), (3.9, 4)]
+                    );
+                    assert!(
+                        (dbg!(path.length) - (vec2(x, 0.1).distance(Vec2::ONE) * 2.0 + 2.0)).abs()
+                            < 0.01
+                    );
+                } else {
+                    println!(" -> taking direct path");
+                    // direct flat path
+                    assert_eq!(
+                        path.path_with_layers
+                            .iter()
+                            .map(|(v, l)| (v.y, *l))
+                            .collect::<Vec<_>>(),
+                        vec![(1.0, 3), (3.0, 4), (3.9, 4)]
+                    );
+                    assert!((dbg!(path.length) - 3.8).abs() < 0.01);
+                }
+            }
+            #[cfg(not(feature = "detailed-layers"))]
+            {
+                assert!((dbg!(path.length) - 3.8).abs() < 0.01);
+                assert_eq!(path.path, vec![vec2(x, 3.9)]);
+            }
+
+            let path = mesh.path(vec2(x, 3.9), vec2(x, 0.1)).unwrap();
+            #[cfg(feature = "detailed-layers")]
+            {
+                println!("{:?}", x);
+                println!("  - {:?}", path.length);
+                println!("  - {:?}", path.path);
+                println!("  - {:?}", path.path_with_layers);
+
+                println!(
+                    "   - direct length: {:?}",
+                    vec2(x, 0.1).distance(vec2(x, 3.9))
+                );
+                println!("   - with hill: {:?}", 0.9 * 2.0 + 1.0 * _scale.y * 2.0,);
+                println!(
+                    "   - with long way: {:?}",
+                    vec2(x, 0.1).distance(Vec2::ONE) * 2.0 + 2.0,
+                );
+                println!(
+                    "  - should take: {:?}",
+                    if x >= 1.0 {
+                        "direct path"
+                    } else if 0.9 * 2.0 + 1.0 * _scale.y * 2.0
+                        < vec2(x, 0.1).distance(Vec2::ONE) * 2.0 + 2.0
+                    {
+                        "hill"
+                    } else {
+                        "long way"
+                    }
+                );
+                if x < 0.6 {
+                    println!(" -> taking hill");
+                    // direct path with hill
+                    assert_eq!(
+                        path.path_with_layers
+                            .iter()
+                            .map(|(v, l)| (v.y, *l))
+                            .collect::<Vec<_>>(),
+                        vec![(3.0, 2), (2.0, 1), (1.0, 0), (0.1, 0)]
+                    );
+                    assert!((dbg!(path.length) - 4.0).abs() < 0.01);
+                } else if x < 1.0 {
+                    println!(" -> taking long way");
+                    // path that avoids hill
+                    assert_eq!(
+                        path.path_with_layers
+                            .iter()
+                            .map(|(v, l)| (v.y, *l))
+                            .collect::<Vec<_>>(),
+                        vec![(3.0, 3), (1.0, 0), (0.1, 0)]
+                    );
+                    assert!(
+                        (dbg!(path.length) - (vec2(x, 0.1).distance(Vec2::ONE) * 2.0 + 2.0)).abs()
+                            < 0.01
+                    );
+                } else {
+                    println!(" -> taking direct path");
+                    // direct flat path
+                    assert_eq!(
+                        path.path_with_layers
+                            .iter()
+                            .map(|(v, l)| (v.y, *l))
+                            .collect::<Vec<_>>(),
+                        vec![(3.0, 3), (1.0, 0), (0.1, 0)]
+                    );
+                    assert!((dbg!(path.length) - 3.8).abs() < 0.01);
+                }
+            }
+            #[cfg(not(feature = "detailed-layers"))]
+            {
+                assert!((dbg!(path.length) - 3.8).abs() < 0.01);
+                assert_eq!(path.path, vec![vec2(x, 0.1)]);
+            }
+        }
     }
 }
