@@ -364,19 +364,34 @@ impl<'m> SearchInstance<'m> {
         // }
 
         let right_index = {
-            let mut temp = 0;
             let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
                 [node.edge.1 as usize]
                 .coords
                 + self.mesh.layers[node.previous_polygon_layer as usize].offset;
-            while (target_layer.vertices[polygon.vertices[temp] as usize].coords
-                + target_layer.offset)
-                .distance_squared(edge)
-                > 0.001
-            {
-                temp += 1;
-            }
-            temp + 1
+            polygon
+                .vertices
+                .iter()
+                .enumerate()
+                .find(|(_, v)| {
+                    (target_layer.vertices[**v as usize].coords + target_layer.offset)
+                        .distance_squared(edge)
+                        < 0.001
+                })
+                .map(|(i, _)| i)
+                .unwrap_or_else(|| {
+                    let mut distances = polygon
+                        .vertices
+                        .iter()
+                        .map(|v| {
+                            (target_layer.vertices[*v as usize].coords + target_layer.offset)
+                                .distance_squared(edge)
+                        })
+                        .enumerate()
+                        .collect::<Vec<_>>();
+                    distances.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+                    distances.first().unwrap().0
+                })
+                + 1
         };
         let left_index = polygon.vertices.len() + right_index - 2;
 
