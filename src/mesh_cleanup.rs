@@ -79,7 +79,7 @@ impl Mesh {
                                     //             + layer0.offset)
                                     //         .collect::<Vec<_>>()
                                     // );
-                                    return vec![u32::MAX];
+                                    return vec![pair[0], u32::MAX];
                                 };
                                 let polygon1 =
                                     &layer1.polygons[pair[1].polygon() as usize].vertices;
@@ -107,7 +107,7 @@ impl Mesh {
                                     //             + layer1.offset)
                                     //         .collect::<Vec<_>>()
                                     // );
-                                    return vec![u32::MAX];
+                                    return vec![pair[0], u32::MAX];
                                 };
 
                                 if layer0.vertices[*previous0 as usize].coords + layer0.offset
