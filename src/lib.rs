@@ -274,7 +274,7 @@ impl Mesh {
         let mut paths: Vec<Path> = vec![];
         // Limit search to avoid an infinite loop.
         for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 10 {
-            let potential_path = match search_instance.next() {
+            let _potential_path = match search_instance.next() {
                 #[cfg(not(feature = "detailed-layers"))]
                 InstanceStep::Found(path) => return Some(path),
                 #[cfg(feature = "detailed-layers")]
@@ -289,7 +289,7 @@ impl Mesh {
                 InstanceStep::Continue => None,
             };
             #[cfg(feature = "detailed-layers")]
-            if let Some(path) = potential_path {
+            if let Some(path) = _potential_path {
                 paths.push(path);
             }
         }
