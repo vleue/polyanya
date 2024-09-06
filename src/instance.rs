@@ -33,7 +33,6 @@ impl std::hash::Hash for Root {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         ((self.0.x * PRECISION) as i32).hash(state);
         ((self.0.y * PRECISION) as i32).hash(state);
-        state.finish();
     }
 }
 
