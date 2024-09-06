@@ -234,7 +234,8 @@ impl Layer {
 
     /// Get all the vertices in a layer that are on a segment.
     pub fn get_vertices_on_segment(&self, start: Vec2, end: Vec2) -> Vec<usize> {
-        self.vertices
+        let mut vertices = self
+            .vertices
             .iter()
             .enumerate()
             .filter_map(|(idx, v)| {
@@ -244,7 +245,15 @@ impl Layer {
                     None
                 }
             })
-            .collect()
+            .collect::<Vec<_>>();
+        vertices.sort_by(|a, b| {
+            self.vertices[*a]
+                .coords
+                .distance(start)
+                .partial_cmp(&self.vertices[*b].coords.distance(start))
+                .unwrap()
+        });
+        vertices
     }
 }
 
