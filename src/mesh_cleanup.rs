@@ -20,7 +20,7 @@ impl Mesh {
                     .cloned()
                     .collect::<Vec<_>>();
                 // Sort by the angle between the Y axis and the direction from the vertex to the center of the polygon
-                polygons.sort_by_key(|p| {
+                polygons.sort_unstable_by_key(|p| {
                     let vertices =
                         &self.layers[p.layer() as usize].polygons[p.polygon() as usize].vertices;
                     let center = vertices
@@ -33,7 +33,7 @@ impl Mesh {
                     let angle = Vec2::Y.angle_between(direction);
                     (angle * 100000.0) as i32
                 });
-                polygons.dedup();
+                polygons.dedup_by_key(|p| *p);
                 if polygons.is_empty() {
                     reordered_neighbors_in_layer.push(vec![u32::MAX]);
                 } else {
