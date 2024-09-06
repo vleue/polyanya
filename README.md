@@ -6,40 +6,89 @@
 
 Implementation of [Polyanya](https://www.ijcai.org/proceedings/2017/0070.pdf) in Rust! Polyanya is a [any-angle path planning](https://en.wikipedia.org/wiki/Any-angle_path_planning) algorithm.
 
-A WASM demo made with [Bevy](https://bevyengine.org) is available [here](https://vleue.github.io/vleue_navigator/).
+WASM demos made with [Bevy](https://bevyengine.org) are available [here](https://vleue.github.io/vleue_navigator/).
+
+## Features
+
+- **Pathfinding using Polyanya**: Efficient any-angle path planning algorithm for navigation meshes.
+- **Multi-layer Navigation Mesh Support**: 
+  - Overlapping navmeshes for 3D navigation (floors, bridges, ...).
+  - One-way layers for directional movement.
+  - Conditional layer traversal with the ability to enable or disable layers.
+  - Layers with different traversal costs for more realistic pathfinding.
 
 ## Usage
 
+Navigation meshes can be built by specifying their outer edges and inner obstacles:
+
 ```rust
-use glam::Vec2;
+use glam::vec2;
+use polyanya::*;
+
+// Build a mesh from its outer edge
+let triangulation = Triangulation::from_outer_edges(&[
+    vec2(0., 6.), vec2(2., 5.),
+    vec2(2., 4.), vec2(1., 4.),
+    vec2(1., 3.), vec2(2., 1.),
+    vec2(4., 1.), vec2(4., 2.),
+    vec2(7., 4.), vec2(7., 0.),
+    vec2(12., 0.), vec2(12., 3.),
+    vec2(11., 3.), vec2(11., 5.),
+    vec2(13., 5.), vec2(13., 7.),
+    vec2(10., 7.), vec2(11., 8.),
+    vec2(7., 8.), vec2(7., 7.),
+    vec2(5., 7.), vec2(5., 8.),
+    vec2(0., 8.),
+]);
+let mesh = triangulation.as_navmesh();
+
+// Get the path between two points
+let from = vec2(12.0, 0.0);
+let to = vec2(3.0, 1.0);
+let path = mesh.path(from, to);
+
+assert_eq!(
+    path.unwrap().path,
+    vec![
+        vec2(7.0, 4.0),
+        vec2(4.0, 2.0),
+        vec2(3.0, 1.0)
+    ]
+);
+```
+
+They can also be built by manually specifying vertices and polygons for complete control. The following produces the same mesh
+
+```rust
+use glam::vec2;
 use polyanya::*;
 
 // Build a mesh from a list of vertices and polygons
 let mesh = Mesh::new(
     vec![
-        Vertex::new(Vec2::new(0., 6.), vec![0, u32::MAX]),           // 0
-        Vertex::new(Vec2::new(2., 5.), vec![0, u32::MAX, 2]),        // 1
-        Vertex::new(Vec2::new(5., 7.), vec![0, 2, u32::MAX]),        // 2
-        Vertex::new(Vec2::new(5., 8.), vec![0, u32::MAX]),           // 3
-        Vertex::new(Vec2::new(0., 8.), vec![0, u32::MAX]),           // 4
-        Vertex::new(Vec2::new(1., 4.), vec![1, u32::MAX]),           // 5
-        Vertex::new(Vec2::new(2., 1.), vec![1, u32::MAX]),           // 6
-        Vertex::new(Vec2::new(4., 1.), vec![1, u32::MAX]),           // 7
-        Vertex::new(Vec2::new(4., 2.), vec![1, u32::MAX, 2]),        // 8
-        Vertex::new(Vec2::new(2., 4.), vec![1, 2, u32::MAX]),        // 9
-        Vertex::new(Vec2::new(7., 4.), vec![2, u32::MAX, 4]),        // 10
-        Vertex::new(Vec2::new(10., 7.), vec![2, 4, 6, u32::MAX, 3]), // 11
-        Vertex::new(Vec2::new(7., 7.), vec![2, 3, u32::MAX]),        // 12
-        Vertex::new(Vec2::new(11., 8.), vec![3, u32::MAX]),          // 13
-        Vertex::new(Vec2::new(7., 8.), vec![3, u32::MAX]),           // 14
-        Vertex::new(Vec2::new(7., 0.), vec![5, 4, u32::MAX]),        // 15
-        Vertex::new(Vec2::new(11., 3.), vec![4, 5, u32::MAX]),       // 16
-        Vertex::new(Vec2::new(11., 5.), vec![4, u32::MAX, 6]),       // 17
-        Vertex::new(Vec2::new(12., 0.), vec![5, u32::MAX]),          // 18
-        Vertex::new(Vec2::new(12., 3.), vec![5, u32::MAX]),          // 19
-        Vertex::new(Vec2::new(13., 5.), vec![6, u32::MAX]),          // 20
-        Vertex::new(Vec2::new(13., 7.), vec![6, u32::MAX]),          // 21
-        Vertex::new(Vec2::new(1., 3.), vec![1, u32::MAX]),           // 22
+        Vertex::new(vec2(0., 6.), vec![0, u32::MAX]),           // 0
+        Vertex::new(vec2(2., 5.), vec![0, u32::MAX, 2]),        // 1
+        Vertex::new(vec2(5., 7.), vec![0, 2, u32::MAX]),        // 2
+        Vertex::new(vec2(5., 8.), vec![0, u32::MAX]),           // 3
+        Vertex::new(vec2(0., 8.), vec![0, u32::MAX]),           // 4
+        Vertex::new(vec2(1., 4.), vec![1, u32::MAX]),           // 5
+        Vertex::new(vec2(2., 1.), vec![1, u32::MAX]),           // 6
+        Vertex::new(vec2(4., 1.), vec![1, u32::MAX]),           // 7
+        Vertex::new(vec2(4., 2.), vec![1, u32::MAX, 2]),        // 8
+        Vertex::new(vec2(2., 4.), vec![1, 2, u32::MAX]),        // 9
+        Vertex::new(vec2(7., 4.), vec![2, u32::MAX, 4]),        // 10
+        Vertex::new(vec2(10., 7.), vec![2, 4, 6, u32::MAX, 3]), // 11
+        Vertex::new(vec2(7., 7.), vec![2, 3, u32::MAX]),        // 12
+        Vertex::new(vec2(11., 8.), vec![3, u32::MAX]),          // 13
+        Vertex::new(vec2(7., 8.), vec![3, u32::MAX]),           // 14
+        Vertex::new(vec2(7., 0.), vec![5, 4, u32::MAX]),        // 15
+        Vertex::new(vec2(11., 3.), vec![4, 5, u32::MAX]),       // 16
+        Vertex::new(vec2(11., 5.), vec![4, u32::MAX, 6]),       // 17
+        Vertex::new(vec2(12., 0.), vec![5, u32::MAX]),          // 18
+        Vertex::new(vec2(12., 3.), vec![5, u32::MAX]),          // 19
+        Vertex::new(vec2(13., 5.), vec![6, u32::MAX]),          // 20
+        Vertex::new(vec2(13., 7.), vec![6, u32::MAX]),          // 21
+        Vertex::new(vec2(1., 3.), vec![1, u32::MAX]),           // 22
     ],
     vec![
         Polygon::new(vec![0, 1, 2, 3, 4], true),           // 0
@@ -51,20 +100,6 @@ let mesh = Mesh::new(
         Polygon::new(vec![11, 17, 20, 21], true),          // 6
     ],
 ).unwrap();
-
-// Get the path between two points
-let from = Vec2::new(12.0, 0.0);
-let to = Vec2::new(3.0, 1.0);
-let path = mesh.path(from, to);
-
-assert_eq!(
-    path.unwrap().path,
-    vec![
-        Vec2::new(7.0, 4.0),
-        Vec2::new(4.0, 2.0),
-        Vec2::new(3.0, 1.0)
-    ]
-);
 ```
 
 The code above will build the following mesh, with polygons marked in green, and vertices in red:

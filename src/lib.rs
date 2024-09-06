@@ -250,7 +250,7 @@ impl Mesh {
                     "{};{};0;0;0;0;0;{}",
                     self.scenarios.get(),
                     start.elapsed().as_secs_f32() * 1_000_000.0,
-                    from.distance(to),
+                    from.pos.distance(to.pos),
                 );
                 self.scenarios.set(self.scenarios.get() + 1);
             }
@@ -271,17 +271,36 @@ impl Mesh {
             start,
         );
 
+        let mut paths: Vec<Path> = vec![];
         // Limit search to avoid an infinite loop.
-        for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 100 {
-            match search_instance.next() {
+        for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 10 {
+            let _potential_path = match search_instance.next() {
+                #[cfg(not(feature = "detailed-layers"))]
                 InstanceStep::Found(path) => return Some(path),
-                InstanceStep::NotFound => return None,
-                InstanceStep::Continue => (),
+                #[cfg(feature = "detailed-layers")]
+                InstanceStep::Found(path) => Some(path),
+                InstanceStep::NotFound => {
+                    if paths.is_empty() {
+                        None
+                    } else {
+                        Some(paths.remove(0))
+                    }
+                }
+                InstanceStep::Continue => None,
+            };
+            #[cfg(feature = "detailed-layers")]
+            if let Some(path) = _potential_path {
+                paths.push(path);
             }
         }
-
-        error!("Search from {from} to {to} failed. Please check the mesh is valid as this should not happen.");
-        None
+        #[cfg(feature = "detailed-layers")]
+        paths.sort_by(|p1, p2| p1.length.partial_cmp(&p2.length).unwrap());
+        if paths.is_empty() {
+            error!("Search from {from} to {to} failed. Please check the mesh is valid as this should not happen.");
+            None
+        } else {
+            Some(paths.remove(0))
+        }
     }
 
     /// The delta set by [`Mesh::set_delta`]
@@ -312,7 +331,7 @@ impl Mesh {
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
             #[cfg(feature = "detailed-layers")]
-            from: node.root,
+            from: (node.root, 0),
             to,
             polygon_to: self.get_point_location(to),
             mesh: self,
@@ -350,7 +369,7 @@ impl Mesh {
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
             #[cfg(feature = "detailed-layers")]
-            from: Vec2::ZERO,
+            from: (Vec2::ZERO, 0),
             to: Vec2::ZERO,
             polygon_to: self.get_point_location(vec2(0.0, 0.0)),
             mesh: self,
@@ -378,6 +397,21 @@ impl Mesh {
         self.get_point_location(point) != u32::MAX
     }
 
+    /// Get the positions of a point, including its layer.
+    ///
+    /// If the point can be in multiple layers, in case of overlapping layers, returns all possible layers.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn get_point_layer(&self, point: impl Into<Coords>) -> Vec<Coords> {
+        let coords = point.into();
+        self.get_point_locations(coords)
+            .iter()
+            .map(|p| Coords {
+                pos: coords.pos,
+                layer: Some(p.layer()),
+            })
+            .collect()
+    }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     fn get_point_location(&self, point: impl Into<Coords>) -> u32 {
         let point = point.into();
@@ -387,7 +421,7 @@ impl Mesh {
                 .and_then(|layer| {
                     Some(U32Layer::from_layer_and_polygon(
                         layer_index,
-                        layer.get_point_location(point.pos, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
                     ))
                 })
                 .unwrap_or(u32::MAX)
@@ -398,11 +432,40 @@ impl Mesh {
                 .flat_map(|(index, layer)| {
                     Some(U32Layer::from_layer_and_polygon(
                         index as u8,
-                        layer.get_point_location(point.pos, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
                     ))
                 })
                 .find(|poly| poly != &u32::MAX)
                 .unwrap_or(u32::MAX)
+        }
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    fn get_point_locations(&self, point: impl Into<Coords>) -> Vec<u32> {
+        let point = point.into();
+        if let Some(layer_index) = point.layer {
+            self.layers
+                .get(layer_index as usize)
+                .and_then(|layer| {
+                    Some(U32Layer::from_layer_and_polygon(
+                        layer_index,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
+                    ))
+                })
+                .into_iter()
+                .collect()
+        } else {
+            self.layers
+                .iter()
+                .enumerate()
+                .flat_map(|(index, layer)| {
+                    Some(U32Layer::from_layer_and_polygon(
+                        index as u8,
+                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
+                    ))
+                })
+                .filter(|poly| poly != &u32::MAX)
+                .collect()
         }
     }
 }
@@ -418,8 +481,8 @@ struct SearchNode {
     polygon_from: u32,
     polygon_to: u32,
     previous_polygon_layer: u8,
-    f: f32,
-    g: f32,
+    distance_start_to_root: f32,
+    heuristic: f32,
 }
 
 impl Display for SearchNode {
@@ -433,7 +496,11 @@ impl Display for SearchNode {
             "right=({}, {}); ",
             self.interval.0.x, self.interval.0.y
         ))?;
-        f.write_str(&format!("f={:.2}, g={:.2} ", self.f + self.g, self.f))?;
+        f.write_str(&format!(
+            "f={:.2}, g={:.2} ",
+            self.distance_start_to_root + self.heuristic,
+            self.distance_start_to_root
+        ))?;
         Ok(())
     }
 }
@@ -448,9 +515,13 @@ impl Eq for SearchNode {}
 
 impl Ord for SearchNode {
     fn cmp(&self, other: &Self) -> Ordering {
-        match (self.f + self.g).total_cmp(&(other.f + other.g)) {
+        match (self.distance_start_to_root + self.heuristic)
+            .total_cmp(&(other.distance_start_to_root + other.heuristic))
+        {
             Ordering::Less => Ordering::Greater,
-            Ordering::Equal => self.f.total_cmp(&other.f),
+            Ordering::Equal => self
+                .distance_start_to_root
+                .total_cmp(&other.distance_start_to_root),
             Ordering::Greater => Ordering::Less,
         }
     }
@@ -532,14 +603,14 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 1,
             previous_polygon_layer: 0,
-            f: from.distance(to),
-            g: 0.0,
+            distance_start_to_root: from.distance(to),
+            heuristic: 0.0,
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].root, from);
-        assert_eq!(successors[0].f, from.distance(to));
-        assert_eq!(successors[0].g, from.distance(to));
+        assert_eq!(successors[0].distance_start_to_root, from.distance(to));
+        assert_eq!(successors[0].heuristic, from.distance(to));
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].interval, (vec2(2.0, 0.0), vec2(2.0, 1.0)));
@@ -574,14 +645,14 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 1,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].root, from);
-        assert_eq!(successors[0].f, 0.0);
-        assert_eq!(successors[0].g, to.distance(from));
+        assert_eq!(successors[0].distance_start_to_root, 0.0);
+        assert_eq!(successors[0].heuristic, to.distance(from));
         assert_eq!(successors[0].polygon_from, 1);
         assert_eq!(successors[0].polygon_to, 0);
         assert_eq!(successors[0].interval, (vec2(1.0, 1.0), vec2(1.0, 0.0)));
@@ -615,17 +686,17 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 0,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].root, vec2(2.0, 1.0));
         assert_eq!(
-            successors[0].f,
+            successors[0].distance_start_to_root,
             from.distance(vec2(1.0, 1.0)) + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
         );
-        assert_eq!(successors[0].g, vec2(2.0, 1.0).distance(to));
+        assert_eq!(successors[0].heuristic, vec2(2.0, 1.0).distance(to));
         assert_eq!(successors[0].polygon_from, 2);
         assert_eq!(successors[0].polygon_to, 4);
         assert_eq!(successors[0].interval, (vec2(3.0, 1.0), vec2(2.0, 1.0)));
@@ -661,17 +732,17 @@ mod tests {
             polygon_from: 0,
             polygon_to: 1,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].root, vec2(2.0, 1.0));
         assert_eq!(
-            successors[0].f,
+            successors[0].distance_start_to_root,
             from.distance(vec2(1.0, 1.0)) + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
         );
-        assert_eq!(successors[0].g, vec2(2.0, 1.0).distance(to));
+        assert_eq!(successors[0].heuristic, vec2(2.0, 1.0).distance(to));
         assert_eq!(successors[0].polygon_from, 2);
         assert_eq!(successors[0].polygon_to, 4);
         assert_eq!(successors[0].interval, (vec2(3.0, 1.0), vec2(2.0, 1.0)));
@@ -768,16 +839,19 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 2);
 
         assert_eq!(successors[1].root, vec2(11.0, 3.0));
-        assert_eq!(successors[1].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
-            successors[1].g,
+            successors[1].distance_start_to_root,
+            from.distance(vec2(11.0, 3.0))
+        );
+        assert_eq!(
+            successors[1].heuristic,
             vec2(11.0, 3.0).distance(vec2(9.75, 6.75)) + vec2(9.75, 6.75).distance(to)
         );
         assert_eq!(successors[1].polygon_from, 4);
@@ -787,8 +861,8 @@ mod tests {
         assert_eq!(successors[1].path, vec![vec2(11.0, 3.0)]);
 
         assert_eq!(successors[0].root, from);
-        assert_eq!(successors[0].f, 0.0);
-        assert_eq!(successors[0].g, from.distance(to));
+        assert_eq!(successors[0].distance_start_to_root, 0.0);
+        assert_eq!(successors[0].heuristic, from.distance(to));
         assert_eq!(successors[0].polygon_from, 4);
         assert_eq!(successors[0].polygon_to, 2);
         assert_eq!(successors[0].interval, (vec2(9.75, 6.75), vec2(7.0, 4.0)));
@@ -815,16 +889,19 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 3);
 
         assert_eq!(successors[0].root, vec2(11.0, 3.0));
-        assert_eq!(successors[0].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
-            successors[0].g,
+            successors[0].distance_start_to_root,
+            from.distance(vec2(11.0, 3.0))
+        );
+        assert_eq!(
+            successors[0].heuristic,
             vec2(11.0, 3.0).distance(vec2(11.0, 5.0)) + vec2(11.0, 5.0).distance(to)
         );
         assert_eq!(successors[0].polygon_from, 4);
@@ -834,9 +911,12 @@ mod tests {
         assert_eq!(successors[0].path, vec![vec2(11.0, 3.0)]);
 
         assert_eq!(successors[1].root, vec2(11.0, 3.0));
-        assert_eq!(successors[1].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
-            successors[1].g,
+            successors[1].distance_start_to_root,
+            from.distance(vec2(11.0, 3.0))
+        );
+        assert_eq!(
+            successors[1].heuristic,
             vec2(11.0, 3.0).distance(to.mirror((vec2(10.0, 7.0), vec2(9.75, 6.75))))
         );
         assert_eq!(successors[1].polygon_from, 4);
@@ -846,9 +926,9 @@ mod tests {
         assert_eq!(successors[1].path, vec![vec2(11.0, 3.0)]);
 
         assert_eq!(successors[2].root, from);
-        assert_eq!(successors[2].f, 0.0);
+        assert_eq!(successors[2].distance_start_to_root, 0.0);
         assert_eq!(
-            successors[2].g,
+            successors[2].heuristic,
             from.distance(vec2(9.75, 6.75))
                 + vec2(9.75, 6.75).distance(to.mirror((vec2(9.75, 6.75), vec2(7.0, 4.0))))
         );
@@ -886,16 +966,19 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 2);
 
         assert_eq!(successors[1].root, vec2(11.0, 3.0));
-        assert_eq!(successors[1].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
-            successors[1].g,
+            successors[1].distance_start_to_root,
+            from.distance(vec2(11.0, 3.0))
+        );
+        assert_eq!(
+            successors[1].heuristic,
             vec2(11.0, 3.0).distance(vec2(9.75, 6.75)) + vec2(9.75, 6.75).distance(to)
         );
         assert_eq!(successors[1].polygon_from, 4);
@@ -905,9 +988,9 @@ mod tests {
         assert_eq!(successors[1].path, vec![vec2(11.0, 3.0)]);
 
         assert_eq!(successors[0].root, from);
-        assert_eq!(successors[0].f, 0.0);
+        assert_eq!(successors[0].distance_start_to_root, 0.0);
         assert_eq!(
-            successors[0].g,
+            successors[0].heuristic,
             from.distance(vec2(7.0, 4.0)) + vec2(7.0, 4.0).distance(to)
         );
         assert_eq!(successors[0].polygon_from, 4);
@@ -954,16 +1037,19 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 2);
 
         assert_eq!(successors[1].root, vec2(11.0, 3.0));
-        assert_eq!(successors[1].f, from.distance(vec2(11.0, 3.0)));
         assert_eq!(
-            successors[1].g,
+            successors[1].distance_start_to_root,
+            from.distance(vec2(11.0, 3.0))
+        );
+        assert_eq!(
+            successors[1].heuristic,
             vec2(11.0, 3.0).distance(vec2(9.75, 6.75)) + vec2(9.75, 6.75).distance(to)
         );
         assert_eq!(successors[1].polygon_from, 4);
@@ -973,9 +1059,9 @@ mod tests {
         // assert_eq!(successors[1].path, vec![from]);
 
         assert_eq!(successors[0].root, from);
-        assert_eq!(successors[0].f, 0.0);
+        assert_eq!(successors[0].distance_start_to_root, 0.0);
         assert_eq!(
-            successors[0].g,
+            successors[0].heuristic,
             from.distance(vec2(7.0, 4.0)) + vec2(7.0, 4.0).distance(to)
         );
         assert_eq!(successors[0].polygon_from, 4);
@@ -1018,8 +1104,8 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 4,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
 
         let successors = mesh.edges_between(&search_node);
@@ -1040,8 +1126,8 @@ mod tests {
             polygon_from: 4,
             polygon_to: 2,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
 
         let successors = mesh.edges_between(&search_node);
@@ -1062,8 +1148,8 @@ mod tests {
             polygon_from: 4,
             polygon_to: 2,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
 
         let successors = mesh.edges_between(&search_node);
@@ -1087,8 +1173,8 @@ mod tests {
             polygon_from: 0,
             polygon_to: 1,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: 1.0,
+            distance_start_to_root: 0.0,
+            heuristic: 1.0,
         };
 
         let successors = mesh.edges_between(&search_node);

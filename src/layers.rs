@@ -4,18 +4,40 @@ use tracing::instrument;
 use bvh2d::bvh2d::BVH2d;
 use glam::{vec2, Vec2};
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 use crate::{helpers::Vec2Helper, instance::EdgeSide, BoundedPolygon, MeshError, Polygon, Vertex};
 
 /// Layer of a NavMesh
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Layer {
     /// List of `Vertex` in this mesh
     pub vertices: Vec<Vertex>,
     /// List of `Polygons` in this mesh
     pub polygons: Vec<Polygon>,
+    /// Offset of the layer
+    pub offset: Vec2,
+    /// Scale of the layer
+    #[cfg(feature = "detailed-layers")]
+    pub scale: Vec2,
     pub(crate) baked_polygons: Option<BVH2d>,
     pub(crate) islands: Option<Vec<usize>>,
+}
+
+impl Default for Layer {
+    fn default() -> Self {
+        Self {
+            vertices: vec![],
+            polygons: vec![],
+            offset: Vec2::ZERO,
+            #[cfg(feature = "detailed-layers")]
+            scale: Vec2::ONE,
+            baked_polygons: None,
+            islands: None,
+        }
+    }
 }
 
 impl Layer {
@@ -209,6 +231,30 @@ impl Layer {
         })
         .find(|poly| *poly != u32::MAX)
     }
+
+    /// Get all the vertices in a layer that are on a segment.
+    pub fn get_vertices_on_segment(&self, start: Vec2, end: Vec2) -> Vec<usize> {
+        let mut vertices = self
+            .vertices
+            .iter()
+            .enumerate()
+            .filter_map(|(idx, v)| {
+                if v.coords.on_segment((start, end)) {
+                    Some(idx)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>();
+        vertices.sort_by(|a, b| {
+            self.vertices[*a]
+                .coords
+                .distance(start)
+                .partial_cmp(&self.vertices[*b].coords.distance(start))
+                .unwrap()
+        });
+        vertices
+    }
 }
 
 #[cfg(test)]
@@ -310,8 +356,8 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: mesh.get_point_location(to),
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 0);
@@ -342,17 +388,17 @@ mod tests {
             polygon_from: mesh.get_point_location(from),
             polygon_to: 0,
             previous_polygon_layer: 0,
-            f: 0.0,
-            g: from.distance(to),
+            distance_start_to_root: 0.0,
+            heuristic: from.distance(to),
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].root, vec2(2.0, 1.0));
         assert_eq!(
-            successors[0].f,
+            successors[0].distance_start_to_root,
             from.distance(vec2(1.0, 1.0)) + vec2(1.0, 1.0).distance(vec2(2.0, 1.0))
         );
-        assert_eq!(successors[0].g, vec2(2.0, 1.0).distance(to));
+        assert_eq!(successors[0].heuristic, vec2(2.0, 1.0).distance(to));
         assert_eq!(successors[0].polygon_from.polygon(), 2);
         assert_eq!(successors[0].polygon_to, u32::from_layer_and_polygon(2, 0));
         assert_eq!(successors[0].interval, (vec2(3.0, 1.0), vec2(2.0, 1.0)));
@@ -653,6 +699,19 @@ mod tests {
                 layer: Some(1)
             }),
             u32::from_layer_and_polygon(1, 0)
+        );
+    }
+
+    #[test]
+    fn find_vertices_on_segment() {
+        let mesh = mesh_u_grid();
+        assert_eq!(
+            mesh.layers[0].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0)),
+            vec![0, 4]
+        );
+        assert_eq!(
+            mesh.layers[0].get_vertices_on_segment(vec2(0.0, 0.0), vec2(4.0, 0.0)),
+            vec![0, 1, 2, 3]
         );
     }
 }

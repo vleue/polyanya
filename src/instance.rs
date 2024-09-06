@@ -33,7 +33,6 @@ impl std::hash::Hash for Root {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         ((self.0.x * PRECISION) as i32).hash(state);
         ((self.0.y * PRECISION) as i32).hash(state);
-        state.finish();
     }
 }
 
@@ -63,7 +62,7 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
     #[cfg(feature = "detailed-layers")]
-    pub(crate) from: Vec2,
+    pub(crate) from: (Vec2, u8),
     pub(crate) to: Vec2,
     pub(crate) polygon_to: u32,
     pub(crate) mesh: &'m Mesh,
@@ -133,7 +132,7 @@ impl<'m> SearchInstance<'m> {
             node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
             #[cfg(feature = "detailed-layers")]
-            from: from.0,
+            from: (from.0, from.1.layer()),
             to: to.0,
             polygon_to: to.1,
             mesh,
@@ -167,8 +166,8 @@ impl<'m> SearchInstance<'m> {
             polygon_from: from.1,
             polygon_to: from.1,
             previous_polygon_layer: from.1.layer(),
-            f: 0.0,
-            g: 0.0,
+            distance_start_to_root: 0.0,
+            heuristic: 0.0,
         };
 
         let from_layer = &mesh.layers[from.1.layer() as usize];
@@ -206,8 +205,8 @@ impl<'m> SearchInstance<'m> {
                 search_instance.add_node(
                     from.0,
                     *other_side,
-                    (start.coords, edge[0]),
-                    (end.coords, edge[1]),
+                    (start.coords + from_layer.offset, edge[0]),
+                    (end.coords + from_layer.offset, edge[1]),
                     &empty_node,
                 );
             }
@@ -227,7 +226,7 @@ impl<'m> SearchInstance<'m> {
 
             if let Some(o) = self.root_history.get(&Root(next.root)) {
                 // TODO: revisit this for layers with different height at the same coordinates
-                if o < &next.f {
+                if o < &next.distance_start_to_root {
                     #[cfg(feature = "verbose")]
                     println!("node is dominated!");
                     #[cfg(feature = "stats")]
@@ -256,7 +255,7 @@ impl<'m> SearchInstance<'m> {
                         self.pushed,
                         self.popped,
                         self.nodes_pruned_post_pop,
-                        next.f + next.g,
+                        next.distance_start_to_root + next.heuristic,
                     );
                     self.mesh.scenarios.set(self.mesh.scenarios.get() + 1);
                 }
@@ -275,7 +274,7 @@ impl<'m> SearchInstance<'m> {
                 #[cfg(feature = "detailed-layers")]
                 let path_with_layers = {
                     let mut path_with_layers = vec![];
-                    let mut from = self.from;
+                    let mut from = self.from.0;
                     for (index, potential_point) in next.path_with_layers.iter().enumerate() {
                         if potential_point.0 == potential_point.1 {
                             from = potential_point.0;
@@ -311,9 +310,20 @@ impl<'m> SearchInstance<'m> {
                     }
                     path_with_layers
                 };
+
                 return InstanceStep::Found(Path {
                     path,
-                    length: next.f + next.g,
+                    #[cfg(not(feature = "detailed-layers"))]
+                    length: next.distance_start_to_root + next.heuristic,
+                    #[cfg(feature = "detailed-layers")]
+                    length: {
+                        let a = path_with_layers.iter().fold((0.0, self.from), |acc, p| {
+                            let scale = self.mesh.layers[acc.1 .1 as usize].scale;
+                            let to_point = (acc.1 .0 * scale).distance(p.0 * scale);
+                            (acc.0 + to_point, *p)
+                        });
+                        a.0
+                    },
                     #[cfg(feature = "detailed-layers")]
                     path_with_layers,
                 });
@@ -353,14 +363,34 @@ impl<'m> SearchInstance<'m> {
         // }
 
         let right_index = {
-            let mut temp = 0;
             let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
                 [node.edge.1 as usize]
-                .coords;
-            while target_layer.vertices[polygon.vertices[temp] as usize].coords != edge {
-                temp += 1;
-            }
-            temp + 1
+                .coords
+                + self.mesh.layers[node.previous_polygon_layer as usize].offset;
+            polygon
+                .vertices
+                .iter()
+                .enumerate()
+                .find(|(_, v)| {
+                    (target_layer.vertices[**v as usize].coords + target_layer.offset)
+                        .distance_squared(edge)
+                        < 0.001
+                })
+                .map(|(i, _)| i)
+                .unwrap_or_else(|| {
+                    let mut distances = polygon
+                        .vertices
+                        .iter()
+                        .map(|v| {
+                            (target_layer.vertices[*v as usize].coords + target_layer.offset)
+                                .distance_squared(edge)
+                        })
+                        .enumerate()
+                        .collect::<Vec<_>>();
+                    distances.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+                    distances.first().unwrap().0
+                })
+                + 1
         };
         let left_index = polygon.vertices.len() + right_index - 2;
 
@@ -377,8 +407,8 @@ impl<'m> SearchInstance<'m> {
                     target_layer.vertices.get_unchecked(edge[1] as usize),
                 )
             };
-            let mut start_point = start.coords;
-            let end_point = end.coords;
+            let mut start_point = start.coords + target_layer.offset;
+            let end_point = end.coords + target_layer.offset;
 
             #[cfg(debug_assertions)]
             if self.debug {
@@ -517,6 +547,8 @@ impl<'m> SearchInstance<'m> {
             self.nodes_generated += 1;
         }
 
+        let mut new_f = node.distance_start_to_root;
+
         let mut path = node.path.clone();
         #[cfg(feature = "detailed-layers")]
         let mut path_with_layers = node.path_with_layers.clone();
@@ -524,15 +556,39 @@ impl<'m> SearchInstance<'m> {
             path.push(root);
             #[cfg(feature = "detailed-layers")]
             path_with_layers.push((root, root, node.polygon_to.layer()));
+            #[cfg(not(feature = "detailed-layers"))]
+            {
+                new_f += node.root.distance(root);
+            }
+            #[cfg(feature = "detailed-layers")]
+            {
+                new_f += node
+                    .root
+                    .distance(root * self.mesh.layers[node.polygon_to.layer() as usize].scale);
+            }
         }
         #[cfg(feature = "detailed-layers")]
         if other_side.layer() != node.polygon_to.layer() {
             path_with_layers.push((start.0, end.0, other_side.layer()));
         }
 
-        let heuristic = heuristic(root, self.to, (start.0, end.0));
-        let new_f = node.f + node.root.distance(root);
-        if new_f.is_nan() || heuristic.is_nan() {
+        let heuristic_to_end: f32;
+        #[cfg(not(feature = "detailed-layers"))]
+        {
+            heuristic_to_end = heuristic(root, self.to, (start.0, end.0));
+        }
+        #[cfg(feature = "detailed-layers")]
+        {
+            heuristic_to_end = heuristic(
+                root,
+                self.to,
+                (
+                    start.0 * self.mesh.layers[start.1.layer() as usize].scale,
+                    end.0 * self.mesh.layers[end.1.layer() as usize].scale,
+                ),
+            );
+        }
+        if new_f.is_nan() || heuristic_to_end.is_nan() {
             #[cfg(debug_assertions)]
             if self.debug {
                 println!("x one of the distance is NaN");
@@ -551,13 +607,13 @@ impl<'m> SearchInstance<'m> {
             polygon_from: node.polygon_to,
             polygon_to: other_side,
             previous_polygon_layer: node.polygon_to.layer(),
-            f: new_f,
-            g: heuristic,
+            distance_start_to_root: new_f,
+            heuristic: heuristic_to_end,
         };
 
         match self.root_history.entry(Root(root)) {
             Entry::Occupied(mut o) => {
-                if o.get() < &new_node.f {
+                if o.get() < &new_node.distance_start_to_root {
                     #[cfg(debug_assertions)]
                     if self.debug {
                         println!("x already got a better path");
@@ -565,18 +621,24 @@ impl<'m> SearchInstance<'m> {
                 } else {
                     #[cfg(debug_assertions)]
                     if self.debug {
-                        println!("o replaced with {}! ({:?})", new_node.f, new_node);
+                        println!(
+                            "o replaced with {}! ({:?})",
+                            new_node.distance_start_to_root, new_node
+                        );
                     }
-                    o.insert(new_node.f);
+                    o.insert(new_node.distance_start_to_root);
                     self.node_buffer.push(new_node);
                 }
             }
             Entry::Vacant(v) => {
                 #[cfg(debug_assertions)]
                 if self.debug {
-                    println!("o added with {}! ({:?})", new_node.f, new_node);
+                    println!(
+                        "o added with {}! ({:?})",
+                        new_node.distance_start_to_root, new_node
+                    );
                 }
-                v.insert(new_node.f);
+                v.insert(new_node.distance_start_to_root);
                 self.node_buffer.push(new_node);
             }
         }
@@ -617,10 +679,10 @@ impl<'m> SearchInstance<'m> {
                 self.fail_fast = 3;
             }
             for successor in self.edges_between(&node).iter() {
+                let target_layer = &self.mesh.layers[node.polygon_to.layer() as usize];
                 // we know they exist, it's checked in `edges_between`
                 #[allow(unsafe_code)]
                 let (start, end) = unsafe {
-                    let target_layer = &self.mesh.layers[node.polygon_to.layer() as usize];
                     (
                         target_layer
                             .vertices
@@ -645,7 +707,14 @@ impl<'m> SearchInstance<'m> {
 
                 #[cfg(debug_assertions)]
                 if self.debug {
-                    println!("| going to {other_side:?}");
+                    match other_side {
+                        &u32::MAX => println!("| going to u32::MAX"),
+                        _ => println!(
+                            "| going to {:?} / {:?}",
+                            other_side.layer(),
+                            other_side.polygon()
+                        ),
+                    }
                 }
 
                 // prune edges that don't have a polygon on the other side: cul de sac pruning
@@ -684,10 +753,15 @@ impl<'m> SearchInstance<'m> {
                 const EPSILON: f32 = 1.0e-10;
                 let root = match successor.ty {
                     SuccessorType::RightNonObservable => {
-                        if successor.interval.0.distance_squared(start.coords) > EPSILON {
+                        if successor
+                            .interval
+                            .0
+                            .distance_squared(start.coords + target_layer.offset)
+                            > EPSILON
+                        {
                             #[cfg(debug_assertions)]
                             if self.debug {
-                                println!("x non observable on an intersection");
+                                println!("x non observable on an intersection (right)");
                             }
                             continue;
                         }
@@ -700,7 +774,10 @@ impl<'m> SearchInstance<'m> {
                                 && vertex.polygons.iter().any(|p| {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
-                            && vertex.coords.distance_squared(node.interval.0) < EPSILON
+                            && (vertex.coords
+                                + self.mesh.layers[node.previous_polygon_layer as usize].offset)
+                                .distance_squared(node.interval.0)
+                                < EPSILON
                         {
                             node.interval.0
                         } else {
@@ -713,10 +790,12 @@ impl<'m> SearchInstance<'m> {
                     }
                     SuccessorType::Observable => node.root,
                     SuccessorType::LeftNonObservable => {
-                        if successor.interval.1.distance_squared(end.coords) > EPSILON {
+                        if (successor.interval.1).distance_squared(end.coords + target_layer.offset)
+                            > EPSILON
+                        {
                             #[cfg(debug_assertions)]
                             if self.debug {
-                                println!("x non observable on an intersection");
+                                println!("x non observable on an intersection (left)");
                             }
                             continue;
                         }
@@ -729,7 +808,10 @@ impl<'m> SearchInstance<'m> {
                                 && vertex.polygons.iter().any(|p| {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
-                            && vertex.coords.distance_squared(node.interval.1) < EPSILON
+                            && (vertex.coords
+                                + self.mesh.layers[node.previous_polygon_layer as usize].offset)
+                                .distance_squared(node.interval.1)
+                                < EPSILON
                         {
                             node.interval.1
                         } else {
@@ -753,13 +835,18 @@ impl<'m> SearchInstance<'m> {
                     (successor.interval.0, successor.edge[0]),
                     (successor.interval.1, successor.edge[1]),
                     &node,
-                )
+                );
             }
 
             if self.node_buffer.len() == 1 && self.node_buffer[0].polygon_to != self.polygon_to {
                 #[cfg(feature = "verbose")]
                 for new_node in &self.node_buffer {
-                    println!("        intermediate: {}", new_node);
+                    println!(
+                        "        intermediate: {} -> to polygon {}/{}",
+                        new_node,
+                        new_node.polygon_to.layer(),
+                        new_node.polygon_to.polygon()
+                    );
                 }
                 node = self.node_buffer.drain(..).next().unwrap();
                 #[cfg(debug_assertions)]
