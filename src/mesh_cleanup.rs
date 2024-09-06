@@ -70,15 +70,6 @@ impl Mesh {
                                         false
                                     })
                                 else {
-                                    // println!(
-                                    //     "searching for {:?} in {:?}",
-                                    //     vertex_coords,
-                                    //     polygon0
-                                    //         .iter()
-                                    //         .map(|v| layer0.vertices[*v as usize].coords
-                                    //             + layer0.offset)
-                                    //         .collect::<Vec<_>>()
-                                    // );
                                     return vec![pair[0], u32::MAX];
                                 };
                                 let polygon1 =
@@ -98,15 +89,6 @@ impl Mesh {
                                         false
                                     })
                                 else {
-                                    // println!(
-                                    //     "searching for {:?} in {:?}",
-                                    //     vertex_coords,
-                                    //     polygon1
-                                    //         .iter()
-                                    //         .map(|v| layer1.vertices[*v as usize].coords
-                                    //             + layer1.offset)
-                                    //         .collect::<Vec<_>>()
-                                    // );
                                     return vec![pair[0], u32::MAX];
                                 };
 
