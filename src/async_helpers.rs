@@ -92,6 +92,7 @@ impl<'m> Future for FuturePath<'m> {
                     length: self.from.distance(self.to),
                     path: vec![self.to],
                     #[cfg(feature = "detailed-layers")]
+                    #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
                     path_with_layers: vec![(self.to, ending_polygon.layer())],
                 }));
             }

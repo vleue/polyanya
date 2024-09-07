@@ -10,6 +10,7 @@
     unused_qualifications,
     missing_docs
 )]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 const PRECISION: f32 = 1000.0;
 
@@ -63,6 +64,7 @@ pub struct Path {
     pub path: Vec<Vec2>,
     /// Coordinates for each step of the path, including when changing layer. The destination is the last step.
     #[cfg(feature = "detailed-layers")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
     pub path_with_layers: Vec<(Vec2, u8)>,
 }
 /// A navigation mesh

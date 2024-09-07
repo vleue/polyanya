@@ -21,6 +21,7 @@ pub struct Layer {
     pub offset: Vec2,
     /// Scale of the layer
     #[cfg(feature = "detailed-layers")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
     pub scale: Vec2,
     pub(crate) baked_polygons: Option<BVH2d>,
     pub(crate) islands: Option<Vec<usize>>,

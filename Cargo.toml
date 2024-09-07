@@ -67,3 +67,6 @@ harness = false
 [[bench]]
 name = "merger"
 harness = false
+
+[package.metadata.docs.rs]
+features = ["async", "detailed-layers"]
