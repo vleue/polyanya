@@ -667,6 +667,7 @@ impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     pub(crate) fn successors(&mut self, mut node: SearchNode) {
+        let mut visited = HashSet::new();
         loop {
             #[cfg(feature = "stats")]
             {
@@ -849,6 +850,10 @@ impl<'m> SearchInstance<'m> {
                     );
                 }
                 node = self.node_buffer.drain(..).next().unwrap();
+                if !visited.insert(node.polygon_to) {
+                    // infinite loop, exit now
+                    break;
+                }
                 #[cfg(debug_assertions)]
                 {
                     self.fail_fast -= 1;
