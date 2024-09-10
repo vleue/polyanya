@@ -852,6 +852,7 @@ impl<'m> SearchInstance<'m> {
                 node = self.node_buffer.drain(..).next().unwrap();
                 if !visited.insert(node.polygon_to) {
                     // infinite loop, exit now
+                    // TODO: shouldn't happen, identify cases that trigger this
                     break;
                 }
                 #[cfg(debug_assertions)]
