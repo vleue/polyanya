@@ -269,6 +269,8 @@ impl Triangulation {
                             .map(|vertex| vertex.index() as u32)
                             .collect(),
                         // TODO: can this be set to the correct value?
+                        // look at each neighboring polygons based on the face vertices
+                        // if there are only two => it's one way
                         false,
                     )
                 })
