@@ -16,6 +16,7 @@ use crate::{Layer, Mesh, Polygon, Vertex};
 pub struct Triangulation {
     inner: GeoPolygon<f32>,
     agent_radius: f32,
+    agent_radius_segments: u8,
     prebuilt: Option<(
         GeoPolygon<f32>,
         ConstrainedDelaunayTriangulation<Point2<f64>>,
@@ -41,6 +42,7 @@ impl Triangulation {
                 vec![],
             ),
             agent_radius: 0.0,
+            agent_radius_segments: 5,
             prebuilt: None,
             base_layer: None,
         }
@@ -51,6 +53,7 @@ impl Triangulation {
         Self {
             inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
             agent_radius: 0.0,
+            agent_radius_segments: 5,
             prebuilt: None,
             base_layer: Some(mesh.layers[layer as usize].clone()),
         }
@@ -61,6 +64,7 @@ impl Triangulation {
         Self {
             inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
             agent_radius: 0.0,
+            agent_radius_segments: 5,
             prebuilt: None,
             base_layer: Some(layer),
         }
@@ -68,6 +72,9 @@ impl Triangulation {
 
     pub fn set_agent_radius(&mut self, radius: f32) {
         self.agent_radius = radius;
+    }
+    pub fn set_agent_radius_segments(&mut self, segments: u8) {
+        self.agent_radius_segments = segments;
     }
 
     /// Add an obstacle delimited by the list of points on its edges.
@@ -150,7 +157,7 @@ impl Triangulation {
         let inner = if self.agent_radius != 0.0 {
             &self
                 .inner
-                .offset_with_arc_segments(-self.agent_radius, 5)
+                .offset_with_arc_segments(-self.agent_radius, self.agent_radius_segments as u32)
                 .unwrap()
                 .0[0]
         } else {
@@ -207,7 +214,7 @@ impl Triangulation {
         let inner = if self.agent_radius != 0.0 {
             &self
                 .inner
-                .offset_with_arc_segments(-self.agent_radius, 5)
+                .offset_with_arc_segments(-self.agent_radius, self.agent_radius_segments as u32)
                 .unwrap()
                 .0[0]
         } else {
