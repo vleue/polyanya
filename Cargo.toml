@@ -31,6 +31,7 @@ spade = "=2.10"
 geo = "0.28.0"
 log = "0.4"
 thiserror = "1"
+geo-offset = { git = "https://github.com/lelongg/geo-offset" }
 
 [dev-dependencies]
 criterion = "0.5"

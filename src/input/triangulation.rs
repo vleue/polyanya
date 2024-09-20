@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
+use geo_offset::Offset;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -14,6 +15,7 @@ use crate::{Layer, Mesh, Polygon, Vertex};
 #[derive(Clone)]
 pub struct Triangulation {
     inner: GeoPolygon<f32>,
+    agent_radius: f32,
     prebuilt: Option<(
         GeoPolygon<f32>,
         ConstrainedDelaunayTriangulation<Point2<f64>>,
@@ -38,6 +40,7 @@ impl Triangulation {
                 LineString::from(edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>()),
                 vec![],
             ),
+            agent_radius: 0.0,
             prebuilt: None,
             base_layer: None,
         }
@@ -47,6 +50,7 @@ impl Triangulation {
     pub fn from_mesh(mesh: &Mesh, layer: u8) -> Triangulation {
         Self {
             inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
+            agent_radius: 0.0,
             prebuilt: None,
             base_layer: Some(mesh.layers[layer as usize].clone()),
         }
@@ -56,9 +60,14 @@ impl Triangulation {
     pub fn from_mesh_layer(layer: Layer) -> Triangulation {
         Self {
             inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
+            agent_radius: 0.0,
             prebuilt: None,
             base_layer: Some(layer),
         }
+    }
+
+    pub fn set_agent_radius(&mut self, radius: f32) {
+        self.agent_radius = radius;
     }
 
     /// Add an obstacle delimited by the list of points on its edges.
@@ -138,15 +147,25 @@ impl Triangulation {
         if self.base_layer.is_some() {
             return;
         }
-        let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f64>>::new();
-        Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
+        let inner = if self.agent_radius != 0.0 {
+            &self
+                .inner
+                .offset_with_arc_segments(-self.agent_radius, 5)
+                .unwrap()
+                .0[0]
+        } else {
+            &self.inner
+        };
 
-        self.inner
+        let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f64>>::new();
+        Triangulation::add_constraint_edges(&mut cdt, inner.exterior());
+
+        inner
             .interiors()
             .iter()
             .for_each(|obstacle| Triangulation::add_constraint_edges(&mut cdt, obstacle));
 
-        let exterior = self.inner.exterior().clone();
+        let exterior = inner.exterior().clone();
         let mut used = std::mem::replace(&mut self.inner, GeoPolygon::new(exterior, vec![]));
         if let Some((previous, _)) = self.prebuilt.take() {
             let (_, inners) = previous.into_inner();
@@ -185,9 +204,19 @@ impl Triangulation {
     /// Convert the triangulation into a [`Layer`].
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_layer(&self) -> Layer {
+        let inner = if self.agent_radius != 0.0 {
+            &self
+                .inner
+                .offset_with_arc_segments(-self.agent_radius, 5)
+                .unwrap()
+                .0[0]
+        } else {
+            &self.inner
+        };
+
         let mut cdt = if self.prebuilt.is_none() {
             let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f64>>::new();
-            Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
+            Triangulation::add_constraint_edges(&mut cdt, inner.exterior());
             cdt
         } else {
             self.prebuilt.as_ref().unwrap().1.clone()
@@ -223,7 +252,7 @@ impl Triangulation {
             }
         }
 
-        self.inner
+        inner
             .interiors()
             .iter()
             .for_each(|obstacle| Triangulation::add_constraint_edges(&mut cdt, obstacle));
@@ -243,7 +272,7 @@ impl Triangulation {
                 let center = Coord::from((center.x as f32, center.y as f32));
 
                 ((used.map(|used| used.contains(&center)).unwrap_or(true)
-                    && self.inner.contains(&center))
+                    && inner.contains(&center))
                     || (self.base_layer.is_some()
                         && self
                             .base_layer
