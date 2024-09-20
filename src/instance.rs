@@ -218,7 +218,7 @@ impl<'m> SearchInstance<'m> {
     pub(crate) fn next(&mut self) -> InstanceStep {
         if let Some(next) = self.pop_node() {
             #[cfg(feature = "verbose")]
-            println!("popped off: {}", next);
+            println!("popped off: {} ({})", next, next.polygon_from);
             #[cfg(feature = "stats")]
             {
                 self.popped += 1;
@@ -653,7 +653,13 @@ impl<'m> SearchInstance<'m> {
         }
         #[cfg(feature = "verbose")]
         for new_node in &self.node_buffer {
-            println!("        pushing: {}", new_node);
+            println!(
+                "        pushing: {} ({}) ({}/{})",
+                new_node,
+                new_node.interval.1.distance_squared(new_node.interval.0),
+                new_node.polygon_to.layer(),
+                new_node.polygon_to.polygon(),
+            );
         }
         self.queue.extend(self.node_buffer.drain(..));
     }
@@ -751,6 +757,15 @@ impl<'m> SearchInstance<'m> {
                     continue;
                 }
 
+                if node.polygon_from == *other_side {
+                    #[cfg(debug_assertions)]
+                    if self.debug {
+                        println!("x going back to the same polygon");
+                    }
+
+                    continue;
+                }
+
                 const EPSILON: f32 = 1.0e-10;
                 let root = match successor.ty {
                     SuccessorType::RightNonObservable => {
@@ -830,6 +845,15 @@ impl<'m> SearchInstance<'m> {
                     println!("| through root {root:?}");
                 }
 
+                if successor.interval.0.distance_squared(successor.interval.1) < 1.0e-10 {
+                    #[cfg(debug_assertions)]
+                    if self.debug {
+                        println!("x zero length edge");
+                    }
+
+                    continue;
+                }
+
                 self.add_node(
                     root,
                     *other_side,
@@ -849,7 +873,18 @@ impl<'m> SearchInstance<'m> {
                         new_node.polygon_to.polygon()
                     );
                 }
+                let previous_node = node;
                 node = self.node_buffer.drain(..).next().unwrap();
+                if node.root == previous_node.root
+                    && node.polygon_to == previous_node.polygon_from
+                    && node.polygon_from == previous_node.polygon_to
+                    && node.interval.0 == previous_node.interval.1
+                    && node.interval.1 == previous_node.interval.0
+                {
+                    // going the exact reverse way as we went into this polygon
+                    // TODO: shouldn't happen, identify cases that trigger this
+                    break;
+                }
                 if !visited.insert(node.polygon_to) {
                     // infinite loop, exit now
                     // TODO: shouldn't happen, identify cases that trigger this
