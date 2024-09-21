@@ -787,8 +787,8 @@ mod tests {
     #[test]
     fn get_closest_point() {
         let mut mesh = mesh_u_grid();
-        mesh.steps = 100;
-        mesh.delta = 0.01;
+        mesh.search_steps = 100;
+        mesh.search_delta = 0.01;
 
         assert_eq!(
             mesh.layers[0].get_closest_point(vec2(1.5, 1.5), 0.1, 10),
@@ -824,7 +824,7 @@ mod tests {
     #[test]
     fn get_closest_point_towards() {
         let mut mesh = mesh_u_grid();
-        mesh.steps = 10;
+        mesh.search_steps = 10;
 
         assert_eq!(
             mesh.layers[0].get_closest_point_towards(vec2(1.5, 1.5), 0.1, 10, vec2(1.5, 0.5)),

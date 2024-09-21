@@ -73,10 +73,10 @@ pub struct Path {
 pub struct Mesh {
     /// Layers of the NavMesh
     pub layers: Vec<Layer>,
-    /// Precision used when checking if a point is in a mesh
-    pub delta: f32,
+    /// Precision used when searching for a point in a mesh
+    pub search_delta: f32,
     /// Number of steps before stopping searching for a point in a mesh
-    pub steps: u32,
+    pub search_steps: u32,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
 }
@@ -146,8 +146,8 @@ impl Default for Mesh {
     fn default() -> Self {
         Self {
             layers: vec![],
-            delta: 0.1,
-            steps: 2,
+            search_delta: 0.1,
+            search_steps: 2,
             #[cfg(feature = "stats")]
             scenarios: Cell::new(0),
         }
@@ -342,32 +342,32 @@ impl Mesh {
     }
 
     /// The delta set by [`Mesh::set_delta`]
-    pub fn delta(&self) -> f32 {
-        self.delta
+    pub fn search_delta(&self) -> f32 {
+        self.search_delta
     }
 
     /// Set the delta for search with [`Mesh::path`], [`Mesh::get_path`], and [`Mesh::point_in_mesh`].
-    /// A given point P(x, y) will be searched in concentric circles around P of radius `delta` * ([`Mesh::steps`] - 1).
+    /// A given point P(x, y) will be searched in concentric circles around P of radius `delta` * ([`Mesh::search_steps`] - 1).
     ///
     /// Default is 0.1
-    pub fn set_delta(&mut self, delta: f32) -> &mut Self {
+    pub fn set_search_delta(&mut self, delta: f32) -> &mut Self {
         assert!(delta >= 0.0);
-        self.delta = delta;
+        self.search_delta = delta;
         self
     }
 
     /// The steps set by [`Mesh::set_steps`]
-    pub fn steps(&self) -> u32 {
-        self.steps
+    pub fn search_steps(&self) -> u32 {
+        self.search_steps
     }
 
     /// Set the steps for search with [`Mesh::path`], [`Mesh::get_path`], and [`Mesh::point_in_mesh`].
-    /// A given point P(x, y) will be searched in concentric circles around P of radius [`Mesh::delta`] * (`steps` - 1).
+    /// A given point P(x, y) will be searched in concentric circles around P of radius [`Mesh::search_delta`] * (`steps` - 1).
     ///
     /// Default is 2
-    pub fn set_steps(&mut self, steps: u32) -> &mut Self {
+    pub fn set_search_steps(&mut self, steps: u32) -> &mut Self {
         assert!(steps != 0);
-        self.steps = steps;
+        self.search_steps = steps;
         self
     }
 
@@ -475,7 +475,7 @@ impl Mesh {
                 .and_then(|layer| {
                     Some(U32Layer::from_layer_and_polygon(
                         layer_index,
-                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.search_delta)?,
                     ))
                 })
                 .unwrap_or(u32::MAX)
@@ -486,7 +486,7 @@ impl Mesh {
                 .flat_map(|(index, layer)| {
                     Some(U32Layer::from_layer_and_polygon(
                         index as u8,
-                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.search_delta)?,
                     ))
                 })
                 .find(|poly| poly != &u32::MAX)
@@ -503,7 +503,7 @@ impl Mesh {
                 .and_then(|layer| {
                     Some(U32Layer::from_layer_and_polygon(
                         layer_index,
-                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.search_delta)?,
                     ))
                 })
                 .into_iter()
@@ -515,7 +515,7 @@ impl Mesh {
                 .flat_map(|(index, layer)| {
                     Some(U32Layer::from_layer_and_polygon(
                         index as u8,
-                        layer.get_point_location(point.pos - layer.offset, self.delta)?,
+                        layer.get_point_location(point.pos - layer.offset, self.search_delta)?,
                     ))
                 })
                 .filter(|poly| poly != &u32::MAX)
@@ -530,9 +530,9 @@ impl Mesh {
         let point = point.into();
         if let Some(layer_index) = point.layer {
             let layer = &self.layers[layer_index as usize];
-            for step in 0..self.steps {
+            for step in 0..self.search_steps {
                 if let Some((new_point, polygon)) =
-                    layer.get_closest_point_inner(point.pos - layer.offset, self.delta, step)
+                    layer.get_closest_point_inner(point.pos - layer.offset, self.search_delta, step)
                 {
                     return Some(Coords {
                         pos: new_point + layer.offset,
@@ -542,11 +542,13 @@ impl Mesh {
                 }
             }
         } else {
-            for step in 0..self.steps {
+            for step in 0..self.search_steps {
                 for (index, layer) in self.layers.iter().enumerate() {
-                    if let Some((new_point, polygon)) =
-                        layer.get_closest_point_inner(point.pos - layer.offset, self.delta, step)
-                    {
+                    if let Some((new_point, polygon)) = layer.get_closest_point_inner(
+                        point.pos - layer.offset,
+                        self.search_delta,
+                        step,
+                    ) {
                         return Some(Coords {
                             pos: new_point + layer.offset,
                             layer: Some(index as u8),
@@ -571,10 +573,10 @@ impl Mesh {
         let direction = -(point.pos - towards).normalize();
         if let Some(layer_index) = point.layer {
             let layer = &self.layers[layer_index as usize];
-            for step in 0..self.steps {
+            for step in 0..self.search_steps {
                 if let Some((new_point, polygon)) = layer.get_closest_point_towards_inner(
                     point.pos - layer.offset,
-                    self.delta,
+                    self.search_delta,
                     direction,
                     step,
                 ) {
@@ -586,11 +588,11 @@ impl Mesh {
                 }
             }
         } else {
-            for step in 0..self.steps {
+            for step in 0..self.search_steps {
                 for (index, layer) in self.layers.iter().enumerate() {
                     if let Some((new_point, polygon)) = layer.get_closest_point_towards_inner(
                         point.pos - layer.offset,
-                        self.delta,
+                        self.search_delta,
                         direction,
                         step,
                     ) {
