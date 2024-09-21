@@ -315,6 +315,7 @@ impl Layer {
         None
     }
 
+    #[inline(always)]
     pub(crate) fn get_closest_point_towards_inner(
         &self,
         point: Vec2,
