@@ -73,8 +73,10 @@ pub struct Path {
 pub struct Mesh {
     /// Layers of the NavMesh
     pub layers: Vec<Layer>,
-    /// Variation used when checking if a point is in a mesh
+    /// Precision used when checking if a point is in a mesh
     pub delta: f32,
+    /// Number of steps before stopping searching for a point in a mesh
+    pub steps: u32,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
 }
@@ -145,6 +147,7 @@ impl Default for Mesh {
         Self {
             layers: vec![],
             delta: 0.1,
+            steps: 2,
             #[cfg(feature = "stats")]
             scenarios: Cell::new(0),
         }
@@ -252,19 +255,13 @@ impl Mesh {
         let starting_polygon_index = if from.polygon_index != u32::MAX {
             from.polygon_index
         } else {
-            self.get_point_location(from)
+            self.get_closest_point(from)?.polygon_index
         };
-        if starting_polygon_index == u32::MAX {
-            return None;
-        }
         let ending_polygon = if to.polygon_index != u32::MAX {
             to.polygon_index
         } else {
-            self.get_point_location(to)
+            self.get_closest_point(to)?.polygon_index
         };
-        if ending_polygon == u32::MAX {
-            return None;
-        }
         // TODO: fix islands detection with multiple layers, even if start and end are on the same layer
         if self.layers.len() == 1 {
             if let Some(islands) = self.layers[starting_polygon_index.layer() as usize]
@@ -350,12 +347,27 @@ impl Mesh {
     }
 
     /// Set the delta for search with [`Mesh::path`], [`Mesh::get_path`], and [`Mesh::point_in_mesh`].
-    /// A given point (x, y)  will be searched in a square around a delimited by (x ± delta, y ± delta).
+    /// A given point P(x, y) will be searched in concentric circles around P of radius `delta` * ([`Mesh::steps`] - 1).
     ///
     /// Default is 0.1
     pub fn set_delta(&mut self, delta: f32) -> &mut Self {
         assert!(delta >= 0.0);
         self.delta = delta;
+        self
+    }
+
+    /// The steps set by [`Mesh::set_steps`]
+    pub fn steps(&self) -> u32 {
+        self.steps
+    }
+
+    /// Set the steps for search with [`Mesh::path`], [`Mesh::get_path`], and [`Mesh::point_in_mesh`].
+    /// A given point P(x, y) will be searched in concentric circles around P of radius [`Mesh::delta`] * (`steps` - 1).
+    ///
+    /// Default is 2
+    pub fn set_steps(&mut self, steps: u32) -> &mut Self {
+        assert!(steps != 0);
+        self.steps = steps;
         self
     }
 
@@ -513,74 +525,79 @@ impl Mesh {
 
     /// Find the closest point in the mesh
     ///
-    /// This will continue until it finds a point in the layer
-    pub fn get_closest_point(&self, point: impl Into<Coords>, delta: f32) -> Coords {
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_point(&self, point: impl Into<Coords>) -> Option<Coords> {
         let point = point.into();
-        let mut step = 0;
         if let Some(layer_index) = point.layer {
-            loop {
-                if let Some((new_point, polygon)) = self.layers[layer_index as usize]
-                    .get_closest_point_inner(point.pos, delta, step)
+            let layer = &self.layers[layer_index as usize];
+            for step in 0..self.steps {
+                if let Some((new_point, polygon)) =
+                    layer.get_closest_point_inner(point.pos - layer.offset, self.delta, step)
                 {
-                    return Coords {
-                        pos: new_point,
+                    return Some(Coords {
+                        pos: new_point + layer.offset,
                         layer: Some(layer_index),
-                        polygon_index: polygon,
-                    };
+                        polygon_index: U32Layer::from_layer_and_polygon(layer_index, polygon),
+                    });
                 }
-                step += 1;
             }
         } else {
-            loop {
+            for step in 0..self.steps {
                 for (index, layer) in self.layers.iter().enumerate() {
                     if let Some((new_point, polygon)) =
-                        layer.get_closest_point_inner(point.pos, delta, step)
+                        layer.get_closest_point_inner(point.pos - layer.offset, self.delta, step)
                     {
-                        return Coords {
-                            pos: new_point,
+                        return Some(Coords {
+                            pos: new_point + layer.offset,
                             layer: Some(index as u8),
-                            polygon_index: polygon,
-                        };
+                            polygon_index: U32Layer::from_layer_and_polygon(index as u8, polygon),
+                        });
                     }
                 }
-                step += 1;
             }
         }
+        None
     }
 
     /// Find the closest point in the mesh in the given direction
     ///
-    /// This will stop after going `delta` * 100 distance in the `towards` direction
+    /// This will search in a line up to `Mesh::delta` * `Mesh::steps` distance away from the point
     pub fn get_closest_point_towards(
         &self,
         point: impl Into<Coords>,
-        delta: f32,
         towards: Vec2,
     ) -> Option<Coords> {
         let point = point.into();
         let direction = -(point.pos - towards).normalize();
         if let Some(layer_index) = point.layer {
-            for step in 0..100 {
-                if let Some((new_point, polygon)) = self.layers[layer_index as usize]
-                    .get_closest_point_towards_inner(point.pos, delta, direction, step)
-                {
+            let layer = &self.layers[layer_index as usize];
+            for step in 0..self.steps {
+                if let Some((new_point, polygon)) = layer.get_closest_point_towards_inner(
+                    point.pos - layer.offset,
+                    self.delta,
+                    direction,
+                    step,
+                ) {
                     return Some(Coords {
-                        pos: new_point,
+                        pos: new_point + layer.offset,
                         layer: Some(layer_index),
-                        polygon_index: polygon,
+                        polygon_index: U32Layer::from_layer_and_polygon(layer_index, polygon),
                     });
                 }
             }
         } else {
-            for step in 0..100 {
+            for step in 0..self.steps {
                 for (index, layer) in self.layers.iter().enumerate() {
-                    if let Some((new_point, polygon)) =
-                        layer.get_closest_point_towards_inner(point.pos, delta, direction, step)
-                    {
+                    if let Some((new_point, polygon)) = layer.get_closest_point_towards_inner(
+                        point.pos - layer.offset,
+                        self.delta,
+                        direction,
+                        step,
+                    ) {
                         return Some(Coords {
-                            pos: new_point,
+                            pos: new_point + layer.offset,
                             layer: Some(index as u8),
-                            polygon_index: polygon,
+                            polygon_index: U32Layer::from_layer_and_polygon(index as u8, polygon),
                         });
                     }
                 }
@@ -1302,5 +1319,13 @@ mod tests {
         for successor in &successors {
             println!("{successor:?}");
         }
+    }
+
+    #[test]
+    fn get_closest_point() {
+        let mesh = mesh_u_grid();
+        let point_location = mesh.get_point_location(vec2(0.5, 0.5));
+        let closest_point = mesh.get_closest_point(vec2(0.5, 0.5)).unwrap();
+        assert_eq!(point_location, closest_point.polygon_index);
     }
 }

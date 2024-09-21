@@ -259,15 +259,14 @@ impl Layer {
 
     /// Find the closest point in the layer
     ///
-    /// This will continue until it finds a point in the layer
-    pub fn get_closest_point(&self, point: Vec2, delta: f32) -> Vec2 {
-        let mut step = 0;
-        loop {
+    /// This will stop after searching in circle of radius up to `delta` * `steps` distance
+    pub fn get_closest_point(&self, point: Vec2, delta: f32, steps: u32) -> Option<Vec2> {
+        for step in 0..=steps {
             if let Some((new_point, _)) = self.get_closest_point_inner(point, delta, step) {
-                return new_point;
+                return Some(new_point);
             }
-            step += 1;
         }
+        None
     }
 
     #[inline(always)]
@@ -282,7 +281,6 @@ impl Layer {
             let angle = i as f32 * std::f32::consts::TAU / (sample * (step + 1)) as f32;
             let (x, y) = angle.sin_cos();
             let new_point = point + vec2(x, y) * delta * step as f32;
-
             let poly = if self.baked_polygons.is_none() {
                 self.get_point_location_unit(new_point)
             } else {
@@ -297,15 +295,16 @@ impl Layer {
 
     /// Find the closest point in the layer in the given direction
     ///
-    /// This will stop after going `delta` * 100 distance in the `towards` direction
+    /// This will stop after going `delta` * `steps` distance in the `towards` direction
     pub fn get_closest_point_towards(
         &self,
         point: Vec2,
         delta: f32,
+        steps: u32,
         towards: Vec2,
     ) -> Option<Vec2> {
         let direction = -(point - towards).normalize();
-        for step in 0..100 {
+        for step in 0..steps {
             if let Some((new_point, _)) =
                 self.get_closest_point_towards_inner(point, delta, direction, step)
             {
@@ -778,49 +777,52 @@ mod tests {
 
     #[test]
     fn get_closest_point() {
-        let mesh = mesh_u_grid();
+        let mut mesh = mesh_u_grid();
+        mesh.steps = 100;
+        mesh.delta = 0.01;
 
         assert_eq!(
-            mesh.layers[0].get_closest_point(vec2(1.5, 1.5), 0.1),
-            vec2(1.5, 1.0)
+            mesh.layers[0].get_closest_point(vec2(1.5, 1.5), 0.1, 10),
+            Some(vec2(1.5, 1.0))
         );
         assert_eq!(
-            mesh.get_closest_point(vec2(1.5, 1.5), 0.1),
-            Coords {
+            mesh.get_closest_point(vec2(1.5, 1.5)),
+            Some(Coords {
                 pos: vec2(1.5, 1.0),
                 layer: Some(0),
                 polygon_index: 1,
-            }
+            })
         );
 
         assert_eq!(
-            mesh.layers[0].get_closest_point(vec2(1.25, 1.5), 0.01),
-            vec2(1.25, 1.0)
+            mesh.layers[0].get_closest_point(vec2(1.25, 1.5), 0.01, 100),
+            Some(vec2(1.25, 1.0))
         );
         assert_eq!(
-            mesh.layers[1].get_closest_point(vec2(1.25, 1.5), 0.01),
-            vec2(1.0, 1.5)
+            mesh.layers[1].get_closest_point(vec2(1.25, 1.5), 0.01, 100),
+            Some(vec2(1.0, 1.5))
         );
         assert_eq!(
-            mesh.get_closest_point(vec2(1.25, 1.5), 0.01),
-            Coords {
+            mesh.get_closest_point(vec2(1.25, 1.5)),
+            Some(Coords {
                 pos: vec2(1.0, 1.5),
                 layer: Some(1),
-                polygon_index: 0,
-            }
+                polygon_index: U32Layer::from_layer_and_polygon(1, 0),
+            })
         );
     }
 
     #[test]
     fn get_closest_point_towards() {
-        let mesh = mesh_u_grid();
+        let mut mesh = mesh_u_grid();
+        mesh.steps = 10;
 
         assert_eq!(
-            mesh.layers[0].get_closest_point_towards(vec2(1.5, 1.5), 0.1, vec2(1.5, 0.5)),
+            mesh.layers[0].get_closest_point_towards(vec2(1.5, 1.5), 0.1, 10, vec2(1.5, 0.5)),
             Some(vec2(1.5, 1.0))
         );
         assert_eq!(
-            mesh.get_closest_point_towards(vec2(1.5, 1.5), 0.1, vec2(1.5, 0.5)),
+            mesh.get_closest_point_towards(vec2(1.5, 1.5), vec2(1.5, 0.5)),
             Some(Coords {
                 pos: vec2(1.5, 1.0),
                 layer: Some(0),
@@ -829,20 +831,20 @@ mod tests {
         );
 
         assert_eq!(
-            mesh.layers[0].get_closest_point_towards(vec2(1.5, 1.5), 0.1, vec2(0.5, 1.5)),
+            mesh.layers[0].get_closest_point_towards(vec2(1.5, 1.5), 0.1, 10, vec2(0.5, 1.5)),
             None
         );
         assert_eq!(
-            mesh.get_closest_point_towards(vec2(1.5, 1.5), 0.1, vec2(0.5, 1.5)),
+            mesh.get_closest_point_towards(vec2(1.5, 1.5), vec2(0.5, 1.5)),
             Some(Coords {
                 pos: vec2(1.0, 1.5),
                 layer: Some(1),
-                polygon_index: 0,
+                polygon_index: U32Layer::from_layer_and_polygon(1, 0),
             })
         );
 
         assert_eq!(
-            mesh.layers[0].get_closest_point_towards(vec2(1.5, 1.5), 0.2, vec2(1.5, 0.5)),
+            mesh.layers[0].get_closest_point_towards(vec2(1.5, 1.5), 0.2, 10, vec2(1.5, 0.5)),
             Some(vec2(1.5, 0.9))
         );
     }
