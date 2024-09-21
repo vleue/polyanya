@@ -439,15 +439,24 @@ mod tests {
         };
         let successors = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 0);
+        #[cfg(not(feature = "detailed-layers"))]
         assert_eq!(
             mesh.path(from, to).unwrap(),
             Path {
                 path: vec![to],
                 length: from.distance(to),
-                #[cfg(feature = "detailed-layers")]
-                path_with_layers: vec![(to, 0)],
             }
         );
+        #[cfg(feature = "detailed-layers")]
+        {
+            let path = mesh.path(from, to).unwrap();
+            assert_eq!(path.path, vec![to]);
+            assert!((path.length - from.distance(to)).abs() < 0.0001);
+            assert!(path.path_with_layers[0].0.distance(vec2(0.2, 1.0)) < 0.0001);
+            assert_eq!(path.path_with_layers[0].1, 0);
+            assert!(path.path_with_layers[1].0.distance(to) < 0.0001);
+            assert_eq!(path.path_with_layers[1].1, 0);
+        }
     }
 
     #[test]
@@ -790,7 +799,7 @@ mod tests {
             Some(Coords {
                 pos: vec2(1.5, 1.0),
                 layer: Some(0),
-                polygon_index: 1,
+                polygon_index: U32Layer::from_layer_and_polygon(0, 1),
             })
         );
 
