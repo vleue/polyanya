@@ -88,6 +88,10 @@ pub struct Coords {
     ///
     /// If specified, the point will be searched in that layer only.
     pub layer: Option<u8>,
+    /// internal: this coords have been built by a search on the mesh that found the polygon index
+    /// if used for a path, this will be used directly instead of searching for it again in the mesh
+    /// default value is u32::MAX which means it hasn't been searched
+    polygon_index: u32,
 }
 
 impl From<Vec2> for Coords {
@@ -95,6 +99,18 @@ impl From<Vec2> for Coords {
         Coords {
             pos: value,
             layer: None,
+            polygon_index: u32::MAX,
+        }
+    }
+}
+
+impl Coords {
+    /// A point on the navigation mesh on the specified layer
+    pub fn on_layer(pos: Vec2, layer: u8) -> Self {
+        Coords {
+            pos,
+            layer: Some(layer),
+            polygon_index: u32::MAX,
         }
     }
 }
@@ -218,11 +234,19 @@ impl Mesh {
         let from = from.into();
         let to = to.into();
 
-        let starting_polygon_index = self.get_point_location(from);
+        let starting_polygon_index = if from.polygon_index != u32::MAX {
+            from.polygon_index
+        } else {
+            self.get_point_location(from)
+        };
         if starting_polygon_index == u32::MAX {
             return None;
         }
-        let ending_polygon = self.get_point_location(to);
+        let ending_polygon = if to.polygon_index != u32::MAX {
+            to.polygon_index
+        } else {
+            self.get_point_location(to)
+        };
         if ending_polygon == u32::MAX {
             return None;
         }
@@ -410,6 +434,7 @@ impl Mesh {
             .map(|p| Coords {
                 pos: coords.pos,
                 layer: Some(p.layer()),
+                polygon_index: *p,
             })
             .collect()
     }
@@ -469,6 +494,84 @@ impl Mesh {
                 .filter(|poly| poly != &u32::MAX)
                 .collect()
         }
+    }
+
+    /// Find the closest point in the mesh
+    ///
+    /// This will continue until it finds a point in the layer
+    pub fn get_closest_point(&self, point: impl Into<Coords>, delta: f32) -> Coords {
+        let point = point.into();
+        let mut step = 0;
+        if let Some(layer_index) = point.layer {
+            loop {
+                if let Some((new_point, polygon)) = self.layers[layer_index as usize]
+                    .get_closest_point_inner(point.pos, delta, step)
+                {
+                    return Coords {
+                        pos: new_point,
+                        layer: Some(layer_index),
+                        polygon_index: polygon,
+                    };
+                }
+                step += 1;
+            }
+        } else {
+            loop {
+                for (index, layer) in self.layers.iter().enumerate() {
+                    if let Some((new_point, polygon)) =
+                        layer.get_closest_point_inner(point.pos, delta, step)
+                    {
+                        return Coords {
+                            pos: new_point,
+                            layer: Some(index as u8),
+                            polygon_index: polygon,
+                        };
+                    }
+                }
+                step += 1;
+            }
+        }
+    }
+
+    /// Find the closest point in the mesh in the given direction
+    ///
+    /// This will stop after going `delta` * 100 distance in the `towards` direction
+    pub fn get_closest_point_towards(
+        &self,
+        point: impl Into<Coords>,
+        delta: f32,
+        towards: Vec2,
+    ) -> Option<Coords> {
+        let point = point.into();
+        let direction = -(point.pos - towards).normalize();
+        if let Some(layer_index) = point.layer {
+            for step in 0..100 {
+                if let Some((new_point, polygon)) = self.layers[layer_index as usize]
+                    .get_closest_point_towards_inner(point.pos, delta, direction, step)
+                {
+                    return Some(Coords {
+                        pos: new_point,
+                        layer: Some(layer_index),
+                        polygon_index: polygon,
+                    });
+                }
+            }
+        } else {
+            for step in 0..100 {
+                for (index, layer) in self.layers.iter().enumerate() {
+                    if let Some((new_point, polygon)) =
+                        layer.get_closest_point_towards_inner(point.pos, delta, direction, step)
+                    {
+                        return Some(Coords {
+                            pos: new_point,
+                            layer: Some(index as u8),
+                            polygon_index: polygon,
+                        });
+                    }
+                }
+            }
+        }
+        return None;
     }
 }
 
