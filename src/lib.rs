@@ -83,11 +83,11 @@ pub struct Mesh {
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Coords {
     /// The position
-    pub pos: Vec2,
+    pos: Vec2,
     /// The layer
     ///
     /// If specified, the point will be searched in that layer only.
-    pub layer: Option<u8>,
+    layer: Option<u8>,
     /// internal: this coords have been built by a search on the mesh that found the polygon index
     /// if used for a path, this will be used directly instead of searching for it again in the mesh
     /// default value is u32::MAX which means it hasn't been searched
@@ -105,6 +105,11 @@ impl From<Vec2> for Coords {
 }
 
 impl Coords {
+    /// A point on the navigation mesh
+    pub fn on_mesh(pos: Vec2) -> Self {
+        pos.into()
+    }
+
     /// A point on the navigation mesh on the specified layer
     pub fn on_layer(pos: Vec2, layer: u8) -> Self {
         Coords {
@@ -112,6 +117,16 @@ impl Coords {
             layer: Some(layer),
             polygon_index: u32::MAX,
         }
+    }
+
+    /// Position of this point
+    pub fn position(&self) -> Vec2 {
+        self.pos
+    }
+
+    /// Layer of this point, if known
+    pub fn layer(&self) -> Option<u8> {
+        self.layer
     }
 }
 
