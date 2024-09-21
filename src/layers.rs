@@ -292,7 +292,7 @@ impl Layer {
                 return Some((new_point, poly));
             }
         }
-        return None;
+        None
     }
 
     /// Find the closest point in the layer in the given direction
@@ -312,7 +312,7 @@ impl Layer {
                 return Some(new_point);
             }
         }
-        return None;
+        None
     }
 
     pub(crate) fn get_closest_point_towards_inner(
@@ -331,7 +331,7 @@ impl Layer {
         if poly != u32::MAX {
             return Some((point, poly));
         }
-        return None;
+        None
     }
 }
 

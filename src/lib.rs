@@ -571,7 +571,7 @@ impl Mesh {
                 }
             }
         }
-        return None;
+        None
     }
 }
 
