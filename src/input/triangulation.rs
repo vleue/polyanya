@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
+use inflate::Inflate;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -19,6 +20,9 @@ pub struct Triangulation {
         ConstrainedDelaunayTriangulation<Point2<f64>>,
     )>,
     base_layer: Option<Layer>,
+    agent_radius: f32,
+    agent_radius_segments: u8,
+    agent_radius_simplification: f32,
 }
 
 impl std::fmt::Debug for Triangulation {
@@ -40,6 +44,9 @@ impl Triangulation {
             ),
             prebuilt: None,
             base_layer: None,
+            agent_radius: 0.0,
+            agent_radius_segments: 5,
+            agent_radius_simplification: 0.0,
         }
     }
 
@@ -49,6 +56,9 @@ impl Triangulation {
             inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
             prebuilt: None,
             base_layer: Some(mesh.layers[layer as usize].clone()),
+            agent_radius: 0.0,
+            agent_radius_segments: 5,
+            agent_radius_simplification: 0.0,
         }
     }
 
@@ -58,7 +68,28 @@ impl Triangulation {
             inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
             prebuilt: None,
             base_layer: Some(layer),
+            agent_radius: 0.0,
+            agent_radius_segments: 5,
+            agent_radius_simplification: 0.0,
         }
+    }
+
+    /// Set the agent radius. THis will be used to offset the edges of the obstacles.
+    pub fn set_agent_radius(&mut self, radius: f32) {
+        self.agent_radius = radius;
+    }
+
+    /// Set the segment counts for the offset when adding rounded corners.
+    pub fn set_agent_radius_segments(&mut self, segments: u8) {
+        self.agent_radius_segments = segments;
+    }
+
+    /// Simplify the inflated obstacles, using a topology-preserving variant of the
+    /// [Visvalingam-Whyatt algorithm](https://www.tandfonline.com/doi/abs/10.1179/000870493786962263).
+    ///
+    /// Epsilon is the minimum area a point should contribute to a polygon.
+    pub fn set_agent_radius_simplification(&mut self, simplification: f32) {
+        self.agent_radius_simplification = simplification;
     }
 
     /// Add an obstacle delimited by the list of points on its edges.
@@ -141,20 +172,28 @@ impl Triangulation {
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f64>>::new();
         Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior());
 
-        self.inner
+        let exterior = self.inner.exterior().clone();
+        let mut inner = std::mem::replace(&mut self.inner, GeoPolygon::new(exterior, vec![]));
+        if self.agent_radius > 1.0e-5 {
+            inner = inner.inflate_obstacles(
+                self.agent_radius,
+                self.agent_radius_segments as u32,
+                self.agent_radius_simplification,
+            );
+        };
+
+        inner
             .interiors()
             .iter()
             .for_each(|obstacle| Triangulation::add_constraint_edges(&mut cdt, obstacle));
 
-        let exterior = self.inner.exterior().clone();
-        let mut used = std::mem::replace(&mut self.inner, GeoPolygon::new(exterior, vec![]));
         if let Some((previous, _)) = self.prebuilt.take() {
             let (_, inners) = previous.into_inner();
             for interior in inners {
-                used.interiors_push(interior);
+                inner.interiors_push(interior);
             }
         }
-        self.prebuilt = Some((used, cdt));
+        self.prebuilt = Some((inner, cdt));
     }
 
     /// Convert the triangulation into a [`Mesh`].
@@ -223,7 +262,17 @@ impl Triangulation {
             }
         }
 
-        self.inner
+        let inner = if self.agent_radius < 1.0e-5 {
+            &self.inner
+        } else {
+            &self.inner.inflate_obstacles(
+                self.agent_radius,
+                self.agent_radius_segments as u32,
+                self.agent_radius_simplification,
+            )
+        };
+
+        inner
             .interiors()
             .iter()
             .for_each(|obstacle| Triangulation::add_constraint_edges(&mut cdt, obstacle));
@@ -243,7 +292,7 @@ impl Triangulation {
                 let center = Coord::from((center.x as f32, center.y as f32));
 
                 ((used.map(|used| used.contains(&center)).unwrap_or(true)
-                    && self.inner.contains(&center))
+                    && inner.contains(&center))
                     || (self.base_layer.is_some()
                         && self
                             .base_layer
@@ -254,7 +303,7 @@ impl Triangulation {
                                     .is_some()
                             })
                             .unwrap_or(true)
-                        && !self.inner.interiors().iter().any(|obstacle| {
+                        && !inner.interiors().iter().any(|obstacle| {
                             GeoPolygon::new(obstacle.clone(), vec![]).contains(&center)
                         })))
                 .then(|| {
@@ -496,5 +545,184 @@ mod tests {
                 [7, 8, 1]
             ]
         );
+    }
+}
+
+mod inflate {
+
+    use std::f32::consts::TAU;
+
+    use geo::{Coord, EuclideanDistance, Line, LineString, Polygon, SimplifyVwPreserve};
+    use i_overlay::{core::solver::Solver, i_float::f32_point::F32Point};
+
+    fn segment_normal(start: &Coord<f32>, end: &Coord<f32>) -> Option<F32Point> {
+        let edge_length = end.euclidean_distance(start);
+        if edge_length == 0.0 {
+            return None;
+        }
+        let dx = end.x - start.x;
+        let dy = end.y - start.y;
+        let x = -dy / edge_length;
+        let y = dx / edge_length;
+
+        Some(F32Point::new(x, y))
+    }
+
+    pub trait Inflate {
+        fn inflate_obstacles(&self, distance: f32, arc_segments: u32, minimum_surface: f32)
+            -> Self;
+    }
+
+    impl Inflate for Polygon<f32> {
+        fn inflate_obstacles(
+            &self,
+            distance: f32,
+            arc_segments: u32,
+            minimum_surface: f32,
+        ) -> Polygon<f32> {
+            Polygon::new(
+                self.exterior().clone(),
+                self.interiors()
+                    .iter()
+                    .map(|ls| inflate(ls, distance, arc_segments))
+                    .map(|ls| ls.simplify_vw_preserve(&minimum_surface))
+                    .collect(),
+            )
+        }
+    }
+
+    fn inflate(linestring: &LineString<f32>, distance: f32, arc_segments: u32) -> LineString<f32> {
+        let mut last;
+        let mut lines = linestring.lines();
+        let line = lines.next().unwrap();
+        let mut inflated_linestring = round_line(&line, distance, arc_segments);
+
+        last = line.end;
+        for line in lines {
+            let rounded_line = round_line(&line, distance, arc_segments);
+
+            inflated_linestring = union(inflated_linestring, rounded_line);
+            last = line.end;
+        }
+        if !linestring.is_closed() {
+            let line = Line::new(last, linestring.0[0]);
+            let rounded_line = round_line(&line, distance, arc_segments);
+            inflated_linestring = union(inflated_linestring, rounded_line);
+        }
+
+        LineString(
+            inflated_linestring
+                .iter()
+                .map(|v| (v.x, v.y).into())
+                .collect(),
+        )
+    }
+
+    fn round_line(line: &Line<f32>, distance: f32, arc_segments: u32) -> Vec<F32Point> {
+        let start = F32Point::new(line.start.x, line.start.y);
+        let end = F32Point::new(line.end.x, line.end.y);
+        let Some(normal) = segment_normal(&line.start, &line.end) else {
+            return (0..(arc_segments * 2))
+                .map(|i| {
+                    let angle = i as f32 * TAU / (arc_segments * 2) as f32;
+                    F32Point::new(
+                        start.x + angle.cos() * distance,
+                        start.y + angle.sin() * distance,
+                    )
+                })
+                .collect();
+        };
+
+        let mut vertices = Vec::with_capacity((arc_segments as usize + 2) * 2);
+
+        create_arc(
+            &mut vertices,
+            &start,
+            distance,
+            &(start - (normal * distance)),
+            &(start + (normal * distance)),
+            arc_segments,
+            true,
+        );
+        create_arc(
+            &mut vertices,
+            &end,
+            distance,
+            &(end + (normal * distance)),
+            &(end - (normal * distance)),
+            arc_segments,
+            true,
+        );
+
+        vertices
+    }
+
+    // from https://github.com/w8r/polygon-offset/blob/77382ec02a4a505fe6c2c900fb67345b206961ed/src/offset.js#L139
+    fn create_arc(
+        vertices: &mut Vec<F32Point>,
+        center: &F32Point,
+        radius: f32,
+        start_vertex: &F32Point,
+        end_vertex: &F32Point,
+        segment_count: u32,
+        outwards: bool,
+    ) {
+        let start_angle = (start_vertex.y - center.y).atan2(start_vertex.x - center.x);
+        let start_angle = if start_angle.is_sign_negative() {
+            start_angle + TAU
+        } else {
+            start_angle
+        };
+
+        let end_angle = (end_vertex.y - center.y).atan2(end_vertex.x - center.x);
+        let end_angle = if end_angle.is_sign_negative() {
+            end_angle + TAU
+        } else {
+            end_angle
+        };
+
+        // odd number please
+        let segment_count = if segment_count % 2 == 0 {
+            segment_count - 1
+        } else {
+            segment_count
+        };
+
+        let angle = if start_angle > end_angle {
+            start_angle - end_angle
+        } else {
+            start_angle + TAU - end_angle
+        };
+
+        let segment_angle = if outwards { -angle } else { TAU - angle } / (segment_count as f32);
+
+        vertices.push(*start_vertex);
+        for i in 1..segment_count {
+            let angle = start_angle + segment_angle * (i as f32);
+            vertices.push(F32Point::new(
+                center.x + angle.cos() * radius,
+                center.y + angle.sin() * radius,
+            ));
+        }
+        vertices.push(*end_vertex);
+    }
+
+    fn union(subj: Vec<F32Point>, clip: Vec<F32Point>) -> Vec<F32Point> {
+        let mut overlay = i_overlay::f32::overlay::F32Overlay::new();
+
+        overlay.add_path(subj, i_overlay::core::overlay::ShapeType::Subject);
+        overlay.add_path(clip, i_overlay::core::overlay::ShapeType::Clip);
+
+        let graph = overlay.into_graph_with_solver(
+            i_overlay::core::fill_rule::FillRule::NonZero,
+            Solver {
+                strategy: i_overlay::core::solver::Strategy::List,
+                precision: i_overlay::core::solver::Precision::Auto,
+                multithreading: None,
+            },
+        );
+        let mut shapes = graph.extract_shapes(i_overlay::core::overlay_rule::OverlayRule::Union);
+
+        shapes.swap_remove(0).swap_remove(0)
     }
 }
