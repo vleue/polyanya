@@ -623,7 +623,7 @@ mod inflate {
         fn inflate_obstacles(&self, distance: f32, arc_segments: u32, minimum_surface: f32)
             -> Self;
 
-        fn inflate(&self, distance: f32, arc_segments: u32, minimum_surface: f32) -> Polygon<f32>;
+        fn inflate(&self, distance: f32, arc_segments: u32, minimum_surface: f32) -> Self;
     }
 
     impl Inflate for Polygon<f32> {
