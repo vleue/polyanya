@@ -222,7 +222,7 @@ impl Triangulation {
         }
 
         let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f64>>::new();
-        Triangulation::add_constraint_edges(&mut cdt, &inner.exterior());
+        Triangulation::add_constraint_edges(&mut cdt, inner.exterior());
 
         inner
             .interiors()
