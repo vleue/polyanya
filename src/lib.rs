@@ -475,7 +475,7 @@ impl Mesh {
                 .and_then(|layer| {
                     Some(U32Layer::from_layer_and_polygon(
                         layer_index,
-                        layer.get_point_location(point.pos - layer.offset, self.search_delta)?,
+                        layer.get_point_location((point.pos - layer.offset) / layer.scale, self.search_delta)?,
                     ))
                 })
                 .unwrap_or(u32::MAX)
@@ -486,7 +486,7 @@ impl Mesh {
                 .flat_map(|(index, layer)| {
                     Some(U32Layer::from_layer_and_polygon(
                         index as u8,
-                        layer.get_point_location(point.pos - layer.offset, self.search_delta)?,
+                        layer.get_point_location((point.pos - layer.offset) / layer.scale, self.search_delta)?,
                     ))
                 })
                 .find(|poly| poly != &u32::MAX)
@@ -503,7 +503,7 @@ impl Mesh {
                 .and_then(|layer| {
                     Some(U32Layer::from_layer_and_polygon(
                         layer_index,
-                        layer.get_point_location(point.pos - layer.offset, self.search_delta)?,
+                        layer.get_point_location((point.pos - layer.offset) / layer.scale, self.search_delta)?,
                     ))
                 })
                 .into_iter()
@@ -515,7 +515,7 @@ impl Mesh {
                 .flat_map(|(index, layer)| {
                     Some(U32Layer::from_layer_and_polygon(
                         index as u8,
-                        layer.get_point_location(point.pos - layer.offset, self.search_delta)?,
+                        layer.get_point_location((point.pos - layer.offset) / layer.scale, self.search_delta)?,
                     ))
                 })
                 .filter(|poly| poly != &u32::MAX)
