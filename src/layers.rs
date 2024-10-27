@@ -38,7 +38,7 @@ impl Default for Layer {
             scale: Vec2::ONE,
             baked_polygons: None,
             islands: None,
-            cost: Vec2::ONE,
+            cost: 1.0,
         }
     }
 }
