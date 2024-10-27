@@ -25,7 +25,7 @@ pub struct Layer {
     pub scale: Vec2,
     pub(crate) baked_polygons: Option<BVH2d>,
     pub(crate) islands: Option<Vec<usize>>,
-    pub(crate) cost: f32,
+    pub cost: f32,
 }
 
 impl Default for Layer {
