@@ -415,16 +415,6 @@ impl Mesh {
         use hashbrown::HashMap;
         use std::collections::BinaryHeap;
 
-        let min_layer_cost: f32;
-        #[cfg(feature="detailed-layers")]
-        {
-            min_layer_cost = self.layers.map(|l| l.cost).min();
-        }
-        #[cfg(not(feature = "detailed-layers"))]
-        {
-            min_layer_cost = 1.0;
-        }
-
         let search_instance = SearchInstance {
             #[cfg(feature = "stats")]
             start: Instant::now(),
@@ -451,7 +441,6 @@ impl Mesh {
             debug: false,
             #[cfg(debug_assertions)]
             fail_fast: -1,
-            min_layer_cost,
         };
         search_instance.edges_between(node).to_vec()
     }
@@ -543,7 +532,7 @@ impl Mesh {
             let layer = &self.layers[layer_index as usize];
             for step in 0..self.search_steps {
                 if let Some((new_point, polygon)) =
-                    layer.get_closest_point_inner(point.pos - layer.offset, self.search_delta, step)
+                    layer.get_closest_point_inner((point.pos - layer.offset) / layer.scale, self.search_delta, step)
                 {
                     return Some(Coords {
                         pos: new_point + layer.offset,
@@ -556,7 +545,7 @@ impl Mesh {
             for step in 0..self.search_steps {
                 for (index, layer) in self.layers.iter().enumerate() {
                     if let Some((new_point, polygon)) = layer.get_closest_point_inner(
-                        point.pos - layer.offset,
+                        (point.pos - layer.offset) / layer.scale,
                         self.search_delta,
                         step,
                     ) {
@@ -586,7 +575,7 @@ impl Mesh {
             let layer = &self.layers[layer_index as usize];
             for step in 0..self.search_steps {
                 if let Some((new_point, polygon)) = layer.get_closest_point_towards_inner(
-                    point.pos - layer.offset,
+                    (point.pos - layer.offset) / layer.scale,
                     self.search_delta,
                     direction,
                     step,
@@ -602,7 +591,7 @@ impl Mesh {
             for step in 0..self.search_steps {
                 for (index, layer) in self.layers.iter().enumerate() {
                     if let Some((new_point, polygon)) = layer.get_closest_point_towards_inner(
-                        point.pos - layer.offset,
+                        (point.pos - layer.offset) / layer.scale,
                         self.search_delta,
                         direction,
                         step,

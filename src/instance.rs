@@ -83,6 +83,7 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) debug: bool,
     #[cfg(debug_assertions)]
     pub(crate) fail_fast: i32,
+    pub(crate) min_layer_cost: f32,
 }
 
 pub(crate) enum InstanceStep {
@@ -562,9 +563,10 @@ impl<'m> SearchInstance<'m> {
             }
             #[cfg(feature = "detailed-layers")]
             {
+                let layer = self.mesh.layers[node.polygon_to.layer() as usize];
                 new_f += node
                     .root
-                    .distance(root * self.mesh.layers[node.polygon_to.layer() as usize].scale);
+                    .distance(root * layer.scale) * layer.cost;
             }
         }
         #[cfg(feature = "detailed-layers")]
@@ -579,15 +581,18 @@ impl<'m> SearchInstance<'m> {
         }
         #[cfg(feature = "detailed-layers")]
         {
+            let start_layer = self.mesh.layers[start.1.layer() as usize];
+            let end_layer = self.mesh.layers[end.1.layer() as usize];
             heuristic_to_end = heuristic(
                 root,
                 self.to,
                 (
-                    start.0 * self.mesh.layers[start.1.layer() as usize].scale,
-                    end.0 * self.mesh.layers[end.1.layer() as usize].scale,
+                    start.0 * start_layer.scale,
+                    end.0 * end_layer.scale,
                 ),
             );
         }
+        heuristic_to_end *= self.min_layer_cost;
         if new_f.is_nan() || heuristic_to_end.is_nan() {
             #[cfg(debug_assertions)]
             if self.debug {
