@@ -564,7 +564,7 @@ impl<'m> SearchInstance<'m> {
             }
             #[cfg(feature = "detailed-layers")]
             {
-                let layer = self.mesh.layers[node.polygon_to.layer() as usize];
+                let layer = &self.mesh.layers[node.polygon_to.layer() as usize];
                 new_f += node
                     .root
                     .distance(root * layer.scale) * layer.cost;
@@ -582,8 +582,8 @@ impl<'m> SearchInstance<'m> {
         }
         #[cfg(feature = "detailed-layers")]
         {
-            let start_layer = self.mesh.layers[start.1.layer() as usize];
-            let end_layer = self.mesh.layers[end.1.layer() as usize];
+            let start_layer = &self.mesh.layers[start.1.layer() as usize];
+            let end_layer = &self.mesh.layers[end.1.layer() as usize];
             heuristic_to_end = heuristic(
                 root,
                 self.to,
