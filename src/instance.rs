@@ -320,7 +320,7 @@ impl<'m> SearchInstance<'m> {
                     #[cfg(feature = "detailed-layers")]
                     length: {
                         let a = path_with_layers.iter().fold((0.0, self.from), |acc, p| {
-                            let layer = self.mesh.layers[acc.1 .1 as usize];
+                            let layer = &self.mesh.layers[acc.1 .1 as usize];
                             let scale = layer.scale;
                             let cost = layer.cost;
                             let to_point = (acc.1 .0 * scale).distance(p.0 * scale) * cost;
