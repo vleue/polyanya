@@ -417,7 +417,7 @@ impl Mesh {
         use std::collections::BinaryHeap;
 
         let min_layer_cost: f32;
-        #[cfg(feature="detailed-layers")]
+        #[cfg(feature = "detailed-layers")]
         {
             min_layer_cost = self.layers.map(|l| l.cost).min();
         }
