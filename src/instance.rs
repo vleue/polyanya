@@ -582,15 +582,15 @@ impl<'m> SearchInstance<'m> {
         }
         #[cfg(feature = "detailed-layers")]
         {
-            let start_layer = &self.mesh.layers[start.1.layer() as usize];
-            let end_layer = &self.mesh.layers[end.1.layer() as usize];
             heuristic_to_end = heuristic(
                 root,
                 self.to,
-                (start.0 * start_layer.scale, end.0 * end_layer.scale),
-            );
+                (
+                    start.0 * self.mesh.layers[start.1.layer() as usize].scale,
+                    end.0 * self.mesh.layers[end.1.layer() as usize].scale,
+                ),
+            ) * self.min_layer_cost;
         }
-        heuristic_to_end *= self.min_layer_cost;
         if new_f.is_nan() || heuristic_to_end.is_nan() {
             #[cfg(debug_assertions)]
             if self.debug {
