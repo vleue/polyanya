@@ -26,6 +26,8 @@ pub struct Layer {
     pub(crate) baked_polygons: Option<BVH2d>,
     pub(crate) islands: Option<Vec<usize>>,
     /// Cost coefficient of the layer
+    #[cfg(feature = "detailed-layers")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
     pub cost: f32,
 }
 
@@ -39,6 +41,7 @@ impl Default for Layer {
             scale: Vec2::ONE,
             baked_polygons: None,
             islands: None,
+            #[cfg(feature = "detailed-layers")]
             cost: 1.0,
         }
     }
