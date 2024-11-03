@@ -419,7 +419,7 @@ impl Mesh {
         let min_layer_cost: f32;
         #[cfg(feature = "detailed-layers")]
         {
-            min_layer_cost = self.layers.map(|l| l.cost).min();
+            min_layer_cost = self.layers.iter().map(|l| l.cost).min_by(|a, b| a.partial_cmp(b).unwrap()).unwrap_or(1.0);
         }
         #[cfg(not(feature = "detailed-layers"))]
         {
