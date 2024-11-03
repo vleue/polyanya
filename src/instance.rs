@@ -83,6 +83,7 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) debug: bool,
     #[cfg(debug_assertions)]
     pub(crate) fail_fast: i32,
+    #[cfg(feature = "detailed-layers")]
     pub(crate) min_layer_cost: f32,
 }
 
@@ -154,6 +155,7 @@ impl<'m> SearchInstance<'m> {
             debug: false,
             #[cfg(debug_assertions)]
             fail_fast: -1,
+            #[cfg(feature = "detailed-layers")]
             min_layer_cost: 1.0,
         };
         search_instance.root_history.insert(Root(from.0), 0.0);
@@ -575,7 +577,7 @@ impl<'m> SearchInstance<'m> {
             path_with_layers.push((start.0, end.0, other_side.layer()));
         }
 
-        let mut heuristic_to_end: f32;
+        let heuristic_to_end: f32;
         #[cfg(not(feature = "detailed-layers"))]
         {
             heuristic_to_end = heuristic(root, self.to, (start.0, end.0));

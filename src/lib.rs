@@ -403,6 +403,7 @@ impl Mesh {
             debug: false,
             #[cfg(debug_assertions)]
             fail_fast: -1,
+            #[cfg(feature = "detailed-layers")]
             min_layer_cost: 1.0,
         };
         search_instance.successors(node);
@@ -415,21 +416,6 @@ impl Mesh {
         use glam::vec2;
         use hashbrown::HashMap;
         use std::collections::BinaryHeap;
-
-        let min_layer_cost: f32;
-        #[cfg(feature = "detailed-layers")]
-        {
-            min_layer_cost = self
-                .layers
-                .iter()
-                .map(|l| l.cost)
-                .min_by(|a, b| a.partial_cmp(b).unwrap())
-                .unwrap_or(1.0);
-        }
-        #[cfg(not(feature = "detailed-layers"))]
-        {
-            min_layer_cost = 1.0;
-        }
 
         let search_instance = SearchInstance {
             #[cfg(feature = "stats")]
@@ -457,7 +443,8 @@ impl Mesh {
             debug: false,
             #[cfg(debug_assertions)]
             fail_fast: -1,
-            min_layer_cost,
+            #[cfg(feature = "detailed-layers")]
+            min_layer_cost: self.get_min_layer_cost(),
         };
         search_instance.edges_between(node).to_vec()
     }
@@ -465,6 +452,17 @@ impl Mesh {
     /// Check if a given point is in a `Mesh`
     pub fn point_in_mesh(&self, point: impl Into<Coords>) -> bool {
         self.get_point_location(point) != u32::MAX
+    }
+
+    /// Get the smallest cost coefficient across all layers
+    #[cfg(feature = "detailed-layers")]
+    pub fn get_min_layer_cost(&self) -> f32 {
+        self
+            .layers
+            .iter()
+            .map(|l| l.cost)
+            .min_by(|a, b| a.partial_cmp(b).unwrap())
+            .unwrap_or(1.0)
     }
 
     /// Get the positions of a point, including its layer.
