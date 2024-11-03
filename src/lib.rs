@@ -457,8 +457,7 @@ impl Mesh {
     /// Get the smallest cost coefficient across all layers
     #[cfg(feature = "detailed-layers")]
     pub fn get_min_layer_cost(&self) -> f32 {
-        self
-            .layers
+        self.layers
             .iter()
             .map(|l| l.cost)
             .min_by(|a, b| a.partial_cmp(b).unwrap())
