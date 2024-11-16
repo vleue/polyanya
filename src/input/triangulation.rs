@@ -719,7 +719,7 @@ mod inflate {
             (inflated_linestring, hole) = union.0.into_iter().next().unwrap().into_inner();
 
             if !hole.is_empty() {
-                holes.extend(hole.into_iter());
+                holes.extend(hole);
             }
         }
 
