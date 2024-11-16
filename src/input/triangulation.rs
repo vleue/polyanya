@@ -600,14 +600,12 @@ mod inflate {
 
     use std::f32::consts::TAU;
 
-    use geo::{Coord, EuclideanDistance, Line, LineString, Polygon, SimplifyVwPreserve};
-    use i_overlay::{
-        core::{overlay_rule::OverlayRule, solver::Solver},
-        i_float::f32_point::F32Point,
+    use geo::{
+        BooleanOps, Coord, Distance, Euclidean, Line, LineString, Polygon, SimplifyVwPreserve,
     };
 
-    fn segment_normal(start: &Coord<f32>, end: &Coord<f32>) -> Option<F32Point> {
-        let edge_length = end.euclidean_distance(start);
+    fn segment_normal(start: &Coord<f32>, end: &Coord<f32>) -> Option<Coord<f32>> {
+        let edge_length = Euclidean::distance(*end, *start);
         if edge_length == 0.0 {
             return None;
         }
@@ -616,7 +614,7 @@ mod inflate {
         let x = -dy / edge_length;
         let y = dx / edge_length;
 
-        Some(F32Point::new(x, y))
+        Some(Coord { x, y })
     }
 
     pub trait Inflate {
@@ -665,21 +663,22 @@ mod inflate {
         for line in lines {
             let rounded_line = round_line(&line, distance, arc_segments);
 
-            inflated_linestring = basic_union(inflated_linestring, rounded_line);
+            let from = Polygon::new(inflated_linestring, vec![]);
+            let with = Polygon::new(rounded_line, vec![]);
+            let union = from.union(&with);
+            inflated_linestring = union.0.into_iter().next().unwrap().into_inner().0;
             last = line.end;
         }
         if !linestring.is_closed() {
             let line = Line::new(last, linestring.0[0]);
             let rounded_line = round_line(&line, distance, arc_segments);
-            inflated_linestring = basic_union(inflated_linestring, rounded_line);
+            let from = Polygon::new(inflated_linestring, vec![]);
+            let with = Polygon::new(rounded_line, vec![]);
+            let union = from.union(&with);
+            inflated_linestring = union.0.into_iter().next().unwrap().into_inner().0;
         }
 
-        LineString(
-            inflated_linestring
-                .iter()
-                .map(|v| (v.x, v.y).into())
-                .collect(),
-        )
+        inflated_linestring
     }
 
     fn inflate_as_polygon(
@@ -696,81 +695,81 @@ mod inflate {
         last = line.end;
         for line in lines {
             let rounded_line = round_line(&line, distance, arc_segments);
+            let from = Polygon::new(inflated_linestring, vec![]);
+            let with = Polygon::new(rounded_line, vec![]);
+            let union = from.union(&with);
 
             let hole;
-            (inflated_linestring, hole) = union(inflated_linestring, rounded_line);
+            (inflated_linestring, hole) = union.0.into_iter().next().unwrap().into_inner();
+
             if !hole.is_empty() {
-                holes.push(LineString(hole.iter().map(|v| (v.x, v.y).into()).collect()));
+                holes.extend(hole.into_iter());
             }
             last = line.end;
         }
         if !linestring.is_closed() {
             let line = Line::new(last, linestring.0[0]);
             let rounded_line = round_line(&line, distance, arc_segments);
+
+            let from = Polygon::new(inflated_linestring, vec![]);
+            let with = Polygon::new(rounded_line, vec![]);
+            let union = from.union(&with);
+
             let hole;
-            (inflated_linestring, hole) = union(inflated_linestring, rounded_line);
+            (inflated_linestring, hole) = union.0.into_iter().next().unwrap().into_inner();
+
             if !hole.is_empty() {
-                holes.push(LineString(hole.iter().map(|v| (v.x, v.y).into()).collect()));
+                holes.extend(hole);
             }
         }
 
-        Polygon::new(
-            LineString(
-                inflated_linestring
-                    .iter()
-                    .map(|v| (v.x, v.y).into())
-                    .collect(),
-            ),
-            holes,
-        )
+        Polygon::new(inflated_linestring, holes)
     }
 
-    fn round_line(line: &Line<f32>, distance: f32, arc_segments: u32) -> Vec<F32Point> {
-        let start = F32Point::new(line.start.x, line.start.y);
-        let end = F32Point::new(line.end.x, line.end.y);
+    fn round_line(line: &Line<f32>, distance: f32, arc_segments: u32) -> LineString<f32> {
         let Some(normal) = segment_normal(&line.start, &line.end) else {
-            return (0..(arc_segments * 2))
-                .map(|i| {
-                    let angle = i as f32 * TAU / (arc_segments * 2) as f32;
-                    F32Point::new(
-                        start.x + angle.cos() * distance,
-                        start.y + angle.sin() * distance,
-                    )
-                })
-                .collect();
+            return LineString::new(
+                (0..(arc_segments * 2))
+                    .map(|i| {
+                        let angle = i as f32 * TAU / (arc_segments * 2) as f32;
+                        Coord {
+                            x: line.start.x + angle.cos() * distance,
+                            y: line.start.y + angle.sin() * distance,
+                        }
+                    })
+                    .collect(),
+            );
         };
-
         let mut vertices = Vec::with_capacity((arc_segments as usize + 2) * 2);
 
         create_arc(
             &mut vertices,
-            &start,
+            &line.start,
             distance,
-            &(start - (normal * distance)),
-            &(start + (normal * distance)),
+            &(line.start - (normal * distance)),
+            &(line.start + (normal * distance)),
             arc_segments,
             true,
         );
         create_arc(
             &mut vertices,
-            &end,
+            &line.end,
             distance,
-            &(end + (normal * distance)),
-            &(end - (normal * distance)),
+            &(line.end + (normal * distance)),
+            &(line.end - (normal * distance)),
             arc_segments,
             true,
         );
 
-        vertices
+        LineString::new(vertices)
     }
 
-    // from https://github.com/w8r/polygon-offset/blob/77382ec02a4a505fe6c2c900fb67345b206961ed/src/offset.js#L139
     fn create_arc(
-        vertices: &mut Vec<F32Point>,
-        center: &F32Point,
+        vertices: &mut Vec<Coord<f32>>,
+        center: &Coord<f32>,
         radius: f32,
-        start_vertex: &F32Point,
-        end_vertex: &F32Point,
+        start_vertex: &Coord<f32>,
+        end_vertex: &Coord<f32>,
         segment_count: u32,
         outwards: bool,
     ) {
@@ -806,57 +805,11 @@ mod inflate {
         vertices.push(*start_vertex);
         for i in 1..segment_count {
             let angle = start_angle + segment_angle * (i as f32);
-            vertices.push(F32Point::new(
-                center.x + angle.cos() * radius,
-                center.y + angle.sin() * radius,
-            ));
+            vertices.push(Coord {
+                x: center.x + angle.cos() * radius,
+                y: center.y + angle.sin() * radius,
+            });
         }
         vertices.push(*end_vertex);
-    }
-
-    fn basic_union(subj: Vec<F32Point>, clip: Vec<F32Point>) -> Vec<F32Point> {
-        let mut overlay = i_overlay::f32::overlay::F32Overlay::new();
-
-        overlay.add_path(subj, i_overlay::core::overlay::ShapeType::Subject);
-        overlay.add_path(clip, i_overlay::core::overlay::ShapeType::Clip);
-
-        let graph = overlay.into_graph_with_solver(
-            i_overlay::core::fill_rule::FillRule::NonZero,
-            Solver {
-                strategy: i_overlay::core::solver::Strategy::List,
-                precision: i_overlay::core::solver::Precision::Auto,
-                multithreading: None,
-            },
-        );
-        let mut shapes = graph.extract_shapes(OverlayRule::Union);
-
-        shapes.swap_remove(0).swap_remove(0)
-    }
-
-    fn union(subj: Vec<F32Point>, clip: Vec<F32Point>) -> (Vec<F32Point>, Vec<F32Point>) {
-        let mut overlay = i_overlay::f32::overlay::F32Overlay::new();
-
-        overlay.add_path(subj, i_overlay::core::overlay::ShapeType::Subject);
-        overlay.add_path(clip, i_overlay::core::overlay::ShapeType::Clip);
-
-        let graph = overlay.into_graph_with_solver(
-            i_overlay::core::fill_rule::FillRule::NonZero,
-            Solver {
-                strategy: i_overlay::core::solver::Strategy::List,
-                precision: i_overlay::core::solver::Precision::Auto,
-                multithreading: None,
-            },
-        );
-        let mut shapes = graph.extract_shapes(OverlayRule::Union);
-
-        let mut res = shapes.swap_remove(0);
-        (
-            res.swap_remove(0),
-            if res.is_empty() {
-                vec![]
-            } else {
-                res.swap_remove(0)
-            },
-        )
     }
 }
