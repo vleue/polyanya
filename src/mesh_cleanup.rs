@@ -30,7 +30,7 @@ impl Mesh {
                         / vertices.len() as f32
                         + self.layers[p.layer() as usize].offset;
                     let direction = center - vertex_coords;
-                    let angle = Vec2::Y.angle_between(direction);
+                    let angle = Vec2::Y.angle_to(direction);
                     (angle * 100000.0) as i32
                 });
                 polygons.dedup_by_key(|p| *p);

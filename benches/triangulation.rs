@@ -2105,6 +2105,35 @@ fn triangulation_many_overlapping_simplified(c: &mut Criterion) {
     );
 }
 
+fn triangulation_many_overlapping_inflated(c: &mut Criterion) {
+    c.bench_function(
+        &"triangulation many overlapping (inflated)".to_string(),
+        |b| {
+            b.iter(|| {
+                let mut triangulation = random_with_many_obstacles();
+                triangulation.set_agent_radius(0.1);
+                let mesh: Mesh = triangulation.as_navmesh();
+                black_box(mesh);
+            })
+        },
+    );
+}
+
+fn triangulation_many_overlapping_simplified_inflated(c: &mut Criterion) {
+    c.bench_function(
+        &"triangulation many overlapping (simplified + inflated)".to_string(),
+        |b| {
+            b.iter(|| {
+                let mut triangulation = random_with_many_obstacles();
+                triangulation.simplify(0.005);
+                triangulation.set_agent_radius(0.1);
+                let mesh: Mesh = triangulation.as_navmesh();
+                black_box(mesh);
+            })
+        },
+    );
+}
+
 criterion_group!(
     benches,
     triangulation,
@@ -2114,5 +2143,7 @@ criterion_group!(
     triangulation_square_overlapping,
     triangulation_many_overlapping,
     triangulation_many_overlapping_simplified,
+    triangulation_many_overlapping_inflated,
+    triangulation_many_overlapping_simplified_inflated,
 );
 criterion_main!(benches);
