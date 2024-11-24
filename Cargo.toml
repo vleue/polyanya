@@ -25,7 +25,7 @@ tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.14" }
 glam = { version = "0.27", features = ["approx"] }
 smallvec = { version = "1.13", features = ["union", "const_generics"] }
-bvh2d = { version = "0.5", git = "https://github.com/mockersf/bvh2d" }
+bvh2d = { version = "0.5" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 spade = "=2.10"
 geo = "0.28.0"
