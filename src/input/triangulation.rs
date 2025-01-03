@@ -132,10 +132,9 @@ impl Triangulation {
     }
 
     /// Add an obstacle delimited by the list of points on its edges.
-    pub fn add_obstacle(&mut self, edges: Vec<Vec2>) {
-        self.inner.interiors_push(LineString::from(
-            edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>(),
-        ));
+    pub fn add_obstacle(&mut self, edges: impl IntoIterator<Item = Vec2>) {
+        self.inner
+            .interiors_push(LineString::from_iter(edges.into_iter().map(|v| (v.x, v.y))));
     }
 
     /// Add obstacles delimited by the list of points on their edges.
@@ -148,12 +147,7 @@ impl Triangulation {
             interiors
                 .into_iter()
                 .chain(obstacles.into_iter().map(|edges| {
-                    LineString(
-                        edges
-                            .iter()
-                            .map(|v| Coord::from((v.x, v.y)))
-                            .collect::<Vec<_>>(),
-                    )
+                    LineString::from_iter(edges.iter().map(|v| Coord::from((v.x, v.y))))
                 }))
                 .collect::<Vec<_>>(),
         );
@@ -728,17 +722,13 @@ mod inflate {
 
     fn round_line(line: &Line<f32>, distance: f32, arc_segments: u32) -> LineString<f32> {
         let Some(normal) = segment_normal(&line.start, &line.end) else {
-            return LineString::new(
-                (0..(arc_segments * 2))
-                    .map(|i| {
-                        let angle = i as f32 * TAU / (arc_segments * 2) as f32;
-                        Coord {
-                            x: line.start.x + angle.cos() * distance,
-                            y: line.start.y + angle.sin() * distance,
-                        }
-                    })
-                    .collect(),
-            );
+            return LineString::from_iter((0..(arc_segments * 2)).map(|i| {
+                let angle = i as f32 * TAU / (arc_segments * 2) as f32;
+                Coord {
+                    x: line.start.x + angle.cos() * distance,
+                    y: line.start.y + angle.sin() * distance,
+                }
+            }));
         };
         let mut vertices = Vec::with_capacity((arc_segments as usize + 2) * 2);
 
