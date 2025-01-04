@@ -138,7 +138,7 @@ impl Triangulation {
     }
 
     /// Add obstacles delimited by the list of points on their edges.
-    pub fn add_obstacles(&mut self, obstacles: impl IntoIterator<Item = Vec<Vec2>>) {
+    pub fn add_obstacles(&mut self, obstacles: impl IntoIterator<Item = impl IntoIterator<Item  = Vec2>>) {
         let (exterior, interiors) =
             std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
                 .into_inner();
@@ -147,7 +147,7 @@ impl Triangulation {
             interiors
                 .into_iter()
                 .chain(obstacles.into_iter().map(|edges| {
-                    LineString::from_iter(edges.iter().map(|v| Coord::from((v.x, v.y))))
+                    LineString::from_iter(edges.into_iter().map(|v| Coord::from((v.x, v.y))))
                 }))
                 .collect::<Vec<_>>(),
         );
