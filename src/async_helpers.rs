@@ -20,7 +20,7 @@ pub struct FuturePath<'m> {
     pub(crate) ending_polygon: u32,
 }
 
-impl<'m> fmt::Debug for FuturePath<'m> {
+impl fmt::Debug for FuturePath<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("FuturePath")
             .field("from", &self.from)
@@ -29,7 +29,7 @@ impl<'m> fmt::Debug for FuturePath<'m> {
     }
 }
 
-impl<'m> Future for FuturePath<'m> {
+impl Future for FuturePath<'_> {
     type Output = Option<Path>;
 
     fn poll(
