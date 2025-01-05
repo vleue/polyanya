@@ -173,14 +173,11 @@ fn is_in_mesh_simplified() {
     // adding a circle obstacle in the middle
     let nb_points = 100;
     let radius = 2.5;
-    triangulation.add_obstacle(
-        (0..nb_points)
-            .map(|i| {
-                let angle = i as f32 * std::f32::consts::TAU / nb_points as f32;
-                let (x, y) = angle.sin_cos();
-                vec2(x, y) * radius + vec2(5.0, 5.0)
-            })
-    );
+    triangulation.add_obstacle((0..nb_points).map(|i| {
+        let angle = i as f32 * std::f32::consts::TAU / nb_points as f32;
+        let (x, y) = angle.sin_cos();
+        vec2(x, y) * radius + vec2(5.0, 5.0)
+    }));
     let polygons_before = triangulation.as_navmesh().layers[0].polygons.clone();
     triangulation.simplify(0.1);
     let mesh: Mesh = triangulation.as_navmesh();
@@ -208,14 +205,11 @@ fn is_in_mesh_overlapping_simplified() {
     // adding a circle obstacle in the middle
     let nb_points = 1000;
     let radius = 2.5;
-    triangulation.add_obstacle(
-        (0..nb_points)
-            .map(|i| {
-                let angle = i as f32 * std::f32::consts::TAU / nb_points as f32;
-                let (x, y) = angle.sin_cos();
-                vec2(x, y) * radius + vec2(5.0, 5.0)
-            })
-    );
+    triangulation.add_obstacle((0..nb_points).map(|i| {
+        let angle = i as f32 * std::f32::consts::TAU / nb_points as f32;
+        let (x, y) = angle.sin_cos();
+        vec2(x, y) * radius + vec2(5.0, 5.0)
+    }));
     triangulation.add_obstacle(vec![
         vec2(2.5, 2.5),
         vec2(2.5, 5.0),

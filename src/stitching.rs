@@ -726,8 +726,7 @@ mod tests {
             vec![vec2(2.0, 2.0), vec2(2.0, 1.75), vec2(1.75, 2.0)],
         ] {
             triangulation_a.add_obstacle(obstacle.clone());
-            triangulation_b
-                .add_obstacle(obstacle.into_iter().map(|v| v - vec2(1.0, 0.0)));
+            triangulation_b.add_obstacle(obstacle.into_iter().map(|v| v - vec2(1.0, 0.0)));
         }
         let mut mesh = Mesh::default();
         let mut layer_a = triangulation_a.as_layer();
