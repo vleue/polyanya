@@ -1,7 +1,7 @@
 use crate::{Mesh, MeshError, Polygon, Vertex};
 use glam::Vec2;
-use std::cmp::Ordering;
-use std::iter;
+use hashbrown::HashMap;
+use std::{cmp::Ordering, iter};
 
 trait Triangle {
     fn get_clockwise_neighbor(&self, index: usize) -> usize;
@@ -58,18 +58,21 @@ impl TryFrom<Trimesh> for Mesh {
 
         // Order vertex polygon neighbors counterclockwise
         for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
-            vertex.polygons.sort_by(|index_a, index_b| {
+            if vertex.polygons.is_empty() {
+                return Err(MeshError::InvalidMesh);
+            }
+
+            vertex.polygons.sort_by(|&index_a, &index_b| {
                 let get_counterclockwise_edge = |index: u32| {
-                    // No u32::MAX present yet, so the unwrap is safe
-                    let index = usize::try_from(index).unwrap();
+                    // No u32::MAX present yet, so `as` cast is safe`
+                    let index = index as usize;
                     let neighbor_index = polygons[index]
                         .vertices
                         .get_counterclockwise_neighbor(vertex_index);
-                    let neighbor = &unordered_vertices[neighbor_index];
-                    neighbor.coords - vertex.coords
+                    &unordered_vertices[neighbor_index].coords - vertex.coords
                 };
-                let edge_a = get_counterclockwise_edge(*index_a);
-                let edge_b = get_counterclockwise_edge(*index_b);
+                let edge_a = get_counterclockwise_edge(index_a);
+                let edge_b = get_counterclockwise_edge(index_b);
                 if edge_a.perp_dot(edge_b) > 0. {
                     Ordering::Less
                 } else {
@@ -77,42 +80,35 @@ impl TryFrom<Trimesh> for Mesh {
                 }
             });
 
-            if vertex.polygons.is_empty() {
-                return Err(MeshError::InvalidMesh);
-            }
-
-            // Add obstacles (-1) as vertex neighbors
-            let mut polygons_including_obstacles = vec![vertex.polygons[0]];
-            for polygon_index in vertex
+            let mut polygons_including_obstacles = Vec::with_capacity(vertex.polygons.len());
+            let first_polygon = vertex.polygons[0];
+            vertex
                 .polygons
                 .iter()
-                .cloned()
                 .skip(1)
-                .chain(iter::once(polygons_including_obstacles[0]))
-            {
-                let last_index = *polygons_including_obstacles.last().unwrap();
-                if last_index == u32::MAX {
-                    polygons_including_obstacles.push(polygon_index);
-                    continue;
-                }
-                let triangle_at = |index: u32| {
-                    let polygon = &polygons[usize::try_from(index).unwrap()];
-                    &polygon.vertices
-                };
+                .chain(iter::once(&first_polygon))
+                .for_each(|&polygon_index| {
+                    let last_index = *polygons_including_obstacles
+                        .last()
+                        .unwrap_or(&first_polygon);
+                    if last_index == u32::MAX {
+                        polygons_including_obstacles.push(polygon_index);
+                    } else {
+                        let triangle_at =
+                            |index: u32| &polygons[usize::try_from(index).unwrap()].vertices;
 
-                let last_counterclockwise_neighbor =
-                    triangle_at(last_index).get_counterclockwise_neighbor(vertex_index);
-                let next_clockwise_neighbor =
-                    triangle_at(polygon_index).get_clockwise_neighbor(vertex_index);
+                        let last_counterclockwise_neighbor =
+                            triangle_at(last_index).get_counterclockwise_neighbor(vertex_index);
+                        let next_clockwise_neighbor =
+                            triangle_at(polygon_index).get_clockwise_neighbor(vertex_index);
 
-                if last_counterclockwise_neighbor != next_clockwise_neighbor {
-                    // The edges don't align; there's an obstacle here
-                    polygons_including_obstacles.push(u32::MAX);
-                }
-                polygons_including_obstacles.push(polygon_index);
-            }
-            // The first element is included in the end again
-            polygons_including_obstacles.remove(0);
+                        if last_counterclockwise_neighbor != next_clockwise_neighbor {
+                            // The edges don't align; there's an obstacle here
+                            polygons_including_obstacles.push(u32::MAX);
+                        }
+                        polygons_including_obstacles.push(polygon_index);
+                    }
+                });
             vertex.polygons = polygons_including_obstacles;
         }
         // Recreate vertices because we now include obstacles, so vertices can now be properly identified as edges
@@ -125,21 +121,24 @@ impl TryFrom<Trimesh> for Mesh {
 }
 
 fn to_vertices(trimesh: &Trimesh) -> Vec<Vertex> {
+    // reducing redundant iterations by implementing vertex-to-polygon lookup
+    let mut lookup: HashMap<usize, Vec<usize>> = HashMap::with_capacity(trimesh.vertices.len());
+    for (polygon_index, vertex_indices_in_polygon) in trimesh.triangles.iter().enumerate() {
+        for &vertex_index in vertex_indices_in_polygon {
+            lookup.entry(vertex_index).or_default().push(polygon_index);
+        }
+    }
+
     trimesh
         .vertices
         .iter()
         .enumerate()
         .map(|(vertex_index, coords)| {
-            let neighbor_indices = trimesh
-                .triangles
+            let neighbor_indices = lookup
+                .get(&vertex_index)
+                .unwrap_or(&Vec::new())
                 .iter()
-                .enumerate()
-                .filter_map(|(polygon_index, vertex_indices_in_polygon)| {
-                    vertex_indices_in_polygon
-                        .contains(&vertex_index)
-                        .then_some(polygon_index)
-                })
-                .map(|index| index as u32)
+                .map(|&polygon_index| polygon_index as u32)
                 .collect();
             Vertex::new(*coords, neighbor_indices)
         })
