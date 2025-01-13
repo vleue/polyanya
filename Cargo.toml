@@ -27,7 +27,7 @@ glam = { version = "0.29", features = ["approx"] }
 smallvec = { version = "1.13", features = ["union", "const_generics"] }
 bvh2d = { version = "0.6", git = "https://github.com/mockersf/bvh2d" }
 serde = { version = "1.0", features = ["derive"], optional = true }
-spade = "=2.12.1"
+spade = "=2.10.0"
 geo = "0.29.0"
 log = "0.4"
 thiserror = "2.0.10"
