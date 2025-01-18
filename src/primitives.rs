@@ -71,7 +71,7 @@ impl Polygon {
         // Hack to handle case where there are no neighbours in the file. In
         // this case we want to assume it is not a one way. The correct fix is
         // to update the polyanya file format to include the neighbours.
-        let mut is_one_way = neighbours.first().is_some();
+        let mut is_one_way = !neighbours.is_empty();
         for neighbour in neighbours {
             if *neighbour != -1 {
                 if found_trav {

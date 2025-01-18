@@ -69,7 +69,7 @@ impl TryFrom<Trimesh> for Mesh {
                     let neighbor_index = polygons[index]
                         .vertices
                         .get_counterclockwise_neighbor(vertex_index);
-                    &unordered_vertices[neighbor_index].coords - vertex.coords
+                    unordered_vertices[neighbor_index].coords - vertex.coords
                 };
                 let edge_a = get_counterclockwise_edge(index_a);
                 let edge_b = get_counterclockwise_edge(index_b);
