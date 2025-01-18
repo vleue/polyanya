@@ -173,21 +173,16 @@ impl<'m> SearchInstance<'m> {
         let from_layer = &mesh.layers[from.1.layer() as usize];
 
         for edge in starting_polygon.edges_index() {
-            let start = if let Some(v) = from_layer.vertices.get(edge[0] as usize) {
-                v
-            } else {
+            let Some(start) = from_layer.vertices.get(edge[0] as usize) else {
                 continue;
             };
-            let end = if let Some(v) = from_layer.vertices.get(edge[1] as usize) {
-                v
-            } else {
+            let Some(end) = from_layer.vertices.get(edge[1] as usize) else {
                 continue;
             };
             let other_side = start
                 .polygons
                 .iter()
-                .filter(|i| **i != u32::MAX && end.polygons.contains(*i))
-                .find(|poly| *poly != &from.1)
+                .find(|poly| **poly != u32::MAX && end.polygons.contains(*poly) && *poly != &from.1)
                 .unwrap_or(&u32::MAX);
 
             if search_instance.blocked_layers.contains(&other_side.layer()) {
@@ -370,25 +365,27 @@ impl<'m> SearchInstance<'m> {
             polygon
                 .vertices
                 .iter()
-                .enumerate()
-                .find(|(_, v)| {
-                    (target_layer.vertices[**v as usize].coords + target_layer.offset)
+                .position(|v| {
+                    (target_layer.vertices[*v as usize].coords + target_layer.offset)
                         .distance_squared(edge)
                         < 0.001
                 })
-                .map(|(i, _)| i)
                 .unwrap_or_else(|| {
-                    let mut distances = polygon
+                    *polygon
                         .vertices
                         .iter()
-                        .map(|v| {
-                            (target_layer.vertices[*v as usize].coords + target_layer.offset)
-                                .distance_squared(edge)
+                        .min_by(|a, b| {
+                            let lhs = (target_layer.vertices[**a as usize].coords
+                                + target_layer.offset)
+                                .distance_squared(edge);
+
+                            let rhs = (target_layer.vertices[**b as usize].coords
+                                + target_layer.offset)
+                                .distance_squared(edge);
+
+                            lhs.partial_cmp(&rhs).unwrap()
                         })
-                        .enumerate()
-                        .collect::<Vec<_>>();
-                    distances.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
-                    distances.first().unwrap().0
+                        .unwrap() as usize
                 })
                 + 1
         };
@@ -472,7 +469,7 @@ impl<'m> SearchInstance<'m> {
                     _ => (),
                 },
             }
-            let mut end_intersection_p = None;
+            let mut end_intersection_p = end_point;
             let mut found_intersection = false;
             let end_root_int1 = end_point.side((node.root, node.interval.1));
 
@@ -491,7 +488,7 @@ impl<'m> SearchInstance<'m> {
                     }
 
                     if intersect.distance_squared(end_point) > 1.0e-6 {
-                        end_intersection_p = Some(intersect);
+                        end_intersection_p = intersect;
                     } else {
                         #[cfg(debug_assertions)]
                         if self.debug {
@@ -502,7 +499,7 @@ impl<'m> SearchInstance<'m> {
                 }
             }
             successors.push(Successor {
-                interval: (start_point, end_intersection_p.unwrap_or(end_point)),
+                interval: (start_point, end_intersection_p),
                 edge,
                 ty,
             });
@@ -511,13 +508,11 @@ impl<'m> SearchInstance<'m> {
                     if found_intersection {
                         ty = SuccessorType::LeftNonObservable;
                     }
-                    if let Some(intersect) = end_intersection_p {
-                        successors.push(Successor {
-                            interval: (intersect, end_point),
-                            edge,
-                            ty,
-                        });
-                    }
+                    successors.push(Successor {
+                        interval: (end_intersection_p, end_point),
+                        edge,
+                        ty,
+                    });
                 }
                 EdgeSide::Edge => match end_point.side((node.root, node.interval.0)) {
                     EdgeSide::Edge | EdgeSide::Left => {
