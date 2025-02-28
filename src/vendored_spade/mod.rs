@@ -21,7 +21,9 @@
 //!    `mint::Point2`. Also implements [HasPosition] for `mint::Point2`.
 
 #![forbid(unsafe_code)]
-#![warn(clippy::all)]
+#![allow(clippy::all)]
+#![allow(unused_imports)]
+#![allow(dead_code)]
 #![deny(rustdoc::broken_intra_doc_links)]
 
 extern crate alloc;

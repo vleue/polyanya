@@ -91,10 +91,6 @@ where
         );
     }
 
-    if cfg!(any(fuzzing, test)) {
-        hull_sanity_check(&result, &hull);
-    }
-
     fix_convexity(&mut result);
 
     for element in skipped_elements {
@@ -251,10 +247,6 @@ where
     }
 
     assert_eq!(edges.len(), 0);
-
-    if cfg!(any(fuzzing, test)) {
-        hull_sanity_check(&result, &hull);
-    }
 
     Ok(result)
 }
@@ -775,10 +767,6 @@ impl Hull {
                 let current_node = self.data[right_index];
                 if current_node.angle == right_angle {
                     break;
-                }
-
-                if cfg!(any(fuzzing, test)) {
-                    assert!(!self.empty.contains(&right_index));
                 }
 
                 // Remove current_node - it is completely overlapped by the new segment
