@@ -19,18 +19,24 @@ async = []
 no-default-baking = []
 detailed-layers = []
 serde = ["glam/serde", "bvh2d/serde", "dep:serde"]
+public-spade = ["dep:spade"]
 
 [dependencies]
+spade = { version = "2.10", optional = true }
 tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.15" }
 glam = { version = "0.29", features = ["approx"] }
 smallvec = { version = "1.13", features = ["union", "const_generics"] }
 bvh2d = { version = "0.6", git = "https://github.com/mockersf/bvh2d" }
 serde = { version = "1.0", features = ["derive"], optional = true }
-spade = "=2.10"
 geo = "0.29.0"
 log = "0.4"
 thiserror = "1"
+
+# additional dependencies for vendored spade
+robust = "1.1.0"
+num-traits = "0.2"
+
 
 [dev-dependencies]
 criterion = "0.5"

@@ -45,6 +45,13 @@ mod mesh_cleanup;
 mod primitives;
 mod stitching;
 
+#[cfg(not(feature = "public-spade"))]
+mod vendored_spade;
+#[cfg(feature = "public-spade")]
+use spade;
+#[cfg(not(feature = "public-spade"))]
+use vendored_spade as spade;
+
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
 pub use input::polyanya_file::PolyanyaFile;
