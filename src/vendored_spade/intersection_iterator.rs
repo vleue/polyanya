@@ -2,59 +2,6 @@ use crate::vendored_spade::delaunay_core::math;
 use crate::vendored_spade::handles::{DirectedEdgeHandle, FixedVertexHandle, VertexHandle};
 use crate::vendored_spade::{HasPosition, Point2, Triangulation, TriangulationExt};
 
-/// An iterator over all intersections of a straight line across the triangulation.
-///
-/// This iterator can, for example, be used to detect which edges prevent the insertion
-/// of a new constraint edge.
-///
-/// Three different intersection kinds are possible:
-///  - The line crosses a different edge
-///  - The line goes through a vertex
-///  - The line overlaps with an existing edge
-///
-/// These intersections are defined by the [Intersection] enum. Intersections are always returned in the same
-/// order as the line, i.e. the closest intersection to the starting point is returned first.
-///
-/// # Example
-///
-/// This triangulation is created by the code below:
-///
-///
-/// The line (s -> e) generates 5 intersections (labeled with `0..=4`): two edge intersections,
-/// a vertex intersection, an edge overlap and  a final vertex intersection.
-///
-/// ```
-/// use spade::{LineIntersectionIterator, Point2, DelaunayTriangulation};
-/// # use spade::InsertionError;
-/// # fn main() -> Result<(), InsertionError> {
-/// let vertices = vec![
-///     Point2::new(-30.0, 20.0),  // v0
-///     Point2::new(0.0, -20.0),   // v1
-///     Point2::new(0.0, 20.0),    // v2
-///     Point2::new(14.0, 0.0),    // v3
-///     Point2::new(30.0, 0.0),    // v4
-/// ];
-///
-/// let triangulation = DelaunayTriangulation::<_>::bulk_load_stable(vertices)?;
-/// for intersection in LineIntersectionIterator::new(
-///     &triangulation,
-///     Point2::new(-30.0, 0.0),
-///     Point2::new(40.0, 0.0),
-/// ) {
-///     println!("{:?}", intersection);
-/// }
-/// # Ok(())
-/// # }
-/// ```
-///
-/// Output (simplified):
-/// ```text
-/// EdgeIntersection(DirectedEdgeHandle v0 -> v1)
-/// EdgeIntersection(DirectedEdgeHandle v2 -> v1)
-/// VertexIntersection(VertexHandle(3))
-/// EdgeOverlap(DirectedEdgeHandle v3 -> v4)
-/// VertexIntersection(VertexHandle(4))
-/// ```
 pub struct LineIntersectionIterator<'a, V, DE, UE, F>
 where
     V: HasPosition,
@@ -67,24 +14,15 @@ where
     line_to: Point2<V::Scalar>,
 }
 
-/// An intersection that can occur when moving through a triangulation along a straight line.
-///
-/// This is used as return type for [LineIntersectionIterator].
 #[allow(clippy::enum_variant_names)]
 pub enum Intersection<'a, V, DE, UE, F>
 where
     V: HasPosition,
 {
-    /// Indicates that the line is either crossing or touching an existing edge.
-    /// The line's destination will always be either on the edge or on its left side (in a right-handed coordinate system).
     EdgeIntersection(DirectedEdgeHandle<'a, V, DE, UE, F>),
-    /// Indicates that the line is touching a vertex.
-    /// A line beginning or starting on a vertex also generates this intersection. A "line" beginning and starting on the same
-    /// vertex will also return this intersection.
+
     VertexIntersection(VertexHandle<'a, V, DE, UE, F>),
-    /// Indicates that a line is (partially) overlapping an existing edge.
-    ///
-    /// This implies that the line points in the same direction as the edge and that they share a common line segment.
+
     EdgeOverlap(DirectedEdgeHandle<'a, V, DE, UE, F>),
 }
 
@@ -132,7 +70,6 @@ impl<'a, V, DE, UE, F> Intersection<'a, V, DE, UE, F>
 where
     V: HasPosition,
 {
-    /// Returns the intersected edge if this is an edge intersection or `None` otherwise.
     pub fn as_edge_intersection(&self) -> Option<DirectedEdgeHandle<'a, V, DE, UE, F>> {
         match self {
             Intersection::EdgeIntersection(ref edge) => Some(*edge),
@@ -148,8 +85,6 @@ where
     UE: Default,
     F: Default,
 {
-    /// Creates a new `LineIntersectionIterator` covering an arbitrary line.
-    /// See [LineIntersectionIterator] for more information.
     pub fn new<T>(
         delaunay: &'a T,
         line_from: Point2<V::Scalar>,
@@ -166,32 +101,6 @@ where
         }
     }
 
-    /// Creates a new line iterator covering the line spanned by two existing vertices.
-    ///
-    /// Both start and end vertex are part of the iteration result.
-    ///
-    /// # Example
-    /// ```
-    /// use spade::{DelaunayTriangulation, Intersection, LineIntersectionIterator, Point2, Triangulation};
-    /// # use spade::InsertionError;
-    /// # fn main() -> Result<(), InsertionError> {
-    ///     let mut triangulation = DelaunayTriangulation::<Point2<f64>>::new();
-    ///     let v0 = triangulation.insert(Point2::new(0.0, 0.0))?;
-    ///     let v1 = triangulation.insert(Point2::new(1.0, 1.0))?;
-    ///
-    ///     let expected_edge_overlap = triangulation.get_edge_from_neighbors(v0, v1).unwrap();
-    ///     let all_intersections = LineIntersectionIterator::new_from_handles(&triangulation, v0, v1).collect::<Vec<_>>();
-    ///
-    ///     let v0 = triangulation.vertex(v0);
-    ///     let v1 = triangulation.vertex(v1);
-    ///     assert_eq!(all_intersections, vec![
-    ///         Intersection::VertexIntersection(v0),
-    ///         Intersection::EdgeOverlap(expected_edge_overlap),
-    ///         Intersection::VertexIntersection(v1),
-    ///     ]);
-    /// # Ok(())
-    /// # }
-    /// ```
     pub fn new_from_handles<T>(
         delaunay: &T,
         from: FixedVertexHandle,

@@ -321,22 +321,6 @@ pub trait TriangulationExt: Triangulation {
         }
     }
 
-    /// The Delaunay property refers to the property that no point lies inside
-    /// the circumcircle of the triangulation's triangles. Adding a
-    /// new point into the triangulations may violate this property, this method
-    /// "repairs" it by strategically flipping edges until the property
-    /// holds again. Every flip produces more "illegal" edges that may have to
-    /// be flipped. However, since any edge is flipped at most once, this
-    /// algorithm is known to terminate.
-    ///
-    /// The given position is the position of a new point may have
-    /// invalidated the Delaunay property, the point must be on the left side
-    /// of the given edge.
-    ///
-    /// "Flipping an edge" refers to switching to the other diagonal in a
-    /// four sided polygon.
-    ///
-    /// Returns `true` if at least one edge was flipped. This will always include the initial edge.
     fn legalize_edge(&mut self, edge: FixedDirectedEdgeHandle) -> bool {
         let mut edges: SmallVec<[FixedDirectedEdgeHandle; 8]> = Default::default();
         edges.push(edge);
@@ -434,7 +418,6 @@ pub trait TriangulationExt: Triangulation {
         current_minimum_vertex
     }
 
-    /// "Walks" through the triangulation until it finds the target point.
     fn locate_with_hint_fixed_core(
         &self,
         target_position: Point2<<Self::Vertex as HasPosition>::Scalar>,
@@ -691,28 +674,6 @@ pub trait TriangulationExt: Triangulation {
         result
     }
 
-    /// After a vertex removal, the created hole is stitched together by connecting
-    /// all vertices to a single vertex at the border (triangle fan).
-    /// Since these new edges can violate the Delaunay property, it must be restored.
-    ///
-    /// The algorithm works like this:
-    ///  - Add all new edges to an "invalid" list
-    ///  - While the invalid list is not empty: Determine if flipping the top edge is
-    ///    required to restore the Delaunay property locally.
-    ///  - If the edge was flipped: Determine the flip polygon. A flip refers
-    ///    to switching the diagonal in a four sided polygon which defines the
-    ///    flip polygon.
-    ///  - Add all edges of the flip polygon to the invalid list if they were
-    ///    newly created. Otherwise, the edge is part of the border loop surrounding
-    ///    the hole created after the vertex removal. These are known to be valid and
-    ///    need not be checked
-    ///
-    /// For more details, refer to
-    /// Olivier Devillers. Vertex Removal in Two Dimensional Delaunay Triangulation:
-    /// Speed-up by Low Degrees Optimization.
-    /// <https://doi.org/10.1016/j.comgeo.2010.10.001>
-    ///
-    /// Note that the described low degrees optimization is not yet part of this library.
     fn legalize_edges_after_removal<F>(
         &mut self,
         edges_to_validate: &mut Vec<FixedUndirectedEdgeHandle>,

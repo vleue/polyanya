@@ -23,9 +23,6 @@ impl IsolateVertexResult {
     }
 }
 
-/// Cut off all edges to the left of the given edges and replace their face
-/// with the outer face.
-/// `edge_strip` should be a vec of connected edges ordered ccw.
 pub fn disconnect_edge_strip<V, DE, UE, F>(
     dcel: &mut Dcel<V, DE, UE, F>,
     edge_strip: Vec<FixedDirectedEdgeHandle>,
@@ -63,8 +60,6 @@ where
     }
 }
 
-/// Removes a vertex from the DCEL.
-/// Then, the resulting hole will be re-triangulated with a triangle fan.
 pub fn isolate_vertex_and_fill_hole<V, DE, UE, F>(
     dcel: &mut Dcel<V, DE, UE, F>,
     border_loop: Vec<FixedDirectedEdgeHandle>,
@@ -530,13 +525,6 @@ where
     ([edge, new_edge], new_vertex_handle)
 }
 
-/// Splits `edge_handle` only one side. Used to split edges on the convex hull.
-///
-/// Returns the newly inserted vertex and the two resulting parts of the split edge.
-///
-/// The returned edges will point in the same direction as the input edge. The first
-/// returned edge has the same origin as the input edge, the second returned edge has the
-/// same destination as the input edge.
 pub fn split_half_edge<V, DE, UE, F>(
     dcel: &mut Dcel<V, DE, UE, F>,
     edge_handle: FixedDirectedEdgeHandle,
@@ -669,11 +657,6 @@ where
     (nv, [edge_handle, e2])
 }
 
-/// Splits `edge_handle`, introducing 6 new half edges, two new faces and one
-/// new vertex.
-///
-/// Returns the newly created vertex handle and the two resulting parts of the split edge.
-/// The returned edges will point in the same direction as the input edge
 pub fn split_edge<V, DE, UE, F>(
     dcel: &mut Dcel<V, DE, UE, F>,
     edge_handle: FixedDirectedEdgeHandle,
@@ -1045,7 +1028,6 @@ where
     }
 }
 
-/// Flip an edge in cw direction
 pub fn flip_cw<V, DE, UE, F>(dcel: &mut Dcel<V, DE, UE, F>, e: FixedUndirectedEdgeHandle) {
     let e = e.as_directed();
     let e_entry = *dcel.half_edge(e);
@@ -1086,8 +1068,6 @@ pub fn flip_cw<V, DE, UE, F>(dcel: &mut Dcel<V, DE, UE, F>, e: FixedUndirectedEd
     dcel.faces[t_face.index()].adjacent_edge = Some(t);
 }
 
-/// Vertex removal has two stages: First, the vertex is disconnected from its surroundings (isolated).
-/// Then, any edges, faces and the vertex itself that have become obsolete are removed.
 pub fn cleanup_isolated_vertex<V, DE, UE, F>(
     dcel: &mut Dcel<V, DE, UE, F>,
     isolated: &mut IsolateVertexResult,
@@ -1152,12 +1132,6 @@ fn fix_handle_swap<V, DE, UE, F>(
     dcel.faces[edge_face.index()].adjacent_edge = Some(edge_handle);
 }
 
-/// Removes a vertex from the DCEL by swapping in another.
-///
-/// This operation *will* leave the DCEL in an inconsistent state, the caller must ensure to
-/// fix the site of the removed vertex appropriately. This method only ensures that
-/// references to the swapped in vertex are updated accordingly.
-/// Returns the data of the removed vertex.
 pub fn swap_remove_vertex<V, DE, UE, F>(
     dcel: &mut Dcel<V, DE, UE, F>,
     vertex_handle: FixedVertexHandle,
@@ -1183,11 +1157,6 @@ pub fn swap_remove_vertex<V, DE, UE, F>(
     }
 }
 
-/// Removes a face from the DCEL by swapping in another face.
-///
-/// This *will* leave the DCEL in an inconsistent state. It is the callers responsibility
-/// to fix the site around the removed face. This method only ensure that any references to
-/// the swapped in faces are updated accordingly.
 fn swap_remove_face<V, DE, UE, F>(dcel: &mut Dcel<V, DE, UE, F>, face: FixedFaceHandle<InnerTag>) {
     dcel.faces.swap_remove(face.index());
     if dcel.faces.len() > face.index() {

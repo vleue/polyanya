@@ -12,11 +12,6 @@ use super::{
 use std::vec;
 use std::vec::Vec;
 
-/// An `f64` wrapper implementing `Ord` and `Eq`.
-///
-/// This is only used as part of bulk loading.
-/// All input coordinates are checked with `validate_coordinate` before they are used, hence
-/// `Ord` and `Eq` should always be well-defined.
 #[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 struct FloatOrd<S>(S);
 
@@ -32,47 +27,6 @@ where
 
 impl<S> Eq for FloatOrd<S> where S: PartialOrd {}
 
-/// Implements a circle-sweep bulk loading algorithm for efficient initialization of Delaunay
-/// triangulations.
-///
-/// The algorithm is motivated by:
-///
-/// A faster circle-sweep Delaunay triangulation algorithm
-/// Ahmad Biniaz, Gholamhossein Dastghaibyfard
-/// Advances in Engineering Software,
-/// Volume 43, Issue 1,
-/// 2012,
-/// <https://doi.org/10.1016/j.advengsoft.2011.09.003>
-///
-/// Or alternatively: <http://cglab.ca/~biniaz/papers/Sweep%20Circle.pdf>
-///
-/// # Overview
-///
-/// The major reason for the algorithm's good performance lies in an efficient lookup structure
-/// for finding *hull edges* at a certain *angle*.
-/// "angle" always refers to the angle of a vertex to a center point which is calculated first.
-/// The lookup structure is implemented by the `Hull` struct. It has a `get` and `insert` method
-/// which can quickly find and update the edges of the hull at a given angle.
-///
-/// The algorithm is roughly compromised of these steps:
-///
-///  1. Calculate the median position of all vertices. We call this position `initial_center`.
-///  2. Sort all vertices along their distance to this center.
-///  3. Build a seed triangulation by inserting vertices (beginning with the closest vertex) into an
-///     empty triangulation. Stop once the triangulation has at least one inner face.
-///  4. Calculate the final center. The final center is some point inside the seed triangulation (e.g.
-///     the average its vertices)
-///  5. Initiate the `Hull` lookup structure with the seed triangulation.
-///  6. Insert all remaining vertices, beginning with the vertex closest to `initial_center`.
-///     This can be done efficiently as the edge "closest" to the new vertex can be identified quickly
-///     with `Hull.get`. After each insertion, the hull is partially patched to be more convex
-///  7. After all vertices have been inserted: The hull is not necessarily convex. Fill any "hole"
-///     in the hull by a process comparable to the graham scan algorithm.
-///
-/// # Some details
-///
-/// "angle" does not refer to an actual angle in radians but rather to an approximation that doesn't
-/// require trigonometry for calculation. See method `pseudo_angle` for more information.
 pub fn bulk_load<V, T>(mut elements: Vec<V>) -> Result<T, InsertionError>
 where
     V: HasPosition,
@@ -611,7 +565,6 @@ where
     Ok(())
 }
 
-/// Makes the outer hull convex. Similar to a graham scan.
 fn fix_convexity<TR>(triangulation: &mut TR)
 where
     TR: Triangulation,
@@ -671,9 +624,6 @@ impl Segment {
         Self { from, to }
     }
 
-    /// Returns `true` if this segment does not contain the angle 0.0.
-    ///
-    /// Pseudo angles wrap back to 0.0 after a full rotation.
     fn is_non_wrapping_segment(&self) -> bool {
         self.from < self.to
     }
@@ -689,34 +639,14 @@ impl Segment {
 
 #[derive(Clone, Copy, Debug)]
 struct Node {
-    /// Pseudo-angle of this hull entry
     angle: FloatOrd<f64>,
 
-    /// An edge leaving at this hull entry.
     edge: FixedDirectedEdgeHandle,
 
-    /// Neighbors (indexes into the hull)
     left: usize,
     right: usize,
 }
 
-/// Implements an efficient angle-to-edge lookup for edges of the hull of a triangulation.
-///
-/// Refer to `bulk_load` (in `bulk_load.rs`) for more background on how this structure is being used.
-///
-/// It implements an efficient mapping of (pseudo-)angles to edges. To do so, it stores all inserted
-/// edges in a linked list backed by a vec. Finding an edge belonging to a given angle can always
-/// be done by iterating through this list until the target angle is found.
-/// The entries are stored in a consistent order (either clockwise or counterclockwise)
-///
-/// This naive sequential search is very slow as it needs to traverse half of the list on average.
-/// To speed things up, the space of valid angles (the half open interval [0, 1) )
-/// is partitioned into `n` equally sized buckets.
-/// For each bucket, `Hull` stores a reference to the list entry with the *biggest angle* that
-/// still belongs into that bucket. A sequential search will begin at this bucket and has to traverse
-/// only a few elements before finding the target angle.
-/// Since the number of buckets is re-adjusted depending on the number of hull entries, this mapping
-/// will now be in O(1) for reasonably evenly distributed triangulations.
 #[derive(Debug)]
 pub struct Hull {
     buckets: Vec<usize>,
@@ -724,7 +654,6 @@ pub struct Hull {
 
     center: Point2<f64>,
 
-    /// Unused indices in data which might be reclaimed later
     empty: Vec<usize>,
 }
 
@@ -817,23 +746,6 @@ impl Hull {
         }
     }
 
-    /// Updates the hull after the insertion of a vertex.
-    ///
-    /// This method should be called after a vertex `v` has been inserted into the outer face of the
-    /// triangulation under construction.
-    ///
-    /// Such a vertex is guaranteed to have two outgoing edges that are adjacent to the convex hull,
-    /// e.g. `e0 -> v -> e1`
-    ///
-    /// In these scenarios, the parameters should be set as follows:
-    /// * `left_angle`: `pseudo_angle(e0.from())`
-    /// * `middle_angle`: `pseudo_angle(v.position())`
-    /// * `right_angle`: `pseudo_angle(e1.to())`
-    /// * `left_edge`: `e0.fix()`
-    /// * `right_edge`: `e1.fix()`
-    ///
-    /// Note that `left_angle` and `right_angle` must already be present in the hull. Otherwise,
-    /// calling this method will result in an endless loop.
     fn insert(
         &mut self,
         left_angle: FloatOrd<f64>,
@@ -949,10 +861,6 @@ impl Hull {
         }
     }
 
-    /// Gets an edge of the hull which covers a given input angle.
-    ///
-    /// An edge is considered to cover an input angle if the input angle is contained in the angle
-    /// segment spanned by `pseudo_angle(edge.from()) .. pseudo_angle(edge.from())`
     fn get(&self, angle: FloatOrd<f64>) -> FixedDirectedEdgeHandle {
         let mut current_handle = self.buckets[self.floored_bucket(angle)];
         loop {
@@ -968,7 +876,6 @@ impl Hull {
         }
     }
 
-    /// Looks up what bucket a given pseudo-angle will fall into.
     fn floored_bucket(&self, angle: FloatOrd<f64>) -> usize {
         ((angle.0 * self.buckets.len() as f64).floor() as usize) % self.buckets.len()
     }
@@ -999,22 +906,6 @@ impl Hull {
     }
 }
 
-/// Returns a pseudo-angle in the 0-1 range, without expensive trigonometry functions
-///
-/// The angle has the following shape:
-/// ```text
-///              0.25
-///               ^ y
-///               |
-///               |
-///   0           |           x
-///   <-----------o-----------> 0.5
-///   1           |
-///               |
-///               |
-///               v
-///              0.75
-/// ```
 #[inline]
 fn pseudo_angle(a: Point2<f64>, center: Point2<f64>) -> FloatOrd<f64> {
     let diff = a.sub(center);

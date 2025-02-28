@@ -15,56 +15,23 @@ use super::{
     InnerTag, TriangulationExt, UndirectedEdgeHandle,
 };
 
-/// Contains details about the outcome of a refinement procedure.
-///
-/// *See [ConstrainedDelaunayTriangulation::refine]*
 #[derive(Debug, Clone)]
 pub struct RefinementResult {
-    /// A `Vec` containing all outer faces that were excluded from refinement.
-    ///
-    /// This `Vec` will be empty unless [RefinementParameters::exclude_outer_faces] has been set.
-    /// In this case, the `Vec` contains all finite outer faces, including any additional outer faces
-    /// that were created during the refinement.
     pub excluded_faces: Vec<FixedFaceHandle<InnerTag>>,
 
-    /// Set to `true` if the refinement could be completed regularly.
-    ///
-    /// This will be `false` if the refinement ran out of additional vertices
-    /// (see [RefinementParameters::with_max_additional_vertices]). Consider adapting the refinement parameters in this case,
-    /// either by using a higher additional vertex count or by e.g. lowering the [angle limit](RefinementParameters::with_angle_limit).
     pub refinement_complete: bool,
 }
 
-/// Specifies the minimum allowed angle that should be kept after a refinement procedure.
-///
-/// The refinement algorithm will attempt to keep the *minimum angle in the triangulation* greater than
-/// an angle limit specified with this struct.
-///
-/// *See [ConstrainedDelaunayTriangulation::refine], [RefinementParameters::with_angle_limit]*
 #[derive(Copy, Clone, PartialEq, PartialOrd)]
 pub struct AngleLimit {
     radius_to_shortest_edge_limit: f64,
 }
 
 impl AngleLimit {
-    /// Create a new angle limit from an angle given in degrees.
-    ///
-    /// Note that angles larger than 30 degrees will quickly lead to overrefinement as the algorithm
-    /// cannot necessarily guarantee termination (other than by limiting the number of additional inserted vertices).
-    ///
-    /// Defaults to 30°. An angle of 0 degrees will disable refining due to small angles.
-    ///
-    /// *See also [from_rad](AngleLimit::from_rad)*
     pub fn from_deg(degree: f64) -> Self {
         Self::from_rad(degree.to_radians())
     }
 
-    /// Create a new angle limit from an angle given in radians.
-    ///
-    /// Note angles larger than 30 degrees (≈0.52rad = PI / 6) will quickly lead to poor refinement quality.
-    /// Passing in an angle of 0rad will disable refining due to small angles.
-    ///
-    /// *See also [from_deg](AngleLimit::from_deg)*
     pub fn from_rad(rad: f64) -> Self {
         let sin = rad.sin();
         if sin == 0.0 {
@@ -74,41 +41,10 @@ impl AngleLimit {
         }
     }
 
-    /// Returns the radius to shortest edge limit corresponding to this angle limit.
-    ///
-    /// See [from_radius_to_shortest_edge_ratio](AngleLimit::from_radius_to_shortest_edge_ratio) for more
-    /// information.
     pub fn radius_to_shortest_edge_limit(&self) -> f64 {
         self.radius_to_shortest_edge_limit
     }
 
-    /// Creates a new angle limit by specifying the circumradius to shortest edge ratio that must be kept.
-    ///
-    /// For each face, this ratio is calculated by dividing the circumradius of the face by the length of its shortest
-    /// edge.
-    /// This ratio is related directly to the minimum allowed angle by the formula
-    /// `ratio = 1 / (2 sin * (min_angle))`.
-    /// The *larger* the allowed min angle is, the *smaller* ratio becomes.
-    ///
-    /// Larger ratio values will lead to a less refined triangulation. Passing in `f64::INFINITY` will disable
-    /// refining due to small angles.
-    ///
-    /// Defaults to 1.0 (30 degrees).
-    ///
-    /// # Example values
-    ///
-    /// | ratio | Bound on smallest angle (deg) | Bound on smallest angle (rad) |
-    /// |-------|-------------------------------|-------------------------------|
-    /// | 0.58  |                        60.00° |                          1.05 |
-    /// | 0.60  |                        56.44° |                          0.99 |
-    /// | 0.70  |                        45.58° |                          0.80 |
-    /// | 0.80  |                        38.68° |                          0.68 |
-    /// | 0.90  |                        33.75° |                          0.59 |
-    /// | 1.00  |                        30.00° |                          0.52 |
-    /// | 1.10  |                        27.04° |                          0.47 |
-    /// | 1.20  |                        24.62° |                          0.43 |
-    /// | 1.30  |                        22.62° |                          0.39 |
-    /// | +INF  |                            0° |                             0 |
     pub fn from_radius_to_shortest_edge_ratio(ratio: f64) -> Self {
         Self {
             radius_to_shortest_edge_limit: ratio,
@@ -142,27 +78,6 @@ enum RefinementHint {
     MustRefine,
 }
 
-/// Controls how Delaunay refinement is performed.
-///
-/// Refer to [ConstrainedDelaunayTriangulation::refine] and methods implemented by this type for more details
-/// about which parameters are supported.
-///
-/// # Example
-///
-/// ```
-/// use spade::{AngleLimit, ConstrainedDelaunayTriangulation, Point2, RefinementParameters};
-///
-/// fn refine_cdt(cdt: &mut ConstrainedDelaunayTriangulation<Point2<f64>>) {
-///     let params = RefinementParameters::<f64>::new()
-///         .exclude_outer_faces(true)
-///         .keep_constraint_edges()
-///         .with_min_required_area(0.0001)
-///         .with_max_allowed_area(0.5)
-///         .with_angle_limit(AngleLimit::from_deg(25.0));
-///
-///     cdt.refine(params);
-/// }
-/// ```
 #[derive(Debug, PartialEq, Clone)]
 pub struct RefinementParameters<S: SpadeNum + Float> {
     max_additional_vertices: Option<usize>,
@@ -188,122 +103,35 @@ impl<S: SpadeNum + Float> Default for RefinementParameters<S> {
 }
 
 impl<S: SpadeNum + Float> RefinementParameters<S> {
-    /// Creates a new set of `RefinementParameters`.
-    ///
-    /// The following values will be used by `new` and `Self::default`:
-    /// * `exclude_outer_faces`: disabled - all faces are used for refinement
-    /// * `keep_constraint_edges`: disabled
-    /// * `min_required_area`: disabled - no lower area limit is used
-    /// * `max_allowed_area`: disabled - no upper area limit is used
-    /// * `angle_limit`: 30 degrees by default.
-    /// * `num_additional_vertices`: 10 times the number of vertices in the triangulation
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Specifies the smallest allowed inner angle in a refined triangulation.
-    ///
-    /// The refinement algorithm will attempt to insert additional points (called steiner points) until the
-    /// minimum angle is larger than the angle bound specified by the refinement parameters.
-    ///
-    /// Defaults to 30 degrees.
-    ///
-    /// Note that angle limits much larger than 30 degrees may not always terminate successfully - consider checking
-    /// [RefinementResult::refinement_complete] to make sure that the angle limit could actually be applied everywhere.
-    ///
-    /// # Examples of different angle limits
-    /// <table>
-    /// <tr><th>0° (no angle refinement)</th><th>20°</th><th>30°</th><th>34°</th></tr>
-    /// <tr><td>
-    ///
-    /// *See also [ConstrainedDelaunayTriangulation::refine]*
     pub fn with_angle_limit(mut self, angle_limit: AngleLimit) -> Self {
         self.angle_limit = angle_limit;
         self
     }
 
-    /// Specifies a lower bound for a triangles area.
-    ///
-    /// The algorithm will attempt to ignore any triangle with an area below this limit. This can also prevent an
-    /// exhaustion of additionally available vertices (see [Self::with_max_additional_vertices]).
-    ///
-    /// Note that there is no guarantee that no face below this area bound will be kept intact - in some cases, a split
-    /// will still be required to restore the triangulation's Delaunay property. Also, this value does not specify a lower
-    /// bound for the smallest possible triangle in the triangulation.
-    ///
-    /// Should be set to something lower than [Self::with_max_allowed_area]. If this method is not called, no lower
-    /// bound check will be performed.
     pub fn with_min_required_area(mut self, min_area: S) -> Self {
         self.min_area = Some(min_area);
         self
     }
 
-    /// Specifies an upper bound for triangle areas in the triangulation.
-    ///
-    /// By default, the refinement tries to be conservative in how many vertices it adds. This will lead to an uneven
-    /// triangle size distribution - areas with larger input features will contain fewer, larger triangles whereas
-    /// regions with small features will contain more densely packed triangles.
-    /// By specifying an upper area bound for triangles, the resulting triangle sizes can be made more similar
-    /// as any large triangle above the bound will be split into smaller parts.
-    ///
-    /// # Examples of different maximum area values
-    ///
-    /// Should be set to something larger than [Self::with_min_required_area]. If this method is not called, no upper area
-    /// bound check will be performed.
     pub fn with_max_allowed_area(mut self, max_area: S) -> Self {
         self.max_area = Some(max_area);
         self
     }
 
-    /// Specifies how many additional vertices may be inserted during Delaunay refinement.
-    ///
-    /// Refinement may, in some cases, fail to terminate if the angle limit is set too high
-    /// (see [with_angle_limit](Self::with_angle_limit)). Simply stopping the refinement after a certain number of vertices
-    /// has been inserted is an easy way to enforce termination. However, the resulting mesh may exhibit very poor quality
-    /// in this case - some areas may have become overly refined, others might be overlooked completely. Consider changing
-    /// the parameters (most notably the angle limit) if the refinement runs out of vertices.
-    ///
-    /// Use [RefinementResult::refinement_complete] to check if the number of additional vertices was sufficient.
     pub fn with_max_additional_vertices(mut self, max_additional_vertices: usize) -> Self {
         self.max_additional_vertices = Some(max_additional_vertices);
         self
     }
 
-    /// Prevents constraint edges from being split during refinement.
-    ///
-    /// By default, constraint edges may be split in order to restore the triangulation's Delaunay property.
-    /// The resulting two new edges will *become new constraint edges*, hence the original shape outlined by
-    /// constraint edges remains the same - no "gaps" or deviations are introduced.
-    ///
-    /// Enabling this option will, in general, reduce the quality of the resulting mesh - it is not necessarily
-    /// Delaunay anymore and faces adjacent to long constraint edges may violate the configured [AngleLimit].
     pub fn keep_constraint_edges(mut self) -> Self {
         self.keep_constraint_edges = true;
         self
     }
 
-    /// Allows to exclude outer faces from the refinement process.
-    ///
-    /// This is useful if the constraint edges form a *closed shape* with a clearly defined inner and outer part.
-    /// Spade will determine inner and outer faces by identifying which faces can be reached from the outer face
-    /// without "crossing" a constraint edge, similar to a flood fill algorithm.
-    ///
-    /// Any holes in the triangulation will also be excluded. More specifically, any point with an odd winding number
-    /// is considered to be inner (see e.g. [Wikipedia](https://en.wikipedia.org/wiki/Point_in_polygon#Winding_number_algorithm)).
-    ///
-    /// Note that excluded faces may still be subdivided if a neighboring edge needs to be split. However, they will never be the
-    /// *cause* for a subdivision - their angle and area is ignored.
-    ///
-    /// The resulting outer faces of the triangulation are returned by the call to [refine](ConstrainedDelaunayTriangulation::refine),
-    /// see [RefinementResult::excluded_faces].
-    ///
-    /// # Example
-    /// <table>
-    /// <tr><th>Unrefined</th><th>Refined</th></tr>
-    /// <tr><td>
-    ///
-    /// *A refinement operation configured to exclude outer faces. All colored faces are considered outer faces and are
-    /// ignored during refinement. Note that the inner part of the "A" shape forms a hole and is also excluded.*
     pub fn exclude_outer_faces(mut self, exclude: bool) -> Self {
         self.exclude_outer_faces = exclude;
         self
@@ -350,101 +178,6 @@ where
     L: HintGenerator<<V as HasPosition>::Scalar>,
     <V as HasPosition>::Scalar: Float,
 {
-    /// Refines a triangulation by inserting additional points to improve the quality of its mesh.
-    ///
-    /// *Mesh quality*, when applied to constrained delaunay triangulations (CDT), usually refers to how skewed its
-    /// triangles are. A skewed triangle is a triangle with very large or very small (acute) inner angles.
-    /// Some applications (e.g. interpolation and finite element methods) perform poorly in the presence of skewed triangles.
-    ///
-    /// Refining by inserting additional points (called "steiner points") may increase the minimum angle. The given
-    /// [RefinementParameters] should be used to modify the refinement behavior.
-    ///
-    /// # General usage
-    ///
-    /// The vertex type must implement `From<Point2<...>>` - otherwise, Spade cannot construct new steiner points at a
-    /// certain location. The refinement itself happens *in place* and will result in a valid CDT.
-    ///
-    /// ```
-    /// use spade::{ConstrainedDelaunayTriangulation, RefinementParameters, Point2, InsertionError, Triangulation};
-    ///
-    /// fn get_refined_triangulation(vertices: Vec<Point2<f64>>) ->
-    ///     Result<ConstrainedDelaunayTriangulation<Point2<f64>>,  InsertionError>
-    /// {
-    ///     let mut cdt = ConstrainedDelaunayTriangulation::bulk_load(vertices)?;
-    ///     let result = cdt.refine(RefinementParameters::default());
-    ///     if !result.refinement_complete {
-    ///         panic!("Refinement failed - I should consider using different parameters.")
-    ///     }
-    ///
-    ///     return Ok(cdt)
-    /// }
-    /// ```
-    ///
-    /// # Example image
-    ///
-    /// <table>
-    /// <tr><th>Unrefined</th><th>Refined</th></tr>
-    /// <tr><td>
-    ///
-    /// *A refinement example. The CDT on the left has some acute angles and skewed triangles.
-    /// The refined CDT on the right contains several additional points that prevents such triangles from appearing while keeping
-    /// all input vertices and constraint edges.*
-    ///
-    /// # Quality guarantees
-    ///
-    /// Refinement will ensure that the resulting triangulation fulfills a few properties:
-    ///  - The triangulation's minimum angle will be larger than the angle specified by
-    ///    [with_angle_limit](RefinementParameters::with_angle_limit).<br>
-    ///    *Exception*: Acute input angles (small angles between initial constraint edges) cannot be maximized as the constraint edges
-    ///    must be kept intact. The algorithm will, for the most part, leave those places unchanged.<br>
-    ///    *Exception*: The refinement will often not be able to increase the minimal angle much above 30 degrees as every newly
-    ///    inserted steiner point may create additional skewed triangles.
-    ///  - The refinement will fullfil the *Delaunay Property*: Every triangle's circumcenter will not contain any other vertex.<br>
-    ///    *Exception*: Refining with [keep_constraint_edges](RefinementParameters::keep_constraint_edges) cannot restore
-    ///    the Delaunay property if doing so would require splitting a constraint edge.<br>
-    ///    *Exception*: Refining with [exclude_outer_faces](RefinementParameters::exclude_outer_faces) will not
-    ///    restore the Delaunay property of any outer face.
-    ///  - Spade allows to specify a [maximum allowed triangle area](RefinementParameters::with_max_allowed_area).
-    ///    The algorithm will attempt to subdivide any triangle with an area larger than this, independent of its smallest angle.
-    ///  - Spade allows to specify a [minimum required triangle area](RefinementParameters::with_min_required_area).
-    ///    The refinement will attempt to ignore any triangle with an area smaller than this parameter. This can prevent the
-    ///    refinement algorithm from over-refining in some cases.
-    ///
-    /// # General limitations
-    ///
-    /// The algorithm may fail to terminate in some cases for a minimum angle limit larger than 30 degrees. Such a limit can
-    /// result in an endless loop: Every additionally inserted point creates more triangles that need to be refined.
-    ///
-    /// To prevent this, spade limits the number of additionally inserted steiner points
-    /// (see [RefinementParameters::with_max_additional_vertices]). However, this may leave the refinement in an incomplete state -
-    /// some areas of the input mesh may not have been triangulated at all, some will be overly refined.
-    /// Use [RefinementResult::refinement_complete] to identify if a refinement operation has succeeded without running out of
-    /// vertices.
-    ///
-    /// For mitigation, consider either lowering the minimum angle limit
-    /// (see [RefinementParameters::with_angle_limit]) or introduce a
-    /// [minimum required area](RefinementParameters::with_min_required_area).
-    ///
-    /// Meshes with very small input angles (angles between two constraint edges) may lead to poorly refined results.
-    /// Please consider providing a bug report if you encounter an input mesh which you think isn't refined well.
-    ///
-    /// # Stability guarantees
-    ///
-    /// While changing the interface of this method is considered to be a breaking change, changes to the specific
-    /// refinement process (e.g. which faces are split in which order) are not. Any patch release may change how
-    /// the same input mesh is being refined.
-    ///
-    /// # References
-    ///
-    /// This is an adaption of the classical refinement algorithms introduced by Jim Ruppert and Paul Chew.
-    ///
-    /// For a good introduction to the topic, refer to the slides from a short course at the thirteenth and fourteenth
-    /// International Meshing Roundtables (2005) by Jonathan Richard Shewchuk:
-    /// <https://people.eecs.berkeley.edu/~jrs/papers/imrtalk.pdf>
-    ///
-    /// Wikipedia: <https://en.wikipedia.org/wiki/Delaunay_refinement>
-    ///
-    ///
     #[doc(alias = "Refinement")]
     #[doc(alias = "Delaunay Refinement")]
     pub fn refine(&mut self, parameters: RefinementParameters<V::Scalar>) -> RefinementResult {
@@ -869,24 +602,6 @@ where
     }
 }
 
-/// Check if final_position would violate an ordering constraint. This is needed since final_position is constructed
-/// with imprecise calculations and may not even be representable in the underlying floating point type. In rare cases,
-/// this means that the newly formed triangles would not be ordered ccw.
-/// We'll simply skip these refinements steps as it should only happen for very bad input geometries.
-///
-/// Before (v0 = segment.from(), v1 = segment.to()):
-///     v2
-///   /   \
-/// v0 --> v1
-///   \   /
-///     v3
-///
-/// After (before legalizing) - return if any face would be ordered cw
-///     v2
-///   / |  \
-/// v0 -v-> v1
-///   \ |  /
-///     v3
 fn validate_constructed_vertex<V, DE, UE, F>(
     final_position: Point2<V::Scalar>,
     segment: DirectedEdgeHandle<V, DE, UE, F>,

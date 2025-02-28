@@ -34,10 +34,6 @@ where
     }
 }
 
-/// Defines the shape of circle.
-///
-/// This is only exported to allow referring to the return type of
-/// [crate::vendored_spade::FloatTriangulation::get_edges_in_circle].
 #[derive(Debug, PartialOrd, PartialEq, Clone, Copy, Hash)]
 pub struct CircleMetric<S: SpadeNum> {
     center: Point2<S>,
@@ -66,10 +62,6 @@ where
     }
 }
 
-/// Defines the shape of a rectangle.
-///
-/// This is only exported to allow referring to the return type of
-/// [crate::vendored_spade::FloatTriangulation::get_edges_in_rectangle].
 #[derive(Debug, PartialOrd, PartialEq, Clone, Copy, Hash)]
 pub struct RectangleMetric<S>
 where
@@ -187,14 +179,6 @@ fn get_edge_intersections<S: Float>(
     [s0, s1]
 }
 
-/// Implements logic required to flood-fill a convex shape in the triangulation.
-/// Flood filling will work by
-///  - identifying an initial face that covers the face
-///  - expanding the edge hull formed by that face until all of the shape is covered (or the
-///    convex hull is reached)
-///
-/// This type doesn't implement `Iterator` directly - instead, it does the heavy lifting for
-/// [VerticesInShapeIterator] and [EdgesInShapeIterator].
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct FloodFillIterator<'a, T, M>
 where
@@ -208,12 +192,6 @@ where
     metric: M,
 }
 
-/// An iterator over vertices within a shape (e.g. a rectangle or circle).
-///
-/// Constructed by calling [crate::vendored_spade::FloatTriangulation::get_vertices_in_rectangle] or
-/// [crate::vendored_spade::FloatTriangulation::get_vertices_in_circle]
-///
-/// The item type is [VertexHandle]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VerticesInShapeIterator<'a, T, M>
 where
@@ -271,12 +249,6 @@ where
     }
 }
 
-/// An iterator over edges within a shape (e.g. a rectangle or circle).
-///
-/// Constructed by calling [crate::vendored_spade::FloatTriangulation::get_edges_in_rectangle] or
-/// [crate::vendored_spade::FloatTriangulation::get_edges_in_circle]
-///
-/// The item type is [UndirectedEdgeHandle]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EdgesInShapeIterator<'a, T, M>
 where
@@ -414,47 +386,6 @@ where
     T: Triangulation,
     M: DistanceMetric<<T::Vertex as HasPosition>::Scalar>,
 {
-    /// An iterator over all edges within a convex shape
-    ///
-    /// To do so, the iterator will, starting from a start edge within the target shape, create a
-    /// growing closed edge loop that expands with each iteration. All edges within that loop are also
-    /// within the target shape.
-    ///
-    /// Each iteration step will replace the last edge from the current loop and expand it outwards:
-    ///
-    /// For a loop with `n` edges, this process looks like this:
-    /// Before the iteration:
-    ///
-    /// ---edge n-1-->O--- edge n--> O ---edge 0-->
-    ///
-    /// After the iteration:
-    ///                      O<--- v_new
-    ///                    /   \
-    ///        new edge n /     \ new edge n+1
-    ///                  /       \
-    /// --- edge n-1 -> O - - - - O --- edge 0 --->
-    ///                      ^
-    ///                      |
-    ///   old edge n (gets returned and removed from the loop)
-    ///
-    /// Where
-    /// `new edge n` = (edge n).prev().rev();
-    /// `new edge n+1` = (edge n).next().rev();
-    ///
-    /// This procedure has one caveat: The loop may expand into itself - in the above
-    /// depiction, `v_new` may already be part of the loop. This leads to
-    /// issues as the loop will contain a "sub loop" that doesn't get cleaned up properly.
-    ///
-    /// For this reason, a hash set stores all vertices that have already been visited. If a collision
-    /// is found, the iterator will skip the edge (by appending it to the front of the loop)
-    /// and attempt to replace edge n-1.
-    ///
-    /// The return type is somewhat unexpected: Since this method is used to iterate both over vertices _and_ edges,
-    /// it must both return any new edge and any new vertex. The possible cases are:
-    /// - return `None` if the iteration has finished, independent of the element type
-    /// - return `Some((edge, None))` if the iteration step produced a new edge but no new vertex
-    /// - return `Some((edge, Some(vertex)))` if the iteration produced a new vertex. This always happens if a new edge is
-    ///   also available.
     #[allow(clippy::type_complexity)]
     fn next(
         &mut self,

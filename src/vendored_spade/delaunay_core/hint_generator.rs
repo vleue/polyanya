@@ -11,33 +11,11 @@ use serde::{Deserialize, Serialize};
 
 use std::vec::Vec;
 
-/// A structure used to speed up common operations on delaunay triangulations like insertion and geometry queries by providing
-/// hints on where to start searching for elements.
-///
-/// Without a hint, these operations run in `O(sqrt(n))` for `n` uniformly distributed vertices. Most time is spent by
-/// "walking" to the queried site (e.g. the face that is being inserted to), starting at a random vertex. A hint generator can
-/// speed this up by either using heuristics or a spatial data structure to determine where to start walking closer to the target
-/// site.
-///
-/// Hints can also be given manually by using the `...with_hint` methods (e.g.
-/// [Triangulation::insert_with_hint])
-///
-/// Usually, you should not need to implement this trait. Spade currently implements two common hint generators that should
-/// fulfill most needs:
-///  - A heuristic that uses the last inserted vertex as hint ([LastUsedVertexHintGenerator])
-///  - A hint generator based on a hierarchy of triangulations that improves walk time to `O(log(n))`
-///     ([HierarchyHintGenerator])
 pub trait HintGenerator<S: SpadeNum>: Default {
-    /// Returns a vertex handle that should be close to a given position.
-    ///
-    /// The returned vertex handle may be invalid.
     fn get_hint(&self, position: Point2<S>) -> FixedVertexHandle;
 
-    /// Notifies the hint generator that an element was looked up
     fn notify_vertex_lookup(&self, vertex: FixedVertexHandle);
-    /// Notifies the hint generator that a new vertex is inserted
     fn notify_vertex_inserted(&mut self, vertex: FixedVertexHandle, vertex_position: Point2<S>);
-    /// Notifies the hint generator that a vertex was removed
     fn notify_vertex_removed(
         &mut self,
         swapped_in_point: Option<Point2<S>>,
@@ -45,31 +23,12 @@ pub trait HintGenerator<S: SpadeNum>: Default {
         vertex_position: Point2<S>,
     );
 
-    /// Creates a new hint generator initialized to give hints for a specific triangulation
     fn initialize_from_triangulation<TR, V>(triangulation: &TR) -> Self
     where
         TR: Triangulation<Vertex = V>,
         V: HasPosition<Scalar = S>;
 }
 
-/// A hint generator that returns the last used vertex as hint.
-///
-/// This is useful if multiple insertion or locate queries are spatially close instead of randomly distributed.
-/// The run time of insertion and locate queries will be bounded by a constant in this case.
-///
-/// This heuristic requires only a constant additional amount of memory.
-///
-/// # Example
-/// ```
-/// use spade::{DelaunayTriangulation, LastUsedVertexHintGenerator, Point2, Triangulation};
-///
-/// type LastUsedVertexTriangulation =
-///     DelaunayTriangulation<Point2<f64>, (), (), (), LastUsedVertexHintGenerator>;
-///
-/// let mut triangulation = LastUsedVertexTriangulation::new();
-/// // Start using the triangulation, e.g. by inserting vertices
-/// triangulation.insert(Point2::new(0.0, 0.0));
-/// ```
 #[derive(Default, Debug)]
 #[cfg_attr(
     feature = "serde",
@@ -124,26 +83,6 @@ impl<S: SpadeNum> HintGenerator<S> for LastUsedVertexHintGenerator {
     }
 }
 
-/// A hint generator based on a hierarchy of triangulations optimized for randomly accessing elements of
-/// the triangulation.
-///
-/// Using this hint generator results in an insertion and lookup performance of O(log(n)) by keeping a
-/// few layers of sparsely populated Delaunay Triangulations. These layers can then be quickly traversed
-/// before diving deeper into the next, more detailed layer where the search is furthermore refined.
-///
-/// # Type parameters
-///  - `S`: The scalar type used by the triangulation
-///
-/// # Example
-/// ```
-/// use spade::{Point2, Triangulation, DelaunayTriangulation, HierarchyHintGenerator};
-///
-/// pub type HierarchyTriangulation = DelaunayTriangulation<Point2<f64>, (), (), (), HierarchyHintGenerator<f64>>;
-///
-/// let mut triangulation = HierarchyTriangulation::new();
-/// // Start using the triangulation, e.g. by inserting vertices
-/// triangulation.insert(Point2::new(0.0, 0.0));
-/// ```
 pub type HierarchyHintGenerator<S> = HierarchyHintGeneratorWithBranchFactor<S, 16>;
 
 #[derive(Debug, Clone)]

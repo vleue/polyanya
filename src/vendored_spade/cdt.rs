@@ -17,16 +17,6 @@ use crate::vendored_spade::{
     Point2, Triangulation, TriangulationExt,
 };
 
-/// Undirected edge type of a [ConstrainedDelaunayTriangulation] (CDT).
-///
-/// CDTs need to store if an undirected edge is a constrained edge. To do so, CDTs don't use
-/// the configured undirected edge type directly but wrap it into `CdtEdge<UE>` first.
-///
-/// This type will only be relevant if the triangulation's undirected edge type is being
-/// overwritten.
-///
-/// # Type parameters
-/// UE: The user configurable undirected edge type.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(
     feature = "serde",
@@ -36,7 +26,6 @@ use crate::vendored_spade::{
 pub struct CdtEdge<UE>(bool, UE);
 
 impl<UE> CdtEdge<UE> {
-    /// Returns `true` if this edge is a constraint edge.
     pub fn is_constraint_edge(&self) -> bool {
         self.0
     }
@@ -46,12 +35,10 @@ impl<UE> CdtEdge<UE> {
         self.0 = true;
     }
 
-    /// Returns the wrapped undirected edge data type.
     pub fn data(&self) -> &UE {
         &self.1
     }
 
-    /// Returns the wrapped undirected edge data type.
     pub fn data_mut(&mut self) -> &mut UE {
         &mut self.1
     }
@@ -75,61 +62,6 @@ impl<UE> AsMut<UE> for CdtEdge<UE> {
     }
 }
 
-/// A two-dimensional
-/// [constrained Delaunay triangulation](https://en.wikipedia.org/wiki/Constrained_Delaunay_triangulation).
-///
-/// A constrained Delaunay triangulation (CDT) is a triangulation that
-/// can contain _constraint edges_. These edges will always be present
-/// in the resulting triangulation.
-///
-///
-/// *Left: A CDT with 4 constraint edges. Right: The same triangulation
-/// without constraint edges*
-///
-///
-/// The resulting triangulation
-/// does not necessarily fulfill the Delaunay property.
-///
-/// This implementation currently supports only _weakly intersecting_
-/// constraints, thus, constraint edges are allowed to touch at
-/// their start or end point but are not allowed to intersect at
-/// any interior point.
-///
-/// The constrained triangulation shares most of the implementation of
-/// the usual Delaunay triangulation, refer to `DelaunayTriangulation`
-/// for more information about type parameters, iteration, performance
-/// and more examples.
-///
-/// # Example
-///
-/// ```
-/// use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation};
-/// # fn try_main() -> Result<(), spade::InsertionError> {
-/// let mut cdt = ConstrainedDelaunayTriangulation::<Point2<_>>::new();
-/// let v0 = cdt.insert(Point2::new(0f64, 0.0))?;
-/// let v1 = cdt.insert(Point2::new(1.0, 0.0))?;
-/// cdt.add_constraint(v0, v1);
-/// // Alternatively, consider using this shorthand
-/// cdt.add_constraint_edge(Point2::new(1.0, 1.0), Point2::new(1.0, 0.0))?;
-/// println!("Number of constraints: {}", cdt.num_constraints()); // 2 constraints
-/// // Constraints are bidirectional!
-/// assert!(cdt.exists_constraint(v1, v0));
-/// assert!(cdt.exists_constraint(v0, v1));
-/// // Check if a new constraint could be added
-/// let from = Point2::new(1.0, -2.0);
-/// let to = Point2::new(1.0, 0.0);
-/// if !cdt.intersects_constraint(from, to) {
-///     // No intersections, the edge can be added
-///     cdt.add_constraint_edge(from, to)?;
-/// }
-/// # Ok(()) }
-/// # fn main() { try_main().unwrap() }
-/// ```
-///
-/// # See also
-/// Refer to [Triangulation] for most implemented methods on this type.
-/// Refer to [DelaunayTriangulation](DelaunayTriangulation) for general
-/// information about using Delaunay triangulations.
 #[doc(alias = "CDT")]
 #[derive(Clone)]
 #[cfg_attr(
@@ -277,105 +209,12 @@ where
     F: Default,
     L: HintGenerator<<V as HasPosition>::Scalar>,
 {
-    /// Efficient bulk loading of a constraint delaunay triangulation, including both vertices and constraint edges.
-    ///
-    /// The edges are given as pairs of vertex indices.
-    ///
-    /// Note that the vertex order is not preserved by this function - iterating through all vertices will not result in
-    /// the same sequence as the input vertices. Use [ConstrainedDelaunayTriangulation::bulk_load_cdt_stable] for a
-    /// slower but order preserving variant.
-    ///
-    /// Input vertices may have the same position. However, only one vertex for each position will be kept. Edges
-    /// that go to a discarded vertex are rerouted and still inserted.
-    /// It is arbitrary which duplicated vertex remains.
-    ///
-    /// # Example
-    /// ```
-    /// # fn main() -> Result<(), spade::InsertionError> {
-    /// use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation};
-    /// let mut vertices = vec![
-    ///     Point2::new(0.0, 1.0),
-    ///     Point2::new(1.0, 2.0),
-    ///     Point2::new(3.0, -3.0),
-    ///     Point2::new(-1.0, -2.0),
-    ///     Point2::new(-4.0, -5.0),
-    /// ];
-    /// let mut edges = vec![[0, 1], [1, 2], [2, 3], [3, 4]];
-    /// let cdt = ConstrainedDelaunayTriangulation::<_>::bulk_load_cdt(vertices.clone(), edges)?;
-    ///
-    /// assert_eq!(cdt.num_vertices(), 5);
-    /// assert_eq!(cdt.num_constraints(), 4);
-    /// // The order will usually change
-    /// assert_ne!(cdt.vertices().map(|v| v.position()).collect::<Vec<_>>(), vertices);
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Panics
-    ///
-    /// Panics if any constraint edges overlap. Panics if the edges contain an invalid index (out of range).
     pub fn bulk_load_cdt(vertices: Vec<V>, edges: Vec<[usize; 2]>) -> Result<Self, InsertionError> {
         let mut result = bulk_load_cdt(vertices, edges)?;
         *result.hint_generator_mut() = L::initialize_from_triangulation(&result);
         Ok(result)
     }
 
-    /// Stable bulk load variant that preserves the input vertex order
-    ///
-    /// The resulting vertex set will be equal to the input vertex set if their positions are all distinct.
-    /// See [ConstrainedDelaunayTriangulation::bulk_load_cdt] for additional details like panic behavior and duplicate
-    /// handling.
-    ///
-    /// # Example
-    /// ```
-    /// # fn main() -> Result<(), spade::InsertionError> {
-    /// use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation};
-    /// let mut vertices = vec![
-    ///     Point2::new(0.0, 1.0),
-    ///     Point2::new(1.0, 2.0),
-    ///     Point2::new(3.0, -3.0),
-    ///     Point2::new(-1.0, -2.0),
-    ///     Point2::new(-4.0, -5.0),
-    /// ];
-    /// let mut edges = vec![[0, 1], [1, 2], [2, 3], [3, 4]];
-    /// let cdt = ConstrainedDelaunayTriangulation::<_>::bulk_load_cdt_stable(vertices.clone(), edges)?;
-    ///
-    /// // The ordered will be preserved:
-    /// assert_eq!(cdt.vertices().map(|v| v.position()).collect::<Vec<_>>(), vertices);
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// It is fine to include vertex positions multiple times. The resulting order will be the same as if
-    /// the duplicates were removed prior to insertion. However, it is unclear *which* duplicates are
-    /// removed - e.g. do not assume that always the first duplicated vertex remains.
-    ///
-    /// ```
-    /// # fn main() -> Result<(), spade::InsertionError> {
-    /// use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation};
-    /// let mut vertices = vec![
-    ///     Point2::new(0.0, 1.0),
-    ///     Point2::new(1.0, 2.0), // Duplicate
-    ///     Point2::new(1.0, 2.0),
-    ///     Point2::new(3.0, -3.0),
-    ///     Point2::new(3.0, -3.0), // Duplicate
-    ///     Point2::new(-4.0, -5.0),
-    /// ];
-    /// let mut edges = vec![[0, 1], [2, 3], [4, 5]];
-    /// let cdt = ConstrainedDelaunayTriangulation::<_>::bulk_load_cdt_stable(vertices.clone(), edges)?;
-    ///
-    /// // The choice of deduplicated vertices is arbitrary. In this example, dedup[1] and dedup[2] could
-    /// // have been swapped
-    /// let dedup = [
-    ///     Point2::new(0.0, 1.0),
-    ///     Point2::new(1.0, 2.0),
-    ///     Point2::new(3.0, -3.0),
-    ///     Point2::new(-4.0, -5.0),
-    /// ];
-    /// assert_eq!(cdt.vertices().map(|v| v.position()).collect::<Vec<_>>(), dedup);
-    /// # Ok(())
-    /// # }
-    /// ```
     pub fn bulk_load_cdt_stable(
         vertices: Vec<V>,
         edges: Vec<[usize; 2]>,
@@ -386,13 +225,6 @@ where
         Ok(result)
     }
 
-    /// Removes a vertex from the triangulation.
-    ///
-    /// This operation runs in O(n²), where n is the degree of the
-    /// removed vertex.
-    ///
-    /// # Handle invalidation
-    /// This method will invalidate all vertex, edge and face handles.
     pub fn remove(&mut self, vertex: FixedVertexHandle) -> V {
         let num_removed_constraints = self
             .dcel
@@ -405,36 +237,25 @@ where
         self.remove_and_notify(vertex)
     }
 
-    /// Returns the number of constraint edges.
     pub fn num_constraints(&self) -> usize {
         self.num_constraints
     }
 
-    /// Returns `true` if a given edge is a constraint edge.
     pub fn is_constraint_edge(&self, edge: FixedUndirectedEdgeHandle) -> bool {
         self.dcel.undirected_edge_data(edge).is_constraint_edge()
     }
 
-    /// Checks if two vertices are connected by a constraint edge.
     pub fn exists_constraint(&self, from: FixedVertexHandle, to: FixedVertexHandle) -> bool {
         self.get_edge_from_neighbors(from, to)
             .map(|e| e.is_constraint_edge())
             .unwrap_or(false)
     }
 
-    /// Checks if a constraint edge can be added.
-    ///
-    /// Returns `false` if the line from `from` to `to` intersects another
-    /// constraint edge.
     pub fn can_add_constraint(&self, from: FixedVertexHandle, to: FixedVertexHandle) -> bool {
         let line_intersection_iterator = LineIntersectionIterator::new_from_handles(self, from, to);
         !self.contains_any_constraint_edge(line_intersection_iterator)
     }
 
-    /// Checks if a line intersects a constraint edge.
-    ///
-    /// Returns `true` if the edge from `from` to `to` intersects a
-    /// constraint edge.
     pub fn intersects_constraint(
         &self,
         line_from: Point2<V::Scalar>,
@@ -454,38 +275,6 @@ where
         })
     }
 
-    /// Creates a several constraint edges by taking and connecting vertices from an iterator.
-    ///
-    /// Every two sequential vertices in the input iterator will be connected by a constraint edge.
-    /// If `closed` is set to true, the first and last vertex will also be connected.
-    ///
-    /// # Special cases:
-    ///  - Does nothing if input iterator is empty
-    ///  - Only inserts the single vertex if the input iterator contains exactly one element
-    ///
-    /// # Example
-    /// ```
-    /// # fn main() -> Result<(), spade::InsertionError> {
-    /// use spade::{ConstrainedDelaunayTriangulation, Point2};
-    ///
-    /// const NUM_VERTICES: usize = 51;
-    ///
-    /// let mut cdt = ConstrainedDelaunayTriangulation::<_>::default();
-    ///
-    /// // Iterates through vertices on a circle
-    /// let vertices = (0..NUM_VERTICES).map(|i| {
-    ///     let angle = std::f64::consts::PI * 2.0 * i as f64 / NUM_VERTICES as f64;
-    ///     let (sin, cos) = angle.sin_cos();
-    ///     Point2::new(sin, cos)
-    /// });
-    ///
-    /// cdt.add_constraint_edges(vertices, true)?;
-    /// # Ok(()) }
-    /// ```
-    ///
-    /// # Panics
-    ///
-    /// Panics if any of the generated constraints intersects with any other constraint edge.
     pub fn add_constraint_edges(
         &mut self,
         vertices: impl IntoIterator<Item = V>,
@@ -510,35 +299,12 @@ where
         Ok(())
     }
 
-    /// Insert two points and creates a constraint between them.
-    ///
-    /// Returns `true` if at least one constraint edge was added.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the new constraint edge intersects with an existing
-    /// constraint edge. Use [can_add_constraint](Self::can_add_constraint) to check.
     pub fn add_constraint_edge(&mut self, from: V, to: V) -> Result<bool, InsertionError> {
         let from_handle = self.insert(from)?;
         let to_handle = self.insert(to)?;
         Ok(self.add_constraint(from_handle, to_handle))
     }
 
-    /// Adds a constraint edge between to vertices.
-    ///
-    /// Returns `true` if at least one constraint edge was added.
-    /// Note that the given constraint might be split into smaller edges
-    /// if a vertex in the triangulation lies exactly on the constraint edge.
-    /// Thus, `cdt.exists_constraint(from, to)` is not necessarily `true`
-    /// after a call to this function.
-    ///
-    /// Returns false and does nothing if `from == to`.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the new constraint edge intersects an existing
-    /// constraint edge. Use [Self::try_add_constraint] or [Self::add_constraint_and_split] to work
-    /// around that.
     pub fn add_constraint(&mut self, from: FixedVertexHandle, to: FixedVertexHandle) -> bool {
         let initial_num_constraints = self.num_constraints();
         self.try_add_constraint_inner(from, to, |_| panic!("Constraint edges must not intersect."));
@@ -546,51 +312,6 @@ where
         self.num_constraints != initial_num_constraints
     }
 
-    /// Takes a conflict region (expressed as a list of intersecting edges) rotates edges to create
-    /// a new constraint edge. Then, the rotated edges (except the new constraint edge)
-    /// are legalized to restore the Delaunay property.
-    ///
-    /// Usually, this step is described as "delete all conflicting edges, then re-triangulate the
-    /// hole". Spade avoids the removal of edges by _rotating_ (flipping) them into place instead.
-    /// The final constraint edge is created implicitly.
-    /// This works as long as the intersecting edges are ordered "along the constraint edge", i.e.
-    /// the intersection points increase in distance from the constraint edge origin.
-    ///
-    /// # Example
-    ///
-    /// The input conflict region might look like this (assuming the target constraint edge goes
-    /// from v0 to v1):
-    ///
-    /// ```text
-    ///     v__________v
-    ///   / |        / |\
-    ///  /  |      /   | \
-    /// v0  |e0  /e1 e2| v1
-    ///  \  |  /       | /
-    ///   \ |/         |/
-    ///     v_________ v
-    /// ```
-    ///
-    /// `conflict_edges` would be set to `vec![e0, e1, e2]` in this case, `target_vertex` would be
-    /// `v1`.
-    ///
-    /// Now, flipping these edges _in this order_ will implicitly create the desired edge:
-    ///
-    /// After flipping the result looks like this with all edges going out of `v0`:
-    ///
-    /// ```text
-    ///     v_________v
-    ///   /     __---  \
-    ///  / __---        \
-    /// v0--------------v1
-    ///  \ --___        /
-    ///   \     --___  /
-    ///     v---------v
-    ///```
-    ///
-    /// Now, the new edges can be legalized as usual.
-    ///
-    /// Returns a handle to the new constraint edge (pointing toward `target_vertex`).
     fn resolve_conflict_region(
         &mut self,
         conflict_edges: Vec<FixedDirectedEdgeHandle>,
@@ -675,11 +396,6 @@ where
         result
     }
 
-    /// Returns all constraint edges that would prevent creating a new constraint between two points.
-    ///
-    /// # See also
-    ///
-    /// See also [Self::get_conflicting_edges_between_vertices]
     pub fn get_conflicting_edges_between_points(
         &self,
         from: Point2<<V as HasPosition>::Scalar>,
@@ -690,12 +406,6 @@ where
             .filter(|e| e.is_constraint_edge())
     }
 
-    /// Returns all constraint edges that would prevent inserting a new constraint connecting two existing
-    /// vertices.
-    ///
-    /// # See also
-    ///
-    /// See also [Self::get_conflicting_edges_between_points]
     pub fn get_conflicting_edges_between_vertices(
         &self,
         from: FixedVertexHandle,
@@ -718,43 +428,6 @@ where
         }
     }
 
-    /// Attempts to add a constraint edge. Leaves the triangulation unchanged if the new edge would
-    /// intersect an existing constraint edge.
-    ///
-    /// Returns all constraint edges that connect `from` and `to`. This includes any constraint
-    /// edge that was already present.
-    /// Multiple edges are returned if the line from `from` to `to` intersects an existing vertex.
-    /// Returns an empty list if the new constraint would intersect any existing constraint or if
-    /// `from == to`.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation};
-    /// # fn try_main() -> Result<(), spade::InsertionError> {
-    /// let mut cdt = ConstrainedDelaunayTriangulation::<Point2<_>>::new();
-    /// let v0 = cdt.insert(Point2::new(-1.0, 0.0))?;
-    /// let v1 = cdt.insert(Point2::new(1.0, 0.0))?;
-    /// let v2 = cdt.insert(Point2::new(0.0, 1.0))?;
-    /// let v3 = cdt.insert(Point2::new(0.0, -1.0))?;
-    /// let first_constraints = cdt.try_add_constraint(v2, v3);
-    /// let second_constraints = cdt.try_add_constraint(v0, v1);
-    ///
-    /// // The first constraint edge can be added as there are no intersecting constraint edges
-    /// assert_eq!(first_constraints.len(), 1);
-    /// let edge = cdt.directed_edge(first_constraints[0]);
-    /// assert_eq!(edge.from().fix(), v2);
-    /// assert_eq!(edge.to().fix(), v3);
-    ///
-    /// // The second edge should not be created as it intersects the first edge.
-    /// assert!(second_constraints.is_empty());
-    ///
-    /// // Consider comparing this to the number of constraints prior to calling
-    /// // `try_add_constraint` to check if any new constraint edge was created.
-    /// assert_eq!(cdt.num_constraints(), 1);
-    /// # Ok(()) }
-    /// # fn main() { try_main().unwrap() }
-    /// ```
     pub fn try_add_constraint(
         &mut self,
         from: FixedVertexHandle,
@@ -899,77 +572,6 @@ where
     F: Default,
     L: HintGenerator<<V as HasPosition>::Scalar>,
 {
-    /// Adds a constraint to the triangulation. Splits any existing constraint edge that would
-    /// intersect the new constraint edge.
-    ///
-    /// The `vertex_constructor` closure is used to convert the position of the intersection into
-    /// a vertex. The returned vertex must have exactly the same position as the argument of the
-    /// closure.
-    ///
-    /// Returns all constraint edges that connect `from` and `to`. This includes any constraint
-    /// edge that was already present.
-    /// Multiple edges are returned if the line from `from` to `to` intersects any existing vertex
-    /// or any existing constraint edge.
-    /// Returns an empty list if `from == to`.
-    ///
-    /// # Image example
-    ///
-    /// This is an input CDT with 3 constraints:
-    ///
-    ///
-    /// Calling `add_constraint_and_split(v0, v1, ...)` will result in this CDT:
-    ///
-    ///
-    /// # Code example
-    ///
-    ///```
-    /// use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation};
-    /// # fn try_main() -> Result<(), spade::InsertionError> {
-    /// use spade::handles::FixedVertexHandle;
-    /// let mut cdt = ConstrainedDelaunayTriangulation::<Point2<_>>::new();
-    /// let v0 = cdt.insert(Point2::new(-1.0, 0.0))?;
-    /// let v1 = cdt.insert(Point2::new(1.0, 0.0))?;
-    /// let v2 = cdt.insert(Point2::new(0.0, 1.0))?;
-    /// let v3 = cdt.insert(Point2::new(0.0, -1.0))?;
-    /// cdt.add_constraint(v2, v3);
-    ///
-    /// // Should create a new split vertex at the origin
-    /// let second_constraints = cdt.add_constraint_and_split(v0, v1, |v| v);
-    ///
-    /// // Expect one additional point introduced by splitting the first constraint edge:
-    /// assert_eq!(cdt.num_vertices(), 5);
-    ///
-    /// let v4 = FixedVertexHandle::from_index(4); // Newly created
-    ///
-    /// // Expect 4 constraints as the first constraint was split:
-    /// assert_eq!(cdt.num_constraints(), 4);
-    ///
-    /// // The second edge should consist of two edges, v0 -> v4 and v4 -> v1
-    /// assert_eq!(second_constraints.len(), 2);
-    ///
-    /// let [e0, e1] = [second_constraints[0], second_constraints[1]];
-    /// let [e0, e1] = [e0, e1].map(|e| cdt.directed_edge(e));
-    ///
-    /// assert_eq!(e0.from().fix(), v0);
-    /// assert_eq!(e0.to().fix(), v4);
-    /// assert_eq!(e1.from().fix(), v4);
-    /// assert_eq!(e1.to().fix(), v1);
-    ///
-    /// # Ok(()) }
-    /// # fn main() { try_main().unwrap() }
-    /// ```
-    ///
-    /// # Precision warning
-    ///
-    /// Intersection points may not _exactly_ lie on the line between `from` and `to`, either due to
-    /// loss of precision or as the exact value may not be representable with the underlying
-    /// floating point number.
-    ///
-    /// Thus, iterating a `LineIntersectionIterator::new_from_handles(&cdt, from, to)` will often
-    /// not return only `Intersection::EdgeOverlap` as would be expected. Instead, use the returned
-    /// `Vec` to identify the edges that form the new constraint.
-    /// The absolute deviation from the correct position should be minimal, especially when using
-    /// `f64` coordinates as storage type.
     pub fn add_constraint_and_split<C>(
         &mut self,
         from: FixedVertexHandle,
@@ -997,10 +599,6 @@ enum GroupEnd<V> {
     NewVertex(V, FixedDirectedEdgeHandle),
 }
 
-/// Represents a conflict region that does not yet fully exist as a vertex may be missing. This can
-/// happen if adding a constraint edge should split any intersecting existing edge.
-/// This will eventually be turned into a "real" conflict group (described as a list of edges) by
-/// inserting the missing vertex.
 struct InitialConflictRegion<V> {
     conflict_edges: Vec<FixedDirectedEdgeHandle>,
     group_end: GroupEnd<V>,

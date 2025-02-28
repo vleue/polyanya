@@ -3,12 +3,6 @@ use num_traits::{Num, Signed};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-/// A coordinate type that can be used with a triangulation.
-///
-/// Internally, most calculations are performed after converting the type into a `f64`.
-/// However, changing this to `f32` will reduce the required storage space slightly.
-///
-/// This type should usually be either `f32` or `f64`.
 pub trait SpadeNum:
     Num + PartialOrd + Into<f64> + From<f32> + Copy + Signed + core::fmt::Debug
 {
@@ -19,9 +13,6 @@ impl<T> SpadeNum for T where
 {
 }
 
-/// A two-dimensional point.
-///
-/// This is the basic type used for defining positions.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Clone, Copy, Default, Hash)]
 #[cfg_attr(
     feature = "serde",
@@ -29,14 +20,12 @@ impl<T> SpadeNum for T where
     serde(crate = "serde")
 )]
 pub struct Point2<S> {
-    /// The point's x coordinate
     pub x: S,
-    /// The point's y coordinate
+
     pub y: S,
 }
 
 impl<S> Point2<S> {
-    /// Creates a new point.
     #[inline]
     pub const fn new(x: S, y: S) -> Self {
         Point2 { x, y }
@@ -44,7 +33,6 @@ impl<S> Point2<S> {
 }
 
 impl<S: SpadeNum> Point2<S> {
-    /// Returns the squared distance of this point and another point.
     #[inline]
     pub fn distance_2(&self, other: Self) -> S {
         self.sub(other).length2()
@@ -116,18 +104,9 @@ impl<S: SpadeNum> From<(S, S)> for Point2<S> {
     }
 }
 
-/// An object with a position.
-///
-/// Vertices need to implement this trait to allow being inserted into triangulations.
 pub trait HasPosition {
-    /// The number type used by this coordinate type.
     type Scalar: SpadeNum;
 
-    /// Returns the position of this object.
-    ///
-    /// **Note**: It is assumed that the position doesn't change once it has been
-    /// inserted into a triangulation. Failing this requirement can lead to crashes,
-    /// invalid results or endless loops.
     fn position(&self) -> Point2<Self::Scalar>;
 }
 

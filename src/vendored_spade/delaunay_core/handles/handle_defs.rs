@@ -10,12 +10,6 @@ use serde::{Deserialize, Serialize};
 pub trait DelaunayElementType: Sized + Default {
     fn num_elements<V, DE, UE, F>(dcel: &Dcel<V, DE, UE, F>) -> usize;
 }
-/// Internal type definition that is only exposed for documentation purposes.
-///
-/// Rust will currently not generate documentation for type definitions depending on
-/// `pub(crate)` types, see [#32077](https://github.com/rust-lang/rust/issues/32077).
-///
-/// Do not use these types. Their removal will not be considered a breaking change.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(
     feature = "serde",
@@ -45,15 +39,6 @@ pub const fn new_fixed_face_handle(index: usize) -> FixedHandleImpl<FaceTag, Pos
 }
 
 impl FixedVertexHandle {
-    /// Creates a new vertex handle from a `usize`.
-    ///
-    /// Ideally, this method should only be used in advanced scenarios as it allows to create
-    /// invalid vertex handles. When possible, attempt to retrieve handles by other means
-    /// instead (see [crate::handles]).
-    ///
-    /// # Panics
-    ///
-    /// Panics if `index >= 2^32`
     pub fn from_index(index: usize) -> Self {
         // Preferably, `new` would simply be public. However, that would allow to create a handle
         // to the outer face marked with `InnerTag` which is bad. Let's only allow vertices for now.
@@ -74,16 +59,6 @@ impl<Type: Default, InnerOuter: InnerOuterMarker> FixedHandleImpl<Type, InnerOut
         Self::new_internal(u32::MAX)
     }
 
-    /// Returns the internal index of this element.
-    ///
-    /// Indices of the same handle type are guaranteed to be unique (e.g. different vertices will
-    /// have different indices from each other).
-    ///
-    /// Indices will always be in the interval `0` .. `number_of_elements` (e.g. the number of
-    /// directed edges).
-    ///
-    /// Adding vertices will not change any indices. Vertex removal does affect indices -
-    /// the index of elements may change to swap-fill any gaps that were created.
     pub fn index(&self) -> usize {
         self.index as usize
     }
@@ -103,16 +78,6 @@ impl<Type: Default, InnerOuter: InnerOuterMarker> FixedHandleImpl<Type, InnerOut
     }
 }
 
-/// Internal type definition that is only exposed for documentation purposes.
-///
-/// Rust will currently not generate documentation for type definitions depending on
-/// `pub(crate)` types, see [#32077](https://github.com/rust-lang/rust/issues/32077).
-///
-/// Do not use these types. Their removal from the public API will not be considered a
-/// breaking change.
-///
-/// Refer to the [handles](crate::handles) module for the handle types that should be used
-/// instead.
 pub struct DynamicHandleImpl<'a, V, DE, UE, F, Type, InnerOuter: InnerOuterMarker> {
     pub(super) dcel: &'a Dcel<V, DE, UE, F>,
     pub(super) handle: FixedHandleImpl<Type, InnerOuter>,
