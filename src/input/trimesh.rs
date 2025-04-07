@@ -1,5 +1,6 @@
 use crate::{Mesh, MeshError, Polygon, Vertex};
 use glam::Vec2;
+use num_traits::Zero;
 use std::cmp::Ordering;
 use std::iter;
 
@@ -70,10 +71,11 @@ impl TryFrom<Trimesh> for Mesh {
                 };
                 let edge_a = get_counterclockwise_edge(*index_a);
                 let edge_b = get_counterclockwise_edge(*index_b);
-                if edge_a.perp_dot(edge_b) > 0. {
-                    Ordering::Less
-                } else {
+                let det = edge_a.perp_dot(edge_b);
+                if det.is_zero() || det < 0. {
                     Ordering::Greater
+                } else {
+                    Ordering::Less
                 }
             });
 
