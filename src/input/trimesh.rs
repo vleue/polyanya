@@ -53,6 +53,8 @@ impl TryFrom<Trimesh> for Mesh {
     type Error = MeshError;
 
     fn try_from(value: Trimesh) -> Result<Self, Self::Error> {
+        println!("=============");
+        println!("{:?}", value);
         let mut vertices: Vec<_> = to_vertices(&value);
         let polygons = to_polygons(value.triangles);
         let unordered_vertices = vertices.clone();
