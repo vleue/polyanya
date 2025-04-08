@@ -54,6 +54,7 @@ use vendored_spade as spade;
 
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
+pub use geo;
 pub use input::polyanya_file::PolyanyaFile;
 pub use input::triangulation::Triangulation;
 pub use input::trimesh::Trimesh;
