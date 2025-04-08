@@ -19,10 +19,9 @@ async = []
 no-default-baking = []
 detailed-layers = []
 serde = ["glam/serde", "bvh2d/serde", "dep:serde"]
-public-spade = ["dep:spade"]
 
 [dependencies]
-spade = { version = "2.10", optional = true }
+spade = { version = "2.13.1" }
 tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.15" }
 glam = { version = "0.29", features = ["approx"] }
