@@ -4,10 +4,10 @@ use inflate::Inflate;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use crate::spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 pub use geo::LineString;
 use geo::{Contains, Coord, Polygon as GeoPolygon, SimplifyVwPreserve};
 use glam::{vec2, Vec2};
+use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
 use crate::{Layer, Mesh, Polygon, Vertex};
 
