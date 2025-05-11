@@ -30,7 +30,7 @@ bvh2d = { version = "0.6", git = "https://github.com/mockersf/bvh2d" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 geo = "0.30.0"
 log = "0.4"
-thiserror = "1"
+thiserror = "2"
 
 # additional dependencies for vendored spade
 robust = "1.1.0"
