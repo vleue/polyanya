@@ -617,7 +617,7 @@ mod inflate {
     };
 
     fn segment_normal(start: &Coord<f32>, end: &Coord<f32>) -> Option<Coord<f32>> {
-        let edge_length = Euclidean::distance(*end, *start);
+        let edge_length = Euclidean.distance(*end, *start);
         if edge_length == 0.0 {
             return None;
         }
