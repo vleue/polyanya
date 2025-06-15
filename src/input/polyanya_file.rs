@@ -226,10 +226,9 @@ fn parse_v3(
         }
         if phase == 2 {
             if nb_faces > 0 {
-                polygon_index += 1;
+                // polygon_index += 1;
                 nb_faces -= 1;
                 let mut values = line.split_whitespace();
-                // TODO: What do I use this for???
                 let is_traversable = match values.next().unwrap() {
                     "0" => false,
                     "1" => true,
@@ -239,40 +238,43 @@ fn parse_v3(
                 let num_edges: usize = values.next().unwrap().parse().unwrap();
                 let mut vertex_indices = Vec::with_capacity(num_edges);
 
-                // TODO: Short circuit this if the polygon isn't traversible.
-                // We still need to add the non-traversible polygons to the vertices.
+                // We still need to add the non-traversable polygons to the vertices.
                 let data = values
                     .enumerate()
                     .map(|(i, v)| {
-                        
                         let num: isize = v.parse().unwrap();
                         if i < num_edges {
-                            // TODO: Account for when it's on the edge of the mesh (the 0 case).
                             // Currently it'll say eg. a corner vert has 2 real faces and ignores the edge of the mesh.
                             // Just checking if there's a 0 in the else and pushing that as u32::max to the ... should work
                             // `num` here is the vertex index
                             let vertex_neighbours =
                                 vertex_polys.entry(num as usize).or_insert(Vec::new());
                             vertex_neighbours.push(match is_traversable {
-                                true => polygon_index, // Polygon index...
+                                true => polygon_index,
                                 false => u32::MAX,
                             });
                             vertex_indices.push(num as usize);
                         } else {
                             // Num here is the polygon/face index.
                             if num <= -1 {
+                                // We don't care about the specific impassable faces, just that they're impassable.
                                 return -1;
                             } else if num == 0 {
+                                // In the mesh-v3 format 0 means that it's the edge of the map and there are no polygons.
                                 vertex_polys
                                     .entry(vertex_indices[i - num_edges])
                                     .or_insert(Vec::new())
                                     .push(u32::MAX);
                             }
                         }
-                        num
+                        // Subtract 1 here since it's 1 indexed, and we're using 0-indexed vecs.
+                        num - 1
                     })
                     .collect();
                 if is_traversable {
+                    // Only increment the polygon index if the polygon is traversable since we don't
+                    // care about the non-traversable polygons.
+                    polygon_index += 1;
                     let polygon = Polygon::using(num_edges, data);
                     mesh.polygons.push(polygon)
                 }
@@ -281,9 +283,11 @@ fn parse_v3(
             }
         }
     }
-
+    
+    // Add the vertices to the mesh. We do this after parsing since the adjacent polygons for vertices are
+    // calculated from the polygons associated with each vertex.
+    // TODO: Do we need to de-duplicate adjacent impassable polygons for the vertices?
     for (i, coordinates) in vertices.into_iter().enumerate() {
-        // Vertices and Polygons/faces are 1-indexed not 0-indexed.
         let vert = Vertex::new(coordinates, vertex_polys.remove(&(i + 1)).unwrap());
         mesh.vertices.push(vert);
     }

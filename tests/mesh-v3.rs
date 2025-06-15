@@ -49,13 +49,15 @@ fn load_v3_scenario(path: &str) -> Vec<Scenario> {
 }
 
 #[test]
+/// Test that loading a basic mesh works.
 fn load_v3() {
-    let mut path: String = "meshes/v3/cube.mesh".into();
-    let mesh = v3_mesh(&path);
+    let path: String = "meshes/v3/cube.mesh".into();
+    let _ = v3_mesh(&path);
 }
 
-// #[test]
+#[test]
 fn v3_scenario() {
+    // TODO: consider shortening this test.
     let mut path: String = "meshes/v3/scene_mp_2p_01.mesh".into();
     let mesh = v3_mesh(&path);
     path.push_str(".scen");
