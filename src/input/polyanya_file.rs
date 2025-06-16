@@ -171,7 +171,7 @@ fn parse_v2(
         if phase == 1 {
             if nb_vertices > 0 {
                 nb_vertices -= 1;
-                let mut values = line.split(' ');
+                let mut values = line.split_whitespace();
                 let x = values.next().unwrap().parse().unwrap();
                 let y = values.next().unwrap().parse().unwrap();
                 let _ = values.next();
@@ -187,7 +187,7 @@ fn parse_v2(
         if phase == 2 {
             if nb_polygons > 0 {
                 nb_polygons -= 1;
-                let mut values = line.split(' ');
+                let mut values = line.split_whitespace();
                 let n = values.next().unwrap().parse().unwrap();
                 let polygon = Polygon::using(n, values.map(|v| v.parse().unwrap()).collect());
                 mesh.polygons.push(polygon)
@@ -282,7 +282,7 @@ fn parse_v3(
             }
         }
     }
-    
+
     // Add the vertices to the mesh. We do this after parsing since the adjacent polygons for vertices are
     // calculated from the polygons associated with each vertex.
     // TODO: Do we need to de-duplicate adjacent impassable polygons for the vertices?
