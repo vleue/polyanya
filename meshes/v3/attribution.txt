@@ -1,0 +1,5 @@
+scene_mp_2p_01.mesh and scene_mp_2p_01.mesh.scen are included for testing and benchmarking purposes only.
+They have been sourced from https://benchmarks.pathfinding.ai/2d-benchmarks/mesh-maps/iron-harvest/
+(download link: https://bitbucket.org/shortestpathlab/benchmarks/src/master/mesh-maps/iron-harvest/)
+
+Many more maps and scenarios are available from those liks for further benchmarking and testing purposes.
