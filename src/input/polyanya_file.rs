@@ -1,14 +1,15 @@
 use core::panic;
-use std::io::{self, BufRead, BufReader, Lines, Read, Write};
+use std::io::{BufRead, BufReader, Lines, Read, Write};
 
 use glam::Vec2;
 use hashbrown::HashMap;
 
 use crate::{Mesh, MeshError, Polygon, Vertex};
 
-/// A mesh read from a Polyanya file in the format `mesh 2`.
+/// A mesh read from a Polyanya file in the formats `mesh 2` or `mesh 3`.
 ///
-/// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
+/// See <https://github.com/vleue/polyanya/blob/main/meshes/v2/format.txt> for v2 format description, or
+/// <https://github.com/vleue/polyanya/blob/main/meshes/v3/format.txt>
 #[derive(Debug)]
 pub struct PolyanyaFile {
     /// List of vertex described in the file
@@ -18,9 +19,10 @@ pub struct PolyanyaFile {
 }
 
 impl PolyanyaFile {
-    /// Create a `Mesh` from a file in the format `mesh 2`.
+    /// Create a `Mesh` from a file in the formats `mesh 2` or `mesh 3`.
     ///
-    /// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
+    /// See <https://github.com/vleue/polyanya/blob/main/meshes/v2/format.txt> for v2 format description, or
+    /// <https://github.com/vleue/polyanya/blob/main/meshes/v3/format.txt>
     pub fn from_file(path: &str) -> PolyanyaFile {
         let mut file = std::fs::File::open(path).unwrap();
         let mut buffer = Vec::new();
@@ -28,9 +30,10 @@ impl PolyanyaFile {
         Self::from_bytes(&buffer)
     }
 
-    /// Create a `Mesh` from bytes in the format `mesh 2`.
+    /// Create a `Mesh` from bytes in the formats `mesh 2` or `mesh 3`.
     ///
-    /// See <https://github.com/vleue/polyanya/blob/main/meshes/format.txt> for format description.
+    /// See <https://github.com/vleue/polyanya/blob/main/meshes/v2/format.txt> for v2 format description, or
+    /// <https://github.com/vleue/polyanya/blob/main/meshes/v3/format.txt>
     pub fn from_bytes(bytes: &[u8]) -> PolyanyaFile {
         let mut lines = BufReader::new(bytes).lines();
 
@@ -57,7 +60,6 @@ impl PolyanyaFile {
             panic!("Invalid polyanya .mesh file");
         };
 
-        // In the v3 format `nb_polygons` is actually the number of faces.
         let (nb_vertices, nb_polygons) = lines
             .next()
             .unwrap()
@@ -155,6 +157,7 @@ impl From<Mesh> for PolyanyaFile {
     }
 }
 
+/// Create a `PolyanyaFile` from the v2 mesh format
 fn parse_v2(
     mesh: &mut PolyanyaFile,
     lines: Lines<BufReader<&[u8]>>,
@@ -189,17 +192,18 @@ fn parse_v2(
                 let polygon = Polygon::using(n, values.map(|v| v.parse().unwrap()).collect());
                 mesh.polygons.push(polygon)
             } else {
-                panic!("unexpected line");
+                panic!("Failed to parse v2 mesh format, unexpected line.");
             }
         }
     }
 }
 
+/// Create a `PolyanyaFile` from the v3 mesh format
 fn parse_v3(
     mesh: &mut PolyanyaFile,
     lines: Lines<BufReader<&[u8]>>,
     mut nb_vertices: usize,
-    mut nb_faces: usize,
+    mut nb_polygons: usize,
 ) {
     let mut phase = 1;
 
@@ -225,14 +229,13 @@ fn parse_v3(
             }
         }
         if phase == 2 {
-            if nb_faces > 0 {
-                // polygon_index += 1;
-                nb_faces -= 1;
+            if nb_polygons > 0 {
+                nb_polygons -= 1;
                 let mut values = line.split_whitespace();
                 let is_traversable = match values.next().unwrap() {
                     "0" => false,
                     "1" => true,
-                    _ => panic!("Invalid mesh format..."),
+                    _ => panic!("Invalid v3 mesh format."),
                 };
 
                 let num_edges: usize = values.next().unwrap().parse().unwrap();
@@ -244,20 +247,16 @@ fn parse_v3(
                     .map(|(i, v)| {
                         let num: isize = v.parse().unwrap();
                         if i < num_edges {
-                            // Currently it'll say eg. a corner vert has 2 real faces and ignores the edge of the mesh.
-                            // Just checking if there's a 0 in the else and pushing that as u32::max to the ... should work
-                            // `num` here is the vertex index
-                            let vertex_neighbours =
-                                vertex_polys.entry(num as usize).or_insert(Vec::new());
+                            let vertex_neighbours = vertex_polys.entry(num as usize).or_default();
                             vertex_neighbours.push(match is_traversable {
                                 true => polygon_index,
                                 false => u32::MAX,
                             });
                             vertex_indices.push(num as usize);
                         } else {
-                            // Num here is the polygon/face index.
+                            // Num here is the polygon index.
                             if num <= -1 {
-                                // We don't care about the specific impassable faces, just that they're impassable.
+                                // We don't care about the specific impassable polygons, just that they're impassable.
                                 return -1;
                             } else if num == 0 {
                                 // In the mesh-v3 format 0 means that it's the edge of the map and there are no polygons.
@@ -279,7 +278,7 @@ fn parse_v3(
                     mesh.polygons.push(polygon)
                 }
             } else {
-                panic!("unexpected line");
+                panic!("Failed to parse v3 mesh format, unexpected line.");
             }
         }
     }
