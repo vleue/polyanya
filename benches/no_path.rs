@@ -3,7 +3,7 @@ use glam::Vec2;
 use polyanya::{Mesh, PolyanyaFile};
 
 fn no_path(c: &mut Criterion) {
-    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh")
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/v2/aurora-merged.mesh")
         .try_into()
         .unwrap();
     [
