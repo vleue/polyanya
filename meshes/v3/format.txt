@@ -1,0 +1,70 @@
+# Mesh
+
+A navigation mesh is a convex decomposition of the traversable space in a
+2D pathfinding environment. This type of input is popular with pathfinding
+algorithms intended for computer game and computer graphics applications.
+
+# Mesh file format .mesh
+
+Stores a complete MCDT of a navigation mesh, with a distinction between a
+traversable face pathfinding can go over and non-traversable.
+
+The file format is stored first as a list of 1-index vertices coordinates,
+followed by a list of n-edge 1-index faces.  Items are assigned index numbeers
+based on their ordering, thus the first vertex listed is id-1, second id-2,
+ect.
+
+The coordinate system has the x-axis increasing towards the right,
+and the y-axis increasing upwards.
+
+The format is provided below, elements in ``[]`` are variables, ``//`` are comments
+
+	mesh
+	3
+	[vertices-n:int] [faces-n:int]
+	// foreach [vertices-n] lines: define vertex-i
+	[vertex-i-x:float] [vertex-i-y:float]
+	// foreach [faces-n] lines: define face-i
+	[face-i-trav:bool] [face-i-edges:int] [face-i-vertex-id:int] * [face-i-edges:int]
+		[face-i-neighbour-id:int] * [face-i-edges:int]
+
+We first describe the number of vertices ``[vertices-n]`` and number of faces
+``[faces-n]`` in the mesh.
+
+The next ``[vertices-n]`` lines describe each vertices x and y coordinate as floats,
+one per line.  These are 1-indexed based on order.
+
+The next ``[faces-n]`` lines describe all faces of the mesh, one per line.
+First parameter ``[face-i-trav]`` is a boolean detailing if face is traversable (1)
+or non-traversable (0).
+The next parameter ``[face-i-edges]`` details the number of edges and vertices each
+face has.
+The next ``[face-i-edges]`` parameters detail the vertices by vertex-id in
+counter-clockwise order.
+The next ``[face-i-edges]`` parameters detail connection status with the neighbouring
+faces that share the same two vertices.  The ``j``th parameter details neighbouring
+face to the edge comprised of the ``j-1``th and ``j``th vertices of the face.
+The connection status is express as an integer ``k`` with 3 considerations:
+
+1. Positive: can traverse over the edge to neighbouring face-id ``k``
+2. Negative: can**not** traverse over the edge to neighbouring face-id ``-k``
+3. Zero: Has no neighbouring face, only found on the edge of the mesh.
+
+Example with comments:
+
+	mesh
+	3
+	5 4  // 5 vertices 4 faces
+	0 0   // vertex 1
+	0 10  // vertex 2
+	10 10 // vertex 3
+	10 0  // vertex 4
+	5 5   // vertex 5
+	0 3   4 1 5   -4 0 -2 // face 1, non-traversable, constrained along edge 5-4 and 1-5
+	1 3   1 2 5   -1 0 3  // face 2, traversable, constrained along edge 5-1
+	1 3   2 3 5   2 0 4   // face 3, traversable, both edges are non-constrained
+	1 3   3 4 5   3 0 -1  // face 4, traversable, constrained along edge 4-5
+
+# Scenario
+Bucket  MapName             X-size  Y-size  Start-X     Start-Y  Goal-X     Goal-Y  Path Cost
+0	    scene_mp_2p_01.mesh 224	    238	    -73.0625    -4.8125 -72.9375	-4.6875 0.1767766952966

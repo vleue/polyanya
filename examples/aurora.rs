@@ -18,7 +18,7 @@ fn main() {
     )
     .expect("set up the subscriber");
 
-    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh")
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/v2/aurora-merged.mesh")
         .try_into()
         .unwrap();
     assert_delta!(

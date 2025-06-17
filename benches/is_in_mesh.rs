@@ -3,7 +3,7 @@ use glam::Vec2;
 use polyanya::{Mesh, PolyanyaFile};
 
 fn is_in_mesh(c: &mut Criterion) {
-    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh")
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/v2/aurora-merged.mesh")
         .try_into()
         .unwrap();
     [
@@ -25,7 +25,7 @@ fn is_in_mesh(c: &mut Criterion) {
 }
 
 fn is_not_in_mesh(c: &mut Criterion) {
-    let mesh: Mesh = PolyanyaFile::from_file("meshes/aurora-merged.mesh")
+    let mesh: Mesh = PolyanyaFile::from_file("meshes/v2/aurora-merged.mesh")
         .try_into()
         .unwrap();
     [

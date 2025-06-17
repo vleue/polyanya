@@ -17,7 +17,7 @@ macro_rules! assert_delta {
 
 #[cfg(test)]
 fn aurora_mesh() -> Mesh {
-    PolyanyaFile::from_file("meshes/aurora.mesh")
+    PolyanyaFile::from_file("meshes/v2/aurora.mesh")
         .try_into()
         .unwrap()
 }

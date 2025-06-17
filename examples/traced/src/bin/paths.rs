@@ -10,7 +10,7 @@ fn main() {
     let mesh: Mesh = {
         let _execution_span: tracing::span::EnteredSpan =
             tracing::info_span!("loading mesh").entered();
-        PolyanyaFile::from_file("meshes/aurora-merged.mesh")
+        PolyanyaFile::from_file("meshes/v2/aurora-merged.mesh")
             .try_into()
             .unwrap()
     };
