@@ -41,8 +41,6 @@ impl PolyanyaFile {
         if let Some(Ok(first)) = lines.next() {
             if first != "mesh" {
                 panic!("Invalid polyanya .mesh file");
-            } else {
-                println!("mesh");
             }
         } else {
             panic!("Invalid polyanya .mesh file");
