@@ -57,7 +57,6 @@ fn load_v3() {
 
 #[test]
 fn v3_scenario() {
-    // TODO: consider shortening this test.
     let mut path: String = "meshes/v3/scene_mp_2p_01.mesh".into();
     let mesh = v3_mesh(&path);
     path.push_str(".scen");
