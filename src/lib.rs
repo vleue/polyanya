@@ -23,8 +23,9 @@ use std::{
 };
 
 use bvh2d::aabb::{Bounded, AABB};
-use glam::Vec2;
+use glam::{FloatExt, Vec2};
 
+use helpers::Vec2Helper;
 use instance::{InstanceStep, U32Layer};
 use log::error;
 use thiserror::Error;
@@ -131,6 +132,33 @@ impl Coords {
     /// Layer of this point, if known
     pub fn layer(&self) -> Option<u8> {
         self.layer
+    }
+
+    /// Height of this point
+    pub fn height(&self, mesh: &Mesh) -> f32 {
+        let layer = &mesh.layers[self.layer().unwrap_or(0) as usize];
+        let poly = &layer.polygons[self.polygon_index as usize];
+
+        if let Some(segment) = poly.vertices.windows(2).find(|edge| {
+            self.pos.on_segment((
+                layer.vertices[edge[0] as usize].coords,
+                layer.vertices[edge[1] as usize].coords,
+            ))
+        }) {
+            let (a, b) = (
+                layer.vertices[segment[0] as usize].coords,
+                layer.vertices[segment[1] as usize].coords,
+            );
+            let t = (self.pos - a).dot(b - a) / (b - a).dot(b - a);
+            return layer.height[segment[0] as usize].lerp(layer.height[segment[1] as usize], t);
+        }
+
+        // TODO: should find the position of the point within the polygon and weight each polygonpoint height based on its distance to the point
+        poly.vertices
+            .iter()
+            .map(|i| *layer.height.get(*i as usize).unwrap_or(&0.0))
+            .sum::<f32>()
+            / poly.vertices.len() as f32
     }
 }
 

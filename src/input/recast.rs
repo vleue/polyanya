@@ -114,7 +114,7 @@ impl From<RecastPolyMesh> for Mesh {
             .vertices
             .iter()
             .map(|v| v.y as f32 * polygon_mesh.cell_height + polygon_mesh.aabb.min.y)
-            .map(|h| -h)
+            .map(|h| h)
             .collect();
 
         let mut navmesh = Mesh {
@@ -243,7 +243,7 @@ impl From<RecastPolyMeshDetail> for Mesh {
                 .collect(),
         )
         .unwrap();
-        layer.height = detailed_mesh.vertices.iter().map(|v| -v.y).collect();
+        layer.height = detailed_mesh.vertices.iter().map(|v| v.y).collect();
 
         let mut detailed_navmesh = Mesh {
             layers: vec![layer],
