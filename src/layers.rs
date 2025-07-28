@@ -431,6 +431,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (0, 1),
@@ -448,6 +449,7 @@ mod tests {
             Path {
                 path: vec![to],
                 length: from.distance(to),
+                path_through_polygons: vec![16777216, 0, 1],
             }
         );
         #[cfg(feature = "detailed-layers")]
@@ -472,6 +474,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
@@ -504,6 +507,7 @@ mod tests {
                     + vec2(2.0, 1.0).distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 2), (to, 2)],
+                path_through_polygons: vec![16777216, 0, 1, 2, 33554432],
             }
         );
     }

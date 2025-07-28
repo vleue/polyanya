@@ -7,7 +7,7 @@ use crate::instance::EdgeSide;
 
 pub(crate) const EPSILON: f32 = 1e-4;
 
-pub(crate) trait Vec2Helper {
+pub trait Vec2Helper {
     fn side(self, edge: (Vec2, Vec2)) -> EdgeSide;
     fn mirror(self, edge: (Vec2, Vec2)) -> Vec2;
     fn on_segment(self, segment: (Vec2, Vec2)) -> bool;
@@ -169,7 +169,7 @@ pub(crate) fn intersection_time(line: (Vec2, Vec2), segment: (Vec2, Vec2)) -> f3
 /// Returns the intersection point of the given line and segment, if it exists.
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
 #[inline(always)]
-pub(crate) fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) -> Option<Vec2> {
+pub fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) -> Option<Vec2> {
     let intersection_time = intersection_time(line, segment);
 
     if !(-EPSILON..=(1.0 + EPSILON)).contains(&intersection_time) || intersection_time.is_nan() {

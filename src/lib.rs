@@ -23,10 +23,10 @@ use std::{
 };
 
 use bvh2d::aabb::{Bounded, AABB};
-use glam::{FloatExt, Vec2};
+use glam::{FloatExt, Vec2, Vec3};
 
-use helpers::Vec2Helper;
-use instance::{InstanceStep, U32Layer};
+// use helpers::Vec2Helper;
+use instance::InstanceStep;
 use log::error;
 use thiserror::Error;
 #[cfg(feature = "tracing")]
@@ -49,10 +49,15 @@ mod stitching;
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
 pub use geo;
+// nah
+pub use helpers::{line_intersect_segment, Vec2Helper};
 pub use input::polyanya_file::PolyanyaFile;
+#[cfg(feature = "recast")]
 pub use input::recast::{RecastPolyMesh, RecastPolyMeshDetail};
 pub use input::triangulation::Triangulation;
 pub use input::trimesh::Trimesh;
+// nah
+pub use instance::U32Layer;
 pub use layers::Layer;
 pub use primitives::{Polygon, Vertex};
 
@@ -69,6 +74,8 @@ pub struct Path {
     #[cfg(feature = "detailed-layers")]
     #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
     pub path_with_layers: Vec<(Vec2, u8)>,
+    /// Indices of the polygons through which the path passes.
+    pub path_through_polygons: Vec<u32>,
 }
 /// A navigation mesh
 #[derive(Debug, Clone)]
@@ -134,8 +141,15 @@ impl Coords {
         self.layer
     }
 
+    pub fn polygon(&self) -> u32 {
+        self.polygon_index
+    }
+
     /// Height of this point
     pub fn height(&self, mesh: &Mesh) -> f32 {
+        if self.polygon_index == u32::MAX {
+            return 0.0;
+        }
         let layer = &mesh.layers[self.layer().unwrap_or(0) as usize];
         let poly = &layer.polygons[self.polygon_index as usize];
 
@@ -152,6 +166,21 @@ impl Coords {
             let t = (self.pos - a).dot(b - a) / (b - a).dot(b - a);
             return layer.height[segment[0] as usize].lerp(layer.height[segment[1] as usize], t);
         }
+        let edge = [
+            *poly.vertices.last().unwrap(),
+            *poly.vertices.first().unwrap(),
+        ];
+        if self.pos.on_segment((
+            layer.vertices[edge[0] as usize].coords,
+            layer.vertices[edge[1] as usize].coords,
+        )) {
+            let (a, b) = (
+                layer.vertices[edge[0] as usize].coords,
+                layer.vertices[edge[1] as usize].coords,
+            );
+            let t = (self.pos - a).dot(b - a) / (b - a).dot(b - a);
+            return layer.height[edge[0] as usize].lerp(layer.height[edge[1] as usize], t);
+        }
 
         // TODO: should find the position of the point within the polygon and weight each polygonpoint height based on its distance to the point
         poly.vertices
@@ -159,6 +188,11 @@ impl Coords {
             .map(|i| *layer.height.get(*i as usize).unwrap_or(&0.0))
             .sum::<f32>()
             / poly.vertices.len() as f32
+    }
+
+    pub fn as_vec3(&self, mesh: &Mesh) -> Vec3 {
+        let height = self.height(mesh);
+        Vec3::new(self.pos.x, height, self.pos.y)
     }
 }
 
@@ -327,6 +361,7 @@ impl Mesh {
                 path: vec![to.pos],
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(to.pos, ending_polygon.layer())],
+                path_through_polygons: vec![ending_polygon],
             });
         }
 
@@ -417,6 +452,7 @@ impl Mesh {
             from: (node.root, 0),
             to,
             polygon_to: self.get_point_location(to),
+            polygon_from: 0,
             mesh: self,
             blocked_layers: HashSet::default(),
             #[cfg(feature = "stats")]
@@ -455,6 +491,7 @@ impl Mesh {
             from: (Vec2::ZERO, 0),
             to: Vec2::ZERO,
             polygon_to: self.get_point_location(vec2(0.0, 0.0)),
+            polygon_from: self.get_point_location(vec2(0.0, 0.0)),
             mesh: self,
             blocked_layers: HashSet::default(),
             #[cfg(feature = "stats")]
@@ -644,6 +681,7 @@ struct SearchNode {
     path: Vec<Vec2>,
     #[cfg(feature = "detailed-layers")]
     path_with_layers: Vec<(Vec2, Vec2, u8)>,
+    path_through_polygons: Vec<u32>,
     root: Vec2,
     interval: (Vec2, Vec2),
     edge: (u32, u32),
@@ -766,6 +804,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
@@ -794,6 +833,7 @@ mod tests {
                 length: from.distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(to, 0)],
+                path_through_polygons: vec![0, 1, 2],
             }
         );
     }
@@ -808,6 +848,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(2.0, 1.0), vec2(2.0, 0.0)),
             edge: (6, 2),
@@ -835,6 +876,7 @@ mod tests {
                 length: from.distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(to, 0)],
+                path_through_polygons: vec![2, 1, 0],
             }
         );
     }
@@ -849,6 +891,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
@@ -881,6 +924,7 @@ mod tests {
                     + vec2(2.0, 1.0).distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 0), (to, 0)],
+                path_through_polygons: vec![3, 0, 1, 2, 4],
             }
         );
     }
@@ -895,6 +939,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
@@ -927,6 +972,7 @@ mod tests {
                     + vec2(2.0, 1.0).distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 0), (to, 0)],
+                path_through_polygons: vec![3, 0, 1, 2, 4],
             }
         );
     }
@@ -1002,6 +1048,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1052,6 +1099,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1129,6 +1177,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1200,6 +1249,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1255,6 +1305,10 @@ mod tests {
             mesh.path(from, to).unwrap().path,
             vec![vec2(7.0, 4.0), vec2(4.0, 2.0), to]
         );
+        assert_eq!(
+            mesh.path(from, to).unwrap().path_through_polygons,
+            vec![5, 4, 2, 1]
+        );
     }
 
     #[test]
@@ -1267,6 +1321,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1289,6 +1344,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(9.75, 6.75), vec2(7.0, 4.0)),
             edge: (11, 10),
@@ -1311,6 +1367,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: vec2(11.0, 3.0),
             interval: (vec2(10.0, 7.0), vec2(7.0, 4.0)),
             edge: (11, 10),
@@ -1336,6 +1393,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: vec2(0.0, 0.0),
             interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
@@ -1359,5 +1417,18 @@ mod tests {
         let point_location = mesh.get_point_location(vec2(0.5, 0.5));
         let closest_point = mesh.get_closest_point(vec2(0.5, 0.5)).unwrap();
         assert_eq!(point_location, closest_point.polygon_index);
+    }
+
+    #[test]
+    fn polygon_contains() {
+        let mesh = mesh_u_grid();
+        let layer = &mesh.layers[0];
+        let polygon = &layer.polygons[0];
+        assert!(polygon.contains(layer, vec2(0.0, 0.5)));
+        assert!(polygon.contains(layer, vec2(0.5, 0.0)));
+        assert!(polygon.contains(layer, vec2(0.5, 0.5)));
+        assert!(!polygon.contains(layer, vec2(0.5, 1.5)));
+        let polygon = &layer.polygons[3];
+        assert!(polygon.contains(layer, vec2(0.5, 1.5)));
     }
 }
