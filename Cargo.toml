@@ -12,13 +12,14 @@ documentation = "https://docs.rs/polyanya"
 categories = ["game-development"]
 
 [features]
-default = ["async"]
+default = ["async", "recast"]
 stats = []
 verbose = []
 async = []
 no-default-baking = []
 detailed-layers = []
 serde = ["glam/serde", "bvh2d/serde", "dep:serde"]
+recast = ["glam/serde", "dep:serde", "dep:serde_json"]
 
 [dependencies]
 spade = { version = "2.13.1" }
@@ -31,6 +32,7 @@ serde = { version = "1.0", features = ["derive"], optional = true }
 geo = "0.30.0"
 log = "0.4"
 thiserror = "2"
+serde_json = { version = "1.0", optional = true }
 
 # additional dependencies for vendored spade
 robust = "1.1.0"
