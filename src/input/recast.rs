@@ -78,7 +78,7 @@ impl RecastPolyMesh {
 
 impl From<RecastPolyMesh> for Mesh {
     fn from(polygon_mesh: RecastPolyMesh) -> Self {
-        let layer = Layer::new(
+        let mut layer = Layer::new(
             polygon_mesh
                 .vertices
                 .iter()
@@ -110,6 +110,12 @@ impl From<RecastPolyMesh> for Mesh {
                 .collect(),
         )
         .unwrap();
+        layer.height = polygon_mesh
+            .vertices
+            .iter()
+            .map(|v| v.y as f32 * polygon_mesh.cell_height + polygon_mesh.aabb.min.y)
+            .map(|h| -h)
+            .collect();
 
         let mut navmesh = Mesh {
             layers: vec![layer],
@@ -205,7 +211,7 @@ impl RecastPolyMeshDetail {
 impl From<RecastPolyMeshDetail> for Mesh {
     fn from(detailed_mesh: RecastPolyMeshDetail) -> Self {
         let common = detailed_mesh.common_vertices();
-        let layer = Layer::new(
+        let mut layer = Layer::new(
             detailed_mesh
                 .vertices
                 .iter()
@@ -237,6 +243,7 @@ impl From<RecastPolyMeshDetail> for Mesh {
                 .collect(),
         )
         .unwrap();
+        layer.height = detailed_mesh.vertices.iter().map(|v| -v.y).collect();
 
         let mut detailed_navmesh = Mesh {
             layers: vec![layer],

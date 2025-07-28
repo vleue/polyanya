@@ -25,6 +25,8 @@ pub struct Layer {
     pub scale: Vec2,
     pub(crate) baked_polygons: Option<BVH2d>,
     pub(crate) islands: Option<Vec<usize>>,
+    /// Height of each vertex. Must either have zero elements to ignore heights, or the same length as vertices.
+    pub height: Vec<f32>,
 }
 
 impl Default for Layer {
@@ -37,6 +39,7 @@ impl Default for Layer {
             scale: Vec2::ONE,
             baked_polygons: None,
             islands: None,
+            height: vec![],
         }
     }
 }
