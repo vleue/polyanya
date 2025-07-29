@@ -141,6 +141,7 @@ impl Coords {
         self.layer
     }
 
+    /// Polygon index of this point
     pub fn polygon(&self) -> u32 {
         self.polygon_index
     }
@@ -153,33 +154,28 @@ impl Coords {
         let layer = &mesh.layers[self.layer().unwrap_or(0) as usize];
         let poly = &layer.polygons[self.polygon_index as usize];
 
-        if let Some(segment) = poly.vertices.windows(2).find(|edge| {
-            self.pos.on_segment((
-                layer.vertices[edge[0] as usize].coords,
-                layer.vertices[edge[1] as usize].coords,
-            ))
-        }) {
+        let closing = vec![
+            *poly.vertices.last().unwrap(),
+            *poly.vertices.first().unwrap(),
+        ];
+
+        if let Some(segment) = poly
+            .vertices
+            .windows(2)
+            .chain([closing.as_slice()])
+            .find(|edge| {
+                self.pos.on_segment((
+                    layer.vertices[edge[0] as usize].coords,
+                    layer.vertices[edge[1] as usize].coords,
+                ))
+            })
+        {
             let (a, b) = (
                 layer.vertices[segment[0] as usize].coords,
                 layer.vertices[segment[1] as usize].coords,
             );
             let t = (self.pos - a).dot(b - a) / (b - a).dot(b - a);
             return layer.height[segment[0] as usize].lerp(layer.height[segment[1] as usize], t);
-        }
-        let edge = [
-            *poly.vertices.last().unwrap(),
-            *poly.vertices.first().unwrap(),
-        ];
-        if self.pos.on_segment((
-            layer.vertices[edge[0] as usize].coords,
-            layer.vertices[edge[1] as usize].coords,
-        )) {
-            let (a, b) = (
-                layer.vertices[edge[0] as usize].coords,
-                layer.vertices[edge[1] as usize].coords,
-            );
-            let t = (self.pos - a).dot(b - a) / (b - a).dot(b - a);
-            return layer.height[edge[0] as usize].lerp(layer.height[edge[1] as usize], t);
         }
 
         // TODO: should find the position of the point within the polygon and weight each polygonpoint height based on its distance to the point
@@ -190,9 +186,9 @@ impl Coords {
             / poly.vertices.len() as f32
     }
 
-    pub fn as_vec3(&self, mesh: &Mesh) -> Vec3 {
-        let height = self.height(mesh);
-        Vec3::new(self.pos.x, height, self.pos.y)
+    /// Position of the point within the mesh, including its height on the Y axis.
+    pub fn position_with_height(&self, mesh: &Mesh) -> Vec3 {
+        Vec3::new(self.pos.x, self.height(mesh), self.pos.y)
     }
 }
 
