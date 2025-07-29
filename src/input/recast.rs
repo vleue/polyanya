@@ -228,8 +228,7 @@ impl From<RecastPolyMeshDetail> for Mesh {
                                     .get(&(i as u32))
                                     .unwrap()
                                     .iter()
-                                    .find(|ii| p.contains(*ii))
-                                    .map(|_| n as u32)
+                                    .find_map(|ii| p.contains(ii).then_some(n as u32))
                             })
                             .collect(),
                     )
