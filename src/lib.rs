@@ -51,7 +51,7 @@ pub use async_helpers::FuturePath;
 pub use geo;
 pub use input::polyanya_file::PolyanyaFile;
 #[cfg(feature = "recast")]
-pub use input::recast::{RecastPolyMesh, RecastPolyMeshDetail};
+pub use input::recast::{RecastFullMesh, RecastPolyMesh, RecastPolyMeshDetail};
 pub use input::triangulation::Triangulation;
 pub use input::trimesh::Trimesh;
 pub use layers::Layer;
