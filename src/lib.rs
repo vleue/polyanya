@@ -23,10 +23,10 @@ use std::{
 };
 
 use bvh2d::aabb::{Bounded, AABB};
-use glam::{FloatExt, Vec2, Vec3};
+use glam::{FloatExt, Vec2, Vec3, Vec3Swizzles};
 
-// use helpers::Vec2Helper;
-use instance::InstanceStep;
+use helpers::{line_intersect_segment, Vec2Helper, EPSILON};
+use instance::{InstanceStep, U32Layer};
 use log::error;
 use thiserror::Error;
 #[cfg(feature = "tracing")]
@@ -49,15 +49,11 @@ mod stitching;
 #[cfg(feature = "async")]
 pub use async_helpers::FuturePath;
 pub use geo;
-// nah
-pub use helpers::{line_intersect_segment, Vec2Helper};
 pub use input::polyanya_file::PolyanyaFile;
 #[cfg(feature = "recast")]
 pub use input::recast::{RecastPolyMesh, RecastPolyMeshDetail};
 pub use input::triangulation::Triangulation;
 pub use input::trimesh::Trimesh;
-// nah
-pub use instance::U32Layer;
 pub use layers::Layer;
 pub use primitives::{Polygon, Vertex};
 
@@ -75,8 +71,80 @@ pub struct Path {
     #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
     pub path_with_layers: Vec<(Vec2, u8)>,
     /// Indices of the polygons through which the path passes.
-    pub path_through_polygons: Vec<u32>,
+    path_through_polygons: Vec<u32>,
 }
+
+impl Path {
+    /// Returns the path with height information on the Y axis.
+    ///
+    /// This can add points to the path when needed to follow the terrain height.
+    pub fn path_with_height(&self, start: Vec3, end: Vec3, mesh: &Mesh) -> Vec<Vec3> {
+        let point_as_vec3 = |point: Vec2| {
+            let coords = mesh.get_point_layer(point)[0];
+            coords.position_with_height(mesh)
+        };
+
+        let mut heighted_path = vec![];
+        let mut current = start;
+        let mut next_i = 0;
+        let mut next_coords = mesh.get_point_layer(self.path[next_i])[0];
+        let mut next = next_coords.position_with_height(mesh);
+        for polygon_index in &self.path_through_polygons {
+            let layer = &mesh.layers[polygon_index.layer() as usize];
+
+            let polygon = &layer.polygons[polygon_index.polygon() as usize];
+            if polygon.contains(layer, next_coords.position()) {
+                next_i += 1;
+                if next_i < self.path.len() - 1 {
+                    heighted_path.push(next);
+                    current = next;
+                    next_coords = mesh.get_point_layer(self.path[next_i])[0];
+                    next = next_coords.position_with_height(mesh);
+                }
+            }
+            let a = point_as_vec3(layer.vertices[polygon.vertices[0] as usize].coords);
+            let b = point_as_vec3(layer.vertices[polygon.vertices[1] as usize].coords);
+            let c = point_as_vec3(layer.vertices[polygon.vertices[2] as usize].coords);
+            let line = next - current;
+            let normal = (b - a).cross(c - a);
+            if line.dot(normal).abs() > EPSILON {
+                let poly_coords = polygon.coords(layer);
+                let closing = vec![
+                    poly_coords.last().unwrap().clone(),
+                    poly_coords.first().unwrap().clone(),
+                ];
+
+                if let Some(new) = poly_coords
+                    .windows(2)
+                    .chain([closing.as_slice()])
+                    .filter_map(|edge| {
+                        line_intersect_segment((current.xz(), next.xz()), (edge[0], edge[1]))
+                    })
+                    .filter(|p| p.on_segment((current.xz(), next.xz())))
+                    .max_by_key(|p| (current.xz().distance_squared(*p) / EPSILON) as u32)
+                {
+                    let new = point_as_vec3(new);
+
+                    if new.distance_squared(current) > EPSILON {
+                        heighted_path.push(new);
+                        current = new;
+                    }
+                };
+            }
+        }
+        heighted_path.push(end);
+        heighted_path
+    }
+
+    /// Returns the polygons that the path goes through.
+    pub fn polygons(&self) -> Vec<(u8, u32)> {
+        self.path_through_polygons
+            .iter()
+            .map(|poly_index| (poly_index.layer(), poly_index.polygon()))
+            .collect()
+    }
+}
+
 /// A navigation mesh
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

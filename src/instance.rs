@@ -92,7 +92,7 @@ pub(crate) enum InstanceStep {
     Continue,
 }
 
-pub trait U32Layer {
+pub(crate) trait U32Layer {
     fn layer(&self) -> u8;
 
     fn polygon(&self) -> u32;

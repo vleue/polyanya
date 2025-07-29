@@ -144,7 +144,7 @@ impl Polygon {
         .unsigned_area()
     }
 
-    pub fn contains(&self, mesh: &Layer, point: Vec2) -> bool {
+    pub(crate) fn contains(&self, mesh: &Layer, point: Vec2) -> bool {
         let mut border = geo::LineString(
             self.vertices
                 .iter()
@@ -172,7 +172,7 @@ impl Polygon {
         polygon.contains(&point) || border.contains(&point)
     }
 
-    pub fn coords(&self, mesh: &Layer) -> Vec<Vec2> {
+    pub(crate) fn coords(&self, mesh: &Layer) -> Vec<Vec2> {
         self.vertices
             .iter()
             .map(|v| mesh.vertices[*v as usize].coords)
