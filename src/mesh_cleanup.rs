@@ -159,6 +159,20 @@ impl Layer {
                 }
             })
             .collect();
+        if self.height.len() != 0 {
+            self.height = self
+                .height
+                .iter()
+                .enumerate()
+                .filter_map(|(i, _)| {
+                    if new_indexes[i] != u32::MAX {
+                        Some(self.height[i])
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+        }
         removed
     }
 }
