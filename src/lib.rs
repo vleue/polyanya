@@ -109,10 +109,7 @@ impl Path {
             let normal = (b - a).cross(c - a);
             if line.dot(normal).abs() > EPSILON {
                 let poly_coords = polygon.coords(layer);
-                let closing = vec![
-                    poly_coords.last().unwrap().clone(),
-                    poly_coords.first().unwrap().clone(),
-                ];
+                let closing = vec![*poly_coords.last().unwrap(), *poly_coords.first().unwrap()];
 
                 if let Some(new) = poly_coords
                     .windows(2)

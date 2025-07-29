@@ -159,7 +159,7 @@ impl Layer {
                 }
             })
             .collect();
-        if self.height.len() != 0 {
+        if !self.height.is_empty() {
             self.height = self
                 .height
                 .iter()

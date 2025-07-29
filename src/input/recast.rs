@@ -121,7 +121,7 @@ impl From<RecastPolyMesh> for Mesh {
                     let mut p: Vec<_> = p.into_iter().map(|i| i as u32).collect();
                     p.reverse();
                     // TODO: compute the is_one_way flag from the second half of the polygon data
-                    Polygon::new(p.into_iter().map(|i| i).collect(), false)
+                    Polygon::new(p.into_iter().collect(), false)
                 })
                 .collect(),
         )
@@ -130,7 +130,6 @@ impl From<RecastPolyMesh> for Mesh {
             .vertices
             .iter()
             .map(|v| v.y as f32 * polygon_mesh.cell_height + polygon_mesh.aabb.min.y)
-            .map(|h| h)
             .collect();
 
         let mut navmesh = Mesh {
@@ -331,13 +330,11 @@ impl From<RecastFullMesh> for Mesh {
                             Vec2::new(v.x, v.z),
                             full.triangles_with_mesh_info()
                                 .iter()
-                                // .filter_map(|(t, a, _)| (*a == area).then_some(t))
                                 .enumerate()
                                 .filter_map(|(n, (p, a, _))| {
                                     common.get(&(i as u32)).unwrap().iter().find_map(|ii| {
                                         p.contains(ii).then(|| {
-                                            if let Some(in_layer_n) = full
-                                                .triangles_with_mesh_info()
+                                            full.triangles_with_mesh_info()
                                                 .iter()
                                                 .enumerate()
                                                 .filter(|(_, (_, na, _))| a == na)
@@ -345,14 +342,12 @@ impl From<RecastFullMesh> for Mesh {
                                                 .find_map(|(layer_n, (original_n, _))| {
                                                     (n == original_n).then_some(layer_n)
                                                 })
-                                            {
-                                                Some(U32Layer::from_layer_and_polygon(
-                                                    if *a == 255 { 0 } else { *a },
-                                                    in_layer_n as u32,
-                                                ))
-                                            } else {
-                                                None
-                                            }
+                                                .map(|in_layer_n| {
+                                                    U32Layer::from_layer_and_polygon(
+                                                        if *a == 255 { 0 } else { *a },
+                                                        in_layer_n as u32,
+                                                    )
+                                                })
                                         })
                                     })
                                 })
