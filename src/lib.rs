@@ -220,7 +220,7 @@ impl Coords {
             return 0.0;
         }
         let layer = &mesh.layers[self.layer().unwrap_or(0) as usize];
-        let poly = &layer.polygons[self.polygon_index as usize];
+        let poly = &layer.polygons[self.polygon_index.polygon() as usize];
 
         let closing = vec![
             *poly.vertices.last().unwrap(),
