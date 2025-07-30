@@ -1,3 +1,5 @@
+use std::fs::File;
+
 use glam::{vec3, Vec3Swizzles};
 use polyanya::{Mesh, RecastFullMesh, RecastPolyMesh, RecastPolyMeshDetail};
 
@@ -11,67 +13,10 @@ macro_rules! assert_delta {
 }
 
 #[test]
-fn poly_mesh() {
-    let mesh: Mesh = RecastPolyMesh::from_file("meshes/recast/poly_mesh.json")
-        .try_into()
-        .unwrap();
-
-    let start = vec3(46.998413, 9.998184, 1.717747);
-    let end = vec3(20.703018, 18.651773, -80.770203);
-
-    let path = mesh.path(start.xz(), end.xz());
-    assert!(path.is_some());
-    assert_eq!(path.as_ref().unwrap().path.len(), 10);
-    assert_eq!(
-        path.as_ref().unwrap().polygons(),
-        vec![
-            (0, 126),
-            (0, 114),
-            (0, 115),
-            (0, 116),
-            (0, 131),
-            (0, 128),
-            (0, 121),
-            (0, 124),
-            (0, 122),
-            (0, 93),
-            (0, 92),
-            (0, 96),
-            (0, 95),
-            (0, 90),
-            (0, 72),
-            (0, 71),
-            (0, 59),
-            (0, 54),
-            (0, 58),
-            (0, 57),
-            (0, 45),
-            (0, 46),
-            (0, 49),
-            (0, 50),
-            (0, 47),
-            (0, 38),
-            (0, 39),
-            (0, 41),
-            (0, 30),
-            (0, 31),
-            (0, 32),
-            (0, 28),
-            (0, 24),
-            (0, 27),
-            (0, 21),
-            (0, 19),
-            (0, 25)
-        ]
-    );
-    assert_delta!(path, 126.75868);
-}
-
-#[test]
 fn detailed_mesh() {
-    let mesh: Mesh = RecastPolyMeshDetail::from_file("meshes/recast/detail_mesh.json")
-        .try_into()
-        .unwrap();
+    let detailed_mesh: RecastPolyMeshDetail =
+        serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
+    let mesh: Mesh = detailed_mesh.into();
 
     let start = vec3(46.998413, 9.998184, 1.717747);
     let end = vec3(20.703018, 18.651773, -80.770203);
@@ -175,8 +120,10 @@ fn detailed_mesh() {
 
 #[test]
 fn full_mesh() {
-    let rasterised = RecastPolyMesh::from_file("meshes/recast/poly_mesh.json");
-    let detailed = RecastPolyMeshDetail::from_file("meshes/recast/detail_mesh.json");
+    let rasterised: RecastPolyMesh =
+        serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
+    let detailed: RecastPolyMeshDetail =
+        serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
     let mesh: polyanya::Mesh = RecastFullMesh::new(rasterised, detailed).into();
 
     let start = vec3(46.998413, 9.998184, 1.717747);
