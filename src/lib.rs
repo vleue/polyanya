@@ -79,35 +79,62 @@ impl Path {
     ///
     /// This can add points to the path when needed to follow the terrain height.
     pub fn path_with_height(&self, start: Vec3, end: Vec3, mesh: &Mesh) -> Vec<Vec3> {
-        let point_as_vec3 = |point: Vec2| {
-            let coords = mesh.get_point_layer(point)[0];
-            coords.position_with_height(mesh)
-        };
-
-        let mut heighted_path = vec![];
+        let mut heighted_path = Vec::with_capacity(self.path.len());
         let mut current = start;
         let mut next_i = 0;
-        let mut next_coords = mesh.get_point_layer(self.path[next_i])[0];
-        let mut next = next_coords.position_with_height(mesh);
+        let mut next_coords: Coords = Coords::on_mesh(self.path[next_i]);
         for polygon_index in &self.path_through_polygons {
+            let layer = &mesh.layers[polygon_index.layer() as usize];
+            let polygon = &layer.polygons[polygon_index.polygon() as usize];
+            if polygon.contains(layer, self.path[next_i]) {
+                next_coords = Coords {
+                    pos: self.path[next_i],
+                    layer: Some(polygon_index.layer()),
+                    polygon_index: *polygon_index,
+                };
+                break;
+            }
+        }
+        let mut next = next_coords.position_with_height(mesh);
+        for (step, polygon_index) in self.path_through_polygons.iter().enumerate() {
             let layer = &mesh.layers[polygon_index.layer() as usize];
 
             let polygon = &layer.polygons[polygon_index.polygon() as usize];
-            if polygon.contains(layer, next_coords.position()) {
+            if *polygon_index == next_coords.polygon_index {
                 next_i += 1;
                 if next_i < self.path.len() - 1 {
                     heighted_path.push(next);
                     current = next;
-                    next_coords = mesh.get_point_layer(self.path[next_i])[0];
+                    for polygon_index in &self.path_through_polygons[step..] {
+                        let layer = &mesh.layers[polygon_index.layer() as usize];
+                        let polygon = &layer.polygons[polygon_index.polygon() as usize];
+                        if polygon.contains(layer, self.path[next_i]) {
+                            next_coords = Coords {
+                                pos: self.path[next_i],
+                                layer: Some(polygon_index.layer()),
+                                polygon_index: *polygon_index,
+                            };
+                            break;
+                        }
+                    }
                     next = next_coords.position_with_height(mesh);
                 }
             }
-            let a = point_as_vec3(layer.vertices[polygon.vertices[0] as usize].coords);
-            let b = point_as_vec3(layer.vertices[polygon.vertices[1] as usize].coords);
-            let c = point_as_vec3(layer.vertices[polygon.vertices[2] as usize].coords);
-            let line = next - current;
-            let normal = (b - a).cross(c - a);
-            if line.dot(normal).abs() > EPSILON {
+            let a = layer.vertices[polygon.vertices[0] as usize]
+                .coords
+                .extend(layer.height[polygon.vertices[0] as usize])
+                .xzy();
+            let b = layer.vertices[polygon.vertices[1] as usize]
+                .coords
+                .extend(layer.height[polygon.vertices[1] as usize])
+                .xzy();
+            let c = layer.vertices[polygon.vertices[2] as usize]
+                .coords
+                .extend(layer.height[polygon.vertices[2] as usize])
+                .xzy();
+            let polygon_normal = (b - a).cross(c - a);
+            let path_direction = next - current;
+            if path_direction.dot(polygon_normal).abs() > EPSILON {
                 let poly_coords = polygon.coords(layer);
                 let closing = vec![*poly_coords.last().unwrap(), *poly_coords.first().unwrap()];
 
@@ -120,9 +147,13 @@ impl Path {
                     .filter(|p| p.on_segment((current.xz(), next.xz())))
                     .max_by_key(|p| (current.xz().distance_squared(*p) / EPSILON) as u32)
                 {
-                    let new = point_as_vec3(new);
-
-                    if new.distance_squared(current) > EPSILON {
+                    if new.distance_squared(current.xz()) > EPSILON {
+                        let new = Coords {
+                            pos: new,
+                            layer: Some(polygon_index.layer()),
+                            polygon_index: *polygon_index,
+                        }
+                        .position_with_height(mesh);
                         heighted_path.push(new);
                         current = new;
                     }
@@ -197,16 +228,19 @@ impl Coords {
     }
 
     /// Position of this point
+    #[inline]
     pub fn position(&self) -> Vec2 {
         self.pos
     }
 
     /// Layer of this point, if known
+    #[inline]
     pub fn layer(&self) -> Option<u8> {
         self.layer
     }
 
     /// Polygon index of this point
+    #[inline]
     pub fn polygon(&self) -> u32 {
         self.polygon_index
     }
