@@ -310,17 +310,16 @@ impl From<RecastFullMesh> for Mesh {
                         .collect(),
                     polygons: triangles_with_mesh_info
                         .iter()
-                        .filter_map(|polygon| (polygon.mesh_area == *area).then_some(polygon))
+                        .filter(|polygon| polygon.mesh_area == *area)
                         .map(|polygon| {
-                            let p = Polygon::new(
+                            Polygon::new(
                                 vec![
                                     polygon.vertices[2] as u32,
                                     polygon.vertices[1] as u32,
                                     polygon.vertices[0] as u32,
                                 ],
                                 false,
-                            );
-                            p
+                            )
                         })
                         .collect(),
                     ..Default::default()

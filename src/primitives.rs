@@ -177,7 +177,7 @@ impl Polygon {
         {
             return false;
         }
-        return true;
+        true
     }
 
     pub(crate) fn coords(&self, mesh: &Layer) -> Vec<Vec2> {
