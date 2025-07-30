@@ -414,12 +414,14 @@ impl Mesh {
         let starting_polygon_index = if from.polygon_index != u32::MAX {
             from.polygon_index
         } else {
-            self.get_closest_point(from)?.polygon_index
+            self.get_closest_point_on_layers(from, blocked_layers.clone())?
+                .polygon_index
         };
         let ending_polygon = if to.polygon_index != u32::MAX {
             to.polygon_index
         } else {
-            self.get_closest_point(to)?.polygon_index
+            self.get_closest_point_on_layers(to, blocked_layers.clone())?
+                .polygon_index
         };
         // TODO: fix islands detection with multiple layers, even if start and end are on the same layer
         if self.layers.len() == 1 {
@@ -494,7 +496,6 @@ impl Mesh {
         #[cfg(feature = "detailed-layers")]
         paths.sort_by(|p1, p2| p1.length.partial_cmp(&p2.length).unwrap());
         if paths.is_empty() {
-            error!("Search from {from} to {to} failed. Please check the mesh is valid as this should not happen.");
             None
         } else {
             Some(paths.remove(0))
@@ -689,6 +690,17 @@ impl Mesh {
     ///
     /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
     pub fn get_closest_point(&self, point: impl Into<Coords>) -> Option<Coords> {
+        self.get_closest_point_on_layers(point, HashSet::default())
+    }
+
+    /// Find the closest point in the mesh
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_point_on_layers(
+        &self,
+        point: impl Into<Coords>,
+        blocked_layers: HashSet<u8>,
+    ) -> Option<Coords> {
         let point = point.into();
         if let Some(layer_index) = point.layer {
             let layer = &self.layers[layer_index as usize];
@@ -705,7 +717,12 @@ impl Mesh {
             }
         } else {
             for step in 0..self.search_steps {
-                for (index, layer) in self.layers.iter().enumerate() {
+                for (index, layer) in self
+                    .layers
+                    .iter()
+                    .enumerate()
+                    .filter(|(index, _)| !blocked_layers.contains(&(*index as u8)))
+                {
                     if let Some((new_point, polygon)) = layer.get_closest_point_inner(
                         point.pos - layer.offset,
                         self.search_delta,
