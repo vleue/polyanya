@@ -125,6 +125,14 @@ impl Mesh {
             .map(|layer| layer.remove_useless_vertices())
             .all(|m| !m)
     }
+
+    /// Update the `is_one_way` flag for each polygon.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn update_is_one_way(&mut self) {
+        self.layers
+            .iter_mut()
+            .for_each(|layer| layer.update_is_one_way());
+    }
 }
 
 impl Layer {
@@ -174,5 +182,25 @@ impl Layer {
                 .collect();
         }
         removed
+    }
+
+    /// Update the `is_one_way` flag for each polygon.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn update_is_one_way(&mut self) {
+        for polygon in self.polygons.iter_mut() {
+            if polygon.vertices.len() == 3 {
+                polygon.is_one_way = polygon
+                    .vertices
+                    .iter()
+                    .any(|vertex| self.vertices[*vertex as usize].polygons.len() == 2);
+            } else {
+                polygon.is_one_way = polygon
+                    .vertices
+                    .iter()
+                    .filter(|vertex| self.vertices[**vertex as usize].polygons.len() == 2)
+                    .count()
+                    == polygon.vertices.len() - 2;
+            }
+        }
     }
 }

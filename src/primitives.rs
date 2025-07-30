@@ -1,6 +1,6 @@
 use std::ops::RangeInclusive;
 
-use geo::{Area, Contains, Coord};
+use geo::{Area, Coord};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -9,7 +9,7 @@ use glam::Vec2;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use crate::layers::Layer;
+use crate::{instance::EdgeSide, layers::Layer, Vec2Helper};
 
 /// A point that lies on an edge of a polygon in the navigation mesh.
 #[derive(Debug, Clone, PartialEq)]
@@ -145,31 +145,39 @@ impl Polygon {
     }
 
     pub(crate) fn contains(&self, mesh: &Layer, point: Vec2) -> bool {
-        let mut border = geo::LineString(
-            self.vertices
-                .iter()
-                .map(|v| {
-                    let c = mesh.vertices[*v as usize].coords;
-                    Coord::from((c.x, c.y))
-                })
-                .collect(),
-        );
-        border.close();
-        let polygon = geo::Polygon::new(
-            geo::LineString(
-                self.vertices
-                    .iter()
-                    .map(|v| {
-                        let c = mesh.vertices[*v as usize].coords;
-                        Coord::from((c.x, c.y))
-                    })
-                    .collect(),
-            ),
-            vec![],
-        );
-        use geo::point;
-        let point = point! {x: point.x, y: point.y};
-        polygon.contains(&point) || border.contains(&point)
+        let closing = vec![
+            *self.vertices.last().unwrap(),
+            *self.vertices.first().unwrap(),
+        ];
+
+        if self
+            .vertices
+            .windows(2)
+            .chain([closing.as_slice()])
+            .any(|edge| {
+                point.on_segment((
+                    mesh.vertices[edge[0] as usize].coords,
+                    mesh.vertices[edge[1] as usize].coords,
+                ))
+            })
+        {
+            return true;
+        }
+
+        if self
+            .vertices
+            .windows(2)
+            .chain([closing.as_slice()])
+            .any(|edge| {
+                point.side((
+                    mesh.vertices[edge[0] as usize].coords,
+                    mesh.vertices[edge[1] as usize].coords,
+                )) == EdgeSide::Right
+            })
+        {
+            return false;
+        }
+        return true;
     }
 
     pub(crate) fn coords(&self, mesh: &Layer) -> Vec<Vec2> {
