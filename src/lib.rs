@@ -747,6 +747,73 @@ impl Mesh {
         None
     }
 
+    /// Find the closest points in the mesh
+    ///
+    /// If there are several points at the same distance, all of them will be returned.
+    /// This can happen when a layer have overlapping polygons.
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_points(&self, point: impl Into<Coords>) -> Vec<Coords> {
+        self.get_closest_points_on_layers(point, HashSet::default())
+    }
+
+    /// Find the closest point in the mesh
+    ///
+    /// If there are several points at the same distance, all of them will be returned.
+    /// This can happen when a layer have overlapping polygons.
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_points_on_layers(
+        &self,
+        point: impl Into<Coords>,
+        blocked_layers: HashSet<u8>,
+    ) -> Vec<Coords> {
+        let point = point.into();
+        if let Some(layer_index) = point.layer {
+            let layer = &self.layers[layer_index as usize];
+            for step in 0..self.search_steps {
+                let coords: Vec<Coords> = layer
+                    .get_closest_points_inner(point.pos - layer.offset, self.search_delta, step)
+                    .iter()
+                    .map(|(new_point, polygon)| Coords {
+                        pos: new_point + layer.offset,
+                        layer: Some(layer_index),
+                        polygon_index: U32Layer::from_layer_and_polygon(layer_index, *polygon),
+                    })
+                    .collect();
+                if !coords.is_empty() {
+                    return coords;
+                }
+            }
+        } else {
+            for step in 0..self.search_steps {
+                for (layer_index, layer) in self
+                    .layers
+                    .iter()
+                    .enumerate()
+                    .filter(|(index, _)| !blocked_layers.contains(&(*index as u8)))
+                {
+                    let coords: Vec<Coords> = layer
+                        .get_closest_points_inner(point.pos - layer.offset, self.search_delta, step)
+                        .iter()
+                        .map(|(new_point, polygon)| Coords {
+                            pos: new_point + layer.offset,
+                            layer: Some(layer_index as u8),
+                            polygon_index: U32Layer::from_layer_and_polygon(
+                                layer_index as u8,
+                                *polygon,
+                            ),
+                        })
+                        .collect();
+                    if !coords.is_empty() {
+                        return coords;
+                    }
+                }
+            }
+        }
+        vec![]
+    }
+
     /// Find the closest point in the mesh in the given direction
     ///
     /// This will search in a line up to `Mesh::delta` * `Mesh::steps` distance away from the point

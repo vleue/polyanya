@@ -160,24 +160,29 @@ impl Layer {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub(crate) fn get_point_location_unit(&self, point: Vec2) -> u32 {
-        for (i, polygon) in self.polygons.iter().enumerate() {
-            if self.point_in_polygon(point, polygon) {
-                return i as u32;
-            }
-        }
-        u32::MAX
+    pub(crate) fn get_point_locations_unit(&self, point: Vec2) -> Vec<u32> {
+        self.polygons
+            .iter()
+            .enumerate()
+            .filter_map(|(index, polygon)| {
+                self.point_in_polygon(point, polygon)
+                    .then_some(index as u32)
+            })
+            .collect()
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub(crate) fn get_point_location_unit_baked(&self, point: Vec2) -> u32 {
+    pub(crate) fn get_point_locations_unit_baked(&self, point: Vec2) -> Vec<u32> {
+        // TODO: do it as an iterator
         self.baked_polygons
             .as_ref()
             .unwrap()
             .contains_iterator(&point)
-            .find(|index| self.point_in_polygon(point, &self.polygons[*index]))
-            .map(|index| index as u32)
-            .unwrap_or(u32::MAX)
+            .filter_map(|index| {
+                self.point_in_polygon(point, &self.polygons[index])
+                    .then_some(index as u32)
+            })
+            .collect()
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
@@ -199,7 +204,7 @@ impl Layer {
             };
 
             let current_side = point.side((last, next));
-            if current_side == EdgeSide::Edge && point.on_segment((last, next)) {
+            if current_side == EdgeSide::Edge && point.in_bounding_box((last, next)) {
                 return true;
             }
             if current_side != EdgeSide::Left {
@@ -213,7 +218,7 @@ impl Layer {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub(crate) fn get_point_location(&self, point: Vec2, delta: f32) -> Option<u32> {
+    pub(crate) fn get_point_location<'a>(&'a self, point: Vec2, delta: f32) -> Option<u32> {
         [
             vec2(0.0, 0.0),
             vec2(delta, 0.0),
@@ -228,10 +233,14 @@ impl Layer {
         .iter()
         .map(|delta| {
             if self.baked_polygons.is_none() {
-                self.get_point_location_unit(point + *delta)
+                self.get_point_locations_unit(point + *delta)
             } else {
-                self.get_point_location_unit_baked(point + *delta)
+                let point = point + *delta;
+                self.get_point_locations_unit_baked(point)
             }
+            .into_iter()
+            .next()
+            .unwrap_or(u32::MAX)
         })
         .find(|poly| *poly != u32::MAX)
     }
@@ -272,6 +281,22 @@ impl Layer {
         None
     }
 
+    /// Find the closest points in the layer.
+    ///
+    /// If there are several points at the same distance, all of them will be returned.
+    /// This can happen when a layer have overlapping polygons.
+    ///
+    /// This will stop after searching in circle of radius up to `delta` * `steps` distance
+    pub fn get_closest_points(&self, point: Vec2, delta: f32, steps: u32) -> Vec<(Vec2, u32)> {
+        for step in 0..=steps {
+            let points = self.get_closest_points_inner(point, delta, step);
+            if !points.is_empty() {
+                return points;
+            }
+        }
+        vec![]
+    }
+
     #[inline(always)]
     pub(crate) fn get_closest_point_inner(
         &self,
@@ -284,16 +309,47 @@ impl Layer {
             let angle = i as f32 * std::f32::consts::TAU / (sample * (step + 1)) as f32;
             let (x, y) = angle.sin_cos();
             let new_point = point + vec2(x, y) * delta * step as f32;
-            let poly = if self.baked_polygons.is_none() {
-                self.get_point_location_unit(new_point)
+            let poly = *if self.baked_polygons.is_none() {
+                self.get_point_locations_unit(new_point)
             } else {
-                self.get_point_location_unit_baked(new_point)
-            };
+                self.get_point_locations_unit_baked(new_point)
+            }
+            .iter()
+            .next()
+            .unwrap_or(&u32::MAX);
+
             if poly != u32::MAX {
                 return Some((new_point, poly));
             }
         }
         None
+    }
+
+    #[inline(always)]
+    pub(crate) fn get_closest_points_inner(
+        &self,
+        point: Vec2,
+        delta: f32,
+        step: u32,
+    ) -> Vec<(Vec2, u32)> {
+        let sample = 10;
+        for i in 0..=(sample * step) {
+            let angle = i as f32 * std::f32::consts::TAU / (sample * (step + 1)) as f32;
+            let (x, y) = angle.sin_cos();
+            let new_point = point + vec2(x, y) * delta * step as f32;
+            let poly: Vec<(Vec2, u32)> = if self.baked_polygons.is_none() {
+                self.get_point_locations_unit(new_point)
+            } else {
+                self.get_point_locations_unit_baked(new_point)
+            }
+            .iter()
+            .map(|p| (new_point, *p))
+            .collect();
+            if !poly.is_empty() {
+                return poly;
+            }
+        }
+        vec![]
     }
 
     /// Find the closest point in the layer in the given direction
@@ -326,11 +382,14 @@ impl Layer {
         step: u32,
     ) -> Option<(Vec2, u32)> {
         let point = point + direction * delta * step as f32;
-        let poly = if self.baked_polygons.is_none() {
-            self.get_point_location_unit(point)
+        let poly = *if self.baked_polygons.is_none() {
+            self.get_point_locations_unit(point)
         } else {
-            self.get_point_location_unit_baked(point)
-        };
+            self.get_point_locations_unit_baked(point)
+        }
+        .iter()
+        .next()
+        .unwrap_or(&u32::MAX);
         if poly != u32::MAX {
             return Some((point, poly));
         }
