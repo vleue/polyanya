@@ -757,6 +757,46 @@ impl Mesh {
         self.get_closest_points_on_layers(point, HashSet::default())
     }
 
+    /// Find the closest point in the mesh, discriminating by height if there are several polygon overlapping.
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_point_at_height(
+        &self,
+        point: impl Into<Coords>,
+        height: f32,
+    ) -> Option<Coords> {
+        self.get_closest_points_on_layers_at_height(point, HashSet::default(), height)
+    }
+
+    /// Find the closest point in the mesh, discriminating by height if there are several polygon overlapping.
+    ///
+    /// If there are several points at the same distance, all of them will be returned.
+    /// This can happen when a layer have overlapping polygons.
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_points_on_layers_at_height(
+        &self,
+        point: impl Into<Coords>,
+        blocked_layers: HashSet<u8>,
+        height: f32,
+    ) -> Option<Coords> {
+        self.get_closest_points_on_layers(point, blocked_layers)
+            .iter()
+            .fold(None, |acc: Option<(Coords, f32)>, &coord| {
+                let coord_height = coord.height(self);
+                if acc
+                    .map(|(_, closest_height)| (closest_height - height).abs())
+                    .unwrap_or(f32::MAX)
+                    > (coord_height - height).abs()
+                {
+                    Some((coord, coord_height))
+                } else {
+                    acc
+                }
+            })
+            .map(|acc| acc.0)
+    }
+
     /// Find the closest point in the mesh
     ///
     /// If there are several points at the same distance, all of them will be returned.
