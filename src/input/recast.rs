@@ -3,8 +3,8 @@ use std::collections::HashSet;
 use glam::{Vec2, Vec3Swizzles};
 use hashbrown::HashMap;
 
-pub use rerecast::DetailPolygonMesh as RecastPolyMeshDetail;
-pub use rerecast::PolygonMesh as RecastPolyMesh;
+pub use rerecast::DetailNavmesh as RecastPolyMeshDetail;
+pub use rerecast::PolygonNavmesh as RecastPolyMesh;
 
 use crate::{Layer, Mesh, Polygon, U32Layer, Vertex};
 
@@ -43,13 +43,13 @@ impl RecastPolyMeshDetailExt for RecastPolyMeshDetail {
             .flat_map(|mesh| {
                 self.triangles
                     .iter()
-                    .skip(mesh.first_triangle_index)
-                    .take(mesh.triangle_count)
-                    .map(|&(t, _)| {
+                    .skip(mesh.base_triangle_index as usize)
+                    .take(mesh.triangle_count as usize)
+                    .map(|[a, b, c]| {
                         [
-                            t.x as usize + mesh.first_vertex_index,
-                            t.y as usize + mesh.first_vertex_index,
-                            t.z as usize + mesh.first_vertex_index,
+                            *a as usize + mesh.base_vertex_index as usize,
+                            *b as usize + mesh.base_vertex_index as usize,
+                            *c as usize + mesh.base_vertex_index as usize,
                         ]
                     })
             })
@@ -146,13 +146,13 @@ impl RecastFullMesh {
                 self.detailed
                     .triangles
                     .iter()
-                    .skip(mesh.first_triangle_index)
-                    .take(mesh.triangle_count)
-                    .map(|&(t, _)| PolygonWithMeshInfo {
+                    .skip(mesh.base_triangle_index as usize)
+                    .take(mesh.triangle_count as usize)
+                    .map(|[a, b, c]| PolygonWithMeshInfo {
                         vertices: [
-                            t.x as usize + mesh.first_vertex_index,
-                            t.y as usize + mesh.first_vertex_index,
-                            t.z as usize + mesh.first_vertex_index,
+                            *a as usize + mesh.base_vertex_index as usize,
+                            *b as usize + mesh.base_vertex_index as usize,
+                            *c as usize + mesh.base_vertex_index as usize,
                         ],
                         mesh_area: mesh_area.0,
                     })

@@ -33,7 +33,7 @@ geo = "0.30.0"
 log = "0.4"
 thiserror = "2"
 serde_json = { version = "1.0", optional = true }
-rerecast = { git = "https://github.com/janhohenheim/rerecast" }
+rerecast = "0.0.2"
 
 # additional dependencies for vendored spade
 robust = "1.1.0"
@@ -48,9 +48,7 @@ tracing = "0.1"
 
 serde_json = "1.0"
 
-rerecast = { git = "https://github.com/janhohenheim/rerecast", features = [
-    "serialize",
-] }
+rerecast = { version = "0.0.2", features = ["serialize"] }
 
 
 [workspace]
