@@ -160,29 +160,32 @@ impl Layer {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub(crate) fn get_point_locations_unit(&self, point: Vec2) -> Vec<u32> {
+    pub(crate) fn get_point_locations_unit(
+        &self,
+        point: Vec2,
+    ) -> impl Iterator<Item = u32> + use<'_> {
         self.polygons
             .iter()
             .enumerate()
-            .filter_map(|(index, polygon)| {
+            .filter_map(move |(index, polygon)| {
                 self.point_in_polygon(point, polygon)
                     .then_some(index as u32)
             })
-            .collect()
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub(crate) fn get_point_locations_unit_baked(&self, point: Vec2) -> Vec<u32> {
-        // TODO: do it as an iterator
+    pub(crate) fn get_point_locations_unit_baked<'a>(
+        &'a self,
+        point: &'a Vec2,
+    ) -> impl Iterator<Item = u32> + use<'a> {
         self.baked_polygons
             .as_ref()
             .unwrap()
-            .contains_iterator(&point)
+            .contains_iterator(point)
             .filter_map(|index| {
-                self.point_in_polygon(point, &self.polygons[index])
+                self.point_in_polygon(*point, &self.polygons[index])
                     .then_some(index as u32)
             })
-            .collect()
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
@@ -232,14 +235,12 @@ impl Layer {
         ]
         .iter()
         .map(|delta| {
+            let point = point + *delta;
             if self.baked_polygons.is_none() {
-                self.get_point_locations_unit(point + *delta)
+                self.get_point_locations_unit(point).next()
             } else {
-                let point = point + *delta;
-                self.get_point_locations_unit_baked(point)
+                self.get_point_locations_unit_baked(&point).next()
             }
-            .into_iter()
-            .next()
             .unwrap_or(u32::MAX)
         })
         .find(|poly| *poly != u32::MAX)
@@ -309,14 +310,12 @@ impl Layer {
             let angle = i as f32 * std::f32::consts::TAU / (sample * (step + 1)) as f32;
             let (x, y) = angle.sin_cos();
             let new_point = point + vec2(x, y) * delta * step as f32;
-            let poly = *if self.baked_polygons.is_none() {
-                self.get_point_locations_unit(new_point)
+            let poly = if self.baked_polygons.is_none() {
+                self.get_point_locations_unit(new_point).next()
             } else {
-                self.get_point_locations_unit_baked(new_point)
+                self.get_point_locations_unit_baked(&new_point).next()
             }
-            .iter()
-            .next()
-            .unwrap_or(&u32::MAX);
+            .unwrap_or(u32::MAX);
 
             if poly != u32::MAX {
                 return Some((new_point, poly));
@@ -339,12 +338,13 @@ impl Layer {
             let new_point = point + vec2(x, y) * delta * step as f32;
             let poly: Vec<(Vec2, u32)> = if self.baked_polygons.is_none() {
                 self.get_point_locations_unit(new_point)
+                    .map(|p| (new_point, p))
+                    .collect()
             } else {
-                self.get_point_locations_unit_baked(new_point)
-            }
-            .iter()
-            .map(|p| (new_point, *p))
-            .collect();
+                self.get_point_locations_unit_baked(&new_point)
+                    .map(|p| (new_point, p))
+                    .collect()
+            };
             if !poly.is_empty() {
                 return poly;
             }
@@ -382,14 +382,12 @@ impl Layer {
         step: u32,
     ) -> Option<(Vec2, u32)> {
         let point = point + direction * delta * step as f32;
-        let poly = *if self.baked_polygons.is_none() {
-            self.get_point_locations_unit(point)
+        let poly = if self.baked_polygons.is_none() {
+            self.get_point_locations_unit(point).next()
         } else {
-            self.get_point_locations_unit_baked(point)
+            self.get_point_locations_unit_baked(&point).next()
         }
-        .iter()
-        .next()
-        .unwrap_or(&u32::MAX);
+        .unwrap_or(u32::MAX);
         if poly != u32::MAX {
             return Some((point, poly));
         }
