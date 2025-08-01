@@ -57,6 +57,7 @@ impl Vec2Helper for Vec2 {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     fn in_bounding_box(self, segment: (Vec2, Vec2)) -> bool {
+        const EPSILON: f32 = 1.0e-6;
         // Check if the point is in the segment's bounding box and then check if it is on the line.
         // Just checking if the point is on the line is not sufficient because the point can be
         // outside the segment but still be on the line.
