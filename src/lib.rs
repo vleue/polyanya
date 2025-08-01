@@ -96,29 +96,36 @@ impl Path {
             }
         }
         let mut next = next_coords.position_with_height(mesh);
-        for (step, polygon_index) in self.path_through_polygons.iter().enumerate() {
+        for (step, polygon_index) in self
+            .path_through_polygons
+            .iter()
+            .enumerate()
+            .take(self.path_through_polygons.len() - 1)
+        {
             let layer = &mesh.layers[polygon_index.layer() as usize];
 
             let polygon = &layer.polygons[polygon_index.polygon() as usize];
             if *polygon_index == next_coords.polygon_index {
                 next_i += 1;
-                if next_i < self.path.len() - 1 {
-                    heighted_path.push(next);
-                    current = next;
-                    for polygon_index in &self.path_through_polygons[step..] {
-                        let layer = &mesh.layers[polygon_index.layer() as usize];
-                        let polygon = &layer.polygons[polygon_index.polygon() as usize];
-                        if polygon.contains(layer, self.path[next_i]) {
-                            next_coords = Coords {
-                                pos: self.path[next_i],
-                                layer: Some(polygon_index.layer()),
-                                polygon_index: *polygon_index,
-                            };
-                            break;
-                        }
+                heighted_path.push(next);
+                current = next;
+                for polygon_index in &self.path_through_polygons[step..] {
+                    let layer = &mesh.layers[polygon_index.layer() as usize];
+                    let polygon = &layer.polygons[polygon_index.polygon() as usize];
+                    if self.path.len() < next_i {
+                        // TODO: shouldn't happen
+                        break;
                     }
-                    next = next_coords.position_with_height(mesh);
+                    if polygon.contains(layer, self.path[next_i]) {
+                        next_coords = Coords {
+                            pos: self.path[next_i],
+                            layer: Some(polygon_index.layer()),
+                            polygon_index: *polygon_index,
+                        };
+                        break;
+                    }
                 }
+                next = next_coords.position_with_height(mesh);
             }
             let a = layer.vertices[polygon.vertices[0] as usize]
                 .coords
@@ -144,7 +151,7 @@ impl Path {
                     .filter_map(|edge| {
                         line_intersect_segment((current.xz(), next.xz()), (edge[0], edge[1]))
                     })
-                    .filter(|p| p.on_segment((current.xz(), next.xz())))
+                    .filter(|p| p.in_bounding_box((current.xz(), next.xz())))
                     .max_by_key(|p| (current.xz().distance_squared(*p) / EPSILON) as u32)
                 {
                     if new.distance_squared(current.xz()) > EPSILON {
@@ -157,7 +164,7 @@ impl Path {
                         heighted_path.push(new);
                         current = new;
                     }
-                };
+                }
             }
         }
         heighted_path.push(end);

@@ -11,6 +11,7 @@ pub(crate) trait Vec2Helper {
     fn side(self, edge: (Vec2, Vec2)) -> EdgeSide;
     fn mirror(self, edge: (Vec2, Vec2)) -> Vec2;
     fn on_segment(self, segment: (Vec2, Vec2)) -> bool;
+    fn in_bounding_box(self, segment: (Vec2, Vec2)) -> bool;
 }
 
 impl Vec2Helper for Vec2 {
@@ -49,9 +50,21 @@ impl Vec2Helper for Vec2 {
         // Check if the point is in the segment's bounding box and then check if it is on the line.
         // Just checking if the point is on the line is not sufficient because the point can be
         // outside the segment but still be on the line.
-        (min(segment.0.x, segment.1.x)..=max(segment.0.x, segment.1.x)).contains(&self.x)
-            && (min(segment.0.y, segment.1.y)..=max(segment.0.y, segment.1.y)).contains(&self.y)
-            && (self.side(segment) == EdgeSide::Edge)
+        self.in_bounding_box(segment) && (self.side(segment) == EdgeSide::Edge)
+    }
+
+    /// Determines if a point is in a bounding box.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
+    fn in_bounding_box(self, segment: (Vec2, Vec2)) -> bool {
+        // Check if the point is in the segment's bounding box and then check if it is on the line.
+        // Just checking if the point is on the line is not sufficient because the point can be
+        // outside the segment but still be on the line.
+        ((min(segment.0.x, segment.1.x) - EPSILON)..=(max(segment.0.x, segment.1.x) + EPSILON))
+            .contains(&self.x)
+            && ((min(segment.0.y, segment.1.y) - EPSILON)
+                ..=(max(segment.0.y, segment.1.y) + EPSILON))
+                .contains(&self.y)
     }
 }
 
@@ -181,7 +194,7 @@ pub(crate) fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) 
 
 #[cfg(test)]
 mod tests {
-    use glam::Vec2;
+    use glam::{vec2, Vec2};
 
     use crate::{helpers::Vec2Helper, instance::EdgeSide};
 
@@ -331,5 +344,13 @@ mod tests {
             ),
             None
         );
+    }
+
+    #[test]
+    fn test_on_segment() {
+        let segment = (vec2(0.0, 0.0), vec2(-9.0, 0.0));
+        let p = vec2(-0.30399954, 5.9604645e-8);
+
+        assert!(p.on_segment(segment));
     }
 }
