@@ -221,7 +221,7 @@ impl Layer {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub(crate) fn get_point_location<'a>(&'a self, point: Vec2, delta: f32) -> Option<u32> {
+    pub(crate) fn get_point_location(&self, point: Vec2, delta: f32) -> Option<u32> {
         [
             vec2(0.0, 0.0),
             vec2(delta, 0.0),
