@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use inflate::Inflate;
+use log::warn;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -68,16 +69,14 @@ impl Triangulation {
 
     /// Create a new triangulation from an existing `Mesh`, cloning the specified [`Layer`].
     pub fn from_mesh(mesh: &Mesh, layer: u8) -> Triangulation {
-        Self {
-            inner: geo::Polygon::new(LineString::new(Vec::new()), vec![]),
-            prebuilt: None,
-            base_layer: Some(mesh.layers[layer as usize].clone()),
-            agent_radius: AgentRadius::None,
-        }
+        Self::from_mesh_layer(mesh.layers[layer as usize].clone())
     }
 
     /// Create a new triangulation from an existing `Layer` of a [`Mesh`].
     pub fn from_mesh_layer(layer: Layer) -> Triangulation {
+        if !layer.height.is_empty() {
+            warn!("Loading a navmesh with height information into a triangulation. All height information will be lost. If the navmesh have overlapping parts the result will be wrong");
+        }
         Self {
             inner: geo::Polygon::new(LineString::new(Vec::new()), vec![]),
             prebuilt: None,

@@ -23,8 +23,9 @@ use std::{
 };
 
 use bvh2d::aabb::{Bounded, AABB};
-use glam::Vec2;
+use glam::{FloatExt, Vec2, Vec3, Vec3Swizzles};
 
+use helpers::{line_intersect_segment, Vec2Helper, EPSILON};
 use instance::{InstanceStep, U32Layer};
 use log::error;
 use thiserror::Error;
@@ -49,6 +50,8 @@ mod stitching;
 pub use async_helpers::FuturePath;
 pub use geo;
 pub use input::polyanya_file::PolyanyaFile;
+#[cfg(feature = "recast")]
+pub use input::recast::{RecastFullMesh, RecastPolyMesh, RecastPolyMeshDetail};
 pub use input::triangulation::Triangulation;
 pub use input::trimesh::Trimesh;
 pub use layers::Layer;
@@ -67,7 +70,116 @@ pub struct Path {
     #[cfg(feature = "detailed-layers")]
     #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
     pub path_with_layers: Vec<(Vec2, u8)>,
+    /// Indices of the polygons through which the path passes.
+    path_through_polygons: Vec<u32>,
 }
+
+impl Path {
+    /// Returns the path with height information on the Y axis.
+    ///
+    /// This can add points to the path when needed to follow the terrain height.
+    pub fn path_with_height(&self, start: Vec3, end: Vec3, mesh: &Mesh) -> Vec<Vec3> {
+        let mut heighted_path = Vec::with_capacity(self.path.len());
+        let mut current = start;
+        let mut next_i = 0;
+        let mut next_coords: Coords = Coords::on_mesh(self.path[next_i]);
+        for polygon_index in &self.path_through_polygons {
+            let layer = &mesh.layers[polygon_index.layer() as usize];
+            let polygon = &layer.polygons[polygon_index.polygon() as usize];
+            if polygon.contains(layer, self.path[next_i]) {
+                next_coords = Coords {
+                    pos: self.path[next_i],
+                    layer: Some(polygon_index.layer()),
+                    polygon_index: *polygon_index,
+                };
+                break;
+            }
+        }
+        let mut next = next_coords.position_with_height(mesh);
+        for (step, polygon_index) in self
+            .path_through_polygons
+            .iter()
+            .enumerate()
+            .take(self.path_through_polygons.len() - 1)
+        {
+            let layer = &mesh.layers[polygon_index.layer() as usize];
+
+            let polygon = &layer.polygons[polygon_index.polygon() as usize];
+            if *polygon_index == next_coords.polygon_index {
+                next_i += 1;
+                heighted_path.push(next);
+                current = next;
+                for polygon_index in &self.path_through_polygons[step..] {
+                    let layer = &mesh.layers[polygon_index.layer() as usize];
+                    let polygon = &layer.polygons[polygon_index.polygon() as usize];
+                    if self.path.len() < next_i {
+                        // TODO: shouldn't happen
+                        break;
+                    }
+                    if polygon.contains(layer, self.path[next_i]) {
+                        next_coords = Coords {
+                            pos: self.path[next_i],
+                            layer: Some(polygon_index.layer()),
+                            polygon_index: *polygon_index,
+                        };
+                        break;
+                    }
+                }
+                next = next_coords.position_with_height(mesh);
+            }
+            let a = layer.vertices[polygon.vertices[0] as usize]
+                .coords
+                .extend(layer.height[polygon.vertices[0] as usize])
+                .xzy();
+            let b = layer.vertices[polygon.vertices[1] as usize]
+                .coords
+                .extend(layer.height[polygon.vertices[1] as usize])
+                .xzy();
+            let c = layer.vertices[polygon.vertices[2] as usize]
+                .coords
+                .extend(layer.height[polygon.vertices[2] as usize])
+                .xzy();
+            let polygon_normal = (b - a).cross(c - a);
+            let path_direction = next - current;
+            if path_direction.dot(polygon_normal).abs() > EPSILON {
+                let poly_coords = polygon.coords(layer);
+                let closing = vec![*poly_coords.last().unwrap(), *poly_coords.first().unwrap()];
+
+                if let Some(new) = poly_coords
+                    .windows(2)
+                    .chain([closing.as_slice()])
+                    .filter_map(|edge| {
+                        line_intersect_segment((current.xz(), next.xz()), (edge[0], edge[1]))
+                    })
+                    .filter(|p| p.in_bounding_box((current.xz(), next.xz())))
+                    .max_by_key(|p| (current.xz().distance_squared(*p) / EPSILON) as u32)
+                {
+                    if new.distance_squared(current.xz()) > EPSILON {
+                        let new = Coords {
+                            pos: new,
+                            layer: Some(polygon_index.layer()),
+                            polygon_index: *polygon_index,
+                        }
+                        .position_with_height(mesh);
+                        heighted_path.push(new);
+                        current = new;
+                    }
+                }
+            }
+        }
+        heighted_path.push(end);
+        heighted_path
+    }
+
+    /// Returns the polygons that the path goes through.
+    pub fn polygons(&self) -> Vec<(u8, u32)> {
+        self.path_through_polygons
+            .iter()
+            .map(|poly_index| (poly_index.layer(), poly_index.polygon()))
+            .collect()
+    }
+}
+
 /// A navigation mesh
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -123,13 +235,66 @@ impl Coords {
     }
 
     /// Position of this point
+    #[inline]
     pub fn position(&self) -> Vec2 {
         self.pos
     }
 
     /// Layer of this point, if known
+    #[inline]
     pub fn layer(&self) -> Option<u8> {
         self.layer
+    }
+
+    /// Polygon index of this point
+    #[inline]
+    pub fn polygon(&self) -> u32 {
+        self.polygon_index
+    }
+
+    /// Height of this point
+    pub fn height(&self, mesh: &Mesh) -> f32 {
+        if self.polygon_index == u32::MAX {
+            return 0.0;
+        }
+        let layer = &mesh.layers[self.layer().unwrap_or(0) as usize];
+        let poly = &layer.polygons[self.polygon_index.polygon() as usize];
+
+        let closing = vec![
+            *poly.vertices.last().unwrap(),
+            *poly.vertices.first().unwrap(),
+        ];
+
+        if let Some(segment) = poly
+            .vertices
+            .windows(2)
+            .chain([closing.as_slice()])
+            .find(|edge| {
+                self.pos.on_segment((
+                    layer.vertices[edge[0] as usize].coords,
+                    layer.vertices[edge[1] as usize].coords,
+                ))
+            })
+        {
+            let (a, b) = (
+                layer.vertices[segment[0] as usize].coords,
+                layer.vertices[segment[1] as usize].coords,
+            );
+            let t = (self.pos - a).dot(b - a) / (b - a).dot(b - a);
+            return layer.height[segment[0] as usize].lerp(layer.height[segment[1] as usize], t);
+        }
+
+        // TODO: should find the position of the point within the polygon and weight each polygonpoint height based on its distance to the point
+        poly.vertices
+            .iter()
+            .map(|i| *layer.height.get(*i as usize).unwrap_or(&0.0))
+            .sum::<f32>()
+            / poly.vertices.len() as f32
+    }
+
+    /// Position of the point within the mesh, including its height on the Y axis.
+    pub fn position_with_height(&self, mesh: &Mesh) -> Vec3 {
+        Vec3::new(self.pos.x, self.height(mesh), self.pos.y)
     }
 }
 
@@ -256,12 +421,14 @@ impl Mesh {
         let starting_polygon_index = if from.polygon_index != u32::MAX {
             from.polygon_index
         } else {
-            self.get_closest_point(from)?.polygon_index
+            self.get_closest_point_on_layers(from, blocked_layers.clone())?
+                .polygon_index
         };
         let ending_polygon = if to.polygon_index != u32::MAX {
             to.polygon_index
         } else {
-            self.get_closest_point(to)?.polygon_index
+            self.get_closest_point_on_layers(to, blocked_layers.clone())?
+                .polygon_index
         };
         // TODO: fix islands detection with multiple layers, even if start and end are on the same layer
         if self.layers.len() == 1 {
@@ -298,6 +465,7 @@ impl Mesh {
                 path: vec![to.pos],
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(to.pos, ending_polygon.layer())],
+                path_through_polygons: vec![ending_polygon],
             });
         }
 
@@ -335,7 +503,6 @@ impl Mesh {
         #[cfg(feature = "detailed-layers")]
         paths.sort_by(|p1, p2| p1.length.partial_cmp(&p2.length).unwrap());
         if paths.is_empty() {
-            error!("Search from {from} to {to} failed. Please check the mesh is valid as this should not happen.");
             None
         } else {
             Some(paths.remove(0))
@@ -388,6 +555,7 @@ impl Mesh {
             from: (node.root, 0),
             to,
             polygon_to: self.get_point_location(to),
+            polygon_from: 0,
             mesh: self,
             blocked_layers: HashSet::default(),
             #[cfg(feature = "stats")]
@@ -426,6 +594,7 @@ impl Mesh {
             from: (Vec2::ZERO, 0),
             to: Vec2::ZERO,
             polygon_to: self.get_point_location(vec2(0.0, 0.0)),
+            polygon_from: self.get_point_location(vec2(0.0, 0.0)),
             mesh: self,
             blocked_layers: HashSet::default(),
             #[cfg(feature = "stats")]
@@ -528,6 +697,17 @@ impl Mesh {
     ///
     /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
     pub fn get_closest_point(&self, point: impl Into<Coords>) -> Option<Coords> {
+        self.get_closest_point_on_layers(point, HashSet::default())
+    }
+
+    /// Find the closest point in the mesh
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_point_on_layers(
+        &self,
+        point: impl Into<Coords>,
+        blocked_layers: HashSet<u8>,
+    ) -> Option<Coords> {
         let point = point.into();
         if let Some(layer_index) = point.layer {
             let layer = &self.layers[layer_index as usize];
@@ -544,7 +724,12 @@ impl Mesh {
             }
         } else {
             for step in 0..self.search_steps {
-                for (index, layer) in self.layers.iter().enumerate() {
+                for (index, layer) in self
+                    .layers
+                    .iter()
+                    .enumerate()
+                    .filter(|(index, _)| !blocked_layers.contains(&(*index as u8)))
+                {
                     if let Some((new_point, polygon)) = layer.get_closest_point_inner(
                         point.pos - layer.offset,
                         self.search_delta,
@@ -560,6 +745,113 @@ impl Mesh {
             }
         }
         None
+    }
+
+    /// Find the closest points in the mesh
+    ///
+    /// If there are several points at the same distance, all of them will be returned.
+    /// This can happen when a layer have overlapping polygons.
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_points(&self, point: impl Into<Coords>) -> Vec<Coords> {
+        self.get_closest_points_on_layers(point, HashSet::default())
+    }
+
+    /// Find the closest point in the mesh, discriminating by height if there are several polygon overlapping.
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_point_at_height(
+        &self,
+        point: impl Into<Coords>,
+        height: f32,
+    ) -> Option<Coords> {
+        self.get_closest_points_on_layers_at_height(point, HashSet::default(), height)
+    }
+
+    /// Find the closest point in the mesh, discriminating by height if there are several polygon overlapping.
+    ///
+    /// If there are several points at the same distance, all of them will be returned.
+    /// This can happen when a layer have overlapping polygons.
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_points_on_layers_at_height(
+        &self,
+        point: impl Into<Coords>,
+        blocked_layers: HashSet<u8>,
+        height: f32,
+    ) -> Option<Coords> {
+        self.get_closest_points_on_layers(point, blocked_layers)
+            .iter()
+            .fold(None, |acc: Option<(Coords, f32)>, &coord| {
+                let coord_height = coord.height(self);
+                if acc
+                    .map(|(_, closest_height)| (closest_height - height).abs())
+                    .unwrap_or(f32::MAX)
+                    > (coord_height - height).abs()
+                {
+                    Some((coord, coord_height))
+                } else {
+                    acc
+                }
+            })
+            .map(|acc| acc.0)
+    }
+
+    /// Find the closest point in the mesh
+    ///
+    /// If there are several points at the same distance, all of them will be returned.
+    /// This can happen when a layer have overlapping polygons.
+    ///
+    /// This will search in circles up to `Mesh::delta` * `Mesh::steps` distance away from the point
+    pub fn get_closest_points_on_layers(
+        &self,
+        point: impl Into<Coords>,
+        blocked_layers: HashSet<u8>,
+    ) -> Vec<Coords> {
+        let point = point.into();
+        if let Some(layer_index) = point.layer {
+            let layer = &self.layers[layer_index as usize];
+            for step in 0..self.search_steps {
+                let coords: Vec<Coords> = layer
+                    .get_closest_points_inner(point.pos - layer.offset, self.search_delta, step)
+                    .iter()
+                    .map(|(new_point, polygon)| Coords {
+                        pos: new_point + layer.offset,
+                        layer: Some(layer_index),
+                        polygon_index: U32Layer::from_layer_and_polygon(layer_index, *polygon),
+                    })
+                    .collect();
+                if !coords.is_empty() {
+                    return coords;
+                }
+            }
+        } else {
+            for step in 0..self.search_steps {
+                for (layer_index, layer) in self
+                    .layers
+                    .iter()
+                    .enumerate()
+                    .filter(|(index, _)| !blocked_layers.contains(&(*index as u8)))
+                {
+                    let coords: Vec<Coords> = layer
+                        .get_closest_points_inner(point.pos - layer.offset, self.search_delta, step)
+                        .iter()
+                        .map(|(new_point, polygon)| Coords {
+                            pos: new_point + layer.offset,
+                            layer: Some(layer_index as u8),
+                            polygon_index: U32Layer::from_layer_and_polygon(
+                                layer_index as u8,
+                                *polygon,
+                            ),
+                        })
+                        .collect();
+                    if !coords.is_empty() {
+                        return coords;
+                    }
+                }
+            }
+        }
+        vec![]
     }
 
     /// Find the closest point in the mesh in the given direction
@@ -615,6 +907,7 @@ struct SearchNode {
     path: Vec<Vec2>,
     #[cfg(feature = "detailed-layers")]
     path_with_layers: Vec<(Vec2, Vec2, u8)>,
+    path_through_polygons: Vec<u32>,
     root: Vec2,
     interval: (Vec2, Vec2),
     edge: (u32, u32),
@@ -737,6 +1030,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
@@ -765,6 +1059,7 @@ mod tests {
                 length: from.distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(to, 0)],
+                path_through_polygons: vec![0, 1, 2],
             }
         );
     }
@@ -779,6 +1074,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(2.0, 1.0), vec2(2.0, 0.0)),
             edge: (6, 2),
@@ -806,6 +1102,7 @@ mod tests {
                 length: from.distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(to, 0)],
+                path_through_polygons: vec![2, 1, 0],
             }
         );
     }
@@ -820,6 +1117,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
@@ -852,6 +1150,7 @@ mod tests {
                     + vec2(2.0, 1.0).distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 0), (to, 0)],
+                path_through_polygons: vec![3, 0, 1, 2, 4],
             }
         );
     }
@@ -866,6 +1165,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
@@ -898,6 +1198,7 @@ mod tests {
                     + vec2(2.0, 1.0).distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 0), (to, 0)],
+                path_through_polygons: vec![3, 0, 1, 2, 4],
             }
         );
     }
@@ -973,6 +1274,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1023,6 +1325,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1100,6 +1403,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1171,6 +1475,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1226,6 +1531,10 @@ mod tests {
             mesh.path(from, to).unwrap().path,
             vec![vec2(7.0, 4.0), vec2(4.0, 2.0), to]
         );
+        assert_eq!(
+            mesh.path(from, to).unwrap().path_through_polygons,
+            vec![5, 4, 2, 1]
+        );
     }
 
     #[test]
@@ -1238,6 +1547,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(11.0, 3.0), vec2(7.0, 0.0)),
             edge: (16, 15),
@@ -1260,6 +1570,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(9.75, 6.75), vec2(7.0, 4.0)),
             edge: (11, 10),
@@ -1282,6 +1593,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: vec2(11.0, 3.0),
             interval: (vec2(10.0, 7.0), vec2(7.0, 4.0)),
             edge: (11, 10),
@@ -1307,6 +1619,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: vec2(0.0, 0.0),
             interval: (vec2(1.0, 0.0), vec2(1.0, 1.0)),
             edge: (1, 5),
@@ -1330,5 +1643,18 @@ mod tests {
         let point_location = mesh.get_point_location(vec2(0.5, 0.5));
         let closest_point = mesh.get_closest_point(vec2(0.5, 0.5)).unwrap();
         assert_eq!(point_location, closest_point.polygon_index);
+    }
+
+    #[test]
+    fn polygon_contains() {
+        let mesh = mesh_u_grid();
+        let layer = &mesh.layers[0];
+        let polygon = &layer.polygons[0];
+        assert!(polygon.contains(layer, vec2(0.0, 0.5)));
+        assert!(polygon.contains(layer, vec2(0.5, 0.0)));
+        assert!(polygon.contains(layer, vec2(0.5, 0.5)));
+        assert!(!polygon.contains(layer, vec2(0.5, 1.5)));
+        let polygon = &layer.polygons[3];
+        assert!(polygon.contains(layer, vec2(0.5, 1.5)));
     }
 }

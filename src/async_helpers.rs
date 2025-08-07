@@ -94,6 +94,7 @@ impl Future for FuturePath<'_> {
                     #[cfg(feature = "detailed-layers")]
                     #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
                     path_with_layers: vec![(self.to, ending_polygon.layer())],
+                    path_through_polygons: vec![ending_polygon],
                 }));
             }
 
