@@ -213,7 +213,7 @@ impl Mesh {
     /// This method returns a `Future`, to get the path in a blocking way use [`Self::path`].
     #[cfg(feature = "async")]
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub fn get_path(&self, from: Vec2, to: Vec2) -> FuturePath {
+    pub fn get_path(&self, from: Vec2, to: Vec2) -> FuturePath<'_> {
         FuturePath {
             from,
             to,
