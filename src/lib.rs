@@ -907,7 +907,7 @@ impl Mesh {
 struct SearchNode {
     path: SmallVec<[Vec2; 10]>,
     #[cfg(feature = "detailed-layers")]
-    path_with_layers: SmallVec<[Vec<(Vec2, Vec2, u8)>; 10]>,
+    path_with_layers: SmallVec<[(Vec2, Vec2, u8); 10]>,
     path_through_polygons: SmallVec<[u32; 10]>,
     root: Vec2,
     interval: (Vec2, Vec2),
