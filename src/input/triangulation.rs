@@ -1,13 +1,14 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use inflate::Inflate;
+use log::warn;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use crate::spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 pub use geo::LineString;
-use geo::{Contains, Coord, Polygon as GeoPolygon, SimplifyVwPreserve};
+use geo::{self, Contains, Coord, SimplifyVwPreserve};
 use glam::{vec2, Vec2};
+use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
 use crate::{Layer, Mesh, Polygon, Vertex};
 
@@ -21,9 +22,9 @@ enum AgentRadius {
 /// An helper to create a [`Mesh`] from a list of edges and obstacle, using a constrained Delaunay triangulation.
 #[derive(Clone)]
 pub struct Triangulation {
-    inner: GeoPolygon<f32>,
+    inner: geo::Polygon<f32>,
     prebuilt: Option<(
-        GeoPolygon<f32>,
+        geo::Polygon<f32>,
         ConstrainedDelaunayTriangulation<Point2<f64>>,
     )>,
     base_layer: Option<Layer>,
@@ -40,10 +41,23 @@ impl std::fmt::Debug for Triangulation {
 }
 
 impl Triangulation {
+    /// Create a new triangulation from a [`geo::Polygon`].
+    ///
+    /// The exterior of the polygon will be used as the outer edge of the triangulation,
+    /// and inner polygons will be used as obstacles.
+    pub fn from_geo_polygon(polygon: geo::Polygon<f32>) -> Triangulation {
+        Self {
+            inner: polygon,
+            prebuilt: None,
+            base_layer: None,
+            agent_radius: AgentRadius::None,
+        }
+    }
+
     /// Create a new triangulation from a the list of points on its outer edges.
     pub fn from_outer_edges(edges: &[Vec2]) -> Triangulation {
         Self {
-            inner: GeoPolygon::new(
+            inner: geo::Polygon::new(
                 LineString::from(edges.iter().map(|v| (v.x, v.y)).collect::<Vec<_>>()),
                 vec![],
             ),
@@ -55,18 +69,16 @@ impl Triangulation {
 
     /// Create a new triangulation from an existing `Mesh`, cloning the specified [`Layer`].
     pub fn from_mesh(mesh: &Mesh, layer: u8) -> Triangulation {
-        Self {
-            inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
-            prebuilt: None,
-            base_layer: Some(mesh.layers[layer as usize].clone()),
-            agent_radius: AgentRadius::None,
-        }
+        Self::from_mesh_layer(mesh.layers[layer as usize].clone())
     }
 
     /// Create a new triangulation from an existing `Layer` of a [`Mesh`].
     pub fn from_mesh_layer(layer: Layer) -> Triangulation {
+        if !layer.height.is_empty() {
+            warn!("Loading a navmesh with height information into a triangulation. All height information will be lost. If the navmesh have overlapping parts the result will be wrong");
+        }
         Self {
-            inner: GeoPolygon::new(LineString::new(Vec::new()), vec![]),
+            inner: geo::Polygon::new(LineString::new(Vec::new()), vec![]),
             prebuilt: None,
             base_layer: Some(layer),
             agent_radius: AgentRadius::None,
@@ -142,10 +154,12 @@ impl Triangulation {
         &mut self,
         obstacles: impl IntoIterator<Item = impl IntoIterator<Item = Vec2>>,
     ) {
-        let (exterior, interiors) =
-            std::mem::replace(&mut self.inner, GeoPolygon::new(LineString(vec![]), vec![]))
-                .into_inner();
-        self.inner = GeoPolygon::new(
+        let (exterior, interiors) = std::mem::replace(
+            &mut self.inner,
+            geo::Polygon::new(LineString(vec![]), vec![]),
+        )
+        .into_inner();
+        self.inner = geo::Polygon::new(
             exterior,
             interiors
                 .into_iter()
@@ -207,7 +221,7 @@ impl Triangulation {
         }
 
         let exterior = self.inner.exterior().clone();
-        let mut inner = std::mem::replace(&mut self.inner, GeoPolygon::new(exterior, vec![]));
+        let mut inner = std::mem::replace(&mut self.inner, geo::Polygon::new(exterior, vec![]));
         match self.agent_radius {
             AgentRadius::Obstacles(radius, segments, simplification) if radius > 1.0e-5 => {
                 inner = inner.inflate_obstacles(radius, segments as u32, simplification);
@@ -349,7 +363,7 @@ impl Triangulation {
                             })
                             .unwrap_or(true)
                         && !inner.interiors().iter().any(|obstacle| {
-                            GeoPolygon::new(obstacle.clone(), vec![]).contains(&center)
+                            geo::Polygon::new(obstacle.clone(), vec![]).contains(&center)
                         })))
                 .then(|| {
                     #[cfg(feature = "tracing")]
@@ -602,7 +616,7 @@ mod inflate {
     };
 
     fn segment_normal(start: &Coord<f32>, end: &Coord<f32>) -> Option<Coord<f32>> {
-        let edge_length = Euclidean::distance(*end, *start);
+        let edge_length = Euclidean.distance(*end, *start);
         if edge_length == 0.0 {
             return None;
         }

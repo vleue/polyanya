@@ -690,6 +690,7 @@ mod tests {
                 path: vec![vec2(1.5, 0.5)],
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 0.5), 1), (vec2(1.5, 0.5), 1)],
+                path_through_polygons: vec![0, 16777216],
             }
         );
         let path = mesh.path(vec2(1.5, 0.5), vec2(0.5, 0.5)).unwrap();
@@ -700,6 +701,7 @@ mod tests {
                 path: vec![vec2(0.5, 0.5)],
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 0.5), 0), (vec2(0.5, 0.5), 0)],
+                path_through_polygons: vec![16777216, 0],
             }
         );
     }
@@ -857,6 +859,7 @@ mod tests {
                 length: 0.625,
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 0.5), 1), (vec2(1.25, 0.5), 1)],
+                path_through_polygons: vec![0, 16777216],
             }
         );
         assert_eq!(
@@ -866,6 +869,7 @@ mod tests {
                 path: vec![vec2(1.75, 0.5)],
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.75, 0.5), 1)],
+                path_through_polygons: vec![16777216],
             }
         );
         assert_eq!(
@@ -878,6 +882,7 @@ mod tests {
                 length: 0.875,
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 0.5), 1), (vec2(1.75, 0.5), 1)],
+                path_through_polygons: vec![0, 16777216],
             }
         );
         assert_eq!(
@@ -890,6 +895,7 @@ mod tests {
                 length: 0.875,
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 0.5), 0), (vec2(0.5, 0.5), 0)],
+                path_through_polygons: vec![16777216, 0],
             }
         );
     }

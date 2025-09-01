@@ -25,6 +25,8 @@ pub struct Layer {
     pub scale: Vec2,
     pub(crate) baked_polygons: Option<BVH2d>,
     pub(crate) islands: Option<Vec<usize>>,
+    /// Height of each vertex. Must either have zero elements to ignore heights, or the same length as vertices.
+    pub height: Vec<f32>,
 }
 
 impl Default for Layer {
@@ -37,6 +39,7 @@ impl Default for Layer {
             scale: Vec2::ONE,
             baked_polygons: None,
             islands: None,
+            height: vec![],
         }
     }
 }
@@ -157,24 +160,32 @@ impl Layer {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub(crate) fn get_point_location_unit(&self, point: Vec2) -> u32 {
-        for (i, polygon) in self.polygons.iter().enumerate() {
-            if self.point_in_polygon(point, polygon) {
-                return i as u32;
-            }
-        }
-        u32::MAX
+    pub(crate) fn get_point_locations_unit(
+        &self,
+        point: Vec2,
+    ) -> impl Iterator<Item = u32> + use<'_> {
+        self.polygons
+            .iter()
+            .enumerate()
+            .filter_map(move |(index, polygon)| {
+                self.point_in_polygon(point, polygon)
+                    .then_some(index as u32)
+            })
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
-    pub(crate) fn get_point_location_unit_baked(&self, point: Vec2) -> u32 {
+    pub(crate) fn get_point_locations_unit_baked<'a>(
+        &'a self,
+        point: &'a Vec2,
+    ) -> impl Iterator<Item = u32> + use<'a> {
         self.baked_polygons
             .as_ref()
             .unwrap()
-            .contains_iterator(&point)
-            .find(|index| self.point_in_polygon(point, &self.polygons[*index]))
-            .map(|index| index as u32)
-            .unwrap_or(u32::MAX)
+            .contains_iterator(point)
+            .filter_map(|index| {
+                self.point_in_polygon(*point, &self.polygons[index])
+                    .then_some(index as u32)
+            })
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
@@ -196,7 +207,7 @@ impl Layer {
             };
 
             let current_side = point.side((last, next));
-            if current_side == EdgeSide::Edge && point.on_segment((last, next)) {
+            if current_side == EdgeSide::Edge && point.in_bounding_box((last, next)) {
                 return true;
             }
             if current_side != EdgeSide::Left {
@@ -224,11 +235,13 @@ impl Layer {
         ]
         .iter()
         .map(|delta| {
+            let point = point + *delta;
             if self.baked_polygons.is_none() {
-                self.get_point_location_unit(point + *delta)
+                self.get_point_locations_unit(point).next()
             } else {
-                self.get_point_location_unit_baked(point + *delta)
+                self.get_point_locations_unit_baked(&point).next()
             }
+            .unwrap_or(u32::MAX)
         })
         .find(|poly| *poly != u32::MAX)
     }
@@ -269,6 +282,22 @@ impl Layer {
         None
     }
 
+    /// Find the closest points in the layer.
+    ///
+    /// If there are several points at the same distance, all of them will be returned.
+    /// This can happen when a layer have overlapping polygons.
+    ///
+    /// This will stop after searching in circle of radius up to `delta` * `steps` distance
+    pub fn get_closest_points(&self, point: Vec2, delta: f32, steps: u32) -> Vec<(Vec2, u32)> {
+        for step in 0..=steps {
+            let points = self.get_closest_points_inner(point, delta, step);
+            if !points.is_empty() {
+                return points;
+            }
+        }
+        vec![]
+    }
+
     #[inline(always)]
     pub(crate) fn get_closest_point_inner(
         &self,
@@ -282,15 +311,45 @@ impl Layer {
             let (x, y) = angle.sin_cos();
             let new_point = point + vec2(x, y) * delta * step as f32;
             let poly = if self.baked_polygons.is_none() {
-                self.get_point_location_unit(new_point)
+                self.get_point_locations_unit(new_point).next()
             } else {
-                self.get_point_location_unit_baked(new_point)
-            };
+                self.get_point_locations_unit_baked(&new_point).next()
+            }
+            .unwrap_or(u32::MAX);
+
             if poly != u32::MAX {
                 return Some((new_point, poly));
             }
         }
         None
+    }
+
+    #[inline(always)]
+    pub(crate) fn get_closest_points_inner(
+        &self,
+        point: Vec2,
+        delta: f32,
+        step: u32,
+    ) -> Vec<(Vec2, u32)> {
+        let sample = 10;
+        for i in 0..=(sample * step) {
+            let angle = i as f32 * std::f32::consts::TAU / (sample * (step + 1)) as f32;
+            let (x, y) = angle.sin_cos();
+            let new_point = point + vec2(x, y) * delta * step as f32;
+            let poly: Vec<(Vec2, u32)> = if self.baked_polygons.is_none() {
+                self.get_point_locations_unit(new_point)
+                    .map(|p| (new_point, p))
+                    .collect()
+            } else {
+                self.get_point_locations_unit_baked(&new_point)
+                    .map(|p| (new_point, p))
+                    .collect()
+            };
+            if !poly.is_empty() {
+                return poly;
+            }
+        }
+        vec![]
     }
 
     /// Find the closest point in the layer in the given direction
@@ -324,10 +383,11 @@ impl Layer {
     ) -> Option<(Vec2, u32)> {
         let point = point + direction * delta * step as f32;
         let poly = if self.baked_polygons.is_none() {
-            self.get_point_location_unit(point)
+            self.get_point_locations_unit(point).next()
         } else {
-            self.get_point_location_unit_baked(point)
-        };
+            self.get_point_locations_unit_baked(&point).next()
+        }
+        .unwrap_or(u32::MAX);
         if poly != u32::MAX {
             return Some((point, poly));
         }
@@ -428,6 +488,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (0, 1),
@@ -445,6 +506,7 @@ mod tests {
             Path {
                 path: vec![to],
                 length: from.distance(to),
+                path_through_polygons: vec![16777216, 0, 1],
             }
         );
         #[cfg(feature = "detailed-layers")]
@@ -469,6 +531,7 @@ mod tests {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
@@ -501,6 +564,7 @@ mod tests {
                     + vec2(2.0, 1.0).distance(to),
                 #[cfg(feature = "detailed-layers")]
                 path_with_layers: vec![(vec2(1.0, 1.0), 0), (vec2(2.0, 1.0), 2), (to, 2)],
+                path_through_polygons: vec![16777216, 0, 1, 2, 33554432],
             }
         );
     }

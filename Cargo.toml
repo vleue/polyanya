@@ -1,6 +1,6 @@
 [package]
 name = "polyanya"
-version = "0.12.1"
+version = "0.14.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 keywords = ["pathfinding"]
@@ -12,26 +12,28 @@ documentation = "https://docs.rs/polyanya"
 categories = ["game-development"]
 
 [features]
-default = ["async"]
+default = ["async", "recast"]
 stats = []
 verbose = []
 async = []
 no-default-baking = []
 detailed-layers = []
-serde = ["glam/serde", "bvh2d/serde", "dep:serde"]
-public-spade = ["dep:spade"]
+serde = ["glam/serde", "bvh2d/serde", "dep:serde", "rerecast/serialize"]
+recast = []
 
 [dependencies]
-spade = { version = "2.10", optional = true }
+spade = { version = "2.13.1" }
 tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.15" }
 glam = { version = "0.30", features = ["approx"] }
 smallvec = { version = "1.13", features = ["union", "const_generics"] }
 bvh2d = { version = "0.6", git = "https://github.com/mockersf/bvh2d" }
 serde = { version = "1.0", features = ["derive"], optional = true }
-geo = "0.29.0"
+geo = "0.30.0"
 log = "0.4"
-thiserror = "1"
+thiserror = "2"
+serde_json = { version = "1.0", optional = true }
+rerecast = "0.1.0"
 
 # additional dependencies for vendored spade
 robust = "1.1.0"
@@ -39,10 +41,16 @@ num-traits = "0.2"
 
 
 [dev-dependencies]
-criterion = "0.5"
+# criterion = "0.5"
+criterion = { package = "codspeed-criterion-compat", version = "3.0" }
 tracing-tracy = "0.11"
 tracing-subscriber = "0.3"
 tracing = "0.1"
+
+serde_json = "1.0"
+
+rerecast = { version = "0.1.0", features = ["serialize"] }
+
 
 [workspace]
 members = ["examples/traced"]
@@ -72,6 +80,10 @@ harness = false
 
 [[bench]]
 name = "merger"
+harness = false
+
+[[bench]]
+name = "recast"
 harness = false
 
 [package.metadata.docs.rs]

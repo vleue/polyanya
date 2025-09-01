@@ -64,6 +64,7 @@ pub(crate) struct SearchInstance<'m> {
     #[cfg(feature = "detailed-layers")]
     pub(crate) from: (Vec2, u8),
     pub(crate) to: Vec2,
+    pub(crate) polygon_from: u32,
     pub(crate) polygon_to: u32,
     pub(crate) mesh: &'m Mesh,
     pub(crate) blocked_layers: HashSet<u8>,
@@ -135,6 +136,7 @@ impl<'m> SearchInstance<'m> {
             from: (from.0, from.1.layer()),
             to: to.0,
             polygon_to: to.1,
+            polygon_from: from.1,
             mesh,
             blocked_layers,
             #[cfg(feature = "stats")]
@@ -160,6 +162,7 @@ impl<'m> SearchInstance<'m> {
             path: vec![],
             #[cfg(feature = "detailed-layers")]
             path_with_layers: vec![],
+            path_through_polygons: vec![],
             root: from.0,
             interval: (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
             edge: (0, 0),
@@ -311,6 +314,9 @@ impl<'m> SearchInstance<'m> {
                     path_with_layers
                 };
 
+                let mut path_through_polygons = next.path_through_polygons;
+                path_through_polygons.insert(0, self.polygon_from);
+
                 return InstanceStep::Found(Path {
                     path,
                     #[cfg(not(feature = "detailed-layers"))]
@@ -326,6 +332,7 @@ impl<'m> SearchInstance<'m> {
                     },
                     #[cfg(feature = "detailed-layers")]
                     path_with_layers,
+                    path_through_polygons,
                 });
             }
             self.successors(next);
@@ -596,11 +603,14 @@ impl<'m> SearchInstance<'m> {
 
             return;
         }
+        let mut path_through_polygons = node.path_through_polygons.clone();
+        path_through_polygons.push(other_side);
 
         let new_node = SearchNode {
             path,
             #[cfg(feature = "detailed-layers")]
             path_with_layers,
+            path_through_polygons,
             root,
             interval: (start.0, end.0),
             edge: (start.1, end.1),
