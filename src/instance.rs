@@ -159,10 +159,10 @@ impl<'m> SearchInstance<'m> {
         search_instance.root_history.insert(Root(from.0), 0.0);
 
         let empty_node = SearchNode {
-            path: vec![],
+            path: SmallVec::new(),
             #[cfg(feature = "detailed-layers")]
-            path_with_layers: vec![],
-            path_through_polygons: vec![],
+            path_with_layers: SmallVec::new(),
+            path_through_polygons: SmallVec::new(),
             root: from.0,
             interval: (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
             edge: (0, 0),
@@ -318,7 +318,7 @@ impl<'m> SearchInstance<'m> {
                 path_through_polygons.insert(0, self.polygon_from);
 
                 return InstanceStep::Found(Path {
-                    path,
+                    path: path.to_vec(),
                     #[cfg(not(feature = "detailed-layers"))]
                     length: next.distance_start_to_root + next.heuristic,
                     #[cfg(feature = "detailed-layers")]
@@ -331,8 +331,8 @@ impl<'m> SearchInstance<'m> {
                         a.0
                     },
                     #[cfg(feature = "detailed-layers")]
-                    path_with_layers,
-                    path_through_polygons,
+                    path_with_layers: path_with_layers.to_vec(),
+                    path_through_polygons: path_through_polygons.to_vec(),
                 });
             }
             self.successors(next);

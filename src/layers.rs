@@ -405,6 +405,7 @@ mod tests {
     #[cfg(feature = "detailed-layers")]
     use glam::IVec2;
     use glam::{vec2, Vec2};
+    use smallvec::SmallVec;
 
     fn mesh_u_grid() -> Mesh {
         let main_layer = Layer {
@@ -485,10 +486,10 @@ mod tests {
         let from: Vec2 = vec2(0.1, 1.1);
         let to = vec2(1.1, 0.1);
         let search_node = SearchNode {
-            path: vec![],
+            path: SmallVec::new(),
             #[cfg(feature = "detailed-layers")]
-            path_with_layers: vec![],
-            path_through_polygons: vec![],
+            path_with_layers: SmallVec::new(),
+            path_through_polygons: SmallVec::new(),
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (0, 1),
@@ -528,10 +529,10 @@ mod tests {
         let from = vec2(0.1, 1.9);
         let to = vec2(2.1, 1.9);
         let search_node = SearchNode {
-            path: vec![],
+            path: SmallVec::new(),
             #[cfg(feature = "detailed-layers")]
-            path_with_layers: vec![],
-            path_through_polygons: vec![],
+            path_with_layers: SmallVec::new(),
+            path_through_polygons: SmallVec::new(),
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
@@ -553,7 +554,10 @@ mod tests {
         assert_eq!(successors[0].polygon_to, u32::from_layer_and_polygon(2, 0));
         assert_eq!(successors[0].interval, (vec2(3.0, 1.0), vec2(2.0, 1.0)));
         assert_eq!(successors[0].edge, (7, 6));
-        assert_eq!(successors[0].path, vec![vec2(1.0, 1.0), vec2(2.0, 1.0)]);
+        assert_eq!(
+            successors[0].path.to_vec(),
+            vec![vec2(1.0, 1.0), vec2(2.0, 1.0)]
+        );
 
         assert_eq!(
             mesh.path(from, to).unwrap(),
