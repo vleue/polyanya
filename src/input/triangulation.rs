@@ -6,7 +6,11 @@ use log::warn;
 use tracing::instrument;
 
 pub use geo::LineString;
-use geo::{self, Contains, Coord, SimplifyVwPreserve};
+use geo::{
+    self,
+    coordinate_position::{coord_pos_relative_to_ring, CoordPos},
+    Contains, Coord, SimplifyVwPreserve,
+};
 use glam::{vec2, Vec2};
 use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
 
@@ -363,7 +367,7 @@ impl Triangulation {
                             })
                             .unwrap_or(true)
                         && !inner.interiors().iter().any(|obstacle| {
-                            geo::Polygon::new(obstacle.clone(), vec![]).contains(&center)
+                            coord_pos_relative_to_ring(center, obstacle) == CoordPos::Inside
                         })))
                 .then(|| {
                     #[cfg(feature = "tracing")]

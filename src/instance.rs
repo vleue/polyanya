@@ -159,10 +159,10 @@ impl<'m> SearchInstance<'m> {
         search_instance.root_history.insert(Root(from.0), 0.0);
 
         let empty_node = SearchNode {
-            path: vec![],
+            path: SmallVec::new(),
             #[cfg(feature = "detailed-layers")]
-            path_with_layers: vec![],
-            path_through_polygons: vec![],
+            path_with_layers: SmallVec::new(),
+            path_through_polygons: SmallVec::new(),
             root: from.0,
             interval: (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
             edge: (0, 0),
@@ -175,13 +175,13 @@ impl<'m> SearchInstance<'m> {
 
         let from_layer = &mesh.layers[from.1.layer() as usize];
 
-        for edge in starting_polygon.edges_index() {
-            let start = if let Some(v) = from_layer.vertices.get(edge[0] as usize) {
+        for [edge0, edge1] in starting_polygon.edges_index() {
+            let start = if let Some(v) = from_layer.vertices.get(edge0 as usize) {
                 v
             } else {
                 continue;
             };
-            let end = if let Some(v) = from_layer.vertices.get(edge[1] as usize) {
+            let end = if let Some(v) = from_layer.vertices.get(edge1 as usize) {
                 v
             } else {
                 continue;
@@ -208,8 +208,8 @@ impl<'m> SearchInstance<'m> {
                 search_instance.add_node(
                     from.0,
                     *other_side,
-                    (start.coords + from_layer.offset, edge[0]),
-                    (end.coords + from_layer.offset, edge[1]),
+                    (start.coords + from_layer.offset, edge0),
+                    (end.coords + from_layer.offset, edge1),
                     &empty_node,
                 );
             }
@@ -318,7 +318,7 @@ impl<'m> SearchInstance<'m> {
                 path_through_polygons.insert(0, self.polygon_from);
 
                 return InstanceStep::Found(Path {
-                    path,
+                    path: path.to_vec(),
                     #[cfg(not(feature = "detailed-layers"))]
                     length: next.distance_start_to_root + next.heuristic,
                     #[cfg(feature = "detailed-layers")]
@@ -331,8 +331,8 @@ impl<'m> SearchInstance<'m> {
                         a.0
                     },
                     #[cfg(feature = "detailed-layers")]
-                    path_with_layers,
-                    path_through_polygons,
+                    path_with_layers: path_with_layers.to_vec(),
+                    path_through_polygons: path_through_polygons.to_vec(),
                 });
             }
             self.successors(next);
@@ -394,7 +394,7 @@ impl<'m> SearchInstance<'m> {
                         })
                         .enumerate()
                         .collect::<Vec<_>>();
-                    distances.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+                    distances.sort_unstable_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
                     distances.first().unwrap().0
                 })
                 + 1
@@ -402,16 +402,16 @@ impl<'m> SearchInstance<'m> {
         let left_index = polygon.vertices.len() + right_index - 2;
 
         let mut ty = SuccessorType::RightNonObservable;
-        for edge in polygon.circular_edges_index(right_index..=left_index) {
-            if edge[0].max(edge[1]) as usize > target_layer.vertices.len() {
+        for [edge0, edge1] in polygon.circular_edges_index(right_index..=left_index) {
+            if edge0.max(edge1) as usize > target_layer.vertices.len() {
                 continue;
             }
             // Bounds are checked just before
             #[allow(unsafe_code)]
             let (start, end) = unsafe {
                 (
-                    target_layer.vertices.get_unchecked(edge[0] as usize),
-                    target_layer.vertices.get_unchecked(edge[1] as usize),
+                    target_layer.vertices.get_unchecked(edge0 as usize),
+                    target_layer.vertices.get_unchecked(edge1 as usize),
                 )
             };
             let mut start_point = start.coords + target_layer.offset;
@@ -419,7 +419,7 @@ impl<'m> SearchInstance<'m> {
 
             #[cfg(debug_assertions)]
             if self.debug {
-                println!("| {edge:?} : {start_point:?} / {end_point:?}");
+                println!("| {edge0:?}-{edge1:?} : {start_point:?} / {end_point:?}");
                 println!(
                     "|   {:?} - {:?}",
                     start_point.side((node.root, node.interval.0)),
@@ -452,7 +452,7 @@ impl<'m> SearchInstance<'m> {
                         {
                             successors.push(Successor {
                                 interval: (start_point, intersect),
-                                edge,
+                                edge: [edge0, edge1],
                                 ty,
                             });
                             start_point = intersect;
@@ -510,7 +510,7 @@ impl<'m> SearchInstance<'m> {
             }
             successors.push(Successor {
                 interval: (start_point, end_intersection_p.unwrap_or(end_point)),
-                edge,
+                edge: [edge0, edge1],
                 ty,
             });
             match end_root_int1 {
@@ -521,7 +521,7 @@ impl<'m> SearchInstance<'m> {
                     if let Some(intersect) = end_intersection_p {
                         successors.push(Successor {
                             interval: (intersect, end_point),
-                            edge,
+                            edge: [edge0, edge1],
                             ty,
                         });
                     }
@@ -696,6 +696,7 @@ impl<'m> SearchInstance<'m> {
                 self.fail_fast = 3;
             }
             for successor in self.edges_between(&node).iter() {
+                let [successor_edge_0, successor_edge_1] = successor.edge;
                 let target_layer = &self.mesh.layers[node.polygon_to.layer() as usize];
                 // we know they exist, it's checked in `edges_between`
                 #[allow(unsafe_code)]
@@ -703,10 +704,10 @@ impl<'m> SearchInstance<'m> {
                     (
                         target_layer
                             .vertices
-                            .get_unchecked(successor.edge[0] as usize),
+                            .get_unchecked(successor_edge_0 as usize),
                         target_layer
                             .vertices
-                            .get_unchecked(successor.edge[1] as usize),
+                            .get_unchecked(successor_edge_1 as usize),
                     )
                 };
 
@@ -867,8 +868,8 @@ impl<'m> SearchInstance<'m> {
                 self.add_node(
                     root,
                     *other_side,
-                    (successor.interval.0, successor.edge[0]),
-                    (successor.interval.1, successor.edge[1]),
+                    (successor.interval.0, successor_edge_0),
+                    (successor.interval.1, successor_edge_1),
                     &node,
                 );
             }
