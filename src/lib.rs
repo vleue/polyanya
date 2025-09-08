@@ -261,28 +261,18 @@ impl Coords {
         let layer = &mesh.layers[self.layer().unwrap_or(0) as usize];
         let poly = &layer.polygons[self.polygon_index.polygon() as usize];
 
-        let closing = vec![
-            *poly.vertices.last().unwrap(),
-            *poly.vertices.first().unwrap(),
-        ];
-
-        if let Some(segment) = poly
-            .vertices
-            .windows(2)
-            .chain([closing.as_slice()])
-            .find(|edge| {
-                self.pos.on_segment((
-                    layer.vertices[edge[0] as usize].coords,
-                    layer.vertices[edge[1] as usize].coords,
-                ))
-            })
-        {
+        if let Some([segment0, segment1]) = poly.edges_index().find(|[edge0, edge1]| {
+            self.pos.on_segment((
+                layer.vertices[*edge0 as usize].coords,
+                layer.vertices[*edge1 as usize].coords,
+            ))
+        }) {
             let (a, b) = (
-                layer.vertices[segment[0] as usize].coords,
-                layer.vertices[segment[1] as usize].coords,
+                layer.vertices[segment0 as usize].coords,
+                layer.vertices[segment1 as usize].coords,
             );
             let t = (self.pos - a).dot(b - a) / (b - a).dot(b - a);
-            return layer.height[segment[0] as usize].lerp(layer.height[segment[1] as usize], t);
+            return layer.height[segment0 as usize].lerp(layer.height[segment1 as usize], t);
         }
 
         // TODO: should find the position of the point within the polygon and weight each polygonpoint height based on its distance to the point
