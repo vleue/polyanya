@@ -192,8 +192,8 @@ impl Layer {
     #[inline(always)]
     fn point_in_polygon(&self, point: Vec2, polygon: &Polygon) -> bool {
         let mut edged = false;
-        for edge in polygon.edges_index() {
-            if edge[0].max(edge[1]) as usize >= self.vertices.len() {
+        for [edge0, edge1] in polygon.edges_index() {
+            if edge0.max(edge1) as usize >= self.vertices.len() {
                 return false;
             }
             edged = true;
@@ -201,8 +201,8 @@ impl Layer {
             #[allow(unsafe_code)]
             let (last, next) = unsafe {
                 (
-                    self.vertices.get_unchecked(edge[0] as usize).coords,
-                    self.vertices.get_unchecked(edge[1] as usize).coords,
+                    self.vertices.get_unchecked(edge0 as usize).coords,
+                    self.vertices.get_unchecked(edge1 as usize).coords,
                 )
             };
 

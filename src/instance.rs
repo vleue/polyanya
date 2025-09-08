@@ -175,13 +175,13 @@ impl<'m> SearchInstance<'m> {
 
         let from_layer = &mesh.layers[from.1.layer() as usize];
 
-        for edge in starting_polygon.edges_index() {
-            let start = if let Some(v) = from_layer.vertices.get(edge[0] as usize) {
+        for [edge0, edge1] in starting_polygon.edges_index() {
+            let start = if let Some(v) = from_layer.vertices.get(edge0 as usize) {
                 v
             } else {
                 continue;
             };
-            let end = if let Some(v) = from_layer.vertices.get(edge[1] as usize) {
+            let end = if let Some(v) = from_layer.vertices.get(edge1 as usize) {
                 v
             } else {
                 continue;
@@ -208,8 +208,8 @@ impl<'m> SearchInstance<'m> {
                 search_instance.add_node(
                     from.0,
                     *other_side,
-                    (start.coords + from_layer.offset, edge[0]),
-                    (end.coords + from_layer.offset, edge[1]),
+                    (start.coords + from_layer.offset, edge0),
+                    (end.coords + from_layer.offset, edge1),
                     &empty_node,
                 );
             }
@@ -402,16 +402,16 @@ impl<'m> SearchInstance<'m> {
         let left_index = polygon.vertices.len() + right_index - 2;
 
         let mut ty = SuccessorType::RightNonObservable;
-        for edge in polygon.circular_edges_index(right_index..=left_index) {
-            if edge[0].max(edge[1]) as usize > target_layer.vertices.len() {
+        for [edge0, edge1] in polygon.circular_edges_index(right_index..=left_index) {
+            if edge0.max(edge1) as usize > target_layer.vertices.len() {
                 continue;
             }
             // Bounds are checked just before
             #[allow(unsafe_code)]
             let (start, end) = unsafe {
                 (
-                    target_layer.vertices.get_unchecked(edge[0] as usize),
-                    target_layer.vertices.get_unchecked(edge[1] as usize),
+                    target_layer.vertices.get_unchecked(edge0 as usize),
+                    target_layer.vertices.get_unchecked(edge1 as usize),
                 )
             };
             let mut start_point = start.coords + target_layer.offset;
@@ -419,7 +419,7 @@ impl<'m> SearchInstance<'m> {
 
             #[cfg(debug_assertions)]
             if self.debug {
-                println!("| {edge:?} : {start_point:?} / {end_point:?}");
+                println!("| {edge0:?}-{edge1:?} : {start_point:?} / {end_point:?}");
                 println!(
                     "|   {:?} - {:?}",
                     start_point.side((node.root, node.interval.0)),
@@ -452,7 +452,7 @@ impl<'m> SearchInstance<'m> {
                         {
                             successors.push(Successor {
                                 interval: (start_point, intersect),
-                                edge,
+                                edge: [edge0, edge1],
                                 ty,
                             });
                             start_point = intersect;
@@ -510,7 +510,7 @@ impl<'m> SearchInstance<'m> {
             }
             successors.push(Successor {
                 interval: (start_point, end_intersection_p.unwrap_or(end_point)),
-                edge,
+                edge: [edge0, edge1],
                 ty,
             });
             match end_root_int1 {
@@ -521,7 +521,7 @@ impl<'m> SearchInstance<'m> {
                     if let Some(intersect) = end_intersection_p {
                         successors.push(Successor {
                             interval: (intersect, end_point),
-                            edge,
+                            edge: [edge0, edge1],
                             ty,
                         });
                     }
