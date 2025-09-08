@@ -33,7 +33,7 @@ impl Layer {
             .collect::<Vec<_>>();
         let mut union_polygons = UnionFind::new(self.polygons.len() as i32);
 
-        area.sort_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap().reverse());
+        area.sort_unstable_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap().reverse());
 
         for (poly_index, _) in area.iter() {
             if union_polygons.find(*poly_index as i32) != *poly_index as i32 {

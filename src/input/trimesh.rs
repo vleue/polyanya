@@ -58,7 +58,7 @@ impl TryFrom<Trimesh> for Mesh {
 
         // Order vertex polygon neighbors counterclockwise
         for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
-            vertex.polygons.sort_by(|index_a, index_b| {
+            vertex.polygons.sort_unstable_by(|index_a, index_b| {
                 let get_counterclockwise_edge = |index: u32| {
                     // No u32::MAX present yet, so the unwrap is safe
                     let index = usize::try_from(index).unwrap();

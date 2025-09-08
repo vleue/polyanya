@@ -502,7 +502,7 @@ impl Mesh {
             }
         }
         #[cfg(feature = "detailed-layers")]
-        paths.sort_by(|p1, p2| p1.length.partial_cmp(&p2.length).unwrap());
+        paths.sort_unstable_by(|p1, p2| p1.length.partial_cmp(&p2.length).unwrap());
         if paths.is_empty() {
             None
         } else {

@@ -260,7 +260,7 @@ impl Layer {
                 }
             })
             .collect::<Vec<_>>();
-        vertices.sort_by(|a, b| {
+        vertices.sort_unstable_by(|a, b| {
             self.vertices[*a]
                 .coords
                 .distance(start)

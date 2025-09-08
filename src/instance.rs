@@ -394,7 +394,7 @@ impl<'m> SearchInstance<'m> {
                         })
                         .enumerate()
                         .collect::<Vec<_>>();
-                    distances.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+                    distances.sort_unstable_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
                     distances.first().unwrap().0
                 })
                 + 1

@@ -235,7 +235,7 @@ impl Mesh {
             }
         }
         let mut stitch_points: Vec<_> = stitch_points.into_iter().collect();
-        stitch_points.sort_by_key(|((a, b), _)| (*a, *b));
+        stitch_points.sort_unstable_by_key(|((a, b), _)| (*a, *b));
         stitch_points
     }
 }

@@ -21,7 +21,7 @@ impl RecastPolyMeshExt for RecastPolyMesh {
             .collect::<HashSet<_>>()
             .into_iter()
             .collect();
-        areas.sort();
+        areas.sort_unstable();
         if let Some(255) = areas.last() {
             areas.pop();
             areas.insert(0, 255);
