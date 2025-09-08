@@ -1,6 +1,5 @@
 use std::ops::RangeInclusive;
 
-use geo::{Area, Coord};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -129,19 +128,18 @@ impl Polygon {
     }
 
     pub(crate) fn area(&self, mesh: &Layer) -> f32 {
-        geo::Polygon::new(
-            geo::LineString(
-                self.vertices
-                    .iter()
-                    .map(|v| {
-                        let c = mesh.vertices[*v as usize].coords;
-                        Coord::from((c.x, c.y))
-                    })
-                    .collect(),
-            ),
-            vec![],
-        )
-        .unsigned_area()
+        let shift = mesh.vertices[self.vertices[0] as usize].coords;
+
+        let mut area = 0.0;
+        for (start, end) in self.edges_index().map(|[e0, e1]| {
+            (
+                mesh.vertices[e0 as usize].coords - shift,
+                mesh.vertices[e1 as usize].coords - shift,
+            )
+        }) {
+            area += start.x * end.y - start.y * end.x;
+        }
+        area / 2.0
     }
 
     pub(crate) fn contains(&self, mesh: &Layer, point: Vec2) -> bool {
