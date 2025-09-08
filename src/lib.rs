@@ -128,29 +128,24 @@ impl Path {
                 }
                 next = next_coords.position_with_height(mesh);
             }
-            let a = layer.vertices[polygon.vertices[0] as usize]
-                .coords
-                .extend(layer.height[polygon.vertices[0] as usize])
-                .xzy();
-            let b = layer.vertices[polygon.vertices[1] as usize]
-                .coords
-                .extend(layer.height[polygon.vertices[1] as usize])
-                .xzy();
-            let c = layer.vertices[polygon.vertices[2] as usize]
-                .coords
-                .extend(layer.height[polygon.vertices[2] as usize])
-                .xzy();
+            let v0 = polygon.vertices[0] as usize;
+            let a = layer.vertices[v0].coords.extend(layer.height[v0]).xzy();
+            let v1 = polygon.vertices[1] as usize;
+            let b = layer.vertices[v1].coords.extend(layer.height[v1]).xzy();
+            let v2 = polygon.vertices[1] as usize;
+            let c = layer.vertices[v2].coords.extend(layer.height[v2]).xzy();
             let polygon_normal = (b - a).cross(c - a);
             let path_direction = next - current;
             if path_direction.dot(polygon_normal).abs() > EPSILON {
                 let poly_coords = polygon.coords(layer);
-                let closing = vec![*poly_coords.last().unwrap(), *poly_coords.first().unwrap()];
+                let closing = [*poly_coords.last().unwrap(), *poly_coords.first().unwrap()];
 
                 if let Some(new) = poly_coords
                     .windows(2)
-                    .chain([closing.as_slice()])
-                    .filter_map(|edge| {
-                        line_intersect_segment((current.xz(), next.xz()), (edge[0], edge[1]))
+                    .map(|pair| [pair[0], pair[1]])
+                    .chain(std::iter::once(closing))
+                    .filter_map(|[edge0, edge1]| {
+                        line_intersect_segment((current.xz(), next.xz()), (edge0, edge1))
                     })
                     .filter(|p| p.in_bounding_box((current.xz(), next.xz())))
                     .max_by_key(|p| (current.xz().distance_squared(*p) / EPSILON) as u32)

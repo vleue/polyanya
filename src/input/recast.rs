@@ -102,7 +102,7 @@ impl From<RecastPolyMeshDetail> for Mesh {
                 detailed_mesh
                     .triangles()
                     .into_iter()
-                    .map(|p| Polygon::new(vec![p[2] as u32, p[1] as u32, p[0] as u32], false))
+                    .map(|[p0, p1, p2]| Polygon::new(vec![p2 as u32, p1 as u32, p0 as u32], false))
                     .collect(),
             )
             .unwrap();

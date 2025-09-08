@@ -49,11 +49,11 @@ impl Mesh {
                             .windows(2)
                             .map(|pair| [pair[0], pair[1]])
                             .chain(std::iter::once([last, first]))
-                            .flat_map(|pair| {
-                                let layer0 = &self.layers[pair[0].layer() as usize];
-                                let layer1 = &self.layers[pair[1].layer() as usize];
+                            .flat_map(|[pair0, pair1]| {
+                                let layer0 = &self.layers[pair0.layer() as usize];
+                                let layer1 = &self.layers[pair1.layer() as usize];
                                 let mut polygon0 =
-                                    layer0.polygons[pair[0].polygon() as usize].vertices.clone();
+                                    layer0.polygons[pair0.polygon() as usize].vertices.clone();
                                 polygon0.reverse();
                                 let mut found = false;
                                 let Some(previous0) =
@@ -70,10 +70,9 @@ impl Mesh {
                                         false
                                     })
                                 else {
-                                    return vec![pair[0], u32::MAX];
+                                    return vec![pair0, u32::MAX];
                                 };
-                                let polygon1 =
-                                    &layer1.polygons[pair[1].polygon() as usize].vertices;
+                                let polygon1 = &layer1.polygons[pair1.polygon() as usize].vertices;
                                 let mut found = false;
                                 let Some(next1) =
                                     polygon1.iter().cycle().take(polygon1.len() * 2).find(|v| {
@@ -89,15 +88,15 @@ impl Mesh {
                                         false
                                     })
                                 else {
-                                    return vec![pair[0], u32::MAX];
+                                    return vec![pair0, u32::MAX];
                                 };
 
                                 if layer0.vertices[*previous0 as usize].coords + layer0.offset
                                     != layer1.vertices[*next1 as usize].coords + layer1.offset
                                 {
-                                    vec![pair[0], u32::MAX]
+                                    vec![pair0, u32::MAX]
                                 } else {
-                                    vec![pair[0]]
+                                    vec![pair0]
                                 }
                             })
                             .collect();

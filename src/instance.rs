@@ -696,6 +696,7 @@ impl<'m> SearchInstance<'m> {
                 self.fail_fast = 3;
             }
             for successor in self.edges_between(&node).iter() {
+                let [successor_edge_0, successor_edge_1] = successor.edge;
                 let target_layer = &self.mesh.layers[node.polygon_to.layer() as usize];
                 // we know they exist, it's checked in `edges_between`
                 #[allow(unsafe_code)]
@@ -703,10 +704,10 @@ impl<'m> SearchInstance<'m> {
                     (
                         target_layer
                             .vertices
-                            .get_unchecked(successor.edge[0] as usize),
+                            .get_unchecked(successor_edge_0 as usize),
                         target_layer
                             .vertices
-                            .get_unchecked(successor.edge[1] as usize),
+                            .get_unchecked(successor_edge_1 as usize),
                     )
                 };
 
@@ -867,8 +868,8 @@ impl<'m> SearchInstance<'m> {
                 self.add_node(
                     root,
                     *other_side,
-                    (successor.interval.0, successor.edge[0]),
-                    (successor.interval.1, successor.edge[1]),
+                    (successor.interval.0, successor_edge_0),
+                    (successor.interval.1, successor_edge_1),
                     &node,
                 );
             }
