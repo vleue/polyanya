@@ -143,38 +143,24 @@ impl Polygon {
     }
 
     pub(crate) fn contains(&self, mesh: &Layer, point: Vec2) -> bool {
-        let closing = vec![
-            *self.vertices.last().unwrap(),
-            *self.vertices.first().unwrap(),
-        ];
+        if self.edges_index().any(|[edge0, edge1]| {
+            point.side((
+                mesh.vertices[edge0 as usize].coords,
+                mesh.vertices[edge1 as usize].coords,
+            )) == EdgeSide::Right
+        }) {
+            return false;
+        }
 
-        if self
-            .vertices
-            .windows(2)
-            .chain([closing.as_slice()])
-            .any(|edge| {
-                point.on_segment((
-                    mesh.vertices[edge[0] as usize].coords,
-                    mesh.vertices[edge[1] as usize].coords,
-                ))
-            })
-        {
+        if self.edges_index().any(|[edge0, edge1]| {
+            point.on_segment((
+                mesh.vertices[edge0 as usize].coords,
+                mesh.vertices[edge1 as usize].coords,
+            ))
+        }) {
             return true;
         }
 
-        if self
-            .vertices
-            .windows(2)
-            .chain([closing.as_slice()])
-            .any(|edge| {
-                point.side((
-                    mesh.vertices[edge[0] as usize].coords,
-                    mesh.vertices[edge[1] as usize].coords,
-                )) == EdgeSide::Right
-            })
-        {
-            return false;
-        }
         true
     }
 
