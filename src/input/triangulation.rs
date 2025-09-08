@@ -178,7 +178,7 @@ impl Triangulation {
     pub fn simplify(&mut self, epsilon: f32) {
         self.inner.interiors_mut(|interiors| {
             for interior in interiors {
-                *interior = interior.simplify_vw_preserve(&epsilon);
+                *interior = interior.simplify_vw_preserve(epsilon);
             }
         });
     }
@@ -647,7 +647,7 @@ mod inflate {
                 self.interiors()
                     .iter()
                     .map(|ls| inflate(ls, distance, arc_segments))
-                    .map(|ls| ls.simplify_vw_preserve(&minimum_surface))
+                    .map(|ls| ls.simplify_vw_preserve(minimum_surface))
                     .collect(),
             )
         }
