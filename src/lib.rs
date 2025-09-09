@@ -44,6 +44,8 @@ mod instance;
 mod layers;
 mod merger;
 mod mesh_cleanup;
+#[cfg(test)]
+mod performance_tests;
 mod primitives;
 mod stitching;
 
@@ -186,6 +188,9 @@ pub struct Mesh {
     pub search_delta: f32,
     /// Number of steps before stopping searching for a point in a mesh
     pub search_steps: u32,
+    /// Cached total polygon count across all layers (for pathfinding iteration limit)
+    #[cfg_attr(feature = "serde", serde(skip))]
+    total_polygon_count: std::cell::Cell<Option<usize>>,
     #[cfg(feature = "stats")]
     pub(crate) scenarios: Cell<u32>,
 }
@@ -300,6 +305,7 @@ impl Default for Mesh {
             layers: vec![],
             search_delta: 0.1,
             search_steps: 2,
+            total_polygon_count: std::cell::Cell::new(None),
             #[cfg(feature = "stats")]
             scenarios: Cell::new(0),
         }
@@ -310,10 +316,28 @@ impl Mesh {
     /// Create a new single layer NavMesh
     pub fn new(vertices: Vec<Vertex>, polygons: Vec<Polygon>) -> Result<Self, MeshError> {
         let layer = Layer::new(vertices, polygons)?;
+        let total_polygon_count = std::cell::Cell::new(Some(layer.polygons.len()));
         Ok(Mesh {
             layers: vec![layer],
+            total_polygon_count,
             ..Default::default()
         })
+    }
+    
+    /// Get the cached total polygon count or calculate it if not cached
+    fn get_total_polygon_count(&self) -> usize {
+        if let Some(count) = self.total_polygon_count.get() {
+            count
+        } else {
+            let count = self.layers.iter().map(|l| l.polygons.len()).sum::<usize>();
+            self.total_polygon_count.set(Some(count));
+            count
+        }
+    }
+    
+    /// Invalidate the cached polygon count (call when layers are modified)
+    pub fn invalidate_polygon_count_cache(&self) {
+        self.total_polygon_count.set(None);
     }
 }
 
@@ -466,7 +490,7 @@ impl Mesh {
 
         let mut paths: Vec<Path> = vec![];
         // Limit search to avoid an infinite loop.
-        for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 10 {
+        for _ in 0..self.get_total_polygon_count() * 10 {
             let _potential_path = match search_instance.next() {
                 #[cfg(not(feature = "detailed-layers"))]
                 InstanceStep::Found(path) => return Some(path),
@@ -476,7 +500,8 @@ impl Mesh {
                     if paths.is_empty() {
                         None
                     } else {
-                        Some(paths.remove(0))
+                        // After sorting, the first element is the shortest path, so we can use swap_remove for O(1) performance
+                        Some(paths.swap_remove(0))
                     }
                 }
                 InstanceStep::Continue => None,
@@ -491,7 +516,8 @@ impl Mesh {
         if paths.is_empty() {
             None
         } else {
-            Some(paths.remove(0))
+            // After sorting, the first element is the shortest path, so we can use swap_remove for O(1) performance
+            Some(paths.swap_remove(0))
         }
     }
 

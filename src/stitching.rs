@@ -102,12 +102,16 @@ impl Mesh {
             })
             .collect();
         self.stitch_internals(None, stitch_vertices, one_way);
+        // Stitching may change the effective connectivity, invalidate caches
+        self.invalidate_polygon_count_cache();
     }
 
     /// Stitch vertices between layers. After, the polygons neighboring the stitch points will be
     /// marked as neighbors in both layers.
     pub fn stitch_at_vertices(&mut self, stitch_vertices: StitchVertices, one_way: bool) {
         self.stitch_internals(None, stitch_vertices, one_way);
+        // Stitching may change the effective connectivity, invalidate caches
+        self.invalidate_polygon_count_cache();
     }
 
     /// Remove all stitches between layers.

@@ -10,11 +10,18 @@ impl Mesh {
     /// This merge neighbouring polygons when possible, keeping them convex.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn merge_polygons(&mut self) -> bool {
-        !self
+        let result = !self
             .layers
             .iter_mut()
             .map(|layer| layer.merge_polygons())
-            .all(|m| !m)
+            .all(|m| !m);
+        
+        // Invalidate the polygon count cache since we may have changed the number of polygons
+        if result {
+            self.invalidate_polygon_count_cache();
+        }
+        
+        result
     }
 }
 
