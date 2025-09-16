@@ -132,7 +132,7 @@ impl Path {
             let a = layer.vertices[v0].coords.extend(layer.height[v0]).xzy();
             let v1 = polygon.vertices[1] as usize;
             let b = layer.vertices[v1].coords.extend(layer.height[v1]).xzy();
-            let v2 = polygon.vertices[1] as usize;
+            let v2 = polygon.vertices[2] as usize;
             let c = layer.vertices[v2].coords.extend(layer.height[v2]).xzy();
             let polygon_normal = (b - a).cross(c - a);
             let path_direction = next - current;
