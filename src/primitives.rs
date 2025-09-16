@@ -152,15 +152,6 @@ impl Polygon {
             return false;
         }
 
-        if self.edges_index().any(|[edge0, edge1]| {
-            point.on_segment((
-                mesh.vertices[edge0 as usize].coords,
-                mesh.vertices[edge1 as usize].coords,
-            ))
-        }) {
-            return true;
-        }
-
         true
     }
 
