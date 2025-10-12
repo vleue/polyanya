@@ -799,7 +799,7 @@ mod inflate {
         };
 
         // odd number please
-        let segment_count = if segment_count % 2 == 0 {
+        let segment_count = if segment_count.is_multiple_of(2) {
             segment_count - 1
         } else {
             segment_count
