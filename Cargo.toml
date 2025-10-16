@@ -25,15 +25,15 @@ recast = []
 spade = { version = "2.13.1" }
 tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.16" }
-glam = { version = "0.29", features = ["approx"] }
+glam = { version = "0.30.8", features = ["approx"] }
 smallvec = { version = "1.13", features = ["union", "const_generics"] }
-bvh2d = { version = "0.6" }
+bvh2d = { version = "0.7" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 geo = "0.31.0"
 log = "0.4"
 thiserror = "2"
 serde_json = { version = "1.0", optional = true }
-rerecast = "0.1.0"
+rerecast = "0.2.0"
 
 # additional dependencies for vendored spade
 robust = "1.1.0"
@@ -49,7 +49,7 @@ tracing = "0.1"
 
 serde_json = "1.0"
 
-rerecast = { version = "0.1.0", features = ["serialize"] }
+rerecast = { version = "0.2.0", features = ["serialize"] }
 
 
 [workspace]
