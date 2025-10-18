@@ -22,11 +22,11 @@ serde = ["glam/serde", "bvh2d/serde", "dep:serde", "rerecast/serialize"]
 recast = []
 
 [dependencies]
-spade = { version = "2.13.1" }
+spade = { version = "2.15.0" }
 tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.16" }
 glam = { version = "0.30.8", features = ["approx"] }
-smallvec = { version = "1.13", features = ["union", "const_generics"] }
+smallvec = { version = "1.15", features = ["union", "const_generics"] }
 bvh2d = { version = "0.7" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 geo = "0.31.0"
@@ -34,11 +34,6 @@ log = "0.4"
 thiserror = "2"
 serde_json = { version = "1.0", optional = true }
 rerecast = "0.2.0"
-
-# additional dependencies for vendored spade
-robust = "1.1.0"
-num-traits = "0.2"
-
 
 [dev-dependencies]
 # criterion = "0.5"
