@@ -70,10 +70,25 @@ impl TryFrom<Trimesh> for Mesh {
                 };
                 let edge_a = get_counterclockwise_edge(*index_a);
                 let edge_b = get_counterclockwise_edge(*index_b);
-                if edge_a.perp_dot(edge_b) > 0. {
+                let perp = edge_a.perp_dot(edge_b);
+
+                // As of Rust 1.81, sort functions panic in debug mode if they are not provided with
+                // a total ordering. When edges are collinear, perp_dot(a, b) == 0, and in this case
+                // the edges should be considered equal. However, due to floating point precision
+                // errors, we can get situations where three collinear edges a, b, c have
+                //
+                //  a > b, b > c, and c > a
+                //
+                // but this violates the ordering invariant and causes a panic. To mitigate, we allow
+                // for some imprecision in perp_dot and treat these edges as collinear.
+                const EPSILON: f32 = 1e-6;
+
+                if perp > EPSILON {
                     Ordering::Less
-                } else {
+                } else if perp < -EPSILON {
                     Ordering::Greater
+                } else {
+                    Ordering::Equal
                 }
             });
 
@@ -247,6 +262,38 @@ mod tests {
         }
         .try_into();
         assert!(matches!(trimesh, Err(MeshError::InvalidMesh)));
+    }
+
+    #[test]
+    fn collinear_edges_total_ordering() {
+        // This particular test case was found by fuzzing to look for the edge case
+        // where floating point errors cause total ordering to be violated.
+        let mut vertices = Vec::new();
+        for ray_index in 0..12 {
+            let angle = (ray_index as f32) * std::f32::consts::TAU / (12 as f32);
+            let angle_offset = ((7 as f32) * 0.1).sin() * 0.01;
+            let dir = Vec2::from_angle(angle + angle_offset);
+
+            for dist_index in 0..2 {
+                let dist = 1.0 + (dist_index as f32) * 0.5;
+                vertices.push(dir * dist);
+            }
+        }
+
+        let center_idx = vertices.len();
+        vertices.push(Vec2::ZERO);
+
+        let triangles: Vec<[usize; 3]> = (0..vertices.len() - 1)
+            .map(|i| [center_idx, i, (i + 1) % (vertices.len() - 1)])
+            .collect();
+
+        let result: Result<Mesh, _> = Trimesh {
+            vertices,
+            triangles,
+        }
+        .try_into();
+
+        assert!(result.is_ok());
     }
 
     fn wrap_to_first(polygons: &[u32], pred: impl Fn(&u32) -> bool) -> Option<Vec<u32>> {
