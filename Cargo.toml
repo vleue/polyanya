@@ -29,7 +29,7 @@ glam = { version = "0.30.8", features = ["approx"] }
 smallvec = { version = "1.15", features = ["union", "const_generics"] }
 bvh2d = { version = "0.7" }
 serde = { version = "1.0", features = ["derive"], optional = true }
-geo = "0.31.0"
+geo = "0.32.0"
 log = "0.4"
 thiserror = "2"
 serde_json = { version = "1.0", optional = true }
