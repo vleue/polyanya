@@ -113,7 +113,7 @@ impl Path {
                 for polygon_index in &self.path_through_polygons[step..] {
                     let layer = &mesh.layers[polygon_index.layer() as usize];
                     let polygon = &layer.polygons[polygon_index.polygon() as usize];
-                    if self.path.len() < next_i {
+                    if self.path.len() <= next_i {
                         // TODO: shouldn't happen
                         break;
                     }
