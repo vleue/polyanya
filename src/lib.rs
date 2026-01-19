@@ -27,7 +27,6 @@ use glam::{FloatExt, Vec2, Vec3, Vec3Swizzles};
 
 use helpers::{line_intersect_segment, Vec2Helper, EPSILON};
 use instance::{InstanceStep, U32Layer};
-use log::error;
 use smallvec::SmallVec;
 use thiserror::Error;
 #[cfg(feature = "tracing")]
