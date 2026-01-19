@@ -112,8 +112,8 @@ impl Path {
                 for polygon_index in &self.path_through_polygons[step..] {
                     let layer = &mesh.layers[polygon_index.layer() as usize];
                     let polygon = &layer.polygons[polygon_index.polygon() as usize];
-                    if self.path.len() < next_i {
-                        // TODO: shouldn't happen
+                    // Guard: stop once we've consumed all waypoints.
+                    if next_i >= self.path.len() {
                         break;
                     }
                     if polygon.contains(layer, self.path[next_i]) {
