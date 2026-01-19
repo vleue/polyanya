@@ -27,7 +27,6 @@ use glam::{FloatExt, Vec2, Vec3, Vec3Swizzles};
 
 use helpers::{line_intersect_segment, Vec2Helper, EPSILON};
 use instance::{InstanceStep, U32Layer};
-use log::error;
 use smallvec::SmallVec;
 use thiserror::Error;
 #[cfg(feature = "tracing")]
@@ -113,8 +112,8 @@ impl Path {
                 for polygon_index in &self.path_through_polygons[step..] {
                     let layer = &mesh.layers[polygon_index.layer() as usize];
                     let polygon = &layer.polygons[polygon_index.polygon() as usize];
-                    if self.path.len() < next_i {
-                        // TODO: shouldn't happen
+                    // Guard: stop once we've consumed all waypoints.
+                    if next_i >= self.path.len() {
                         break;
                     }
                     if polygon.contains(layer, self.path[next_i]) {
