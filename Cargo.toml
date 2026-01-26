@@ -25,7 +25,7 @@ recast = []
 spade = { version = "2.15.0" }
 tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.16" }
-glam = { version = "0.30.8", features = ["approx"] }
+glam = { version = "0.31.0", features = ["approx"] }
 smallvec = { version = "1.15", features = ["union", "const_generics"] }
 bvh2d = { version = "0.7" }
 serde = { version = "1.0", features = ["derive"], optional = true }
