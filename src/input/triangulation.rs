@@ -281,7 +281,9 @@ impl Triangulation {
     /// Convert the triangulation into a [`Layer`].
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn as_layer(&self) -> Layer {
-        let mut cdt = if self.prebuilt.is_none() {
+        let mut cdt = if let Some((_, cdt)) = &self.prebuilt {
+            cdt.clone()
+        } else {
             let mut cdt = ConstrainedDelaunayTriangulation::<Point2<f64>>::new();
             match self.agent_radius {
                 AgentRadius::Everything(radius, segments, _) if radius > 1.0e-5 => {
@@ -291,8 +293,6 @@ impl Triangulation {
                 _ => Triangulation::add_constraint_edges(&mut cdt, self.inner.exterior()),
             };
             cdt
-        } else {
-            self.prebuilt.as_ref().unwrap().1.clone()
         };
         let used = self.prebuilt.as_ref().map(|(used, _)| used);
 
