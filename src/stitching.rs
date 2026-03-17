@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use glam::Vec2;
+use smallvec::SmallVec;
 
 use crate::{instance::U32Layer, Mesh};
 
@@ -36,17 +37,17 @@ impl Mesh {
                 }
             }
             for (stitch_from, stitch_to) in stitch_vertices {
-                let mut neighbors_to = {
+                let neighbors_to = {
                     let vertex_from = self.layers[from as usize]
                         .vertices
                         .get(stitch_from)
                         .unwrap();
-                    let mut neighbors_from = vertex_from
+                    let neighbors_from: SmallVec<[u32; 6]> = vertex_from
                         .polygons
                         .iter()
                         .filter(|n| **n != u32::MAX && n.layer() == from)
                         .cloned()
-                        .collect::<Vec<_>>();
+                        .collect();
                     let vertex_to = self
                         .layers
                         .get_mut(to as usize)
@@ -54,14 +55,14 @@ impl Mesh {
                         .vertices
                         .get_mut(stitch_to)
                         .unwrap();
-                    let neighbors_to = vertex_to
+                    let neighbors_to: SmallVec<[u32; 6]> = vertex_to
                         .polygons
                         .iter()
                         .filter(|n| **n != u32::MAX && n.layer() == to)
                         .cloned()
-                        .collect::<Vec<_>>();
+                        .collect();
                     if !one_way {
-                        vertex_to.polygons.append(&mut neighbors_from);
+                        vertex_to.polygons.extend_from_slice(&neighbors_from);
                     }
                     neighbors_to
                 };
@@ -72,7 +73,7 @@ impl Mesh {
                     .vertices
                     .get_mut(stitch_from)
                     .unwrap();
-                vertex_from.polygons.append(&mut neighbors_to);
+                vertex_from.polygons.extend_from_slice(&neighbors_to);
             }
         }
         self.reorder_neighbors_ccw_and_fix_corners();
@@ -295,51 +296,54 @@ mod tests {
             false,
         );
         assert_eq!(
-            mesh.layers[0].vertices[0].polygons,
-            vec![0, 16777216, u32::MAX]
-        );
-        assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
-        assert_eq!(
-            mesh.layers[0].vertices[2].polygons,
-            vec![0, 33554432, u32::MAX, 16777216]
+            mesh.layers[0].vertices[0].polygons.as_slice(),
+            &[0, 16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[0].vertices[3].polygons,
-            vec![33554432, 0, u32::MAX]
-        );
-
-        assert_eq!(
-            mesh.layers[1].vertices[0].polygons,
-            vec![16777216, u32::MAX]
+            mesh.layers[0].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[1].vertices[1].polygons,
-            vec![0, 16777216, u32::MAX]
+            mesh.layers[0].vertices[2].polygons.as_slice(),
+            &[0, 33554432, u32::MAX, 16777216]
         );
         assert_eq!(
-            mesh.layers[1].vertices[2].polygons,
-            vec![16777216, u32::MAX]
-        );
-        assert_eq!(
-            mesh.layers[1].vertices[3].polygons,
-            vec![0, 33554432, u32::MAX, 16777216]
+            mesh.layers[0].vertices[3].polygons.as_slice(),
+            &[33554432, 0, u32::MAX]
         );
 
         assert_eq!(
-            mesh.layers[2].vertices[0].polygons,
-            vec![0, 33554432, u32::MAX, 16777216]
+            mesh.layers[1].vertices[0].polygons.as_slice(),
+            &[16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[1].polygons,
-            vec![33554432, 0, u32::MAX]
+            mesh.layers[1].vertices[1].polygons.as_slice(),
+            &[0, 16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[2].polygons,
-            vec![33554432, u32::MAX]
+            mesh.layers[1].vertices[2].polygons.as_slice(),
+            &[16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[3].polygons,
-            vec![33554432, u32::MAX]
+            mesh.layers[1].vertices[3].polygons.as_slice(),
+            &[0, 33554432, u32::MAX, 16777216]
+        );
+
+        assert_eq!(
+            mesh.layers[2].vertices[0].polygons.as_slice(),
+            &[0, 33554432, u32::MAX, 16777216]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[1].polygons.as_slice(),
+            &[33554432, 0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[2].polygons.as_slice(),
+            &[33554432, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[3].polygons.as_slice(),
+            &[33554432, u32::MAX]
         );
     }
 
@@ -355,20 +359,56 @@ mod tests {
             false,
         );
         mesh.remove_stitches();
-        assert_eq!(mesh.layers[0].vertices[0].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[0].vertices[2].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[0].vertices[3].polygons, vec![0, u32::MAX]);
+        assert_eq!(
+            mesh.layers[0].vertices[0].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[0].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[0].vertices[2].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[0].vertices[3].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
 
-        assert_eq!(mesh.layers[1].vertices[0].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[1].vertices[1].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[1].vertices[2].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[1].vertices[3].polygons, vec![u32::MAX, 0]);
+        assert_eq!(
+            mesh.layers[1].vertices[0].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[1].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[1].vertices[2].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[1].vertices[3].polygons.as_slice(),
+            &[u32::MAX, 0]
+        );
 
-        assert_eq!(mesh.layers[2].vertices[0].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[2].vertices[1].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[2].vertices[2].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[2].vertices[3].polygons, vec![0, u32::MAX]);
+        assert_eq!(
+            mesh.layers[2].vertices[0].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[2].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[3].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
     }
 
     #[test]
@@ -383,37 +423,55 @@ mod tests {
             false,
         );
         mesh.remove_stitches_to_layer(1);
-        assert_eq!(mesh.layers[0].vertices[0].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
         assert_eq!(
-            mesh.layers[0].vertices[2].polygons,
-            vec![0, 33554432, u32::MAX]
+            mesh.layers[0].vertices[0].polygons.as_slice(),
+            &[0, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[0].vertices[3].polygons,
-            vec![33554432, 0, u32::MAX]
+            mesh.layers[0].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[0].vertices[2].polygons.as_slice(),
+            &[0, 33554432, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[0].vertices[3].polygons.as_slice(),
+            &[33554432, 0, u32::MAX]
         );
 
-        assert_eq!(mesh.layers[1].vertices[0].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[1].vertices[1].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[1].vertices[2].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[1].vertices[3].polygons, vec![u32::MAX, 0]);
+        assert_eq!(
+            mesh.layers[1].vertices[0].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[1].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[1].vertices[2].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[1].vertices[3].polygons.as_slice(),
+            &[u32::MAX, 0]
+        );
 
         assert_eq!(
-            mesh.layers[2].vertices[0].polygons,
-            vec![0, 33554432, u32::MAX]
+            mesh.layers[2].vertices[0].polygons.as_slice(),
+            &[0, 33554432, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[1].polygons,
-            vec![33554432, 0, u32::MAX]
+            mesh.layers[2].vertices[1].polygons.as_slice(),
+            &[33554432, 0, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[2].polygons,
-            vec![33554432, u32::MAX]
+            mesh.layers[2].vertices[2].polygons.as_slice(),
+            &[33554432, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[3].polygons,
-            vec![33554432, u32::MAX]
+            mesh.layers[2].vertices[3].polygons.as_slice(),
+            &[33554432, u32::MAX]
         );
     }
     #[test]
@@ -430,41 +488,56 @@ mod tests {
         );
 
         assert_eq!(
-            mesh.layers[0].vertices[0].polygons,
-            vec![0, 16777216, u32::MAX]
+            mesh.layers[0].vertices[0].polygons.as_slice(),
+            &[0, 16777216, u32::MAX]
         );
-        assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
         assert_eq!(
-            mesh.layers[0].vertices[2].polygons,
-            vec![0, u32::MAX, 16777216]
+            mesh.layers[0].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
         );
-        assert_eq!(mesh.layers[0].vertices[3].polygons, vec![0, u32::MAX]);
+        assert_eq!(
+            mesh.layers[0].vertices[2].polygons.as_slice(),
+            &[0, u32::MAX, 16777216]
+        );
+        assert_eq!(
+            mesh.layers[0].vertices[3].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
 
         assert_eq!(
-            mesh.layers[1].vertices[0].polygons,
-            vec![16777216, u32::MAX]
+            mesh.layers[1].vertices[0].polygons.as_slice(),
+            &[16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[1].vertices[1].polygons,
-            vec![0, 16777216, u32::MAX]
+            mesh.layers[1].vertices[1].polygons.as_slice(),
+            &[0, 16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[1].vertices[2].polygons,
-            vec![16777216, u32::MAX]
+            mesh.layers[1].vertices[2].polygons.as_slice(),
+            &[16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[1].vertices[3].polygons,
-            vec![0, u32::MAX, 16777216]
+            mesh.layers[1].vertices[3].polygons.as_slice(),
+            &[0, u32::MAX, 16777216]
         );
 
         // these are not logical, `restitch_layer_at_points` should not be used to stitch a layer with other layers that haven't been stitched in already
         assert_eq!(
-            mesh.layers[2].vertices[0].polygons,
-            vec![0, u32::MAX, 16777216]
+            mesh.layers[2].vertices[0].polygons.as_slice(),
+            &[0, u32::MAX, 16777216]
         );
-        assert_eq!(mesh.layers[2].vertices[1].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[2].vertices[2].polygons, vec![0, u32::MAX]);
-        assert_eq!(mesh.layers[2].vertices[3].polygons, vec![0, u32::MAX]);
+        assert_eq!(
+            mesh.layers[2].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[2].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[3].polygons.as_slice(),
+            &[0, u32::MAX]
+        );
     }
 
     #[test]
@@ -490,51 +563,54 @@ mod tests {
         );
 
         assert_eq!(
-            mesh.layers[0].vertices[0].polygons,
-            vec![0, 16777216, u32::MAX]
-        );
-        assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
-        assert_eq!(
-            mesh.layers[0].vertices[2].polygons,
-            vec![0, 33554432, u32::MAX, 16777216]
+            mesh.layers[0].vertices[0].polygons.as_slice(),
+            &[0, 16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[0].vertices[3].polygons,
-            vec![33554432, 0, u32::MAX]
-        );
-
-        assert_eq!(
-            mesh.layers[1].vertices[0].polygons,
-            vec![16777216, u32::MAX]
+            mesh.layers[0].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[1].vertices[1].polygons,
-            vec![0, 16777216, u32::MAX]
+            mesh.layers[0].vertices[2].polygons.as_slice(),
+            &[0, 33554432, u32::MAX, 16777216]
         );
         assert_eq!(
-            mesh.layers[1].vertices[2].polygons,
-            vec![16777216, u32::MAX]
-        );
-        assert_eq!(
-            mesh.layers[1].vertices[3].polygons,
-            vec![0, 33554432, u32::MAX, 16777216]
+            mesh.layers[0].vertices[3].polygons.as_slice(),
+            &[33554432, 0, u32::MAX]
         );
 
         assert_eq!(
-            mesh.layers[2].vertices[0].polygons,
-            vec![0, 33554432, u32::MAX, 16777216]
+            mesh.layers[1].vertices[0].polygons.as_slice(),
+            &[16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[1].polygons,
-            vec![33554432, 0, u32::MAX]
+            mesh.layers[1].vertices[1].polygons.as_slice(),
+            &[0, 16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[2].polygons,
-            vec![33554432, u32::MAX]
+            mesh.layers[1].vertices[2].polygons.as_slice(),
+            &[16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[3].polygons,
-            vec![33554432, u32::MAX]
+            mesh.layers[1].vertices[3].polygons.as_slice(),
+            &[0, 33554432, u32::MAX, 16777216]
+        );
+
+        assert_eq!(
+            mesh.layers[2].vertices[0].polygons.as_slice(),
+            &[0, 33554432, u32::MAX, 16777216]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[1].polygons.as_slice(),
+            &[33554432, 0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[2].polygons.as_slice(),
+            &[33554432, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[3].polygons.as_slice(),
+            &[33554432, u32::MAX]
         );
     }
 
@@ -554,51 +630,54 @@ mod tests {
         );
 
         assert_eq!(
-            mesh.layers[0].vertices[0].polygons,
-            vec![0, 16777216, u32::MAX]
-        );
-        assert_eq!(mesh.layers[0].vertices[1].polygons, vec![0, u32::MAX]);
-        assert_eq!(
-            mesh.layers[0].vertices[2].polygons,
-            vec![0, 33554432, u32::MAX, 16777216]
+            mesh.layers[0].vertices[0].polygons.as_slice(),
+            &[0, 16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[0].vertices[3].polygons,
-            vec![33554432, 0, u32::MAX]
-        );
-
-        assert_eq!(
-            mesh.layers[1].vertices[0].polygons,
-            vec![16777216, u32::MAX]
+            mesh.layers[0].vertices[1].polygons.as_slice(),
+            &[0, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[1].vertices[1].polygons,
-            vec![0, 16777216, u32::MAX]
+            mesh.layers[0].vertices[2].polygons.as_slice(),
+            &[0, 33554432, u32::MAX, 16777216]
         );
         assert_eq!(
-            mesh.layers[1].vertices[2].polygons,
-            vec![16777216, u32::MAX]
-        );
-        assert_eq!(
-            mesh.layers[1].vertices[3].polygons,
-            vec![0, 33554432, u32::MAX, 16777216]
+            mesh.layers[0].vertices[3].polygons.as_slice(),
+            &[33554432, 0, u32::MAX]
         );
 
         assert_eq!(
-            mesh.layers[2].vertices[0].polygons,
-            vec![0, 33554432, u32::MAX, 16777216]
+            mesh.layers[1].vertices[0].polygons.as_slice(),
+            &[16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[1].polygons,
-            vec![33554432, 0, u32::MAX]
+            mesh.layers[1].vertices[1].polygons.as_slice(),
+            &[0, 16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[2].polygons,
-            vec![33554432, u32::MAX]
+            mesh.layers[1].vertices[2].polygons.as_slice(),
+            &[16777216, u32::MAX]
         );
         assert_eq!(
-            mesh.layers[2].vertices[3].polygons,
-            vec![33554432, u32::MAX]
+            mesh.layers[1].vertices[3].polygons.as_slice(),
+            &[0, 33554432, u32::MAX, 16777216]
+        );
+
+        assert_eq!(
+            mesh.layers[2].vertices[0].polygons.as_slice(),
+            &[0, 33554432, u32::MAX, 16777216]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[1].polygons.as_slice(),
+            &[33554432, 0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[2].polygons.as_slice(),
+            &[33554432, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[2].vertices[3].polygons.as_slice(),
+            &[33554432, u32::MAX]
         );
     }
 
@@ -643,27 +722,39 @@ mod tests {
 
         mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
 
-        assert_eq!(mesh.layers[0].vertices[0].polygons, vec![0, u32::MAX]);
         assert_eq!(
-            mesh.layers[0].vertices[1].polygons,
-            vec![1 << 24, 0, u32::MAX]
+            mesh.layers[0].vertices[0].polygons.as_slice(),
+            &[0, u32::MAX]
         );
-        assert_eq!(mesh.layers[0].vertices[2].polygons, vec![0, u32::MAX,]);
         assert_eq!(
-            mesh.layers[0].vertices[3].polygons,
-            vec![1 << 24, u32::MAX, 0]
+            mesh.layers[0].vertices[1].polygons.as_slice(),
+            &[1 << 24, 0, u32::MAX]
+        );
+        assert_eq!(
+            mesh.layers[0].vertices[2].polygons.as_slice(),
+            &[0, u32::MAX,]
+        );
+        assert_eq!(
+            mesh.layers[0].vertices[3].polygons.as_slice(),
+            &[1 << 24, u32::MAX, 0]
         );
 
         assert_eq!(
-            mesh.layers[1].vertices[0].polygons,
-            vec![1 << 24, 0, u32::MAX]
+            mesh.layers[1].vertices[0].polygons.as_slice(),
+            &[1 << 24, 0, u32::MAX]
         );
-        assert_eq!(mesh.layers[1].vertices[1].polygons, vec![1 << 24, u32::MAX]);
         assert_eq!(
-            mesh.layers[1].vertices[2].polygons,
-            vec![1 << 24, u32::MAX, 0]
+            mesh.layers[1].vertices[1].polygons.as_slice(),
+            &[1 << 24, u32::MAX]
         );
-        assert_eq!(mesh.layers[1].vertices[3].polygons, vec![1 << 24, u32::MAX]);
+        assert_eq!(
+            mesh.layers[1].vertices[2].polygons.as_slice(),
+            &[1 << 24, u32::MAX, 0]
+        );
+        assert_eq!(
+            mesh.layers[1].vertices[3].polygons.as_slice(),
+            &[1 << 24, u32::MAX]
+        );
 
         assert!(mesh.point_in_mesh(vec2(0.5, 0.5)));
         assert!(mesh.point_in_mesh(vec2(1.5, 0.5)));

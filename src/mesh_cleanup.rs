@@ -1,4 +1,5 @@
 use glam::Vec2;
+use smallvec::{smallvec, SmallVec};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -13,12 +14,12 @@ impl Mesh {
             for vertex in &layer.vertices {
                 let vertex_coords = vertex.coords + layer.offset;
                 // For each polygon using a vertex, sort them in CCW order
-                let mut polygons = vertex
+                let mut polygons: SmallVec<[u32; 6]> = vertex
                     .polygons
                     .iter()
                     .filter(|p| **p != u32::MAX)
                     .cloned()
-                    .collect::<Vec<_>>();
+                    .collect();
                 // Sort by the angle between the Y axis and the direction from the vertex to the center of the polygon
                 polygons.sort_unstable_by_key(|p| {
                     let vertices =
@@ -35,7 +36,7 @@ impl Mesh {
                 });
                 polygons.dedup_by_key(|p| *p);
                 if polygons.is_empty() {
-                    reordered_neighbors_in_layer.push(vec![u32::MAX]);
+                    reordered_neighbors_in_layer.push(smallvec![u32::MAX]);
                 } else {
                     // Reintroduce empty markers
                     // For two following polygons on a vertex, check their previous / next vertices
@@ -49,7 +50,7 @@ impl Mesh {
                             .windows(2)
                             .map(|pair| [pair[0], pair[1]])
                             .chain(std::iter::once([last, first]))
-                            .flat_map(|[pair0, pair1]| {
+                            .flat_map(|[pair0, pair1]| -> SmallVec<[u32; 6]> {
                                 let layer0 = &self.layers[pair0.layer() as usize];
                                 let layer1 = &self.layers[pair1.layer() as usize];
                                 let mut polygon0 =
@@ -70,7 +71,7 @@ impl Mesh {
                                         false
                                     })
                                 else {
-                                    return vec![pair0, u32::MAX];
+                                    return smallvec![pair0, u32::MAX];
                                 };
                                 let polygon1 = &layer1.polygons[pair1.polygon() as usize].vertices;
                                 let mut found = false;
@@ -88,15 +89,15 @@ impl Mesh {
                                         false
                                     })
                                 else {
-                                    return vec![pair0, u32::MAX];
+                                    return smallvec![pair0, u32::MAX];
                                 };
 
                                 if layer0.vertices[*previous0 as usize].coords + layer0.offset
                                     != layer1.vertices[*next1 as usize].coords + layer1.offset
                                 {
-                                    vec![pair0, u32::MAX]
+                                    smallvec![pair0, u32::MAX]
                                 } else {
-                                    vec![pair0]
+                                    smallvec![pair0]
                                 }
                             })
                             .collect();
@@ -142,7 +143,7 @@ impl Layer {
         let mut new_indexes = vec![u32::MAX; self.vertices.len()];
         let mut kept = 0;
         for (i, vertex) in self.vertices.iter().enumerate() {
-            if vertex.polygons.is_empty() || vertex.polygons == [u32::MAX] {
+            if vertex.polygons.is_empty() || vertex.polygons.as_slice() == [u32::MAX] {
                 removed = true;
             } else {
                 new_indexes[i] = kept;

@@ -8,6 +8,8 @@ use glam::Vec2;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
+use smallvec::SmallVec;
+
 use crate::{instance::EdgeSide, layers::Layer, Vec2Helper};
 
 /// A point that lies on an edge of a polygon in the navigation mesh.
@@ -19,7 +21,7 @@ pub struct Vertex {
     /// Indices of the neighbouring polygons, in a counter clockwise order.
     ///
     /// `u32::MAX` marks a neighbouring spot outside the navigation mesh.
-    pub polygons: Vec<u32>,
+    pub polygons: SmallVec<[u32; 6]>,
     /// Is this vertex a corner of one of its polygons?
     pub is_corner: bool,
 }
@@ -27,9 +29,18 @@ pub struct Vertex {
 impl Vertex {
     /// Create a new `Vertex`.
     pub fn new(coords: Vec2, polygons: Vec<u32>) -> Self {
+        let is_corner = polygons.contains(&u32::MAX);
         Self {
             coords,
+            is_corner,
+            polygons: SmallVec::from_vec(polygons),
+        }
+    }
+
+    pub(crate) fn from_smallvec(coords: Vec2, polygons: SmallVec<[u32; 6]>) -> Self {
+        Self {
             is_corner: polygons.contains(&u32::MAX),
+            coords,
             polygons,
         }
     }
@@ -101,7 +112,7 @@ impl Polygon {
     }
 
     #[cfg(test)]
-    pub(crate) fn double_edges_index(&self) -> smallvec::SmallVec<[(u32, u32); 20]> {
+    pub(crate) fn double_edges_index(&self) -> SmallVec<[(u32, u32); 20]> {
         use smallvec::smallvec;
         let mut edges = smallvec![(u32::MAX, u32::MAX); self.vertices.len() * 2];
         let mut last = self.vertices[0];

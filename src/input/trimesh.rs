@@ -1,5 +1,6 @@
 use crate::{Mesh, MeshError, Polygon, Vertex};
 use glam::Vec2;
+use smallvec::SmallVec;
 use std::cmp::Ordering;
 use std::iter;
 
@@ -97,7 +98,8 @@ impl TryFrom<Trimesh> for Mesh {
             }
 
             // Add obstacles (-1) as vertex neighbors
-            let mut polygons_including_obstacles = vec![vertex.polygons[0]];
+            let mut polygons_including_obstacles: SmallVec<[u32; 6]> =
+                smallvec::smallvec![vertex.polygons[0]];
             for polygon_index in vertex
                 .polygons
                 .iter()
@@ -133,7 +135,7 @@ impl TryFrom<Trimesh> for Mesh {
         // Recreate vertices because we now include obstacles, so vertices can now be properly identified as edges
         let vertices: Vec<_> = vertices
             .into_iter()
-            .map(|vertex| Vertex::new(vertex.coords, vertex.polygons))
+            .map(|vertex| Vertex::from_smallvec(vertex.coords, vertex.polygons))
             .collect();
         Self::new(vertices, polygons)
     }
