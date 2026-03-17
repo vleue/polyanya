@@ -607,8 +607,11 @@ impl<'m> SearchInstance<'m> {
 
             return;
         }
-        let mut path_through_polygons = node.path_through_polygons.clone();
-        path_through_polygons.push(other_side);
+        let path_through_polygons = {
+            let mut p = node.path_through_polygons.clone();
+            p.push(other_side);
+            p
+        };
 
         let new_node = SearchNode {
             path,
@@ -687,7 +690,7 @@ impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     pub(crate) fn successors(&mut self, mut node: SearchNode) {
-        let mut visited = HashSet::new();
+        let mut visited: SmallVec<[u32; 8]> = SmallVec::new();
         loop {
             #[cfg(feature = "stats")]
             {
@@ -900,11 +903,12 @@ impl<'m> SearchInstance<'m> {
                     // TODO: shouldn't happen, identify cases that trigger this
                     break;
                 }
-                if !visited.insert(node.polygon_to) {
+                if visited.contains(&node.polygon_to) {
                     // infinite loop, exit now
                     // TODO: shouldn't happen, identify cases that trigger this
                     break;
                 }
+                visited.push(node.polygon_to);
                 #[cfg(debug_assertions)]
                 {
                     self.fail_fast -= 1;
