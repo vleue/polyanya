@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use glam::{Vec2, Vec3Swizzles};
 use hashbrown::HashMap;
 
@@ -14,14 +12,9 @@ trait RecastPolyMeshExt {
 
 impl RecastPolyMeshExt for RecastPolyMesh {
     fn areas(&self) -> Vec<u8> {
-        let mut areas: Vec<u8> = self
-            .areas
-            .iter()
-            .map(|area| area.0)
-            .collect::<HashSet<_>>()
-            .into_iter()
-            .collect();
+        let mut areas: Vec<u8> = self.areas.iter().map(|area| area.0).collect();
         areas.sort_unstable();
+        areas.dedup();
         if let Some(255) = areas.last() {
             areas.pop();
             areas.insert(0, 255);
@@ -57,20 +50,21 @@ impl RecastPolyMeshDetailExt for RecastPolyMeshDetail {
     }
 
     fn common_vertices(&self) -> HashMap<u32, Vec<u32>> {
-        self.vertices
-            .iter()
-            .enumerate()
-            .map(|(i, v)| {
-                (
-                    i as u32,
-                    self.vertices
-                        .iter()
-                        .enumerate()
-                        .filter_map(|(i2, v2)| (v == v2).then_some(i2 as u32))
-                        .collect(),
-                )
-            })
-            .collect()
+        // Group vertex indices by their coordinates in a single pass
+        let mut groups: HashMap<(u32, u32, u32), Vec<u32>> =
+            HashMap::with_capacity(self.vertices.len());
+        for (i, v) in self.vertices.iter().enumerate() {
+            let key = (v.x.to_bits(), v.y.to_bits(), v.z.to_bits());
+            groups.entry(key).or_default().push(i as u32);
+        }
+        // Build the result: for each vertex, map to its group of coincident vertices
+        let mut result = HashMap::with_capacity(self.vertices.len());
+        for group in groups.values() {
+            for &idx in group {
+                result.insert(idx, group.clone());
+            }
+        }
+        result
     }
 }
 
