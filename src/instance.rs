@@ -385,17 +385,21 @@ impl<'m> SearchInstance<'m> {
                 })
                 .map(|(i, _)| i)
                 .unwrap_or_else(|| {
-                    let mut distances = polygon
+                    polygon
                         .vertices
                         .iter()
-                        .map(|v| {
-                            (target_layer.vertices[*v as usize].coords + target_layer.offset)
-                                .distance_squared(edge)
-                        })
                         .enumerate()
-                        .collect::<Vec<_>>();
-                    distances.sort_unstable_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
-                    distances.first().unwrap().0
+                        .min_by(|(_, a), (_, b)| {
+                            let da = (target_layer.vertices[**a as usize].coords
+                                + target_layer.offset)
+                                .distance_squared(edge);
+                            let db = (target_layer.vertices[**b as usize].coords
+                                + target_layer.offset)
+                                .distance_squared(edge);
+                            da.partial_cmp(&db).unwrap()
+                        })
+                        .unwrap()
+                        .0
                 })
                 + 1
         };
