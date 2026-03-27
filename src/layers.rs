@@ -187,6 +187,27 @@ impl Layer {
             })
     }
 
+    /// Find the first polygon containing the point using internal iteration (no SmallVec allocation).
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
+    pub(crate) fn find_first_point_location_baked(&self, point: &Vec2) -> Option<u32> {
+        use core::ops::ControlFlow;
+        let query_point = [point.x, point.y];
+        let mut result = None;
+        self.baked_polygons
+            .as_ref()
+            .unwrap()
+            .locate_in_envelope_intersecting_int(rstar::AABB::from_point(query_point), |bp| {
+                if self.point_in_polygon(*point, &self.polygons[bp.index]) {
+                    result = Some(bp.index as u32);
+                    ControlFlow::Break(())
+                } else {
+                    ControlFlow::Continue(())
+                }
+            });
+        result
+    }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     fn point_in_polygon(&self, point: Vec2, polygon: &Polygon) -> bool {
@@ -238,7 +259,7 @@ impl Layer {
             if self.baked_polygons.is_none() {
                 self.get_point_locations_unit(point).next()
             } else {
-                self.get_point_locations_unit_baked(&point).next()
+                self.find_first_point_location_baked(&point)
             }
             .unwrap_or(u32::MAX)
         })
@@ -312,7 +333,7 @@ impl Layer {
             let poly = if self.baked_polygons.is_none() {
                 self.get_point_locations_unit(new_point).next()
             } else {
-                self.get_point_locations_unit_baked(&new_point).next()
+                self.find_first_point_location_baked(&new_point)
             }
             .unwrap_or(u32::MAX);
 
@@ -384,7 +405,7 @@ impl Layer {
         let poly = if self.baked_polygons.is_none() {
             self.get_point_locations_unit(point).next()
         } else {
-            self.get_point_locations_unit_baked(&point).next()
+            self.find_first_point_location_baked(&point)
         }
         .unwrap_or(u32::MAX);
         if poly != u32::MAX {
