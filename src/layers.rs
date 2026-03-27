@@ -1,8 +1,8 @@
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use bvh2d::bvh2d::BVH2d;
 use glam::{vec2, Vec2};
+use rstar::RTree;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -23,7 +23,7 @@ pub struct Layer {
     #[cfg(feature = "detailed-layers")]
     #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
     pub scale: Vec2,
-    pub(crate) baked_polygons: Option<BVH2d>,
+    pub(crate) baked_polygons: Option<RTree<BoundedPolygon>>,
     pub(crate) islands: Option<Vec<usize>>,
     /// Height of each vertex. Must either have zero elements to ignore heights, or the same length as vertices.
     pub height: Vec<f32>,
@@ -110,32 +110,30 @@ impl Layer {
     pub fn bake_polygon_finder(&mut self) {
         let bounded_polygons = self
             .polygons
-            .iter_mut()
-            .map(|polygon| BoundedPolygon {
-                aabb: polygon.vertices.iter().fold(
-                    (vec2(f32::MAX, f32::MAX), Vec2::ZERO),
+            .iter()
+            .enumerate()
+            .map(|(index, polygon)| {
+                let (min, max) = polygon.vertices.iter().fold(
+                    (vec2(f32::MAX, f32::MAX), vec2(f32::MIN, f32::MIN)),
                     |mut aabb, v| {
                         if let Some(v) = self.vertices.get(*v as usize) {
-                            if v.coords.x < aabb.0.x {
-                                aabb.0.x = v.coords.x;
-                            }
-                            if v.coords.y < aabb.0.y {
-                                aabb.0.y = v.coords.y;
-                            }
-                            if v.coords.x > aabb.1.x {
-                                aabb.1.x = v.coords.x;
-                            }
-                            if v.coords.y > aabb.1.y {
-                                aabb.1.y = v.coords.y;
-                            }
+                            aabb.0.x = aabb.0.x.min(v.coords.x);
+                            aabb.0.y = aabb.0.y.min(v.coords.y);
+                            aabb.1.x = aabb.1.x.max(v.coords.x);
+                            aabb.1.y = aabb.1.y.max(v.coords.y);
                         }
                         aabb
                     },
-                ),
+                );
+                BoundedPolygon {
+                    index,
+                    aabb_min: [min.x, min.y],
+                    aabb_max: [max.x, max.y],
+                }
             })
             .collect::<Vec<_>>();
 
-        self.baked_polygons = Some(BVH2d::build(&bounded_polygons));
+        self.baked_polygons = Some(RTree::bulk_load(bounded_polygons));
     }
 
     /// Create a `Layer` from a list of [`Vertex`] and [`Polygon`].
@@ -178,13 +176,14 @@ impl Layer {
         &'a self,
         point: &'a Vec2,
     ) -> impl Iterator<Item = u32> + use<'a> {
+        let query_point = [point.x, point.y];
         self.baked_polygons
             .as_ref()
             .unwrap()
-            .contains_iterator(point)
-            .filter_map(|index| {
-                self.point_in_polygon(*point, &self.polygons[index])
-                    .then_some(index as u32)
+            .locate_in_envelope_intersecting(&rstar::AABB::from_point(query_point))
+            .filter_map(|bp| {
+                self.point_in_polygon(*point, &self.polygons[bp.index])
+                    .then_some(bp.index as u32)
             })
     }
 

@@ -22,7 +22,6 @@ use std::{
     fmt::{self, Debug, Display},
 };
 
-use bvh2d::aabb::{Bounded, AABB};
 use glam::{FloatExt, Vec2, Vec3, Vec3Swizzles};
 
 use helpers::{line_intersect_segment, Vec2Helper, EPSILON};
@@ -316,13 +315,18 @@ impl Mesh {
     }
 }
 
+#[derive(Debug, Clone)]
 struct BoundedPolygon {
-    aabb: (Vec2, Vec2),
+    index: usize,
+    aabb_min: [f32; 2],
+    aabb_max: [f32; 2],
 }
 
-impl Bounded for BoundedPolygon {
-    fn aabb(&self) -> AABB {
-        AABB::with_bounds(self.aabb.0, self.aabb.1)
+impl rstar::RTreeObject for BoundedPolygon {
+    type Envelope = rstar::AABB<[f32; 2]>;
+
+    fn envelope(&self) -> Self::Envelope {
+        rstar::AABB::from_corners(self.aabb_min, self.aabb_max)
     }
 }
 
