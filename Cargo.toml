@@ -27,7 +27,7 @@ tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.16" }
 glam = { version = "0.30.8", features = ["approx"] }
 smallvec = { version = "1.15", features = ["union", "const_generics"] }
-rstar = { version = "0.12", git = "https://github.com/mockersf/rstar", branch = "AABB-from-known-bounds" }
+rstar = { version = "0.12", git = "https://github.com/georust/rstar" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 geo = "0.32.0"
 log = "0.4"
