@@ -411,8 +411,7 @@ impl Triangulation {
             .inner_faces()
             .filter_map(|face| {
                 let root = find(&mut component, face.index());
-                component_navigable[&root]
-                .then(|| {
+                component_navigable[&root].then(|| {
                     #[cfg(feature = "tracing")]
                     let _preparing_span = tracing::info_span!("preparing polygon").entered();
 
