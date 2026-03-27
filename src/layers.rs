@@ -194,7 +194,8 @@ impl Layer {
         use core::ops::ControlFlow;
         let query_point = [point.x, point.y];
         let mut result = None;
-        self.baked_polygons
+        let _ = self
+            .baked_polygons
             .as_ref()
             .unwrap()
             .locate_in_envelope_intersecting_int(rstar::AABB::from_point(query_point), |bp| {
