@@ -71,30 +71,34 @@ impl Layer {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn bake_islands_detection(&mut self) {
         let mut islands = vec![usize::MAX; self.polygons.len()];
-        while let Some((root, _)) = islands
-            .iter()
-            .enumerate()
-            .find(|(_, island)| **island == usize::MAX)
-        {
-            let mut to_visit = Vec::new();
+        let mut to_visit = Vec::new();
+        let mut next_unvisited = 0;
+        loop {
+            // Find next unvisited polygon starting from where we left off
+            let root = match islands[next_unvisited..]
+                .iter()
+                .position(|island| *island == usize::MAX)
+            {
+                Some(pos) => next_unvisited + pos,
+                None => break,
+            };
+            next_unvisited = root + 1;
             to_visit.push(root);
             while let Some(next) = to_visit.pop() {
-                if islands[next] == usize::MAX {
-                    let polygon = &mut self.polygons[next];
-                    islands[next] = root;
-                    to_visit.extend(
-                        polygon
-                            .vertices
-                            .iter()
-                            .flat_map(|v| self.vertices[*v as usize].polygons.iter())
-                            .filter_map(|i| {
-                                if *i != u32::MAX {
-                                    Some(*i as usize)
-                                } else {
-                                    None
-                                }
-                            }),
-                    );
+                if islands[next] != usize::MAX {
+                    continue;
+                }
+                islands[next] = root;
+                let polygon = &self.polygons[next];
+                for v in &polygon.vertices {
+                    for i in &self.vertices[*v as usize].polygons {
+                        if *i != u32::MAX {
+                            let idx = *i as usize;
+                            if islands[idx] == usize::MAX {
+                                to_visit.push(idx);
+                            }
+                        }
+                    }
                 }
             }
         }
