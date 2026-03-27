@@ -14,7 +14,7 @@ use hashbrown::{hash_map::Entry, HashMap};
 use crate::helpers::EPSILON;
 use crate::{
     helpers::{heuristic, line_intersect_segment, turning_point, Vec2Helper},
-    Mesh, Path, SearchNode, PRECISION,
+    Mesh, Path, PathArenaNode, SearchNode, PRECISION,
 };
 
 pub(crate) struct Root(Vec2);
@@ -61,6 +61,7 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) queue: BinaryHeap<SearchNode>,
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
+    pub(crate) path_arena: Vec<PathArenaNode>,
     #[cfg(feature = "detailed-layers")]
     pub(crate) from: (Vec2, u8),
     pub(crate) to: Vec2,
@@ -132,6 +133,7 @@ impl<'m> SearchInstance<'m> {
             queue: BinaryHeap::with_capacity(15),
             node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
+            path_arena: Vec::with_capacity(50),
             #[cfg(feature = "detailed-layers")]
             from: (from.0, from.1.layer()),
             to: to.0,
@@ -159,10 +161,7 @@ impl<'m> SearchInstance<'m> {
         search_instance.root_history.insert(Root(from.0), 0.0);
 
         let empty_node = SearchNode {
-            path: SmallVec::new(),
-            #[cfg(feature = "detailed-layers")]
-            path_with_layers: SmallVec::new(),
-            path_through_polygons: SmallVec::new(),
+            arena_parent: u32::MAX,
             root: from.0,
             interval: (Vec2::new(0.0, 0.0), Vec2::new(0.0, 0.0)),
             edge: (0, 0),
@@ -262,7 +261,12 @@ impl<'m> SearchInstance<'m> {
                     );
                     self.mesh.scenarios.set(self.mesh.scenarios.get() + 1);
                 }
-                let mut path = next.path;
+                // Reconstruct path and polygons from arena
+                let (mut path, mut path_through_polygons) =
+                    self.reconstruct_path(next.arena_parent);
+
+                #[cfg(feature = "detailed-layers")]
+                let arena_path_with_layers = self.reconstruct_path_with_layers(next.arena_parent);
 
                 let mut path_with_layers_end = vec![];
                 if let Some(turn) = turning_point(next.root, self.to, next.interval) {
@@ -278,14 +282,13 @@ impl<'m> SearchInstance<'m> {
                 let path_with_layers = {
                     let mut path_with_layers = vec![];
                     let mut from = self.from.0;
-                    for (index, potential_point) in next.path_with_layers.iter().enumerate() {
+                    for (index, potential_point) in arena_path_with_layers.iter().enumerate() {
                         if potential_point.0 == potential_point.1 {
                             from = potential_point.0;
                             path_with_layers.push((potential_point.0, potential_point.2));
                         } else {
                             // look for next fixed point to find the intersection
-                            let to = next
-                                .path_with_layers
+                            let to = arena_path_with_layers
                                 .iter()
                                 .skip(index + 1)
                                 .find(|point| point.0 == point.1)
@@ -314,11 +317,10 @@ impl<'m> SearchInstance<'m> {
                     path_with_layers
                 };
 
-                let mut path_through_polygons = next.path_through_polygons;
                 path_through_polygons.insert(0, self.polygon_from);
 
                 return InstanceStep::Found(Path {
-                    path: path.to_vec(),
+                    path,
                     #[cfg(not(feature = "detailed-layers"))]
                     length: next.distance_start_to_root + next.heuristic,
                     #[cfg(feature = "detailed-layers")]
@@ -332,7 +334,7 @@ impl<'m> SearchInstance<'m> {
                     },
                     #[cfg(feature = "detailed-layers")]
                     path_with_layers: path_with_layers.to_vec(),
-                    path_through_polygons: path_through_polygons.to_vec(),
+                    path_through_polygons,
                 });
             }
             self.successors(next);
@@ -344,6 +346,55 @@ impl<'m> SearchInstance<'m> {
             self.successors_called, self.nodes_generated, self.pushed, self.popped
         );
         InstanceStep::NotFound
+    }
+
+    /// Reconstruct the path (turning points) and polygon chain from the arena.
+    pub(crate) fn reconstruct_path(&self, arena_parent: u32) -> (Vec<Vec2>, Vec<u32>) {
+        let mut turning_points = Vec::new();
+        let mut polygons = Vec::new();
+
+        // Walk arena chain backwards, collecting into vecs
+        let mut chain = Vec::new();
+        let mut idx = arena_parent;
+        while idx != u32::MAX {
+            chain.push(idx);
+            idx = self.path_arena[idx as usize].parent;
+        }
+        chain.reverse();
+
+        for &arena_idx in &chain {
+            let entry = &self.path_arena[arena_idx as usize];
+            polygons.push(entry.polygon);
+            if entry.root_changed {
+                turning_points.push(entry.root);
+            }
+        }
+
+        (turning_points, polygons)
+    }
+
+    /// Reconstruct path_with_layers from the arena (only used with detailed-layers feature).
+    #[cfg(feature = "detailed-layers")]
+    pub(crate) fn reconstruct_path_with_layers(&self, arena_parent: u32) -> Vec<(Vec2, Vec2, u8)> {
+        let mut chain = Vec::new();
+        let mut idx = arena_parent;
+        while idx != u32::MAX {
+            chain.push(idx);
+            idx = self.path_arena[idx as usize].parent;
+        }
+        chain.reverse();
+
+        let mut result = Vec::new();
+        for &arena_idx in &chain {
+            let entry = &self.path_arena[arena_idx as usize];
+            if let Some(info) = entry.root_layer_info {
+                result.push(info);
+            }
+            if let Some(info) = entry.crossing_layer_info {
+                result.push(info);
+            }
+        }
+        result
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
@@ -556,13 +607,7 @@ impl<'m> SearchInstance<'m> {
 
         let mut new_f = node.distance_start_to_root;
 
-        let mut path = node.path.clone();
-        #[cfg(feature = "detailed-layers")]
-        let mut path_with_layers = node.path_with_layers.clone();
         if root != node.root {
-            path.push(root);
-            #[cfg(feature = "detailed-layers")]
-            path_with_layers.push((root, root, node.polygon_to.layer()));
             #[cfg(not(feature = "detailed-layers"))]
             {
                 new_f += node.root.distance(root);
@@ -573,10 +618,6 @@ impl<'m> SearchInstance<'m> {
                     .root
                     .distance(root * self.mesh.layers[node.polygon_to.layer() as usize].scale);
             }
-        }
-        #[cfg(feature = "detailed-layers")]
-        if other_side.layer() != node.polygon_to.layer() {
-            path_with_layers.push((start.0, end.0, other_side.layer()));
         }
 
         let heuristic_to_end: f32;
@@ -603,14 +644,31 @@ impl<'m> SearchInstance<'m> {
 
             return;
         }
-        let mut path_through_polygons = node.path_through_polygons.clone();
-        path_through_polygons.push(other_side);
+
+        // Push arena entry for this edge
+        let root_changed = root != node.root;
+        let arena_idx = self.path_arena.len() as u32;
+        self.path_arena.push(PathArenaNode {
+            root,
+            polygon: other_side,
+            parent: node.arena_parent,
+            root_changed,
+            #[cfg(feature = "detailed-layers")]
+            root_layer_info: if root_changed {
+                Some((root, root, node.polygon_to.layer()))
+            } else {
+                None
+            },
+            #[cfg(feature = "detailed-layers")]
+            crossing_layer_info: if other_side.layer() != node.polygon_to.layer() {
+                Some((start.0, end.0, other_side.layer()))
+            } else {
+                None
+            },
+        });
 
         let new_node = SearchNode {
-            path,
-            #[cfg(feature = "detailed-layers")]
-            path_with_layers,
-            path_through_polygons,
+            arena_parent: arena_idx,
             root,
             interval: (start.0, end.0),
             edge: (start.1, end.1),
