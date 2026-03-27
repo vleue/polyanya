@@ -322,11 +322,11 @@ struct BoundedPolygon {
     aabb_max: [f32; 2],
 }
 
-impl rstar::RTreeObject for BoundedPolygon {
-    type Envelope = rstar::AABB<[f32; 2]>;
+impl rstar2::RTreeObject for BoundedPolygon {
+    type Envelope = rstar2::AABB<[f32; 2]>;
 
     fn envelope(&self) -> Self::Envelope {
-        rstar::AABB::from_sorted(self.aabb_min, self.aabb_max)
+        rstar2::AABB::from_sorted(self.aabb_min, self.aabb_max)
     }
 }
 

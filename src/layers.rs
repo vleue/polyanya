@@ -2,7 +2,7 @@
 use tracing::instrument;
 
 use glam::{vec2, Vec2};
-use rstar::RTree;
+use rstar2::RTree;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -180,7 +180,7 @@ impl Layer {
         self.baked_polygons
             .as_ref()
             .unwrap()
-            .locate_in_envelope_intersecting(&rstar::AABB::from_point(query_point))
+            .locate_in_envelope_intersecting(&rstar2::AABB::from_point(query_point))
             .filter_map(|bp| {
                 self.point_in_polygon(*point, &self.polygons[bp.index])
                     .then_some(bp.index as u32)
