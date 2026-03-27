@@ -343,32 +343,75 @@ impl Triangulation {
         #[cfg(feature = "tracing")]
         let polygon_span = tracing::info_span!("listing polygons").entered();
 
-        let mut face_to_polygon: Vec<u32> = vec![u32::MAX; cdt.all_faces().len()];
+        // Use flood-fill via Union-Find to group faces into connected components
+        // separated by constraint edges. This way we only need one expensive
+        // point-in-polygon test per component instead of per face.
+        let num_faces = cdt.all_faces().len();
+        let mut component: Vec<usize> = (0..num_faces).collect();
+        fn find(component: &mut [usize], mut x: usize) -> usize {
+            while component[x] != x {
+                component[x] = component[component[x]];
+                x = component[x];
+            }
+            x
+        }
+        fn union(component: &mut [usize], a: usize, b: usize) {
+            let ra = find(component, a);
+            let rb = find(component, b);
+            if ra != rb {
+                component[ra] = rb;
+            }
+        }
+
+        // Merge faces connected by non-constraint edges
+        for face in cdt.inner_faces() {
+            let face_idx = face.index();
+            for edge in face.adjacent_edges() {
+                if !edge.is_constraint_edge() {
+                    let neighbor = edge.rev().face();
+                    if !neighbor.is_outer() {
+                        union(&mut component, face_idx, neighbor.index());
+                    }
+                }
+            }
+        }
+
+        // For each component, test one representative face
+        let mut component_navigable: HashMap<usize, bool> = HashMap::new();
+        for face in cdt.inner_faces() {
+            let root = find(&mut component, face.index());
+            if component_navigable.contains_key(&root) {
+                continue;
+            }
+            let center = face.center();
+            let center = Coord::from((center.x as f32, center.y as f32));
+
+            let navigable = (used.map(|used| used.contains(&center)).unwrap_or(true)
+                && inner.contains(&center))
+                || (self.base_layer.is_some()
+                    && self
+                        .base_layer
+                        .as_ref()
+                        .map(|base_layer| {
+                            base_layer
+                                .get_point_location(vec2(center.x, center.y), 0.0)
+                                .is_some()
+                        })
+                        .unwrap_or(true)
+                    && !inner.interiors().iter().any(|obstacle| {
+                        coord_pos_relative_to_ring(center, obstacle) == CoordPos::Inside
+                    }));
+            component_navigable.insert(root, navigable);
+        }
+
+        // Build polygons using the precomputed component results
+        let mut face_to_polygon: Vec<u32> = vec![u32::MAX; num_faces];
         let mut i = 0;
         let polygons = cdt
             .inner_faces()
             .filter_map(|face| {
-                #[cfg(feature = "tracing")]
-                let _checking_span = tracing::info_span!("checking polygon").entered();
-
-                let center = face.center();
-                let center = Coord::from((center.x as f32, center.y as f32));
-
-                ((used.map(|used| used.contains(&center)).unwrap_or(true)
-                    && inner.contains(&center))
-                    || (self.base_layer.is_some()
-                        && self
-                            .base_layer
-                            .as_ref()
-                            .map(|base_layer| {
-                                base_layer
-                                    .get_point_location(vec2(center.x, center.y), 0.0)
-                                    .is_some()
-                            })
-                            .unwrap_or(true)
-                        && !inner.interiors().iter().any(|obstacle| {
-                            coord_pos_relative_to_ring(center, obstacle) == CoordPos::Inside
-                        })))
+                let root = find(&mut component, face.index());
+                component_navigable[&root]
                 .then(|| {
                     #[cfg(feature = "tracing")]
                     let _preparing_span = tracing::info_span!("preparing polygon").entered();
