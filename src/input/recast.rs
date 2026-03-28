@@ -197,6 +197,30 @@ impl From<RecastFullMesh> for Mesh {
             })
             .collect();
 
+        // Precompute: for each vertex index, which polygon indices contain it
+        let num_vertices = full.detailed.vertices.len();
+        let mut vertex_to_polygons: Vec<Vec<usize>> = vec![vec![]; num_vertices];
+        for (polygon_index, polygon) in triangles_with_mesh_info.iter().enumerate() {
+            for &v in &polygon.vertices {
+                vertex_to_polygons[v].push(polygon_index);
+            }
+        }
+
+        // Expand using common (coincident) vertices
+        let vertex_to_all_polygons: Vec<Vec<usize>> = (0..num_vertices)
+            .map(|vertex_index| {
+                let mut all_polygons = Vec::new();
+                if let Some(common_vertices) = common.get(&(vertex_index as u32)) {
+                    for cv in common_vertices {
+                        all_polygons.extend(&vertex_to_polygons[*cv as usize]);
+                    }
+                }
+                all_polygons.sort_unstable();
+                all_polygons.dedup();
+                all_polygons
+            })
+            .collect();
+
         let layers = areas
             .iter()
             .map(|area| {
@@ -209,25 +233,13 @@ impl From<RecastFullMesh> for Mesh {
                         .map(|(vertex_index, vertex)| {
                             Vertex::new(
                                 vertex.xz(),
-                                triangles_with_mesh_info
+                                vertex_to_all_polygons[vertex_index]
                                     .iter()
-                                    .enumerate()
-                                    .filter_map(|(polygon_index, polygon)| {
-                                        common.get(&(vertex_index as u32)).unwrap().iter().find_map(
-                                            |common_vertex_index| {
-                                                polygon
-                                                    .vertices
-                                                    .contains(&(*common_vertex_index as usize))
-                                                    .then(|| {
-                                                        reindexed_polygons
-                                                            .get(&polygon.mesh_area)
-                                                            .unwrap()
-                                                            .get(&polygon_index)
-                                                            .cloned()
-                                                    })
-                                                    .flatten()
-                                            },
-                                        )
+                                    .filter_map(|&polygon_index| {
+                                        let polygon = &triangles_with_mesh_info[polygon_index];
+                                        reindexed_polygons
+                                            .get(&polygon.mesh_area)
+                                            .and_then(|m| m.get(&polygon_index).cloned())
                                     })
                                     .collect(),
                             )
