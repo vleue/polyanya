@@ -636,10 +636,7 @@ mod tests {
         let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
         let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
 
-        let stitch_indices = indices_from
-            .into_iter()
-            .zip(indices_to.into_iter())
-            .collect();
+        let stitch_indices = indices_from.into_iter().zip(indices_to).collect();
 
         mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
 
@@ -675,10 +672,7 @@ mod tests {
         let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
         let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
 
-        let stitch_indices = indices_from
-            .into_iter()
-            .zip(indices_to.into_iter())
-            .collect();
+        let stitch_indices = indices_from.into_iter().zip(indices_to).collect();
 
         mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
 
@@ -758,10 +752,7 @@ mod tests {
         let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
         let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
 
-        let stitch_indices = indices_from
-            .into_iter()
-            .zip(indices_to.into_iter())
-            .collect();
+        let stitch_indices = indices_from.into_iter().zip(indices_to).collect();
 
         mesh.stitch_at_vertices(vec![((0, 1), stitch_indices)], false);
 
@@ -809,17 +800,11 @@ mod tests {
 
         let indices_from = mesh.layers[0].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
         let indices_to = mesh.layers[1].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
-        let stitch_indices_0_1 = indices_from
-            .into_iter()
-            .zip(indices_to.into_iter())
-            .collect();
+        let stitch_indices_0_1 = indices_from.into_iter().zip(indices_to).collect();
 
         let indices_from = mesh.layers[1].get_vertices_on_segment(vec2(1.0, 0.0), vec2(1.0, 1.0));
         let indices_to = mesh.layers[2].get_vertices_on_segment(vec2(0.0, 0.0), vec2(0.0, 1.0));
-        let stitch_indices_1_2 = indices_from
-            .into_iter()
-            .zip(indices_to.into_iter())
-            .collect();
+        let stitch_indices_1_2 = indices_from.into_iter().zip(indices_to).collect();
 
         mesh.stitch_at_vertices(
             vec![

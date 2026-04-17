@@ -397,7 +397,7 @@ impl Layer {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashSet, u32};
+    use std::collections::HashSet;
 
     #[cfg(feature = "detailed-layers")]
     use crate::helpers::line_intersect_segment;
@@ -495,7 +495,7 @@ mod tests {
             distance_start_to_root: 0.0,
             heuristic: from.distance(to),
         };
-        let (successors, arena) = dbg!(mesh.successors(search_node, to));
+        let (successors, _arena) = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 0);
         #[cfg(not(feature = "detailed-layers"))]
         assert_eq!(
