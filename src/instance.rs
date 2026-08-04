@@ -61,6 +61,9 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) queue: BinaryHeap<SearchNode>,
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
+    /// Nodes already expanded, keyed on everything that decides what a node expands
+    /// into. See `is_new`.
+    pub(crate) seen_nodes: hashbrown::HashSet<(u32, [u32; 7])>,
     pub(crate) path_arena: Vec<PathArenaNode>,
     #[cfg(feature = "detailed-layers")]
     pub(crate) from: (Vec2, u8),
@@ -133,6 +136,7 @@ impl<'m> SearchInstance<'m> {
             queue: BinaryHeap::with_capacity(15),
             node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
+            seen_nodes: hashbrown::HashSet::with_capacity(64),
             path_arena: Vec::with_capacity(50),
             #[cfg(feature = "detailed-layers")]
             from: (from.0, from.1.layer()),
@@ -238,6 +242,10 @@ impl<'m> SearchInstance<'m> {
 
                     return InstanceStep::Continue;
                 }
+            }
+
+            if !self.is_new(&next) {
+                return InstanceStep::Continue;
             }
 
             if next.polygon_to == self.polygon_to {
@@ -710,6 +718,31 @@ impl<'m> SearchInstance<'m> {
                 self.node_buffer.push(new_node);
             }
         }
+    }
+
+    /// Has a node bit for bit identical to this one already been expanded? Same target
+    /// polygon, same root, same interval, same cost: expanding it again can only produce
+    /// the successors the first one produced.
+    ///
+    /// This is not a theoretical case. A funnel that reaches a corner whose polygons form
+    /// a ring can walk that ring with the root and the cost pinned, regenerating the same
+    /// nodes lap after lap until the iteration limit runs out, and the path that does
+    /// exist is never returned. `root_history` cannot stop it: it drops nodes that are
+    /// strictly worse, and these are equal.
+    #[inline(always)]
+    fn is_new(&mut self, node: &SearchNode) -> bool {
+        self.seen_nodes.insert((
+            node.polygon_to,
+            [
+                node.root.x.to_bits(),
+                node.root.y.to_bits(),
+                node.interval.0.x.to_bits(),
+                node.interval.0.y.to_bits(),
+                node.interval.1.x.to_bits(),
+                node.interval.1.y.to_bits(),
+                node.distance_start_to_root.to_bits(),
+            ],
+        ))
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
