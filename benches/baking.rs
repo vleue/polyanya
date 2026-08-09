@@ -5,7 +5,7 @@ fn baking(c: &mut Criterion) {
     let mut mesh: Mesh = PolyanyaFile::from_file("meshes/v2/aurora-merged.mesh")
         .try_into()
         .unwrap();
-    c.bench_function(&"baking".to_string(), |b| {
+    c.bench_function("baking", |b| {
         b.iter(|| {
             mesh.unbake();
             mesh.bake();

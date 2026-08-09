@@ -6,7 +6,7 @@ use polyanya::{Mesh, RecastFullMesh, RecastPolyMesh, RecastPolyMeshDetail};
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
         let val = $x.unwrap().length;
-        if !((val - $y).abs() < 0.0001) {
+        if (val - $y).abs() >= 0.0001 {
             assert_eq!(val, $y);
         }
     };
@@ -19,7 +19,7 @@ fn detailed_mesh() {
     let mesh: Mesh = detailed_mesh.into();
 
     let start = vec3(46.998413, 9.998184, 1.717747);
-    let end = vec3(20.703018, 18.651773, -80.770203);
+    let end = vec3(20.703018, 18.651773, -80.770_2);
 
     let path = mesh.path(start.xz(), end.xz());
     assert!(path.is_some());
@@ -127,7 +127,7 @@ fn full_mesh() {
     let mesh: polyanya::Mesh = RecastFullMesh::new(rasterised, detailed).into();
 
     let start = vec3(46.998413, 9.998184, 1.717747);
-    let end = vec3(20.703018, 18.651773, -80.770203);
+    let end = vec3(20.703018, 18.651773, -80.770_2);
 
     let path = mesh.path(start.xz(), end.xz());
     assert!(path.is_some());

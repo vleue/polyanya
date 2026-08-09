@@ -4,7 +4,7 @@ use polyanya::{Mesh, Triangulation};
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
         let val = $x.unwrap().length;
-        if !((val - $y).abs() < 0.0001) {
+        if (val - $y).abs() >= 0.0001 {
             assert_eq!(val, $y);
         }
     };
