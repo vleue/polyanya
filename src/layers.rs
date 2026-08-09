@@ -180,7 +180,7 @@ impl Layer {
         self.baked_polygons
             .as_ref()
             .unwrap()
-            .locate_in_envelope_intersecting(rstar::AABB::from_point(query_point))
+            .locate_in_envelope_intersecting(&rstar::AABB::from_point(query_point))
             .filter_map(|bp| {
                 self.point_in_polygon(*point, &self.polygons[bp.index])
                     .then_some(bp.index as u32)
@@ -198,7 +198,7 @@ impl Layer {
             .baked_polygons
             .as_ref()
             .unwrap()
-            .locate_in_envelope_intersecting_int(rstar::AABB::from_point(query_point), |bp| {
+            .locate_in_envelope_intersecting_int(&rstar::AABB::from_point(query_point), |bp| {
                 if self.point_in_polygon(*point, &self.polygons[bp.index]) {
                     result = Some(bp.index as u32);
                     ControlFlow::Break(())

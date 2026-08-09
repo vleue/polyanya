@@ -316,6 +316,7 @@ impl Mesh {
 }
 
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 struct BoundedPolygon {
     index: usize,
     aabb_min: [f32; 2],
@@ -326,7 +327,7 @@ impl rstar::RTreeObject for BoundedPolygon {
     type Envelope = rstar::AABB<[f32; 2]>;
 
     fn envelope(&self) -> Self::Envelope {
-        rstar::AABB::from_bounds(self.aabb_min, self.aabb_max)
+        rstar::AABB::from_corners(self.aabb_min, self.aabb_max)
     }
 }
 
