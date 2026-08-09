@@ -418,7 +418,7 @@ impl Layer {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashSet, u32};
+    use std::collections::HashSet;
 
     #[cfg(feature = "detailed-layers")]
     use crate::helpers::line_intersect_segment;
@@ -426,7 +426,6 @@ mod tests {
     #[cfg(feature = "detailed-layers")]
     use glam::IVec2;
     use glam::{vec2, Vec2};
-    use smallvec::SmallVec;
 
     fn mesh_u_grid() -> Mesh {
         let main_layer = Layer {
@@ -507,10 +506,7 @@ mod tests {
         let from: Vec2 = vec2(0.1, 1.1);
         let to = vec2(1.1, 0.1);
         let search_node = SearchNode {
-            path: SmallVec::new(),
-            #[cfg(feature = "detailed-layers")]
-            path_with_layers: SmallVec::new(),
-            path_through_polygons: SmallVec::new(),
+            arena_parent: u32::MAX,
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (0, 1),
@@ -520,7 +516,7 @@ mod tests {
             distance_start_to_root: 0.0,
             heuristic: from.distance(to),
         };
-        let successors = dbg!(mesh.successors(search_node, to));
+        let (successors, _arena) = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 0);
         #[cfg(not(feature = "detailed-layers"))]
         assert_eq!(
@@ -550,10 +546,7 @@ mod tests {
         let from = vec2(0.1, 1.9);
         let to = vec2(2.1, 1.9);
         let search_node = SearchNode {
-            path: SmallVec::new(),
-            #[cfg(feature = "detailed-layers")]
-            path_with_layers: SmallVec::new(),
-            path_through_polygons: SmallVec::new(),
+            arena_parent: u32::MAX,
             root: from,
             interval: (vec2(0.0, 1.0), vec2(1.0, 1.0)),
             edge: (4, 5),
@@ -563,7 +556,7 @@ mod tests {
             distance_start_to_root: 0.0,
             heuristic: from.distance(to),
         };
-        let successors = dbg!(mesh.successors(search_node, to));
+        let (successors, arena) = dbg!(mesh.successors(search_node, to));
         assert_eq!(successors.len(), 1);
         assert_eq!(successors[0].root, vec2(2.0, 1.0));
         assert_eq!(
@@ -576,7 +569,7 @@ mod tests {
         assert_eq!(successors[0].interval, (vec2(3.0, 1.0), vec2(2.0, 1.0)));
         assert_eq!(successors[0].edge, (7, 6));
         assert_eq!(
-            successors[0].path.to_vec(),
+            crate::reconstruct_test_path(&arena, successors[0].arena_parent),
             vec![vec2(1.0, 1.0), vec2(2.0, 1.0)]
         );
 
