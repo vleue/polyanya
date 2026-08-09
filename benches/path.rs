@@ -5,7 +5,7 @@ use polyanya::{Mesh, PolyanyaFile};
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
         let val = $x;
-        if !((val.length - $y).abs() < 0.001) {
+        if (val.length - $y).abs() >= 0.001 {
             assert_eq!(val.length, $y);
         }
         black_box(val);

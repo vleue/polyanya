@@ -131,7 +131,7 @@ const ARENA_OBSTACLES: [[Vec2; 6]; 5] = [
 ];
 
 fn merger(c: &mut Criterion) {
-    c.bench_function(&"merger arena".to_string(), |b| {
+    c.bench_function("merger arena", |b| {
         // Equivalent to the arena mesh
         let mut triangulation = Triangulation::from_outer_edges(&ARENA_OUTER_EDGE);
 
@@ -1969,7 +1969,7 @@ fn random_with_many_obstacles() -> Triangulation {
 }
 
 fn merger_many_overlapping(c: &mut Criterion) {
-    c.bench_function(&"merger many overlapping".to_string(), |b| {
+    c.bench_function("merger many overlapping", |b| {
         let triangulation = random_with_many_obstacles();
         let mesh: Mesh = triangulation.as_navmesh();
         b.iter(|| {
@@ -1981,7 +1981,7 @@ fn merger_many_overlapping(c: &mut Criterion) {
 }
 
 fn merger_many_overlapping_once(c: &mut Criterion) {
-    c.bench_function(&"merger many overlapping (once)".to_string(), |b| {
+    c.bench_function("merger many overlapping (once)", |b| {
         let triangulation = random_with_many_obstacles();
         let mesh: Mesh = triangulation.as_navmesh();
         b.iter(|| {

@@ -983,7 +983,7 @@ mod tests {
         ($x:expr, $y:expr) => {
             let val = $x;
             let expected = $y;
-            if !((val - expected).abs() < 0.01) {
+            if (val - expected).abs() >= 0.01 {
                 assert_eq!(val, expected);
             }
         };
@@ -1549,7 +1549,7 @@ mod tests {
         );
 
         let successor = successors.into_iter().next().unwrap();
-        let (successors, arena) = dbg!(mesh.successors(successor, to));
+        let (successors, _arena) = dbg!(mesh.successors(successor, to));
         dbg!(&successors[0]);
         assert_eq!(successors.len(), 1);
 

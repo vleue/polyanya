@@ -242,7 +242,7 @@ mod tests {
         // Test epsilon value is large enough
         assert_eq!(
             Vec2Helper::side(
-                Vec2::new(5.585231282, 5.3880110045),
+                Vec2::new(5.5852313, 5.388011),
                 (Vec2::new(9.56, 7.42), Vec2::new(1.54, 3.32))
             ),
             EdgeSide::Edge
