@@ -270,8 +270,8 @@ mod tests {
         // where floating point errors cause total ordering to be violated.
         let mut vertices = Vec::new();
         for ray_index in 0..12 {
-            let angle = (ray_index as f32) * std::f32::consts::TAU / (12 as f32);
-            let angle_offset = ((7 as f32) * 0.1).sin() * 0.01;
+            let angle = (ray_index as f32) * std::f32::consts::TAU / 12_f32;
+            let angle_offset = (7_f32 * 0.1).sin() * 0.01;
             let dir = Vec2::from_angle(angle + angle_offset);
 
             for dist_index in 0..2 {
