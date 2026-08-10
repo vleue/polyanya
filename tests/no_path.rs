@@ -1,33 +1,47 @@
+use std::sync::OnceLock;
 use std::time::Instant;
 
 use glam::{vec2, Vec2};
-use polyanya::{Mesh, PolyanyaFile, Triangulation};
+use polyanya::{Layer, Mesh, PolyanyaFile, Triangulation};
+
+/// Read and bake the aurora mesh once for the whole test binary, then clone it
+/// into each mesh that needs it. Baking is per layer and happens before
+/// stitching, so a clone of the baked layer is the same thing as baking a
+/// clone.
+fn aurora_layer() -> &'static Layer {
+    static AURORA: OnceLock<Layer> = OnceLock::new();
+    AURORA.get_or_init(|| {
+        let mut aurora: Mesh = PolyanyaFile::from_file("meshes/v2/aurora-merged.mesh")
+            .try_into()
+            .unwrap();
+        let mut layer = aurora.layers.remove(0);
+        layer.bake();
+        layer
+    })
+}
 
 /// A real mesh plus a small square that is not stitched to it, so nothing can
 /// reach the square. Island detection is skipped as soon as there is more than
 /// one layer, so this is the case where the search really does have to run out
 /// of nodes to answer "no path".
 fn mesh_with_an_unreachable_island(copies: usize) -> Mesh {
-    let aurora: Mesh = PolyanyaFile::from_file("meshes/v2/aurora-merged.mesh")
-        .try_into()
-        .unwrap();
-    let island: Mesh = Triangulation::from_outer_edges(&[
+    let mut island = Triangulation::from_outer_edges(&[
         vec2(1000.0, 1000.0),
         vec2(1010.0, 1000.0),
         vec2(1010.0, 1010.0),
         vec2(1000.0, 1010.0),
     ])
-    .as_navmesh();
+    .as_layer();
+    island.bake();
 
-    let mut layers = vec![island.layers[0].clone()];
+    let mut layers = vec![island];
     for _ in 0..copies {
-        layers.push(aurora.layers[0].clone());
+        layers.push(aurora_layer().clone());
     }
     let mut mesh = Mesh {
         layers,
         ..Default::default()
     };
-    mesh.bake();
     // nothing to stitch, but a multi-layer mesh still needs this pass: it is
     // what tags polygon indices with their layer
     mesh.stitch_at_vertices(vec![], false);
