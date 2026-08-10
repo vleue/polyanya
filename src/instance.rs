@@ -244,6 +244,17 @@ impl<'m> SearchInstance<'m> {
                 }
             }
 
+            if !self.is_new(&next) {
+                #[cfg(feature = "verbose")]
+                println!("node is a duplicate!");
+                #[cfg(feature = "stats")]
+                {
+                    self.nodes_pruned_post_pop += 1;
+                }
+
+                return InstanceStep::Continue;
+            }
+
             if next.polygon_to == self.polygon_to {
                 #[cfg(feature = "stats")]
                 {
@@ -649,15 +660,6 @@ impl<'m> SearchInstance<'m> {
             return;
         }
 
-        if !self.is_new(other_side, root, (start.0, end.0), new_f) {
-            #[cfg(debug_assertions)]
-            if self.debug {
-                println!("x already generated this exact node");
-            }
-
-            return;
-        }
-
         // Push arena entry for this edge
         let root_changed = root != node.root;
         let arena_idx = self.path_arena.len() as u32;
@@ -725,9 +727,9 @@ impl<'m> SearchInstance<'m> {
         }
     }
 
-    /// Has a node bit for bit identical to this one already been generated? Same target
-    /// polygon, same root, same interval, same cost: expanding it can only produce the
-    /// successors the first one produced.
+    /// Has a node bit for bit identical to this one already been expanded? Same target
+    /// polygon, same root, same interval, same cost: expanding it again can only produce
+    /// the successors the first one produced.
     ///
     /// This is not a theoretical case. A funnel that reaches a corner whose polygons form
     /// a ring can walk that ring with the root and the cost pinned, regenerating the same
@@ -735,23 +737,17 @@ impl<'m> SearchInstance<'m> {
     /// exist is never returned. `root_history` cannot stop it: it drops nodes that are
     /// strictly worse, and these are equal.
     #[inline(always)]
-    fn is_new(
-        &mut self,
-        polygon_to: u32,
-        root: Vec2,
-        interval: (Vec2, Vec2),
-        distance_start_to_root: f32,
-    ) -> bool {
+    fn is_new(&mut self, node: &SearchNode) -> bool {
         self.seen_nodes.insert((
-            polygon_to,
+            node.polygon_to,
             [
-                root.x.to_bits(),
-                root.y.to_bits(),
-                interval.0.x.to_bits(),
-                interval.0.y.to_bits(),
-                interval.1.x.to_bits(),
-                interval.1.y.to_bits(),
-                distance_start_to_root.to_bits(),
+                node.root.x.to_bits(),
+                node.root.y.to_bits(),
+                node.interval.0.x.to_bits(),
+                node.interval.0.y.to_bits(),
+                node.interval.1.x.to_bits(),
+                node.interval.1.y.to_bits(),
+                node.distance_start_to_root.to_bits(),
             ],
         ))
     }
