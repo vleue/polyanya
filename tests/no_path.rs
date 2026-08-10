@@ -34,14 +34,11 @@ fn mesh_with_an_unreachable_island(copies: usize) -> Mesh {
     .as_layer();
     island.bake();
 
-    let mut layers = vec![island];
+    let mut mesh = Mesh::default();
+    mesh.layers.push(island);
     for _ in 0..copies {
-        layers.push(aurora_layer().clone());
+        mesh.layers.push(aurora_layer().clone());
     }
-    let mut mesh = Mesh {
-        layers,
-        ..Default::default()
-    };
     // nothing to stitch, but a multi-layer mesh still needs this pass: it is
     // what tags polygon indices with their layer
     mesh.stitch_at_vertices(vec![], false);
