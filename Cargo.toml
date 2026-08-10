@@ -18,22 +18,22 @@ verbose = []
 async = []
 no-default-baking = []
 detailed-layers = []
-serde = ["glam/serde", "bvh2d/serde", "dep:serde", "rerecast/serialize"]
+serde = ["glam/serde", "rstar/serde", "dep:serde", "rerecast/serialize"]
 recast = []
 
 [dependencies]
 spade = { version = "2.15.0" }
 tracing = { version = "0.1", optional = true }
 hashbrown = { version = "0.16" }
-glam = { version = "0.30.8", features = ["approx"] }
+glam = { version = "0.32.1", features = ["approx"] }
 smallvec = { version = "1.15", features = ["union", "const_generics"] }
-bvh2d = { version = "0.7" }
+rstar = { version = "0.12" }
 serde = { version = "1.0", features = ["derive"], optional = true }
-geo = "0.32.0"
+geo = "0.33.1"
 log = "0.4"
 thiserror = "2"
 serde_json = { version = "1.0", optional = true }
-rerecast = "0.3.0"
+rerecast = "0.4.0"
 
 [dev-dependencies]
 # criterion = "0.5"
@@ -44,7 +44,7 @@ tracing = "0.1"
 
 serde_json = "1.0"
 
-rerecast = { version = "0.3.0", features = ["serialize"] }
+rerecast = { version = "0.4.0", features = ["serialize"] }
 
 
 [workspace]

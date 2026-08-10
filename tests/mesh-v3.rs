@@ -12,7 +12,7 @@ struct Scenario {
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
         let val = $x.unwrap().length;
-        if !((val - $y).abs() < 0.0001) {
+        if (val - $y).abs() >= 0.0001 {
             assert_eq!(val, $y);
         }
     };
@@ -31,7 +31,7 @@ fn load_v3_scenario(path: &str) -> Vec<Scenario> {
         panic!("bad file, version header does not match 'version 1'")
     }
     lines
-        .filter_map(|line| line.ok())
+        .map_while(Result::ok)
         .map(|line| {
             let mut values = line.split_whitespace().skip(4);
             let start = Vec2::new(

@@ -131,7 +131,7 @@ const ARENA_OBSTACLES: [[Vec2; 6]; 5] = [
 ];
 
 fn triangulation(c: &mut Criterion) {
-    c.bench_function(&"triangulation arena".to_string(), |b| {
+    c.bench_function("triangulation arena", |b| {
         b.iter(|| {
             // Equivalent to the arena mesh
             let mut triangulation = Triangulation::from_outer_edges(&ARENA_OUTER_EDGE);
@@ -149,7 +149,7 @@ fn triangulation(c: &mut Criterion) {
 }
 
 fn triangulation_bulk(c: &mut Criterion) {
-    c.bench_function(&"triangulation arena bulk add obstacles".to_string(), |b| {
+    c.bench_function("triangulation arena bulk add obstacles", |b| {
         b.iter(|| {
             // Equivalent to the arena mesh
             let mut triangulation = Triangulation::from_outer_edges(&ARENA_OUTER_EDGE);
@@ -168,7 +168,7 @@ fn triangulation_bulk(c: &mut Criterion) {
 }
 
 fn triangulation_overlapping(c: &mut Criterion) {
-    c.bench_function(&"triangulation arena overlapping".to_string(), |b| {
+    c.bench_function("triangulation arena overlapping", |b| {
         b.iter(|| {
             // Equivalent to the arena mesh
             let mut triangulation = Triangulation::from_outer_edges(&ARENA_OUTER_EDGE);
@@ -186,7 +186,7 @@ fn triangulation_overlapping(c: &mut Criterion) {
 }
 
 fn triangulation_square(c: &mut Criterion) {
-    c.bench_function(&"triangulation square".to_string(), |b| {
+    c.bench_function("triangulation square", |b| {
         b.iter(|| {
             let mut triangulation = Triangulation::from_outer_edges(&[
                 vec2(0.0, 0.0),
@@ -225,7 +225,7 @@ fn triangulation_square(c: &mut Criterion) {
 }
 
 fn triangulation_square_overlapping(c: &mut Criterion) {
-    c.bench_function(&"triangulation square overlapping".to_string(), |b| {
+    c.bench_function("triangulation square overlapping", |b| {
         b.iter(|| {
             let mut triangulation = Triangulation::from_outer_edges(&[
                 vec2(0.0, 0.0),
@@ -2082,7 +2082,7 @@ fn random_with_many_obstacles() -> Triangulation {
 }
 
 fn triangulation_many_overlapping(c: &mut Criterion) {
-    c.bench_function(&"triangulation many overlapping".to_string(), |b| {
+    c.bench_function("triangulation many overlapping", |b| {
         b.iter(|| {
             let triangulation = random_with_many_obstacles();
             let mesh: Mesh = triangulation.as_navmesh();
@@ -2092,36 +2092,30 @@ fn triangulation_many_overlapping(c: &mut Criterion) {
 }
 
 fn triangulation_many_overlapping_simplified(c: &mut Criterion) {
-    c.bench_function(
-        &"triangulation many overlapping (simplified)".to_string(),
-        |b| {
-            b.iter(|| {
-                let mut triangulation = random_with_many_obstacles();
-                triangulation.simplify(0.005);
-                let mesh: Mesh = triangulation.as_navmesh();
-                black_box(mesh);
-            })
-        },
-    );
+    c.bench_function("triangulation many overlapping (simplified)", |b| {
+        b.iter(|| {
+            let mut triangulation = random_with_many_obstacles();
+            triangulation.simplify(0.005);
+            let mesh: Mesh = triangulation.as_navmesh();
+            black_box(mesh);
+        })
+    });
 }
 
 fn triangulation_many_overlapping_inflated(c: &mut Criterion) {
-    c.bench_function(
-        &"triangulation many overlapping (inflated)".to_string(),
-        |b| {
-            b.iter(|| {
-                let mut triangulation = random_with_many_obstacles();
-                triangulation.set_agent_radius(0.1);
-                let mesh: Mesh = triangulation.as_navmesh();
-                black_box(mesh);
-            })
-        },
-    );
+    c.bench_function("triangulation many overlapping (inflated)", |b| {
+        b.iter(|| {
+            let mut triangulation = random_with_many_obstacles();
+            triangulation.set_agent_radius(0.1);
+            let mesh: Mesh = triangulation.as_navmesh();
+            black_box(mesh);
+        })
+    });
 }
 
 fn triangulation_many_overlapping_simplified_inflated(c: &mut Criterion) {
     c.bench_function(
-        &"triangulation many overlapping (simplified + inflated)".to_string(),
+        "triangulation many overlapping (simplified + inflated)",
         |b| {
             b.iter(|| {
                 let mut triangulation = random_with_many_obstacles();
