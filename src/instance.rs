@@ -245,6 +245,13 @@ impl<'m> SearchInstance<'m> {
             }
 
             if !self.is_new(&next) {
+                #[cfg(feature = "verbose")]
+                println!("node is a duplicate!");
+                #[cfg(feature = "stats")]
+                {
+                    self.nodes_pruned_post_pop += 1;
+                }
+
                 return InstanceStep::Continue;
             }
 
