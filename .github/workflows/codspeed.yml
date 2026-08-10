@@ -11,7 +11,7 @@ jobs:
     name: Run benchmarks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -22,7 +22,7 @@ jobs:
         run: cargo codspeed build
 
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v4
+        uses: CodSpeedHQ/action@v5
         with:
           mode: instrumentation
           run: cargo codspeed run
