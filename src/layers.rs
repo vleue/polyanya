@@ -228,8 +228,11 @@ impl Layer {
             };
 
             let current_side = point.side((last, next));
-            if current_side == EdgeSide::Edge && point.in_bounding_box((last, next)) {
-                return true;
+            if current_side == EdgeSide::Edge {
+                if point.in_bounding_box((last, next)) {
+                    return true;
+                }
+                continue;
             }
             if current_side != EdgeSide::Left {
                 return false;
