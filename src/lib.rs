@@ -22,7 +22,6 @@ use std::{
     fmt::{self, Debug, Display},
 };
 
-use bvh2d::aabb::{Bounded, AABB};
 use glam::{FloatExt, Vec2, Vec3, Vec3Swizzles};
 
 use helpers::{line_intersect_segment, Vec2Helper, EPSILON};
@@ -315,13 +314,19 @@ impl Mesh {
     }
 }
 
+#[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 struct BoundedPolygon {
-    aabb: (Vec2, Vec2),
+    index: usize,
+    aabb_min: [f32; 2],
+    aabb_max: [f32; 2],
 }
 
-impl Bounded for BoundedPolygon {
-    fn aabb(&self) -> AABB {
-        AABB::with_bounds(self.aabb.0, self.aabb.1)
+impl rstar::RTreeObject for BoundedPolygon {
+    type Envelope = rstar::AABB<[f32; 2]>;
+
+    fn envelope(&self) -> Self::Envelope {
+        rstar::AABB::from_corners(self.aabb_min, self.aabb_max)
     }
 }
 
@@ -465,23 +470,16 @@ impl Mesh {
         let mut paths: Vec<Path> = vec![];
         // Limit search to avoid an infinite loop.
         for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 10 {
-            let _potential_path = match search_instance.next() {
+            match search_instance.next() {
                 #[cfg(not(feature = "detailed-layers"))]
                 InstanceStep::Found(path) => return Some(path),
                 #[cfg(feature = "detailed-layers")]
-                InstanceStep::Found(path) => Some(path),
-                InstanceStep::NotFound => {
-                    if paths.is_empty() {
-                        None
-                    } else {
-                        Some(paths.remove(0))
-                    }
-                }
-                InstanceStep::Continue => None,
-            };
-            #[cfg(feature = "detailed-layers")]
-            if let Some(path) = _potential_path {
-                paths.push(path);
+                InstanceStep::Found(path) => paths.push(path),
+                // The queue has run dry and nothing can refill it, so every further step
+                // is a pop from an empty heap. Keep going and we just burn the whole
+                // iteration limit before returning the answer we already have.
+                InstanceStep::NotFound => break,
+                InstanceStep::Continue => (),
             }
         }
         #[cfg(feature = "detailed-layers")]
@@ -983,7 +981,7 @@ mod tests {
         ($x:expr, $y:expr) => {
             let val = $x;
             let expected = $y;
-            if !((val - expected).abs() < 0.01) {
+            if (val - expected).abs() >= 0.01 {
                 assert_eq!(val, expected);
             }
         };
@@ -1549,7 +1547,7 @@ mod tests {
         );
 
         let successor = successors.into_iter().next().unwrap();
-        let (successors, arena) = dbg!(mesh.successors(successor, to));
+        let (successors, _arena) = dbg!(mesh.successors(successor, to));
         dbg!(&successors[0]);
         assert_eq!(successors.len(), 1);
 
