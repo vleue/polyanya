@@ -106,8 +106,15 @@ impl Layer {
     /// Uses a BVH. This is useful at the start of the pathfinding, to get the containing polygons
     /// for the start and end point. It can also be used through [`Self::point_in_mesh`] to check
     /// if a point is in the mesh.
+    ///
+    /// A layer without polygons is left unbaked: there is no tree to build, and every reader of
+    /// the BVH already falls back to the linear scan when it is missing.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn bake_polygon_finder(&mut self) {
+        if self.polygons.is_empty() {
+            self.baked_polygons = None;
+            return;
+        }
         let bounded_polygons = self
             .polygons
             .iter()
