@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, HashSet};
 
 use inflate::Inflate;
 use log::warn;
@@ -9,10 +9,13 @@ pub use geo::LineString;
 use geo::{
     self,
     coordinate_position::{coord_pos_relative_to_ring, CoordPos},
-    Contains, Coord, SimplifyVwPreserve,
+    Coord, SimplifyVwPreserve,
 };
 use glam::{vec2, Vec2};
-use spade::{ConstrainedDelaunayTriangulation, Point2, Triangulation as SpadeTriangulation};
+use spade::{
+    handles::FixedVertexHandle, ConstrainedDelaunayTriangulation, Point2,
+    Triangulation as SpadeTriangulation,
+};
 
 use crate::{Layer, Mesh, Polygon, Vertex};
 
@@ -193,26 +196,22 @@ impl Triangulation {
         cdt: &mut ConstrainedDelaunayTriangulation<Point2<f64>>,
         edges: &LineString<f32>,
     ) {
-        if edges.0.is_empty() {
+        if edges.0.len() < 2 {
             return;
         }
-        for line in edges.lines() {
-            let from = line.start;
-            let next = line.end;
-
-            let point_a = cdt
+        // Each point is inserted once, and reused as the start of the next constraint edge.
+        let mut previous: Option<FixedVertexHandle> = None;
+        for coord in &edges.0 {
+            let vertex = cdt
                 .insert(Point2 {
-                    x: from.x as f64,
-                    y: from.y as f64,
+                    x: coord.x as f64,
+                    y: coord.y as f64,
                 })
                 .unwrap();
-            let point_b = cdt
-                .insert(Point2 {
-                    x: next.x as f64,
-                    y: next.y as f64,
-                })
-                .unwrap();
-            cdt.add_constraint_and_split(point_a, point_b, |v| v);
+            if let Some(previous) = previous {
+                cdt.add_constraint_and_split(previous, vertex, |v| v);
+            }
+            previous = Some(vertex);
         }
     }
 
@@ -334,6 +333,10 @@ impl Triangulation {
                 .inflate_obstacles(radius, segments as u32, simplification),
             _ => &self.inner,
         };
+        // Bounding boxes of the obstacles, so that point-in-polygon tests can skip
+        // the obstacles that can't contain the point without walking all their edges.
+        let inner_bounds = obstacles_bounds(inner);
+        let used_bounds = used.map(obstacles_bounds);
 
         inner
             .interiors()
@@ -377,17 +380,20 @@ impl Triangulation {
         }
 
         // For each component, test one representative face
-        let mut component_navigable: HashMap<usize, bool> = HashMap::new();
+        let mut component_navigable: Vec<Option<bool>> = vec![None; num_faces];
         for face in cdt.inner_faces() {
             let root = find(&mut component, face.index());
-            if component_navigable.contains_key(&root) {
+            if component_navigable[root].is_some() {
                 continue;
             }
             let center = face.center();
             let center = Coord::from((center.x as f32, center.y as f32));
 
-            let navigable = (used.map(|used| used.contains(&center)).unwrap_or(true)
-                && inner.contains(&center))
+            let navigable = (used
+                .zip(used_bounds.as_deref())
+                .map(|(used, bounds)| polygon_contains(used, bounds, center))
+                .unwrap_or(true)
+                && polygon_contains(inner, &inner_bounds, center))
                 || (self.base_layer.is_some()
                     && self
                         .base_layer
@@ -398,10 +404,15 @@ impl Triangulation {
                                 .is_some()
                         })
                         .unwrap_or(true)
-                    && !inner.interiors().iter().any(|obstacle| {
-                        coord_pos_relative_to_ring(center, obstacle) == CoordPos::Inside
-                    }));
-            component_navigable.insert(root, navigable);
+                    && !inner
+                        .interiors()
+                        .iter()
+                        .zip(&inner_bounds)
+                        .any(|(obstacle, bounds)| {
+                            bounds.contains(center)
+                                && coord_pos_relative_to_ring(center, obstacle) == CoordPos::Inside
+                        }));
+            component_navigable[root] = Some(navigable);
         }
 
         // Build polygons using the precomputed component results
@@ -411,7 +422,7 @@ impl Triangulation {
             .inner_faces()
             .filter_map(|face| {
                 let root = find(&mut component, face.index());
-                component_navigable[&root].then(|| {
+                (component_navigable[root] == Some(true)).then(|| {
                     #[cfg(feature = "tracing")]
                     let _preparing_span = tracing::info_span!("preparing polygon").entered();
 
@@ -437,26 +448,29 @@ impl Triangulation {
         #[cfg(feature = "tracing")]
         let vertex_span = tracing::info_span!("listing vertices").entered();
 
+        // Scratch buffer reused for every vertex, the final list is copied from it.
+        let mut neighbour_polygons = Vec::new();
         let vertices = cdt
             .vertices()
             .map(|point| {
                 #[cfg(feature = "tracing")]
                 let _preparing_span = tracing::info_span!("preparing vertex").entered();
 
-                let mut neighbour_polygons = point
-                    .out_edges()
-                    .map(|out_edge| face_to_polygon[out_edge.face().index()])
-                    .collect::<VecDeque<_>>();
+                neighbour_polygons.clear();
+                neighbour_polygons.extend(
+                    point
+                        .out_edges()
+                        .map(|out_edge| face_to_polygon[out_edge.face().index()]),
+                );
                 let neighbour_polygons: Vec<_> =
-                    if neighbour_polygons.iter().all(|i| *i == u32::MAX) {
-                        vec![u32::MAX]
-                    } else {
-                        while neighbour_polygons[0] == u32::MAX {
-                            neighbour_polygons.rotate_left(1);
+                    match neighbour_polygons.iter().position(|i| *i != u32::MAX) {
+                        None => vec![u32::MAX],
+                        Some(first_polygon) => {
+                            // Start the list on a polygon, not on the outside marker
+                            neighbour_polygons.rotate_left(first_polygon);
+                            neighbour_polygons.dedup();
+                            neighbour_polygons.clone()
                         }
-                        let mut neighbour_polygons: Vec<_> = neighbour_polygons.into();
-                        neighbour_polygons.dedup();
-                        neighbour_polygons
                     };
                 let point = point.position();
                 Vertex::new(vec2(point.x as f32, point.y as f32), neighbour_polygons)
@@ -471,6 +485,66 @@ impl Triangulation {
             polygons,
             ..Default::default()
         }
+    }
+}
+
+/// Axis-aligned bounding box of a ring.
+#[derive(Clone, Copy, Debug)]
+struct Bounds {
+    min: Coord<f32>,
+    max: Coord<f32>,
+}
+
+impl Bounds {
+    fn of_ring(ring: &LineString<f32>) -> Self {
+        let mut bounds = Bounds {
+            min: Coord {
+                x: f32::INFINITY,
+                y: f32::INFINITY,
+            },
+            max: Coord {
+                x: f32::NEG_INFINITY,
+                y: f32::NEG_INFINITY,
+            },
+        };
+        for coord in &ring.0 {
+            bounds.min.x = bounds.min.x.min(coord.x);
+            bounds.min.y = bounds.min.y.min(coord.y);
+            bounds.max.x = bounds.max.x.max(coord.x);
+            bounds.max.y = bounds.max.y.max(coord.y);
+        }
+        bounds
+    }
+
+    #[inline]
+    fn contains(&self, coord: Coord<f32>) -> bool {
+        coord.x >= self.min.x
+            && coord.x <= self.max.x
+            && coord.y >= self.min.y
+            && coord.y <= self.max.y
+    }
+}
+
+fn obstacles_bounds(polygon: &geo::Polygon<f32>) -> Vec<Bounds> {
+    polygon.interiors().iter().map(Bounds::of_ring).collect()
+}
+
+/// Same as [`geo::Contains::contains`] for a [`geo::Polygon`] and a [`Coord`], but skipping the
+/// obstacles whose bounding box doesn't contain the point.
+///
+/// `bounds` must be the bounding boxes of the interiors of `polygon`, in the same order.
+fn polygon_contains(polygon: &geo::Polygon<f32>, bounds: &[Bounds], coord: Coord<f32>) -> bool {
+    if polygon.exterior().0.is_empty() {
+        return false;
+    }
+    match coord_pos_relative_to_ring(coord, polygon.exterior()) {
+        CoordPos::Outside | CoordPos::OnBoundary => false,
+        CoordPos::Inside => polygon
+            .interiors()
+            .iter()
+            .zip(bounds)
+            .filter(|(_, bounds)| bounds.contains(coord))
+            .all(|(hole, _)| coord_pos_relative_to_ring(coord, hole) == CoordPos::Outside),
     }
 }
 
@@ -658,7 +732,7 @@ mod inflate {
     use std::f32::consts::TAU;
 
     use geo::{
-        BooleanOps, Coord, Distance, Euclidean, Line, LineString, Polygon, SimplifyVwPreserve,
+        unary_union, Coord, Distance, Euclidean, Line, LineString, Polygon, SimplifyVwPreserve,
     };
 
     fn segment_normal(start: &Coord<f32>, end: &Coord<f32>) -> Option<Coord<f32>> {
@@ -693,7 +767,15 @@ mod inflate {
                 self.interiors()
                     .iter()
                     .map(|ls| inflate(ls, distance, arc_segments))
-                    .map(|ls| ls.simplify_vw_preserve(minimum_surface))
+                    .map(|ls| {
+                        // `simplify_vw_preserve` returns the input unchanged for a non-positive
+                        // epsilon, but only after building a spatial index of its edges.
+                        if minimum_surface > 0.0 {
+                            ls.simplify_vw_preserve(minimum_surface)
+                        } else {
+                            ls
+                        }
+                    })
                     .collect(),
             )
         }
@@ -710,77 +792,29 @@ mod inflate {
         }
     }
 
-    fn inflate(linestring: &LineString<f32>, distance: f32, arc_segments: u32) -> LineString<f32> {
-        let mut last;
-        let mut lines = linestring.lines();
-        let line = lines.next().unwrap();
-        let mut inflated_linestring = round_line(&line, distance, arc_segments);
-
-        last = line.end;
-        for line in lines {
-            let rounded_line = round_line(&line, distance, arc_segments);
-
-            let from = Polygon::new(inflated_linestring, vec![]);
-            let with = Polygon::new(rounded_line, vec![]);
-            let union = from.union(&with);
-            inflated_linestring = union.0.into_iter().next().unwrap().into_inner().0;
-            last = line.end;
-        }
-        if !linestring.is_closed() {
-            let line = Line::new(last, linestring.0[0]);
-            let rounded_line = round_line(&line, distance, arc_segments);
-            let from = Polygon::new(inflated_linestring, vec![]);
-            let with = Polygon::new(rounded_line, vec![]);
-            let union = from.union(&with);
-            inflated_linestring = union.0.into_iter().next().unwrap().into_inner().0;
-        }
-
-        inflated_linestring
-    }
-
+    /// Union of every segment of the ring inflated to a rounded rectangle, as a single polygon.
+    ///
+    /// All the rounded segments are merged in a single boolean operation instead of one union
+    /// per segment on a polygon growing with each step.
     fn inflate_as_polygon(
         linestring: &LineString<f32>,
         distance: f32,
         arc_segments: u32,
     ) -> Polygon<f32> {
-        let mut last;
-        let mut lines = linestring.lines();
-        let line = lines.next().unwrap();
-        let mut inflated_linestring = round_line(&line, distance, arc_segments);
-        let mut holes = vec![];
+        let closing = (!linestring.is_closed())
+            .then(|| Line::new(*linestring.0.last().unwrap(), linestring.0[0]));
+        let rounded_lines = linestring
+            .lines()
+            .chain(closing)
+            .map(|line| Polygon::new(round_line(&line, distance, arc_segments), vec![]))
+            .collect::<Vec<_>>();
+        unary_union(&rounded_lines).0.into_iter().next().unwrap()
+    }
 
-        last = line.end;
-        for line in lines {
-            let rounded_line = round_line(&line, distance, arc_segments);
-            let from = Polygon::new(inflated_linestring, vec![]);
-            let with = Polygon::new(rounded_line, vec![]);
-            let union = from.union(&with);
-
-            let hole;
-            (inflated_linestring, hole) = union.0.into_iter().next().unwrap().into_inner();
-
-            if !hole.is_empty() {
-                holes.extend(hole);
-            }
-            last = line.end;
-        }
-        if !linestring.is_closed() {
-            let line = Line::new(last, linestring.0[0]);
-            let rounded_line = round_line(&line, distance, arc_segments);
-
-            let from = Polygon::new(inflated_linestring, vec![]);
-            let with = Polygon::new(rounded_line, vec![]);
-            let union = from.union(&with);
-
-            let hole;
-            (inflated_linestring, hole) = union.0.into_iter().next().unwrap().into_inner();
-
-            if !hole.is_empty() {
-                holes.extend(hole);
-            }
-        }
-
-        Polygon::new(inflated_linestring, holes)
+    fn inflate(linestring: &LineString<f32>, distance: f32, arc_segments: u32) -> LineString<f32> {
+        inflate_as_polygon(linestring, distance, arc_segments)
+            .into_inner()
+            .0
     }
 
     fn round_line(line: &Line<f32>, distance: f32, arc_segments: u32) -> LineString<f32> {
