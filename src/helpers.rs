@@ -117,28 +117,41 @@ pub(crate) fn max(x: f32, y: f32) -> f32 {
     }
 }
 
+/// Is the root sitting on the interval itself?
+///
+/// The root normally sees the interval through a wedge bounded by the rays to its two ends,
+/// and where the path bends is decided by which side of those rays the goal falls on. Put
+/// the root on the interval and that wedge opens out into a half plane: the two rays point
+/// opposite ways, so the goal lands outside both of them at once and the side tests stop
+/// answering the question they are asked. Nothing blocks such a root, which is already on
+/// the edge, so the path leaves it straight. The root on one of the ends is the common way
+/// this happens, but landing anywhere along the interval does the same thing.
+#[inline(always)]
+fn root_on_interval(root: Vec2, interval: (Vec2, Vec2)) -> bool {
+    root.on_segment(interval)
+}
+
 /// Computes heuristic distance from a [`super::SearchNode`] represented by the given root and interval to the goal.
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
 #[inline(always)]
 pub(crate) fn heuristic(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> f32 {
-    // If the goal is on the same side of the interval with the root, then we mirror it.
-    let goal = if root.side(interval) == goal.side(interval) {
-        goal.mirror(interval)
-    } else {
-        goal
-    };
-
-    // Filter out the trivial cases.
-    if root == interval.0 || root == interval.1 {
-        root.distance(goal)
-    } else {
-        // If the point is not in the estimated "line of sight", then the heuristic will
-        // be an approximated taut path length, otherwise it will be the exact distance
-        // between the root and the goal.
-        match intersection_time((root, goal), interval) {
-            x if x < 0.0 => root.distance(interval.0) + interval.0.distance(goal),
-            x if x > 1.0 => root.distance(interval.1) + interval.1.distance(goal),
-            _ => root.distance(goal),
+    // This measures the very path [`turning_point`] describes, so it asks that function
+    // where the path bends rather than working it out a second way of its own. The two used
+    // to decide it separately and could disagree, and then the length reported for a path
+    // was not the length of the path reported with it.
+    match turning_point(root, goal, interval) {
+        // The bend is on the interval, and mirroring is a reflection in that same line, so
+        // the distance from the bend to the goal is the same whichever goal is used.
+        Some(turn) => root.distance(turn) + turn.distance(goal),
+        // Straight through, measured against the mirrored goal when the goal is on the
+        // root's side of the interval, which is what makes this a taut path length.
+        None => {
+            let goal = if root.side(interval) == goal.side(interval) {
+                goal.mirror(interval)
+            } else {
+                goal
+            };
+            root.distance(goal)
         }
     }
 }
@@ -147,13 +160,14 @@ pub(crate) fn heuristic(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> f32 {
 #[cfg_attr(feature = "tracing", instrument(skip_all))]
 #[inline(always)]
 pub(crate) fn turning_point(root: Vec2, goal: Vec2, interval: (Vec2, Vec2)) -> Option<Vec2> {
+    // If the goal is on the same side of the interval with the root, then we mirror it.
     let goal = if root.side(interval) == goal.side(interval) {
         goal.mirror(interval)
     } else {
         goal
     };
 
-    if root == interval.0 {
+    if root_on_interval(root, interval) {
         None
     } else if goal.side((root, interval.0)) == EdgeSide::Right {
         Some(interval.0)
@@ -189,7 +203,13 @@ pub(crate) fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) 
     if !(-EPSILON..=(1.0 + EPSILON)).contains(&intersection_time) || intersection_time.is_nan() {
         None
     } else {
-        Some(segment.0 + intersection_time * (segment.1 - segment.0))
+        // The bounds above are deliberately a little wider than the segment, so that a line
+        // passing within a hair of an end still counts as crossing it. The point handed back
+        // has to be on the segment all the same: callers use it as an interval bound, and a
+        // bound sitting just past the end makes the interval run backwards. A backwards
+        // interval reads as a wide cone instead of an empty one, which lets the search see
+        // through walls.
+        Some(segment.0 + intersection_time.clamp(0.0, 1.0) * (segment.1 - segment.0))
     }
 }
 
@@ -199,7 +219,7 @@ mod tests {
 
     use crate::{helpers::Vec2Helper, instance::EdgeSide};
 
-    use super::{heuristic, line_intersect_segment};
+    use super::{heuristic, line_intersect_segment, turning_point};
 
     #[test]
     fn test_on_side() {
@@ -353,5 +373,66 @@ mod tests {
         let p = vec2(-0.30399954, 5.9604645e-8);
 
         assert!(p.on_segment(segment));
+    }
+
+    /// The bounds are wider than the segment so a line passing within a hair of an end
+    /// still counts as crossing it, but the point that comes back has to be on the
+    /// segment. Callers use it as an interval bound, and one just past the end makes the
+    /// interval run backwards, which reads as a wide cone instead of an empty one and lets
+    /// the search cut corners through walls.
+    #[test]
+    fn line_intersect_segment_lands_on_the_segment() {
+        // taken from a search on `meshes/v2/aurora-merged.mesh`: the line crosses the
+        // segment's own line at t = 1.0000586, a hair past the end
+        let segment = (vec2(564.0, 192.0), vec2(557.0, 168.0));
+        let line = (vec2(606.0, 144.0), vec2(558.12524, 167.44727));
+
+        let intersection = line_intersect_segment(line, segment).unwrap();
+        assert!(
+            intersection.on_segment(segment),
+            "{intersection:?} is not on {segment:?}"
+        );
+    }
+
+    /// [`heuristic`] measures the path [`turning_point`] describes, so the two have to
+    /// agree about where that path bends. Both degenerate shapes below used to break one
+    /// of them: the root sitting on the interval leaves the side tests with a half plane
+    /// to work with instead of a wedge, and a root, interval and goal in a line leave
+    /// `intersection_time` dividing by nearly nothing.
+    #[test]
+    fn heuristic_measures_the_turning_point_path() {
+        let cases = [
+            // root on the interval, from `meshes/v2/arena.mesh`
+            (
+                vec2(18.5, 25.0),
+                vec2(15.0, 47.0),
+                (vec2(18.0, 19.0), vec2(19.0, 31.0)),
+            ),
+            // root on one end of the interval, from `meshes/v2/arena.mesh`
+            (
+                vec2(35.0, 15.0),
+                vec2(30.626049, 19.191982),
+                (vec2(34.0, 3.0), vec2(35.0, 15.0)),
+            ),
+            // root, interval and goal nearly in a line, from `meshes/v3/scene_mp_2p_01.mesh`
+            (
+                vec2(-3.98, -66.47),
+                vec2(-3.885617, -72.63431),
+                (vec2(-3.891216, -72.26863), vec2(-3.880018, -72.99999)),
+            ),
+        ];
+
+        for (root, goal, interval) in cases {
+            let walked = match turning_point(root, goal, interval) {
+                Some(turn) => root.distance(turn) + turn.distance(goal),
+                None => root.distance(goal),
+            };
+            let estimated = heuristic(root, goal, interval);
+            assert!(
+                (walked - estimated).abs() < 1e-3,
+                "root {root:?} interval {interval:?} goal {goal:?}: \
+                 turning point says the path is {walked} long, heuristic says {estimated}"
+            );
+        }
     }
 }

@@ -93,6 +93,30 @@ pub(crate) enum InstanceStep {
     Continue,
 }
 
+/// Did a computed interval end land on the vertex it was meant to?
+///
+/// Interval ends come out of intersecting a ray with an edge, so they carry the rounding of
+/// every step behind them, and `f32` holds only about seven significant digits. An end that
+/// should sit exactly on a corner instead lands a little short of it, and the search has to
+/// decide whether that is the corner or some other point on the edge. Get it wrong one way
+/// and it refuses to turn at a corner it can plainly see, takes the long way round, and
+/// answers the same query differently depending on which end you start from. Get it wrong
+/// the other way and it turns at a vertex that was never there.
+///
+/// The allowance is a fraction of the distance the ray covered, so that it does not go
+/// tight on a mesh whose coordinates are larger than the ones measured here. On the bundled
+/// meshes the ends that should have been corners missed by about a thousandth of a unit,
+/// over rays of 46 and 239 units, while the nearest end that genuinely was not a corner sat
+/// 7 to 30 times further out. The fraction below sits between the two.
+#[inline(always)]
+fn lands_on(computed: Vec2, vertex: Vec2, root: Vec2) -> bool {
+    const RELATIVE: f32 = 5.0e-5;
+    // Close to the root there is no accumulated error to speak of, but the comparison still
+    // needs something to scale, and this keeps it from collapsing to an exact match.
+    let travelled = root.distance(vertex).max(1.0);
+    computed.distance_squared(vertex) < (RELATIVE * travelled).powi(2)
+}
+
 pub(crate) trait U32Layer {
     fn layer(&self) -> u8;
 
@@ -421,34 +445,48 @@ impl<'m> SearchInstance<'m> {
         // }
 
         let right_index = {
-            let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
-                [node.edge.1 as usize]
-                .coords
-                + self.mesh.layers[node.previous_polygon_layer as usize].offset;
-            polygon
-                .vertices
-                .iter()
-                .enumerate()
-                .find(|(_, v)| {
-                    (target_layer.vertices[**v as usize].coords + target_layer.offset)
-                        .distance_squared(edge)
-                        < 0.001
-                })
-                .map(|(i, _)| i)
-                .unwrap_or_else(|| {
-                    let mut distances = polygon
-                        .vertices
-                        .iter()
-                        .map(|v| {
-                            (target_layer.vertices[*v as usize].coords + target_layer.offset)
-                                .distance_squared(edge)
-                        })
-                        .enumerate()
-                        .collect::<Vec<_>>();
-                    distances.sort_unstable_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
-                    distances.first().unwrap().0
-                })
-                + 1
+            // Within one layer the edge already names the vertex, so say so. Looking it up
+            // by coordinates needs a tolerance wide enough to absorb the rounding of a
+            // cross layer transform, and a mesh is free to put two of a polygon's own
+            // corners closer together than that: `meshes/v3/scene_mp_2p_01.mesh` has a
+            // triangle whose two corners are 0.008 apart. Matching the wrong one starts the
+            // walk an edge early, which both hands the first edge's observability to
+            // the next one and drops a real successor.
+            let same_layer = node.polygon_to.layer() == node.previous_polygon_layer;
+            let by_index = if same_layer {
+                polygon.vertices.iter().position(|v| *v == node.edge.1)
+            } else {
+                None
+            };
+            by_index.unwrap_or_else(|| {
+                let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
+                    [node.edge.1 as usize]
+                    .coords
+                    + self.mesh.layers[node.previous_polygon_layer as usize].offset;
+                polygon
+                    .vertices
+                    .iter()
+                    .enumerate()
+                    .find(|(_, v)| {
+                        (target_layer.vertices[**v as usize].coords + target_layer.offset)
+                            .distance_squared(edge)
+                            < 0.001
+                    })
+                    .map(|(i, _)| i)
+                    .unwrap_or_else(|| {
+                        let mut distances = polygon
+                            .vertices
+                            .iter()
+                            .map(|v| {
+                                (target_layer.vertices[*v as usize].coords + target_layer.offset)
+                                    .distance_squared(edge)
+                            })
+                            .enumerate()
+                            .collect::<Vec<_>>();
+                        distances.sort_unstable_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+                        distances.first().unwrap().0
+                    })
+            }) + 1
         };
         let left_index = polygon.vertices.len() + right_index - 2;
 
@@ -835,15 +873,13 @@ impl<'m> SearchInstance<'m> {
                     continue;
                 }
 
-                const EPSILON: f32 = 1.0e-10;
                 let root = match successor.ty {
                     SuccessorType::RightNonObservable => {
-                        if successor
-                            .interval
-                            .0
-                            .distance_squared(start.coords + target_layer.offset)
-                            > EPSILON
-                        {
+                        if !lands_on(
+                            successor.interval.0,
+                            start.coords + target_layer.offset,
+                            node.root,
+                        ) {
                             #[cfg(debug_assertions)]
                             if self.debug {
                                 println!("x non observable on an intersection (right)");
@@ -859,10 +895,12 @@ impl<'m> SearchInstance<'m> {
                                 && vertex.polygons.iter().any(|p| {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
-                            && (vertex.coords
-                                + self.mesh.layers[node.previous_polygon_layer as usize].offset)
-                                .distance_squared(node.interval.0)
-                                < EPSILON
+                            && lands_on(
+                                node.interval.0,
+                                vertex.coords
+                                    + self.mesh.layers[node.previous_polygon_layer as usize].offset,
+                                node.root,
+                            )
                         {
                             node.interval.0
                         } else {
@@ -875,9 +913,11 @@ impl<'m> SearchInstance<'m> {
                     }
                     SuccessorType::Observable => node.root,
                     SuccessorType::LeftNonObservable => {
-                        if (successor.interval.1).distance_squared(end.coords + target_layer.offset)
-                            > EPSILON
-                        {
+                        if !lands_on(
+                            successor.interval.1,
+                            end.coords + target_layer.offset,
+                            node.root,
+                        ) {
                             #[cfg(debug_assertions)]
                             if self.debug {
                                 println!("x non observable on an intersection (left)");
@@ -893,10 +933,12 @@ impl<'m> SearchInstance<'m> {
                                 && vertex.polygons.iter().any(|p| {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
-                            && (vertex.coords
-                                + self.mesh.layers[node.previous_polygon_layer as usize].offset)
-                                .distance_squared(node.interval.1)
-                                < EPSILON
+                            && lands_on(
+                                node.interval.1,
+                                vertex.coords
+                                    + self.mesh.layers[node.previous_polygon_layer as usize].offset,
+                                node.root,
+                            )
                         {
                             node.interval.1
                         } else {
