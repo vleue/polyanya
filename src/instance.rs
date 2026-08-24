@@ -60,7 +60,6 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
     pub(crate) path_arena: Vec<PathArenaNode>,
-    #[cfg(feature = "detailed-layers")]
     pub(crate) from: (Vec2, u8),
     pub(crate) to: Vec2,
     pub(crate) polygon_from: u32,
@@ -223,7 +222,6 @@ impl<'m> SearchInstance<'m> {
             node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
             path_arena: Vec::with_capacity(50),
-            #[cfg(feature = "detailed-layers")]
             from: (from.0, from.1.layer()),
             to: to.0,
             polygon_to: to.1,
@@ -409,9 +407,22 @@ impl<'m> SearchInstance<'m> {
                 path_through_polygons.insert(0, self.polygon_from);
 
                 return InstanceStep::Found(Path {
-                    path,
                     #[cfg(not(feature = "detailed-layers"))]
-                    length: next.distance_start_to_root + next.heuristic,
+                    // Measured over the path that is actually returned, not as
+                    // `distance_start_to_root + heuristic`. The two agree while every
+                    // assumption the heuristic makes holds, and stop agreeing when the goal
+                    // sits outside the polygon the search ended in, which `search_delta`
+                    // allows: the heuristic then measures to a mirrored goal, or misses the
+                    // backtrack the reconstruction emits, and the reported length is off by
+                    // units in either direction. This is what the `detailed-layers` build
+                    // has always done.
+                    length: path
+                        .iter()
+                        .fold((0.0, self.from.0), |(total, previous), point| {
+                            (total + previous.distance(*point), *point)
+                        })
+                        .0,
+                    path,
                     #[cfg(feature = "detailed-layers")]
                     length: {
                         let a = path_with_layers.iter().fold((0.0, self.from), |acc, p| {
