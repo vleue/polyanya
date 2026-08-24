@@ -106,8 +106,15 @@ impl Layer {
     /// Uses a BVH. This is useful at the start of the pathfinding, to get the containing polygons
     /// for the start and end point. It can also be used through [`Self::point_in_mesh`] to check
     /// if a point is in the mesh.
+    ///
+    /// A layer without polygons is left unbaked: there is no tree to build, and every reader of
+    /// the BVH already falls back to the linear scan when it is missing.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     pub fn bake_polygon_finder(&mut self) {
+        if self.polygons.is_empty() {
+            self.baked_polygons = None;
+            return;
+        }
         let bounded_polygons = self
             .polygons
             .iter()
@@ -180,7 +187,7 @@ impl Layer {
         self.baked_polygons
             .as_ref()
             .unwrap()
-            .locate_in_envelope_intersecting(&rstar::AABB::from_point(query_point))
+            .locate_in_envelope_intersecting(rstar::AABB::from_point(query_point))
             .filter_map(|bp| {
                 self.point_in_polygon(*point, &self.polygons[bp.index])
                     .then_some(bp.index as u32)
@@ -198,7 +205,7 @@ impl Layer {
             .baked_polygons
             .as_ref()
             .unwrap()
-            .locate_in_envelope_intersecting_int(&rstar::AABB::from_point(query_point), |bp| {
+            .locate_in_envelope_intersecting_int(rstar::AABB::from_point(query_point), |bp| {
                 if self.point_in_polygon(*point, &self.polygons[bp.index]) {
                     result = Some(bp.index as u32);
                     ControlFlow::Break(())
@@ -228,8 +235,11 @@ impl Layer {
             };
 
             let current_side = point.side((last, next));
-            if current_side == EdgeSide::Edge && point.in_bounding_box((last, next)) {
-                return true;
+            if current_side == EdgeSide::Edge {
+                if point.in_bounding_box((last, next)) {
+                    return true;
+                }
+                continue;
             }
             if current_side != EdgeSide::Left {
                 return false;
