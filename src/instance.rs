@@ -95,26 +95,27 @@ pub(crate) enum InstanceStep {
 
 /// Did a computed interval end land on the vertex it was meant to?
 ///
-/// Interval ends come out of intersecting a ray with an edge, so they carry the rounding of
-/// every step behind them, and `f32` holds only about seven significant digits. An end that
-/// should sit exactly on a corner instead lands a little short of it, and the search has to
-/// decide whether that is the corner or some other point on the edge. Get it wrong one way
-/// and it refuses to turn at a corner it can plainly see, takes the long way round, and
-/// answers the same query differently depending on which end you start from. Get it wrong
-/// the other way and it turns at a vertex that was never there.
+/// Interval ends come out of intersecting a ray with an edge. When the ray passes close to
+/// a corner it crosses that edge at a shallow angle, the intersection is the ratio of two
+/// nearly cancelling quantities, and the answer comes back a good deal further from the
+/// corner than `f32`'s precision alone would suggest. The search then has to decide whether
+/// that end is the corner or some other point along the edge. Decide it too strictly and it
+/// refuses to turn at a corner it can plainly see, takes the long way round, and answers
+/// the same query differently depending on which end you start from. Decide it too loosely
+/// and it turns at a vertex that was never there.
 ///
-/// The allowance is a fraction of the distance the ray covered, so that it does not go
-/// tight on a mesh whose coordinates are larger than the ones measured here. On the bundled
-/// meshes the ends that should have been corners missed by about a thousandth of a unit,
-/// over rays of 46 and 239 units, while the nearest end that genuinely was not a corner sat
-/// 7 to 30 times further out. The fraction below sits between the two.
+/// The allowance has a floor because that cancellation does not shrink with the ray: on the
+/// bundled meshes the ends that should have been corners missed by 1.0 to 1.4 thousandths
+/// of a unit alike, over rays of 18, 46 and 239 units. It grows with the ray on top of that,
+/// so it does not go tight on a mesh whose coordinates are larger than the ones measured
+/// here. In those same searches the nearest end that genuinely was not a corner sat several
+/// times further out than the floor.
 #[inline(always)]
 fn lands_on(computed: Vec2, vertex: Vec2, root: Vec2) -> bool {
     const RELATIVE: f32 = 5.0e-5;
-    // Close to the root there is no accumulated error to speak of, but the comparison still
-    // needs something to scale, and this keeps it from collapsing to an exact match.
-    let travelled = root.distance(vertex).max(1.0);
-    computed.distance_squared(vertex) < (RELATIVE * travelled).powi(2)
+    const FLOOR: f32 = 2.0e-3;
+    let allowance = (RELATIVE * root.distance(vertex)).max(FLOOR);
+    computed.distance_squared(vertex) < allowance.powi(2)
 }
 
 pub(crate) trait U32Layer {
@@ -480,12 +481,11 @@ impl<'m> SearchInstance<'m> {
         let root = node.root;
         let (right, left) = node.interval;
 
-        const EPSILON: f32 = 1.0e-6;
         // Turning at an end of the interval is only possible if the interval actually reaches the
         // corner there. Whether that corner is one we're allowed to turn at is checked later, in
         // `successors`, which also knows about blocked layers.
-        let reaches_right = right.distance_squared(t1) < EPSILON;
-        let reaches_left = left.distance_squared(t3) < EPSILON;
+        let reaches_right = lands_on(right, t1, root);
+        let reaches_left = lands_on(left, t3, root);
 
         let mut successors = SmallVec::new();
         match t2.side((root, left)) {
