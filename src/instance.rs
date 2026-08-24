@@ -919,7 +919,13 @@ impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     pub(crate) fn successors(&mut self, mut node: SearchNode) {
-        let mut visited = HashSet::new();
+        // A node with a single successor is expanded in place instead of going through the queue.
+        // Polygons can be laid out so that such a chain walks a cycle, so its length is capped:
+        // past the cap the node is left in the buffer and goes back to the queue, where the regular
+        // search handles it. Chains this long are vanishingly rare, and cutting one only costs a
+        // push and a pop.
+        const MAX_CHAINED_EXPANSIONS: u32 = 64;
+        let mut chained_expansions = 0;
         loop {
             #[cfg(feature = "stats")]
             {
@@ -1120,12 +1126,12 @@ impl<'m> SearchInstance<'m> {
                         new_node.polygon_to.polygon()
                     );
                 }
-                node = self.node_buffer.drain(..).next().unwrap();
-                if !visited.insert(node.polygon_to) {
-                    // infinite loop, exit now
-                    // TODO: shouldn't happen, identify cases that trigger this
+                chained_expansions += 1;
+                if chained_expansions > MAX_CHAINED_EXPANSIONS {
+                    // leave the node in the buffer, it will be pushed to the queue
                     break;
                 }
+                node = self.node_buffer.drain(..).next().unwrap();
                 #[cfg(debug_assertions)]
                 {
                     self.fail_fast -= 1;
