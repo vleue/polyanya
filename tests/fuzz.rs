@@ -550,6 +550,101 @@ fn aurora_mesh() -> &'static Mesh {
     AURORA.get_or_init(|| mesh_from("meshes/v2/aurora-merged.mesh"))
 }
 
+/// A point just past the mesh edge, close enough that the search still accepts it.
+///
+/// Walks out from a point on the mesh in a random direction until it stops being
+/// contained, then a little further. Gives up rather than search harder when the walk
+/// runs off the end of a wide open area, so the caller has to cope with `None`.
+fn point_just_off_mesh(mesh: &Mesh, rng: &mut Rng) -> Option<Vec2> {
+    let inside = point_in_random_polygon(mesh, rng)?;
+    let angle = rng.range(0.0, std::f32::consts::TAU);
+    let direction = Vec2::new(angle.cos(), angle.sin());
+
+    let mut step = 0.002;
+    while step < 4.0 {
+        if !strictly_on_mesh(mesh, inside + direction * step) {
+            // Past the edge now. Land somewhere in the band the search still snaps back
+            // from, which is what makes this different from `fuzz_off_mesh_queries`.
+            let point = inside + direction * (step + rng.range(0.0, 0.05));
+            return (!strictly_on_mesh(mesh, point) && mesh.point_in_mesh(point)).then_some(point);
+        }
+        step *= 1.4;
+    }
+    None
+}
+
+/// Goals a hair outside the mesh, which the search accepts and answers rather than
+/// refusing. It cannot answer with a path that stays on the mesh, since the goal isn't on
+/// it, so most of the properties don't apply. What has to hold is that `length` describes
+/// the path handed out with it: a caller that sorts destinations by cost is comparing
+/// those numbers, and a goal landing a thousandth of a unit outside because it was
+/// computed in f32 is not something they can see coming.
+///
+/// This band is invisible to the other tests, which only generate goals that are strictly
+/// on the mesh, and it is where the search's assumptions stop holding: the final polygon
+/// does not contain the goal, so the heuristic can measure to a mirrored goal, or miss a
+/// backtrack in the path, and be off by units in either direction.
+#[test]
+fn fuzz_goals_just_off_mesh() {
+    let seed = seed();
+    eprintln!("fuzzing goals just off the mesh, POLYANYA_FUZZ_SEED={seed}");
+    let mut rng = Rng::new(seed);
+    let mesh = &mesh_from("meshes/v3/scene_mp_2p_01.mesh");
+
+    let deadline = budget().map(|budget| Instant::now() + budget);
+    let count = if deadline.is_some() {
+        usize::MAX
+    } else {
+        iterations(2000)
+    };
+    let mut ran = 0;
+    for i in 0..count {
+        if let (0, Some(deadline)) = (i % 64, deadline) {
+            if Instant::now() >= deadline {
+                break;
+            }
+        }
+        let (Some(from), Some(to)) = (
+            point_in_random_polygon(mesh, &mut rng),
+            point_just_off_mesh(mesh, &mut rng),
+        ) else {
+            continue;
+        };
+        let Some(path) = mesh.path(from, to) else {
+            continue;
+        };
+        ran += 1;
+        let query = Query {
+            mesh: "scene_mp_2p_01",
+            seed,
+            from,
+            to,
+        };
+
+        assert!(!path.path.is_empty(), "empty path, {query}");
+        let last = *path.path.last().unwrap();
+        assert!(
+            close(last.x, to.x) && close(last.y, to.y),
+            "path ends at {last:?} instead of the goal, {query}"
+        );
+        let summed = path
+            .path
+            .iter()
+            .fold((0.0, from), |(total, previous), point| {
+                (total + previous.distance(*point), *point)
+            })
+            .0;
+        assert!(
+            close(summed, path.length),
+            "length {} but the path is {summed} long, {query}",
+            path.length
+        );
+    }
+
+    eprintln!("goals just off the mesh: {ran} queries checked");
+    assert!(ran > 0, "no query could be generated");
+}
+
 /// Points well outside the mesh. The search snaps a query back to the closest point
 /// within `search_delta * search_steps`, so far away points have to come back as "no
 /// path" rather than panicking, looping, or answering with a path that starts nowhere.
