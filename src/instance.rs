@@ -396,6 +396,25 @@ impl<'m> SearchInstance<'m> {
         result
     }
 
+    /// An intersection that lands on one end of the edge it was computed on, snapped to that
+    /// end's exact coordinates.
+    ///
+    /// The generic path in [`Self::edges_between`] only splits an edge when the intersection falls
+    /// strictly inside it, so an interval that reaches a corner carries that corner's exact
+    /// coordinates. That has to hold here too: `successors` only lets the search turn at a corner
+    /// when the interval end matches the vertex to 1e-10, which a computed intersection misses.
+    #[inline(always)]
+    fn snap_to_edge_end(intersection: Vec2, start: Vec2, end: Vec2) -> Vec2 {
+        const EPSILON: f32 = 1.0e-6;
+        if intersection.distance_squared(start) < EPSILON {
+            start
+        } else if intersection.distance_squared(end) < EPSILON {
+            end
+        } else {
+            intersection
+        }
+    }
+
     /// Successors of a search node expanding into a triangle.
     ///
     /// A triangle has only two edges to expand onto, and where the interval splits between them is
@@ -448,11 +467,12 @@ impl<'m> SearchInstance<'m> {
         match t2.side((root, left)) {
             // t2 is behind the left end of the interval: everything observable is on t1-t2.
             EdgeSide::Left => {
-                let li = line_intersect_segment((root, left), (t1, t2))?;
+                let li =
+                    Self::snap_to_edge_end(line_intersect_segment((root, left), (t1, t2))?, t1, t2);
                 let ri = if reaches_right {
                     t1
                 } else {
-                    line_intersect_segment((root, right), (t1, t2))?
+                    Self::snap_to_edge_end(line_intersect_segment((root, right), (t1, t2))?, t1, t2)
                 };
                 successors.push(Successor {
                     interval: (ri, li),
@@ -477,7 +497,7 @@ impl<'m> SearchInstance<'m> {
                 let ri = if reaches_right {
                     t1
                 } else {
-                    line_intersect_segment((root, right), (t1, t2))?
+                    Self::snap_to_edge_end(line_intersect_segment((root, right), (t1, t2))?, t1, t2)
                 };
                 successors.push(Successor {
                     interval: (ri, t2),
@@ -497,12 +517,16 @@ impl<'m> SearchInstance<'m> {
                 let li = if reaches_left {
                     t3
                 } else {
-                    line_intersect_segment((root, left), (t2, t3))?
+                    Self::snap_to_edge_end(line_intersect_segment((root, left), (t2, t3))?, t2, t3)
                 };
                 match t2.side((root, right)) {
                     // The observable part is entirely on t2-t3.
                     EdgeSide::Right => {
-                        let ri = line_intersect_segment((root, right), (t2, t3))?;
+                        let ri = Self::snap_to_edge_end(
+                            line_intersect_segment((root, right), (t2, t3))?,
+                            t2,
+                            t3,
+                        );
                         if reaches_right {
                             successors.push(Successor {
                                 interval: (t1, t2),
@@ -541,7 +565,11 @@ impl<'m> SearchInstance<'m> {
                         let ri = if reaches_right {
                             t1
                         } else {
-                            line_intersect_segment((root, right), (t1, t2))?
+                            Self::snap_to_edge_end(
+                                line_intersect_segment((root, right), (t1, t2))?,
+                                t1,
+                                t2,
+                            )
                         };
                         successors.push(Successor {
                             interval: (ri, t2),
