@@ -10,8 +10,6 @@ use std::time::Instant;
 use glam::Vec2;
 use hashbrown::{hash_map::Entry, HashMap};
 
-#[cfg(feature = "detailed-layers")]
-use crate::helpers::EPSILON;
 use crate::{
     helpers::{heuristic, line_intersect_segment, turning_point, Vec2Helper},
     Layer, Mesh, Path, PathArenaNode, Polygon, SearchNode, PRECISION,
@@ -368,6 +366,7 @@ impl<'m> SearchInstance<'m> {
                     path.push(self.to);
                     path_with_layers_end.push((self.to, next.polygon_to.layer()));
                 }
+
                 #[cfg(feature = "detailed-layers")]
                 let path_with_layers = {
                     let mut path_with_layers = vec![];
@@ -398,7 +397,7 @@ impl<'m> SearchInstance<'m> {
                     let mut path_with_layers = vec![];
                     while let Some(p) = path_with_layers_peekable.next() {
                         if let Some(n) = path_with_layers_peekable.peek() {
-                            if p.0.distance_squared(n.0) < EPSILON {
+                            if p.0.distance_squared(n.0) < 1.0e-12 {
                                 continue;
                             }
                         }
