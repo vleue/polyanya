@@ -17,6 +17,17 @@ use crate::{
     Layer, Mesh, Path, PathArenaNode, Polygon, SearchNode, PRECISION,
 };
 
+/// A run of this many pops without `f` going up is taken as the search going in circles,
+/// and turns on the bookkeeping in `is_new`.
+///
+/// It only has to sit above the longest run a healthy search produces, and those are
+/// short: over 15000 searches on the bundled meshes the longest was 79, on `aurora.mesh`.
+/// Turning the bookkeeping on early costs a little speed and nothing else, so there is no
+/// need to leave much more room than that. A mesh with fewer polygons than this uses its
+/// polygon count instead, so that a small mesh still gets there well inside the iteration
+/// limit `Mesh::path` searches under.
+const STALL_LIMIT: usize = 512;
+
 pub(crate) struct Root(Vec2);
 
 impl PartialEq for Root {
@@ -62,8 +73,16 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
     /// Nodes already expanded, keyed on everything that decides what a node expands
-    /// into. See `is_new`.
-    pub(crate) seen_nodes: hashbrown::HashSet<(u32, [u32; 7])>,
+    /// into. Empty unless the search has started going in circles: see `is_new`.
+    pub(crate) seen_nodes: hashbrown::HashSet<[u32; 10]>,
+    /// `f` of the last node popped, and how many pops have gone by without it going up.
+    /// This is what going in circles looks like from here: see `is_new`.
+    pub(crate) last_f: f32,
+    pub(crate) stalled_pops: u32,
+    /// How long a run of pops without progress is tolerated before `seen_nodes` starts
+    /// recording. See `STALL_LIMIT`.
+    pub(crate) stall_limit: u32,
+    pub(crate) recording: bool,
     pub(crate) path_arena: Vec<PathArenaNode>,
     #[cfg(feature = "detailed-layers")]
     pub(crate) from: (Vec2, u8),
@@ -136,7 +155,16 @@ impl<'m> SearchInstance<'m> {
             queue: BinaryHeap::with_capacity(15),
             node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
-            seen_nodes: hashbrown::HashSet::with_capacity(64),
+            seen_nodes: hashbrown::HashSet::new(),
+            last_f: 0.0,
+            stalled_pops: 0,
+            stall_limit: mesh
+                .layers
+                .iter()
+                .map(|layer| layer.polygons.len())
+                .sum::<usize>()
+                .min(STALL_LIMIT) as u32,
+            recording: false,
             path_arena: Vec::with_capacity(50),
             #[cfg(feature = "detailed-layers")]
             from: (from.0, from.1.layer()),
@@ -229,6 +257,21 @@ impl<'m> SearchInstance<'m> {
                 self.popped += 1;
             }
 
+            if !self.recording {
+                // Every node on a cycle has the same `f`: a node never has a lower `f`
+                // than the one it came from, so a run that arrives back where it started
+                // cannot have gone up along the way either. A long run of pops that does
+                // not raise `f` is what that looks like from here.
+                let f = next.distance_start_to_root + next.heuristic;
+                if f > self.last_f {
+                    self.last_f = f;
+                    self.stalled_pops = 0;
+                } else {
+                    self.stalled_pops += 1;
+                    self.recording = self.stalled_pops > self.stall_limit;
+                }
+            }
+
             if let Some(o) = self.root_history.get(&Root(next.root)) {
                 // TODO: revisit this for layers with different height at the same coordinates
                 if o < &next.distance_start_to_root {
@@ -243,7 +286,7 @@ impl<'m> SearchInstance<'m> {
                 }
             }
 
-            if !self.is_new(&next) {
+            if self.recording && !self.is_new(&next) {
                 #[cfg(feature = "verbose")]
                 println!("node is a duplicate!");
                 #[cfg(feature = "stats")]
@@ -935,29 +978,33 @@ impl<'m> SearchInstance<'m> {
         }
     }
 
-    /// Has a node bit for bit identical to this one already been expanded? Same target
-    /// polygon, same root, same interval, same cost: expanding it again can only produce
-    /// the successors the first one produced.
+    /// Has this node already been expanded? The key holds everything the expansion reads:
+    /// the polygon it goes into, the edge it comes over, and the wedge it looks through.
+    /// The cost is deliberately left out, so that a repeat arriving more expensively goes
+    /// as well — two nodes with this key have the same heuristic, so the cheapest of them
+    /// is the one the queue hands over first.
     ///
-    /// This is not a theoretical case. A funnel that reaches a corner whose polygons form
-    /// a ring can walk that ring with the root and the cost pinned, regenerating the same
-    /// nodes lap after lap until the iteration limit runs out, and the path that does
-    /// exist is never returned. `root_history` cannot stop it: it drops nodes that are
-    /// strictly worse, and these are equal.
+    /// Only reached once the search has started going in circles, which is the only time
+    /// anything comes back. A funnel that reaches a corner whose polygons form a ring can
+    /// walk that ring with the root and the cost pinned, regenerating the same nodes lap
+    /// after lap until the iteration limit runs out, and the path that does exist is never
+    /// returned. `root_history` cannot stop it: it drops nodes that are strictly worse,
+    /// and these are equal. Recording them is what ends the lap, and doing it only once a
+    /// search looks stuck keeps it off the paths of every search that does not.
     #[inline(always)]
     fn is_new(&mut self, node: &SearchNode) -> bool {
-        self.seen_nodes.insert((
+        self.seen_nodes.insert([
             node.polygon_to,
-            [
-                node.root.x.to_bits(),
-                node.root.y.to_bits(),
-                node.interval.0.x.to_bits(),
-                node.interval.0.y.to_bits(),
-                node.interval.1.x.to_bits(),
-                node.interval.1.y.to_bits(),
-                node.distance_start_to_root.to_bits(),
-            ],
-        ))
+            node.polygon_from,
+            node.edge.0,
+            node.edge.1,
+            node.root.x.to_bits(),
+            node.root.y.to_bits(),
+            node.interval.0.x.to_bits(),
+            node.interval.0.y.to_bits(),
+            node.interval.1.x.to_bits(),
+            node.interval.1.y.to_bits(),
+        ])
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip_all))]

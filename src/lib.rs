@@ -534,6 +534,10 @@ impl Mesh {
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
             seen_nodes: hashbrown::HashSet::new(),
+            last_f: 0.0,
+            stalled_pops: 0,
+            stall_limit: u32::MAX,
+            recording: false,
             path_arena: Vec::new(),
             #[cfg(feature = "detailed-layers")]
             from: (node.root, 0),
@@ -576,6 +580,10 @@ impl Mesh {
             node_buffer: Vec::new(),
             root_history: HashMap::new(),
             seen_nodes: hashbrown::HashSet::new(),
+            last_f: 0.0,
+            stalled_pops: 0,
+            stall_limit: u32::MAX,
+            recording: false,
             path_arena: Vec::new(),
             #[cfg(feature = "detailed-layers")]
             from: (Vec2::ZERO, 0),
