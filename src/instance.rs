@@ -14,7 +14,7 @@ use hashbrown::{hash_map::Entry, HashMap};
 use crate::helpers::EPSILON;
 use crate::{
     helpers::{heuristic, line_intersect_segment, turning_point, Vec2Helper},
-    Mesh, Path, PathArenaNode, SearchNode, PRECISION,
+    Layer, Mesh, Path, PathArenaNode, Polygon, SearchNode, PRECISION,
 };
 
 pub(crate) struct Root(Vec2);
@@ -212,8 +212,7 @@ impl<'m> SearchInstance<'m> {
             let other_side = start
                 .polygons
                 .iter()
-                .filter(|i| **i != u32::MAX && end.polygons.contains(*i))
-                .find(|poly| *poly != &from.1)
+                .find(|i| **i != u32::MAX && **i != from.1 && end.polygons.contains(*i))
                 .unwrap_or(&u32::MAX);
 
             if search_instance.blocked_layers.contains(&other_side.layer()) {
@@ -421,6 +420,199 @@ impl<'m> SearchInstance<'m> {
         result
     }
 
+    /// An intersection that lands on one end of the edge it was computed on, snapped to that
+    /// end's exact coordinates.
+    ///
+    /// The generic path in [`Self::edges_between`] only splits an edge when the intersection falls
+    /// strictly inside it, so an interval that reaches a corner carries that corner's exact
+    /// coordinates. That has to hold here too: `successors` only lets the search turn at a corner
+    /// when the interval end matches the vertex to 1e-10, which a computed intersection misses.
+    #[inline(always)]
+    fn snap_to_edge_end(intersection: Vec2, start: Vec2, end: Vec2) -> Vec2 {
+        const EPSILON: f32 = 1.0e-6;
+        if intersection.distance_squared(start) < EPSILON {
+            start
+        } else if intersection.distance_squared(end) < EPSILON {
+            end
+        } else {
+            intersection
+        }
+    }
+
+    /// Successors of a search node expanding into a triangle.
+    ///
+    /// A triangle has only two edges to expand onto, and where the interval splits between them is
+    /// decided by two orientation tests, so the generic edge walk in [`Self::edges_between`] can be
+    /// skipped entirely: at most three successors, at most two intersections, no iteration.
+    ///
+    /// Ported from the reference implementation:
+    /// <https://bitbucket.org/dharabor/pathfinding/src/624a6abe8777d14d0753e847b0970e74a7913b45/anyangle/polyanya/search/expansion.cpp#lines-220>
+    ///
+    /// Returns `None` when the triangle can't be handled here, in which case the caller falls back
+    /// to the generic path.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
+    fn edges_between_triangle(
+        &self,
+        node: &SearchNode,
+        polygon: &Polygon,
+        target_layer: &Layer,
+        left_vertex_index: usize,
+    ) -> Option<SmallVec<[Successor; 10]>> {
+        // Naming follows the reference implementation: going counter clockwise from the vertex the
+        // interval's left end comes from, the three corners are t3 (left), t1 (right) and t2. We
+        // came in through t3-t1, so the successors are on t1-t2 and t2-t3.
+        let i3 = left_vertex_index;
+        let i1 = (i3 + 1) % 3;
+        let i2 = (i3 + 2) % 3;
+        let (v1, v2, v3) = (
+            polygon.vertices[i1],
+            polygon.vertices[i2],
+            polygon.vertices[i3],
+        );
+        if v1.max(v2).max(v3) as usize >= target_layer.vertices.len() {
+            return None;
+        }
+        let t1 = target_layer.vertices[v1 as usize].coords + target_layer.offset;
+        let t2 = target_layer.vertices[v2 as usize].coords + target_layer.offset;
+        let t3 = target_layer.vertices[v3 as usize].coords + target_layer.offset;
+
+        let root = node.root;
+        let (right, left) = node.interval;
+
+        const EPSILON: f32 = 1.0e-6;
+        // Turning at an end of the interval is only possible if the interval actually reaches the
+        // corner there. Whether that corner is one we're allowed to turn at is checked later, in
+        // `successors`, which also knows about blocked layers.
+        let reaches_right = right.distance_squared(t1) < EPSILON;
+        let reaches_left = left.distance_squared(t3) < EPSILON;
+
+        let mut successors = SmallVec::new();
+        match t2.side((root, left)) {
+            // t2 is behind the left end of the interval: everything observable is on t1-t2.
+            EdgeSide::Left => {
+                let li =
+                    Self::snap_to_edge_end(line_intersect_segment((root, left), (t1, t2))?, t1, t2);
+                let ri = if reaches_right {
+                    t1
+                } else {
+                    Self::snap_to_edge_end(line_intersect_segment((root, right), (t1, t2))?, t1, t2)
+                };
+                successors.push(Successor {
+                    interval: (ri, li),
+                    edge: [v1, v2],
+                    ty: SuccessorType::Observable,
+                });
+                if reaches_left {
+                    successors.push(Successor {
+                        interval: (li, t2),
+                        edge: [v1, v2],
+                        ty: SuccessorType::LeftNonObservable,
+                    });
+                    successors.push(Successor {
+                        interval: (t2, t3),
+                        edge: [v2, v3],
+                        ty: SuccessorType::LeftNonObservable,
+                    });
+                }
+            }
+            // The left end of the interval points straight at t2: the observable part ends there.
+            EdgeSide::Edge => {
+                let ri = if reaches_right {
+                    t1
+                } else {
+                    Self::snap_to_edge_end(line_intersect_segment((root, right), (t1, t2))?, t1, t2)
+                };
+                successors.push(Successor {
+                    interval: (ri, t2),
+                    edge: [v1, v2],
+                    ty: SuccessorType::Observable,
+                });
+                if reaches_left {
+                    successors.push(Successor {
+                        interval: (t2, t3),
+                        edge: [v2, v3],
+                        ty: SuccessorType::LeftNonObservable,
+                    });
+                }
+            }
+            // The observable part reaches past t2, onto t2-t3.
+            EdgeSide::Right => {
+                let li = if reaches_left {
+                    t3
+                } else {
+                    Self::snap_to_edge_end(line_intersect_segment((root, left), (t2, t3))?, t2, t3)
+                };
+                match t2.side((root, right)) {
+                    // The observable part is entirely on t2-t3.
+                    EdgeSide::Right => {
+                        let ri = Self::snap_to_edge_end(
+                            line_intersect_segment((root, right), (t2, t3))?,
+                            t2,
+                            t3,
+                        );
+                        if reaches_right {
+                            successors.push(Successor {
+                                interval: (t1, t2),
+                                edge: [v1, v2],
+                                ty: SuccessorType::RightNonObservable,
+                            });
+                            successors.push(Successor {
+                                interval: (t2, ri),
+                                edge: [v2, v3],
+                                ty: SuccessorType::RightNonObservable,
+                            });
+                        }
+                        successors.push(Successor {
+                            interval: (ri, li),
+                            edge: [v2, v3],
+                            ty: SuccessorType::Observable,
+                        });
+                    }
+                    // The right end of the interval points straight at t2.
+                    EdgeSide::Edge => {
+                        if reaches_right {
+                            successors.push(Successor {
+                                interval: (t1, t2),
+                                edge: [v1, v2],
+                                ty: SuccessorType::RightNonObservable,
+                            });
+                        }
+                        successors.push(Successor {
+                            interval: (t2, li),
+                            edge: [v2, v3],
+                            ty: SuccessorType::Observable,
+                        });
+                    }
+                    // The observable part straddles t2, so it spans both edges.
+                    EdgeSide::Left => {
+                        let ri = if reaches_right {
+                            t1
+                        } else {
+                            Self::snap_to_edge_end(
+                                line_intersect_segment((root, right), (t1, t2))?,
+                                t1,
+                                t2,
+                            )
+                        };
+                        successors.push(Successor {
+                            interval: (ri, t2),
+                            edge: [v1, v2],
+                            ty: SuccessorType::Observable,
+                        });
+                        successors.push(Successor {
+                            interval: (t2, li),
+                            edge: [v2, v3],
+                            ty: SuccessorType::Observable,
+                        });
+                    }
+                }
+            }
+        }
+
+        Some(successors)
+    }
+
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     pub(crate) fn edges_between(&self, node: &SearchNode) -> SmallVec<[Successor; 10]> {
@@ -438,27 +630,16 @@ impl<'m> SearchInstance<'m> {
         //     // TODO: possible optimisation
         //     // https://bitbucket.org/dharabor/pathfinding/src/624a6abe8777d14d0753e847b0970e74a7913b45/anyangle/polyanya/search/expansion.cpp#lines-156
         // }
-        // if polygon.vertices.len() == 3 {
-        //     // println!("triangle");
-        //     // TODO: possible optimisation
-        //     // https://bitbucket.org/dharabor/pathfinding/src/624a6abe8777d14d0753e847b0970e74a7913b45/anyangle/polyanya/search/expansion.cpp#lines-220
-        // }
 
-        let right_index = {
-            // Within one layer the edge already names the vertex, so say so. Looking it up
-            // by coordinates needs a tolerance wide enough to absorb the rounding of a
-            // cross layer transform, and a mesh is free to put two of a polygon's own
-            // corners closer together than that: `meshes/v3/scene_mp_2p_01.mesh` has a
-            // triangle whose two corners are 0.008 apart. Matching the wrong one starts the
-            // walk an edge early, which both hands the first edge's observability to
-            // the next one and drops a real successor.
-            let same_layer = node.polygon_to.layer() == node.previous_polygon_layer;
-            let by_index = if same_layer {
-                polygon.vertices.iter().position(|v| *v == node.edge.1)
-            } else {
-                None
-            };
-            by_index.unwrap_or_else(|| {
+        let left_vertex_index = {
+            // Vertex indices are only meaningful within a layer. When the previous polygon is on
+            // the same layer, the shared vertex can be found by comparing indices, without
+            // touching any coordinates.
+            let same_layer_index = (node.previous_polygon_layer == node.polygon_to.layer())
+                .then(|| polygon.vertices.iter().position(|v| *v == node.edge.1))
+                .flatten();
+
+            same_layer_index.unwrap_or_else(|| {
                 let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
                     [node.edge.1 as usize]
                     .coords
@@ -486,12 +667,25 @@ impl<'m> SearchInstance<'m> {
                         distances.sort_unstable_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
                         distances.first().unwrap().0
                     })
-            }) + 1
+            })
         };
+
+        if polygon.vertices.len() == 3 {
+            if let Some(successors) =
+                self.edges_between_triangle(node, polygon, target_layer, left_vertex_index)
+            {
+                return successors;
+            }
+        }
+
+        let right_index = left_vertex_index + 1;
         let left_index = polygon.vertices.len() + right_index - 2;
 
         let mut ty = SuccessorType::RightNonObservable;
-        for [edge0, edge1] in polygon.circular_edges_index(right_index..=left_index) {
+        // Walks the edges starting after the one we came through, wrapping around the polygon at
+        // most once.
+        for i in right_index..=left_index {
+            let [edge0, edge1] = polygon.circular_edge(i);
             if edge0.max(edge1) as usize > target_layer.vertices.len() {
                 continue;
             }
@@ -779,7 +973,13 @@ impl<'m> SearchInstance<'m> {
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
     pub(crate) fn successors(&mut self, mut node: SearchNode) {
-        let mut visited = HashSet::new();
+        // A node with a single successor is expanded in place instead of going through the queue.
+        // Polygons can be laid out so that such a chain walks a cycle, so its length is capped:
+        // past the cap the node is left in the buffer and goes back to the queue, where the regular
+        // search handles it. Chains this long are vanishingly rare, and cutting one only costs a
+        // push and a pop.
+        const MAX_CHAINED_EXPANSIONS: u32 = 64;
+        let mut chained_expansions = 0;
         loop {
             #[cfg(feature = "stats")]
             {
@@ -815,8 +1015,9 @@ impl<'m> SearchInstance<'m> {
                 let other_side = start
                     .polygons
                     .iter()
-                    .filter(|i| **i != u32::MAX && end.polygons.contains(*i))
-                    .find(|poly| poly != &&node.polygon_to)
+                    .find(|i| {
+                        **i != u32::MAX && **i != node.polygon_to && end.polygons.contains(*i)
+                    })
                     .unwrap_or(&u32::MAX);
 
                 #[cfg(debug_assertions)]
@@ -984,23 +1185,12 @@ impl<'m> SearchInstance<'m> {
                         new_node.polygon_to.polygon()
                     );
                 }
-                let previous_node = node;
+                chained_expansions += 1;
+                if chained_expansions > MAX_CHAINED_EXPANSIONS {
+                    // leave the node in the buffer, it will be pushed to the queue
+                    break;
+                }
                 node = self.node_buffer.drain(..).next().unwrap();
-                if node.root == previous_node.root
-                    && node.polygon_to == previous_node.polygon_from
-                    && node.polygon_from == previous_node.polygon_to
-                    && node.interval.0 == previous_node.interval.1
-                    && node.interval.1 == previous_node.interval.0
-                {
-                    // going the exact reverse way as we went into this polygon
-                    // TODO: shouldn't happen, identify cases that trigger this
-                    break;
-                }
-                if !visited.insert(node.polygon_to) {
-                    // infinite loop, exit now
-                    // TODO: shouldn't happen, identify cases that trigger this
-                    break;
-                }
                 #[cfg(debug_assertions)]
                 {
                     self.fail_fast -= 1;
