@@ -421,34 +421,42 @@ impl<'m> SearchInstance<'m> {
         // }
 
         let right_index = {
-            let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
-                [node.edge.1 as usize]
-                .coords
-                + self.mesh.layers[node.previous_polygon_layer as usize].offset;
-            polygon
-                .vertices
-                .iter()
-                .enumerate()
-                .find(|(_, v)| {
-                    (target_layer.vertices[**v as usize].coords + target_layer.offset)
-                        .distance_squared(edge)
-                        < 0.001
-                })
-                .map(|(i, _)| i)
-                .unwrap_or_else(|| {
-                    let mut distances = polygon
-                        .vertices
-                        .iter()
-                        .map(|v| {
-                            (target_layer.vertices[*v as usize].coords + target_layer.offset)
-                                .distance_squared(edge)
-                        })
-                        .enumerate()
-                        .collect::<Vec<_>>();
-                    distances.sort_unstable_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
-                    distances.first().unwrap().0
-                })
-                + 1
+            // Vertex indices are only meaningful within a layer. When the previous polygon is on
+            // the same layer, the shared vertex can be found by comparing indices, without
+            // touching any coordinates.
+            let same_layer_index = (node.previous_polygon_layer == node.polygon_to.layer())
+                .then(|| polygon.vertices.iter().position(|v| *v == node.edge.1))
+                .flatten();
+
+            same_layer_index.unwrap_or_else(|| {
+                let edge = self.mesh.layers[node.previous_polygon_layer as usize].vertices
+                    [node.edge.1 as usize]
+                    .coords
+                    + self.mesh.layers[node.previous_polygon_layer as usize].offset;
+                polygon
+                    .vertices
+                    .iter()
+                    .enumerate()
+                    .find(|(_, v)| {
+                        (target_layer.vertices[**v as usize].coords + target_layer.offset)
+                            .distance_squared(edge)
+                            < 0.001
+                    })
+                    .map(|(i, _)| i)
+                    .unwrap_or_else(|| {
+                        let mut distances = polygon
+                            .vertices
+                            .iter()
+                            .map(|v| {
+                                (target_layer.vertices[*v as usize].coords + target_layer.offset)
+                                    .distance_squared(edge)
+                            })
+                            .enumerate()
+                            .collect::<Vec<_>>();
+                        distances.sort_unstable_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+                        distances.first().unwrap().0
+                    })
+            }) + 1
         };
         let left_index = polygon.vertices.len() + right_index - 2;
 
