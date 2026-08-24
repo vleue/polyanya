@@ -630,7 +630,10 @@ impl<'m> SearchInstance<'m> {
         let left_index = polygon.vertices.len() + right_index - 2;
 
         let mut ty = SuccessorType::RightNonObservable;
-        for [edge0, edge1] in polygon.circular_edges_index(right_index..=left_index) {
+        // Walks the edges starting after the one we came through, wrapping around the polygon at
+        // most once.
+        for i in right_index..=left_index {
+            let [edge0, edge1] = polygon.circular_edge(i);
             if edge0.max(edge1) as usize > target_layer.vertices.len() {
                 continue;
             }

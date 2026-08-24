@@ -1,5 +1,3 @@
-use std::ops::RangeInclusive;
-
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -115,16 +113,15 @@ impl Polygon {
         edges
     }
 
+    /// The `i`th edge going around the polygon. `i` may run up to twice the vertex count, so a
+    /// walk starting anywhere can wrap around the polygon once.
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
-    pub(crate) fn circular_edges_index(
-        &self,
-        bounds: RangeInclusive<usize>,
-    ) -> impl Iterator<Item = [u32; 2]> + '_ {
-        self.edges_index()
-            .chain(self.edges_index())
-            .skip(*bounds.start())
-            .take(*bounds.end() + 1 - *bounds.start())
+    pub(crate) fn circular_edge(&self, i: usize) -> [u32; 2] {
+        let count = self.vertices.len();
+        let a = if i >= count { i - count } else { i };
+        let b = if a + 1 == count { 0 } else { a + 1 };
+        [self.vertices[a], self.vertices[b]]
     }
 
     pub(crate) fn area(&self, mesh: &Layer) -> f32 {
@@ -179,9 +176,11 @@ mod tests {
                 eprintln!("{start} -> {end}");
                 assert_eq!(
                     polygon.double_edges_index()[start..=end],
-                    polygon
-                        .circular_edges_index(start..=end)
-                        .map(|[a, b]| (a, b))
+                    (start..=end)
+                        .map(|i| {
+                            let [a, b] = polygon.circular_edge(i);
+                            (a, b)
+                        })
                         .collect::<Vec<_>>()
                 );
             }
