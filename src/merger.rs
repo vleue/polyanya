@@ -343,4 +343,32 @@ mod test {
         assert_eq!(mesh.layers[0].polygons.len(), 6);
         dbg!(mesh.path(Vec2::new(-4.5, 4.0), Vec2::new(-4.0, -4.5)));
     }
+
+    #[test]
+    fn merged_polygon_with_collinear_vertices() {
+        let triangulation = Triangulation::from_outer_edges(&[
+            vec2(-1., -1.),
+            vec2(-1., 1.),
+            vec2(0., 1.),
+            vec2(1.5, 1.),
+            vec2(1., -1.),
+        ]);
+        let mut mesh = triangulation.as_navmesh();
+        mesh.merge_polygons();
+
+        for corner in [
+            vec2(-1., -1.),
+            vec2(-1., 1.),
+            vec2(0., 1.),
+            vec2(1.5, 1.),
+            vec2(1., -1.),
+        ] {
+            assert!(
+                mesh.get_closest_point(corner).is_some(),
+                "corner {corner:?} not found in the mesh"
+            );
+        }
+        assert!(!mesh.point_in_mesh(vec2(2., 1.)));
+        assert!(!mesh.point_in_mesh(vec2(-2., 1.)));
+    }
 }
