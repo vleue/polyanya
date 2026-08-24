@@ -72,3 +72,39 @@ jobs:
       - name: Run tests
         run: |
           cargo test --release --examples
+
+  soak:
+    name: Fuzz soak
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run soak
+        run: |
+          cargo test --release --test fuzz -- --nocapture
+        env:
+          POLYANYA_FUZZ_SECONDS: 600
+          POLYANYA_FUZZ_SEED: ${{ github.run_id }}
+
+  soak-detailed-layers:
+    name: Fuzz soak (detailed layers)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run soak
+        run: |
+          cargo test --release --features detailed-layers --test fuzz -- --nocapture
+        env:
+          POLYANYA_FUZZ_SECONDS: 600
+          POLYANYA_FUZZ_SEED: ${{ github.run_id }}

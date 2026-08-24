@@ -539,7 +539,6 @@ impl Mesh {
             stall_limit: u32::MAX,
             recording: false,
             path_arena: Vec::new(),
-            #[cfg(feature = "detailed-layers")]
             from: (node.root, 0),
             to,
             polygon_to: self.get_point_location(to),
@@ -585,7 +584,6 @@ impl Mesh {
             stall_limit: u32::MAX,
             recording: false,
             path_arena: Vec::new(),
-            #[cfg(feature = "detailed-layers")]
             from: (Vec2::ZERO, 0),
             to: Vec2::ZERO,
             polygon_to: self.get_point_location(vec2(0.0, 0.0)),
