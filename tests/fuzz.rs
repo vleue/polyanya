@@ -7,10 +7,12 @@
 //! that doesn't match the polyline it comes with, fails without anyone having to know
 //! the right cost up front.
 //!
-//! Runs are deterministic. Set `POLYANYA_FUZZ_SEED` to replay a failure, and
-//! `POLYANYA_FUZZ_ITERATIONS` to soak for longer than the default.
+//! Runs are deterministic. Set `POLYANYA_FUZZ_SEED` to replay a failure,
+//! `POLYANYA_FUZZ_ITERATIONS` to soak for longer than the default, and
+//! `POLYANYA_FUZZ_SECONDS` to soak for a length of time instead of a number of queries.
 
 use std::sync::OnceLock;
+use std::time::{Duration, Instant};
 
 use glam::Vec2;
 use polyanya::{Mesh, Path, PolyanyaFile};
@@ -62,14 +64,28 @@ fn iterations(default: usize) -> usize {
         .unwrap_or(default)
 }
 
-/// Lengths here run from fractions of a unit (arena) to well over a thousand (aurora),
-/// and `f32` accumulation over a long polyline drifts with the length. A fixed epsilon
-/// would either be noise at the top of that range or unusable at the bottom.
+/// How long to keep throwing queries at a mesh, for a soak that has a length of time to
+/// fill rather than a number of queries to get through.
+///
+/// A count is the wrong unit for that: the same number of queries takes minutes on one
+/// mesh and seconds on another, and a machine half the speed of this one turns a bounded
+/// run into an unbounded one. A budget spends whatever time it is given on whatever the
+/// machine can manage in it.
+fn budget() -> Option<Duration> {
+    std::env::var("POLYANYA_FUZZ_SECONDS")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .map(Duration::from_secs)
+}
+
 /// How finely the segments between waypoints are sampled when checking that a path stays
 /// on the mesh. Small enough to catch a corner cut across a wall, large enough that the
 /// thousand-unit aurora paths don't dominate the test's runtime.
 const SAMPLE_EVERY: f32 = 0.25;
 
+/// Lengths here run from fractions of a unit (arena) to well over a thousand (aurora),
+/// and `f32` accumulation over a long polyline drifts with the length. A fixed epsilon
+/// would either be noise at the top of that range or unusable at the bottom.
 fn tolerance(length: f32) -> f32 {
     1e-3_f32.max(length.abs() * 1e-4)
 }
@@ -374,12 +390,34 @@ fn check_query(mesh: &Mesh, query: &Query, third: Option<Vec2>) {
 
 fn fuzz_mesh(name: &'static str, mesh: &Mesh, count: usize) {
     let seed = seed();
-    eprintln!("fuzzing {name} with {count} queries, POLYANYA_FUZZ_SEED={seed}");
+    let deadline = budget().map(|budget| Instant::now() + budget);
+    match deadline {
+        Some(_) => eprintln!(
+            "fuzzing {name} for {:?}, POLYANYA_FUZZ_SEED={seed}",
+            budget().unwrap()
+        ),
+        None => eprintln!("fuzzing {name} with {count} queries, POLYANYA_FUZZ_SEED={seed}"),
+    }
+    // With a budget it is the clock that ends the run, not the count.
+    let count = if deadline.is_some() {
+        usize::MAX
+    } else {
+        count
+    };
     let mut rng = Rng::new(seed);
     let bounds = bounds(mesh);
 
+    let mut attempted = 0;
     let mut ran = 0;
-    for _ in 0..count {
+    for i in 0..count {
+        // Reading the clock is cheap next to a query, but not free, and one query in
+        // sixty-four is close enough to spend a budget accurately.
+        if let (0, Some(deadline)) = (i % 64, deadline) {
+            if Instant::now() >= deadline {
+                break;
+            }
+        }
+        attempted += 1;
         let (Some(from), Some(to)) = (
             random_point(mesh, &mut rng, bounds),
             random_point(mesh, &mut rng, bounds),
@@ -400,10 +438,11 @@ fn fuzz_mesh(name: &'static str, mesh: &Mesh, count: usize) {
         ran += 1;
     }
 
+    eprintln!("{name}: {ran} queries checked");
     // Guard against the generators quietly failing and the test passing on nothing.
     assert!(
-        ran > count / 2,
-        "only {ran} of {count} queries could be generated on {name}"
+        ran > 0 && ran > attempted / 2,
+        "only {ran} of {attempted} queries could be generated on {name}"
     );
 }
 
@@ -453,7 +492,18 @@ fn fuzz_off_mesh_queries() {
     let (min, max) = bounds(mesh);
     let size = max - min;
 
-    for _ in 0..iterations(500) {
+    let deadline = budget().map(|budget| Instant::now() + budget);
+    let count = if deadline.is_some() {
+        usize::MAX
+    } else {
+        iterations(500)
+    };
+    for i in 0..count {
+        if let (0, Some(deadline)) = (i % 64, deadline) {
+            if Instant::now() >= deadline {
+                break;
+            }
+        }
         // one full mesh width past an edge, at least
         let outside = Vec2::new(
             rng.range(max.x + size.x, max.x + 10.0 * size.x),
