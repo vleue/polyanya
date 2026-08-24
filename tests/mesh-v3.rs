@@ -70,3 +70,37 @@ fn v3_scenario() {
         assert_delta!(mesh.path(scenario.start, scenario.goal), scenario.cost);
     }
 }
+
+/// A path has to stay inside the mesh between its turns, and the same query has to cost
+/// the same whichever feature set is compiled in.
+///
+/// The successor walk used to locate the edge it came in through by matching coordinates
+/// with a tolerance, and this mesh has a triangle whose two corners are 0.008 apart,
+/// closer than that tolerance. Matching the wrong corner started the walk an edge early,
+/// which handed one edge's observability to the next and let the root propagate where it
+/// should have had to turn a corner. The resulting path cut across a wall, and it looked
+/// *shorter* than the real one, so it won under `detailed-layers`, which keeps every path
+/// the search reaches and takes the shortest.
+#[test]
+fn path_stays_in_the_mesh_around_close_together_corners() {
+    let mesh = v3_mesh("meshes/v3/scene_mp_2p_01.mesh");
+    let from = Vec2::new(-89.27931, -9.702867);
+    let to = Vec2::new(35.1644, -103.2862);
+
+    let path = mesh.path(from, to).unwrap();
+
+    let mut previous = from;
+    for point in &path.path {
+        let steps = ((previous.distance(*point) / 0.25).ceil() as usize).max(1);
+        for step in 1..steps {
+            let sample = previous.lerp(*point, step as f32 / steps as f32);
+            assert!(
+                mesh.point_in_mesh(sample),
+                "the path leaves the mesh at {sample:?}, between {previous:?} and {point:?}"
+            );
+        }
+        previous = *point;
+    }
+
+    assert_delta!(Some(path), 169.52078);
+}

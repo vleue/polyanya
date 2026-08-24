@@ -10,8 +10,6 @@ use std::time::Instant;
 use glam::Vec2;
 use hashbrown::{hash_map::Entry, HashMap};
 
-#[cfg(feature = "detailed-layers")]
-use crate::helpers::EPSILON;
 use crate::{
     helpers::{heuristic, line_intersect_segment, turning_point, Vec2Helper},
     Layer, Mesh, Path, PathArenaNode, Polygon, SearchNode, PRECISION,
@@ -62,7 +60,6 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) node_buffer: Vec<SearchNode>,
     pub(crate) root_history: HashMap<Root, f32>,
     pub(crate) path_arena: Vec<PathArenaNode>,
-    #[cfg(feature = "detailed-layers")]
     pub(crate) from: (Vec2, u8),
     pub(crate) to: Vec2,
     pub(crate) polygon_from: u32,
@@ -91,6 +88,97 @@ pub(crate) enum InstanceStep {
     Found(Path),
     NotFound,
     Continue,
+}
+
+/// Did a computed interval end land on the vertex it was meant to?
+///
+/// Interval ends come out of intersecting a ray with an edge. When the ray passes close to
+/// a corner it crosses that edge at a shallow angle, the intersection is the ratio of two
+/// nearly cancelling quantities, and the answer comes back a good deal further from the
+/// corner than `f32`'s precision alone would suggest. The search then has to decide whether
+/// that end is the corner or some other point along the edge. Decide it too strictly and it
+/// refuses to turn at a corner it can plainly see, takes the long way round, and answers
+/// the same query differently depending on which end you start from. Decide it too loosely
+/// and it turns at a vertex that was never there.
+///
+/// The allowance has a floor because that cancellation does not shrink with the ray: on the
+/// bundled meshes the ends that should have been corners missed by 1.0 to 1.4 thousandths
+/// of a unit alike, over rays of 18, 46 and 239 units. It grows with the ray on top of that,
+/// so it does not go tight on a mesh whose coordinates are larger than the ones measured
+/// here. In those same searches the nearest end that genuinely was not a corner sat several
+/// times further out than the floor.
+#[inline(always)]
+fn lands_on(computed: Vec2, vertex: Vec2, root: Vec2) -> bool {
+    const RELATIVE: f32 = 5.0e-5;
+    const FLOOR: f32 = 2.0e-3;
+    let allowance = (RELATIVE * root.distance(vertex)).max(FLOOR);
+    computed.distance_squared(vertex) < allowance.powi(2)
+}
+
+/// Narrow a successor's interval to the part of it the parent could actually see.
+///
+/// A successor that keeps its parent's root sees through the parent's wedge, so its own
+/// wedge has to sit inside that one. Nothing else makes that true. The wedge is carried as
+/// two loose points on an edge and every decision about it is a float comparison, so a
+/// wedge thin enough that its two bounding rays stop being distinguishable can come back
+/// out of the edge walk pointing somewhere else entirely: on the bundled meshes a wedge
+/// seen to narrow to a twentieth of a degree reappears in the next polygon sixteen degrees
+/// wide and not even overlapping where it came from. A search that believes that walks
+/// straight through the wall the wedge had narrowed around.
+///
+/// Cutting the interval down to the overlap is what keeps a vanishing wedge vanishing.
+/// Discarding a successor outright instead is not enough and not safe: most of these
+/// overlap their parent in part, and dropping those loses real ways through.
+#[inline(always)]
+fn clip_to_cone(root: Vec2, cone: (Vec2, Vec2), segment: (Vec2, Vec2)) -> Option<(Vec2, Vec2)> {
+    // Interval ends are computed by intersecting a ray with an edge, and on the bundled
+    // meshes ends that should have landed exactly on a corner miss it by about a
+    // thousandth of a unit. This runs at every polygon along a path, though, so what it has
+    // to tolerate is not one of those misses but however far they have wandered by the time
+    // a long chain of them has gone by; clip tighter than that and the wedge gets eaten a
+    // little at each step until real ways through are gone. There is room to be generous:
+    // the widening this exists to stop is not a near miss but a wedge reappearing sixteen
+    // degrees wide after narrowing to a twentieth of one.
+    const SLACK: f32 = 1.0e-2;
+
+    let right = cone.0 - root;
+    let left = cone.1 - root;
+    let (right_len, left_len) = (right.length(), left.length());
+    // A root sitting on one end of its own interval has no wedge: the ray to that end has
+    // no direction, and what it can see is a half plane rather than a slice. There is
+    // nothing to clip against, and dividing by that ray's length only manufactures noise.
+    if right_len < SLACK || left_len < SLACK {
+        return Some(segment);
+    }
+
+    // How far each end of the interval sits inside the wedge, as a distance rather than a
+    // signed area, so one allowance means the same thing whatever the lengths involved.
+    // Inside is left of the ray through the wedge's right hand end and right of the ray
+    // through its left hand end, so both of these are positive there.
+    let from_right = |point: Vec2| right.perp_dot(point - root) / right_len + SLACK;
+    let from_left = |point: Vec2| -left.perp_dot(point - root) / left_len + SLACK;
+
+    let (mut lo, mut hi) = (0.0_f32, 1.0_f32);
+    for (at_start, at_end) in [
+        (from_right(segment.0), from_right(segment.1)),
+        (from_left(segment.0), from_left(segment.1)),
+    ] {
+        if at_start < 0.0 && at_end < 0.0 {
+            // wholly on the wrong side of this ray
+            return None;
+        }
+        // Where the interval crosses the ray, as a fraction along it.
+        if at_start < 0.0 {
+            lo = lo.max(at_start / (at_start - at_end));
+        } else if at_end < 0.0 {
+            hi = hi.min(at_start / (at_start - at_end));
+        }
+    }
+    if lo > hi {
+        return None;
+    }
+    let along = segment.1 - segment.0;
+    Some((segment.0 + along * lo, segment.0 + along * hi))
 }
 
 pub(crate) trait U32Layer {
@@ -134,7 +222,6 @@ impl<'m> SearchInstance<'m> {
             node_buffer: Vec::with_capacity(10),
             root_history: HashMap::with_capacity(10),
             path_arena: Vec::with_capacity(50),
-            #[cfg(feature = "detailed-layers")]
             from: (from.0, from.1.layer()),
             to: to.0,
             polygon_to: to.1,
@@ -277,6 +364,7 @@ impl<'m> SearchInstance<'m> {
                     path.push(self.to);
                     path_with_layers_end.push((self.to, next.polygon_to.layer()));
                 }
+
                 #[cfg(feature = "detailed-layers")]
                 let path_with_layers = {
                     let mut path_with_layers = vec![];
@@ -307,7 +395,7 @@ impl<'m> SearchInstance<'m> {
                     let mut path_with_layers = vec![];
                     while let Some(p) = path_with_layers_peekable.next() {
                         if let Some(n) = path_with_layers_peekable.peek() {
-                            if p.0.distance_squared(n.0) < EPSILON {
+                            if p.0.distance_squared(n.0) < 1.0e-12 {
                                 continue;
                             }
                         }
@@ -319,9 +407,22 @@ impl<'m> SearchInstance<'m> {
                 path_through_polygons.insert(0, self.polygon_from);
 
                 return InstanceStep::Found(Path {
-                    path,
                     #[cfg(not(feature = "detailed-layers"))]
-                    length: next.distance_start_to_root + next.heuristic,
+                    // Measured over the path that is actually returned, not as
+                    // `distance_start_to_root + heuristic`. The two agree while every
+                    // assumption the heuristic makes holds, and stop agreeing when the goal
+                    // sits outside the polygon the search ended in, which `search_delta`
+                    // allows: the heuristic then measures to a mirrored goal, or misses the
+                    // backtrack the reconstruction emits, and the reported length is off by
+                    // units in either direction. This is what the `detailed-layers` build
+                    // has always done.
+                    length: path
+                        .iter()
+                        .fold((0.0, self.from.0), |(total, previous), point| {
+                            (total + previous.distance(*point), *point)
+                        })
+                        .0,
+                    path,
                     #[cfg(feature = "detailed-layers")]
                     length: {
                         let a = path_with_layers.iter().fold((0.0, self.from), |acc, p| {
@@ -456,12 +557,11 @@ impl<'m> SearchInstance<'m> {
         let root = node.root;
         let (right, left) = node.interval;
 
-        const EPSILON: f32 = 1.0e-6;
         // Turning at an end of the interval is only possible if the interval actually reaches the
         // corner there. Whether that corner is one we're allowed to turn at is checked later, in
         // `successors`, which also knows about blocked layers.
-        let reaches_right = right.distance_squared(t1) < EPSILON;
-        let reaches_left = left.distance_squared(t3) < EPSILON;
+        let reaches_right = lands_on(right, t1, root);
+        let reaches_left = lands_on(left, t3, root);
 
         let mut successors = SmallVec::new();
         match t2.side((root, left)) {
@@ -813,6 +913,20 @@ impl<'m> SearchInstance<'m> {
             self.nodes_generated += 1;
         }
 
+        // Keeping the root means seeing through the parent's wedge, so cut this interval
+        // down to the part of it that wedge reaches. The start node has no wedge yet, and a
+        // root that moved to a corner starts a wedge of its own, so neither is clipped.
+        let (start, end) = if root == node.root && node.interval.0 != node.interval.1 {
+            match clip_to_cone(root, node.interval, (start.0, end.0)) {
+                Some((clipped_start, clipped_end)) => {
+                    ((clipped_start, start.1), (clipped_end, end.1))
+                }
+                None => return,
+            }
+        } else {
+            (start, end)
+        };
+
         let mut new_f = node.distance_start_to_root;
 
         if root != node.root {
@@ -1050,15 +1164,13 @@ impl<'m> SearchInstance<'m> {
                     continue;
                 }
 
-                const EPSILON: f32 = 1.0e-10;
                 let root = match successor.ty {
                     SuccessorType::RightNonObservable => {
-                        if successor
-                            .interval
-                            .0
-                            .distance_squared(start.coords + target_layer.offset)
-                            > EPSILON
-                        {
+                        if !lands_on(
+                            successor.interval.0,
+                            start.coords + target_layer.offset,
+                            node.root,
+                        ) {
                             #[cfg(debug_assertions)]
                             if self.debug {
                                 println!("x non observable on an intersection (right)");
@@ -1074,10 +1186,12 @@ impl<'m> SearchInstance<'m> {
                                 && vertex.polygons.iter().any(|p| {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
-                            && (vertex.coords
-                                + self.mesh.layers[node.previous_polygon_layer as usize].offset)
-                                .distance_squared(node.interval.0)
-                                < EPSILON
+                            && lands_on(
+                                node.interval.0,
+                                vertex.coords
+                                    + self.mesh.layers[node.previous_polygon_layer as usize].offset,
+                                node.root,
+                            )
                         {
                             node.interval.0
                         } else {
@@ -1090,9 +1204,11 @@ impl<'m> SearchInstance<'m> {
                     }
                     SuccessorType::Observable => node.root,
                     SuccessorType::LeftNonObservable => {
-                        if (successor.interval.1).distance_squared(end.coords + target_layer.offset)
-                            > EPSILON
-                        {
+                        if !lands_on(
+                            successor.interval.1,
+                            end.coords + target_layer.offset,
+                            node.root,
+                        ) {
                             #[cfg(debug_assertions)]
                             if self.debug {
                                 println!("x non observable on an intersection (left)");
@@ -1108,10 +1224,12 @@ impl<'m> SearchInstance<'m> {
                                 && vertex.polygons.iter().any(|p| {
                                     *p == u32::MAX || self.blocked_layers.contains(&p.layer())
                                 })))
-                            && (vertex.coords
-                                + self.mesh.layers[node.previous_polygon_layer as usize].offset)
-                                .distance_squared(node.interval.1)
-                                < EPSILON
+                            && lands_on(
+                                node.interval.1,
+                                vertex.coords
+                                    + self.mesh.layers[node.previous_polygon_layer as usize].offset,
+                                node.root,
+                            )
                         {
                             node.interval.1
                         } else {

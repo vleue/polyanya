@@ -189,7 +189,13 @@ pub(crate) fn line_intersect_segment(line: (Vec2, Vec2), segment: (Vec2, Vec2)) 
     if !(-EPSILON..=(1.0 + EPSILON)).contains(&intersection_time) || intersection_time.is_nan() {
         None
     } else {
-        Some(segment.0 + intersection_time * (segment.1 - segment.0))
+        // The bounds above are deliberately a little wider than the segment, so that a line
+        // passing within a hair of an end still counts as crossing it. The point handed back
+        // has to be on the segment all the same: callers use it as an interval bound, and a
+        // bound sitting just past the end makes the interval run backwards. A backwards
+        // interval reads as a wide cone instead of an empty one, which lets the search see
+        // through walls.
+        Some(segment.0 + intersection_time.clamp(0.0, 1.0) * (segment.1 - segment.0))
     }
 }
 
