@@ -211,6 +211,70 @@ fn random_point(mesh: &Mesh, rng: &mut Rng, bounds: (Vec2, Vec2)) -> Option<Vec2
     }
 }
 
+/// Does the mesh pinch to a point here?
+///
+/// Polygons are walkable between where they share an edge, and a point is not an edge. So
+/// where the polygons around a vertex fall into more than one group joined by shared edges,
+/// the mesh touches itself at that vertex without joining: everything in one group is on the
+/// far side of a gap from everything in another, however close the two look.
+///
+/// `meshes/v3/scene_mp_2p_01.mesh` has one at (-33.91, -75.15001), where a triangle below
+/// the pinch meets three above it at that vertex and nowhere else. Crossing from one side to
+/// a point just past the other is 3.2 units as the crow flies and 17.5 by any route that
+/// exists. They are rare: none in arena, 0.3% of aurora's vertices, 1.3% of this mesh's.
+fn pinches_here(mesh: &Mesh, point: Vec2) -> bool {
+    mesh.get_point_layer(point).iter().any(|coords| {
+        let layer_index = coords.layer().unwrap_or(0);
+        let Some(layer) = mesh.layers.get(layer_index as usize) else {
+            return false;
+        };
+        let Some(vertex) = layer.polygons[coords.polygon() as usize]
+            .vertices
+            .iter()
+            .map(|index| &layer.vertices[*index as usize])
+            .find(|vertex| (vertex.coords + layer.offset).distance_squared(point) < 1.0e-6)
+        else {
+            return false;
+        };
+
+        // The polygons around the vertex, on this layer, in no particular order.
+        let around = vertex
+            .polygons
+            .iter()
+            .filter(|polygon| **polygon != u32::MAX && (**polygon >> 24) as u8 == layer_index)
+            .map(|polygon| (polygon & 0x00FF_FFFF) as usize)
+            .collect::<Vec<_>>();
+        if around.len() < 2 {
+            return false;
+        }
+
+        // Spread out from the first of them, stepping only between polygons that share an
+        // edge. Anything left unreached is in a group of its own.
+        let shares_an_edge = |a: usize, b: usize| {
+            let (a, b) = (&layer.polygons[a].vertices, &layer.polygons[b].vertices);
+            a.iter().filter(|vertex| b.contains(vertex)).count() >= 2
+        };
+        let mut reached = vec![false; around.len()];
+        reached[0] = true;
+        let mut spreading = true;
+        while spreading {
+            spreading = false;
+            for from in 0..around.len() {
+                if !reached[from] {
+                    continue;
+                }
+                for to in 0..around.len() {
+                    if !reached[to] && shares_an_edge(around[from], around[to]) {
+                        reached[to] = true;
+                        spreading = true;
+                    }
+                }
+            }
+        }
+        reached.iter().any(|reached| !reached)
+    })
+}
+
 /// Everything needed to replay a failure, printed by every assertion.
 struct Query {
     mesh: &'static str,
@@ -361,7 +425,13 @@ fn check_query(mesh: &Mesh, query: &Query, third: Option<Vec2>) {
     // to one of the polygons around it, and from the wrong side of the corner the search
     // has to go the long way round. That predates the search optimisations (it reproduces
     // on 7869725), so it isn't this test's to fail on.
-    if path.path.len() > 1 {
+    //
+    // A turn on a pinch can't be asked about this way at all. The leg starts exactly on the
+    // point the mesh pinches at, so it starts on whichever fan the point location happened
+    // to name, and from a fan the path itself could never have reached it finds a way
+    // through that the path could never have taken. The leg comes back shorter than what
+    // the path left for it and nothing is wrong.
+    if path.path.len() > 1 && !pinches_here(mesh, path.path[0]) {
         let turn = path.path[0];
         let remaining = mesh
             .path(turn, to)

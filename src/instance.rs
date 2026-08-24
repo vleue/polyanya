@@ -118,6 +118,72 @@ fn lands_on(computed: Vec2, vertex: Vec2, root: Vec2) -> bool {
     computed.distance_squared(vertex) < allowance.powi(2)
 }
 
+/// Narrow a successor's interval to the part of it the parent could actually see.
+///
+/// A successor that keeps its parent's root sees through the parent's wedge, so its own
+/// wedge has to sit inside that one. Nothing else makes that true. The wedge is carried as
+/// two loose points on an edge and every decision about it is a float comparison, so a
+/// wedge thin enough that its two bounding rays stop being distinguishable can come back
+/// out of the edge walk pointing somewhere else entirely: on the bundled meshes a wedge
+/// seen to narrow to a twentieth of a degree reappears in the next polygon sixteen degrees
+/// wide and not even overlapping where it came from. A search that believes that walks
+/// straight through the wall the wedge had narrowed around.
+///
+/// Cutting the interval down to the overlap is what keeps a vanishing wedge vanishing.
+/// Discarding a successor outright instead is not enough and not safe: most of these
+/// overlap their parent in part, and dropping those loses real ways through.
+#[inline(always)]
+fn clip_to_cone(root: Vec2, cone: (Vec2, Vec2), segment: (Vec2, Vec2)) -> Option<(Vec2, Vec2)> {
+    // Interval ends are computed by intersecting a ray with an edge, and on the bundled
+    // meshes ends that should have landed exactly on a corner miss it by about a
+    // thousandth of a unit. This runs at every polygon along a path, though, so what it has
+    // to tolerate is not one of those misses but however far they have wandered by the time
+    // a long chain of them has gone by; clip tighter than that and the wedge gets eaten a
+    // little at each step until real ways through are gone. There is room to be generous:
+    // the widening this exists to stop is not a near miss but a wedge reappearing sixteen
+    // degrees wide after narrowing to a twentieth of one.
+    const SLACK: f32 = 1.0e-2;
+
+    let right = cone.0 - root;
+    let left = cone.1 - root;
+    let (right_len, left_len) = (right.length(), left.length());
+    // A root sitting on one end of its own interval has no wedge: the ray to that end has
+    // no direction, and what it can see is a half plane rather than a slice. There is
+    // nothing to clip against, and dividing by that ray's length only manufactures noise.
+    if right_len < SLACK || left_len < SLACK {
+        return Some(segment);
+    }
+
+    // How far each end of the interval sits inside the wedge, as a distance rather than a
+    // signed area, so one allowance means the same thing whatever the lengths involved.
+    // Inside is left of the ray through the wedge's right hand end and right of the ray
+    // through its left hand end, so both of these are positive there.
+    let from_right = |point: Vec2| right.perp_dot(point - root) / right_len + SLACK;
+    let from_left = |point: Vec2| -left.perp_dot(point - root) / left_len + SLACK;
+
+    let (mut lo, mut hi) = (0.0_f32, 1.0_f32);
+    for (at_start, at_end) in [
+        (from_right(segment.0), from_right(segment.1)),
+        (from_left(segment.0), from_left(segment.1)),
+    ] {
+        if at_start < 0.0 && at_end < 0.0 {
+            // wholly on the wrong side of this ray
+            return None;
+        }
+        // Where the interval crosses the ray, as a fraction along it.
+        if at_start < 0.0 {
+            lo = lo.max(at_start / (at_start - at_end));
+        } else if at_end < 0.0 {
+            hi = hi.min(at_start / (at_start - at_end));
+        }
+    }
+    if lo > hi {
+        return None;
+    }
+    let along = segment.1 - segment.0;
+    Some((segment.0 + along * lo, segment.0 + along * hi))
+}
+
 pub(crate) trait U32Layer {
     fn layer(&self) -> u8;
 
@@ -836,6 +902,20 @@ impl<'m> SearchInstance<'m> {
         {
             self.nodes_generated += 1;
         }
+
+        // Keeping the root means seeing through the parent's wedge, so cut this interval
+        // down to the part of it that wedge reaches. The start node has no wedge yet, and a
+        // root that moved to a corner starts a wedge of its own, so neither is clipped.
+        let (start, end) = if root == node.root && node.interval.0 != node.interval.1 {
+            match clip_to_cone(root, node.interval, (start.0, end.0)) {
+                Some((clipped_start, clipped_end)) => {
+                    ((clipped_start, start.1), (clipped_end, end.1))
+                }
+                None => return,
+            }
+        } else {
+            (start, end)
+        };
 
         let mut new_f = node.distance_start_to_root;
 
