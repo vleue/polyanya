@@ -188,8 +188,7 @@ impl<'m> SearchInstance<'m> {
             let other_side = start
                 .polygons
                 .iter()
-                .filter(|i| **i != u32::MAX && end.polygons.contains(*i))
-                .find(|poly| *poly != &from.1)
+                .find(|i| **i != u32::MAX && **i != from.1 && end.polygons.contains(*i))
                 .unwrap_or(&u32::MAX);
 
             if search_instance.blocked_layers.contains(&other_side.layer()) {
@@ -961,8 +960,9 @@ impl<'m> SearchInstance<'m> {
                 let other_side = start
                     .polygons
                     .iter()
-                    .filter(|i| **i != u32::MAX && end.polygons.contains(*i))
-                    .find(|poly| poly != &&node.polygon_to)
+                    .find(|i| {
+                        **i != u32::MAX && **i != node.polygon_to && end.polygons.contains(*i)
+                    })
                     .unwrap_or(&u32::MAX);
 
                 #[cfg(debug_assertions)]
