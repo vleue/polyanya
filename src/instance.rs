@@ -1120,18 +1120,7 @@ impl<'m> SearchInstance<'m> {
                         new_node.polygon_to.polygon()
                     );
                 }
-                let previous_node = node;
                 node = self.node_buffer.drain(..).next().unwrap();
-                if node.root == previous_node.root
-                    && node.polygon_to == previous_node.polygon_from
-                    && node.polygon_from == previous_node.polygon_to
-                    && node.interval.0 == previous_node.interval.1
-                    && node.interval.1 == previous_node.interval.0
-                {
-                    // going the exact reverse way as we went into this polygon
-                    // TODO: shouldn't happen, identify cases that trigger this
-                    break;
-                }
                 if !visited.insert(node.polygon_to) {
                     // infinite loop, exit now
                     // TODO: shouldn't happen, identify cases that trigger this
