@@ -658,6 +658,34 @@ mod tests {
             .collect()
     }
 
+    /// Compare a path against where its points are meant to be, rather than against the
+    /// exact `f32` that came out last time.
+    ///
+    /// The points where a path crosses between layers are computed, not copied off a
+    /// vertex, so the last few bits of them move whenever the arithmetic reaching them
+    /// changes. Writing those bits into the test pins noise: it fails for changes that move
+    /// a crossing by a millionth of a unit and says nothing about it landing in the right
+    /// place.
+    #[cfg(feature = "detailed-layers")]
+    #[track_caller]
+    fn assert_path_with_layers(actual: &[(Vec2, u8)], expected: &[(Vec2, u8)]) {
+        assert_eq!(
+            actual.len(),
+            expected.len(),
+            "expected {expected:?}, got {actual:?}"
+        );
+        for ((point, layer), (expected_point, expected_layer)) in actual.iter().zip(expected) {
+            assert_eq!(
+                layer, expected_layer,
+                "expected {expected:?}, got {actual:?}"
+            );
+            assert!(
+                point.distance(*expected_point) < 1.0e-4,
+                "expected {expected:?}, got {actual:?}"
+            );
+        }
+    }
+
     #[test]
     fn shortcut_blocked() {
         let mesh = mesh_overlapping_layers();
@@ -743,9 +771,9 @@ mod tests {
                 7 => {
                     assert_eq!(path.path, vec![vec2(1.0, 2.0), to]);
                     #[cfg(feature = "detailed-layers")]
-                    assert_eq!(
-                        path.path_with_layers,
-                        vec![(vec2(1.0, 2.0), 1), (vec2(4.0, 1.0), 0), (to, 0)]
+                    assert_path_with_layers(
+                        &path.path_with_layers,
+                        &[(vec2(1.0, 2.0), 1), (vec2(4.0, 1.0), 0), (to, 0)],
                     );
                 }
                 _ if i < 11 => {
@@ -780,9 +808,9 @@ mod tests {
                 7 => {
                     assert_eq!(path.path, vec![vec2(4.0, 1.0), to]);
                     #[cfg(feature = "detailed-layers")]
-                    assert_eq!(
-                        path.path_with_layers,
-                        vec![(vec2(4.0, 1.0), 1), (vec2(0.9999997, 2.0), 0), (to, 0)]
+                    assert_path_with_layers(
+                        &path.path_with_layers,
+                        &[(vec2(4.0, 1.0), 1), (vec2(1.0, 2.0), 0), (to, 0)],
                     );
                 }
                 _ if i < 11 => {
