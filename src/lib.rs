@@ -325,6 +325,9 @@ struct BoundedPolygon {
 impl rstar::RTreeObject for BoundedPolygon {
     type Envelope = rstar::AABB<[f32; 2]>;
 
+    // Called many times per element during `RTree::bulk_load`; leaving it out of line makes
+    // baking the polygon finder about 8x slower.
+    #[inline(always)]
     fn envelope(&self) -> Self::Envelope {
         rstar::AABB::from_corners(self.aabb_min, self.aabb_max)
     }
