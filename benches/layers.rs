@@ -166,13 +166,13 @@ fn no_path(c: &mut Criterion) {
     [
         (
             "to unreachable zone",
-            Vec2::new(46.884785, -0.3412806),
-            Vec2::new(24.074783, -81.75128),
+            Vec2::new(-5.515217, -17.64128),
+            Vec2::new(13.808118, -83.25128),
         ),
         (
             "from unreachable zone",
-            Vec2::new(24.074783, -81.75128),
-            Vec2::new(46.884785, -0.3412806),
+            Vec2::new(13.808118, -83.25128),
+            Vec2::new(-5.515217, -17.64128),
         ),
     ]
     .iter()

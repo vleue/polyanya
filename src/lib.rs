@@ -26,6 +26,7 @@ use glam::{FloatExt, Vec2, Vec3, Vec3Swizzles};
 
 use helpers::{line_intersect_segment, Vec2Helper, EPSILON};
 use instance::{InstanceStep, U32Layer};
+use smallvec::SmallVec;
 use thiserror::Error;
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -395,6 +396,12 @@ impl Mesh {
     ///
     /// This will be a [`Path`] if a path is found, or `None` if not.
     ///
+    /// A point given without a polygon or a layer can sit over more than one polygon, on a
+    /// mesh whose layers or polygons overlap: a spot under a balcony is on the ground floor
+    /// and on the balcony both. Every polygon it resolves to is a valid reading of the
+    /// query, so all of them are searched together and the shortest path is returned. Give
+    /// a [`Coords`] with a layer, or use [`Self::path_with_height`], to pick one instead.
+    ///
     /// This method is blocking, to get the path in an async way use [`Self::get_path`].
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
     #[inline(always)]
@@ -404,39 +411,152 @@ impl Mesh {
         to: impl Into<Coords>,
         blocked_layers: HashSet<u8>,
     ) -> Option<Path> {
-        #[cfg(feature = "stats")]
-        let start = Instant::now();
-
         let from = from.into();
         let to = to.into();
 
-        let starting_polygon_index = if from.polygon_index != u32::MAX {
-            from.polygon_index
-        } else {
-            self.get_closest_point_on_layers(from, blocked_layers.clone())?
-                .polygon_index
-        };
-        let ending_polygon = if to.polygon_index != u32::MAX {
-            to.polygon_index
-        } else {
-            self.get_closest_point_on_layers(to, blocked_layers.clone())?
-                .polygon_index
-        };
+        let starting_polygons = self.candidate_polygons(from, &blocked_layers);
+        if starting_polygons.is_empty() {
+            return None;
+        }
+        let ending_polygons = self.candidate_polygons(to, &blocked_layers);
+        if ending_polygons.is_empty() {
+            return None;
+        }
+
+        self.path_between_polygons(
+            (from.pos, &starting_polygons),
+            (to.pos, &ending_polygons),
+            blocked_layers,
+        )
+    }
+
+    /// Every polygon a query point resolves to.
+    ///
+    /// A point that already names its polygon has exactly one; one that names a layer is
+    /// looked for in that layer only. Otherwise it can land on several overlapping
+    /// polygons, and which of them a search picks must not depend on how the mesh is cut
+    /// into layers, so they are all returned.
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    #[inline(always)]
+    pub(crate) fn candidate_polygons(
+        &self,
+        point: Coords,
+        blocked_layers: &HashSet<u8>,
+    ) -> SmallVec<[u32; 1]> {
+        if point.polygon_index != u32::MAX {
+            return smallvec::smallvec![point.polygon_index];
+        }
+        let mut found = SmallVec::new();
+        for step in 0..self.search_steps {
+            // Every layer is searched at this step before moving on to the next one:
+            // stopping at the first layer with a hit would make the answer depend on how
+            // the mesh happens to be partitioned into layers.
+            for (layer_index, layer) in self.layers.iter().enumerate() {
+                let layer_index = layer_index as u8;
+                if point.layer.is_some_and(|only| only != layer_index)
+                    || blocked_layers.contains(&layer_index)
+                {
+                    continue;
+                }
+                layer.push_point_locations(
+                    point.pos - layer.offset,
+                    self.search_delta,
+                    step,
+                    layer_index,
+                    &mut found,
+                );
+            }
+            if !found.is_empty() {
+                break;
+            }
+        }
+        if found.len() > 1 {
+            self.merge_touching_readings(&mut found);
+        }
+        found
+    }
+
+    /// Drop the readings that are not really different.
+    ///
+    /// A point that lands on an edge is in the polygons on both sides of it, and one on a
+    /// vertex is in every polygon around it. Those are neighbours, so a search that starts
+    /// in any of them reaches the rest over a zero-length crossing, and seeding from each
+    /// would walk the whole mesh once per reading. What has to be kept is a reading the
+    /// search cannot get to from another one -- a floor above, a disconnected region.
+    fn merge_touching_readings(&self, found: &mut SmallVec<[u32; 1]>) {
+        let mut kept: SmallVec<[u32; 1]> = SmallVec::new();
+        let mut group: SmallVec<[u32; 1]> = SmallVec::new();
+        while !found.is_empty() {
+            let first = found.remove(0);
+            kept.push(first);
+            group.clear();
+            group.push(first);
+            // Everything the kept reading touches, and everything those touch in turn.
+            while let Some(current) = group.pop() {
+                let mut other = 0;
+                while other < found.len() {
+                    if self.share_an_edge(current, found[other]) {
+                        group.push(found.remove(other));
+                    } else {
+                        other += 1;
+                    }
+                }
+            }
+        }
+        *found = kept;
+    }
+
+    /// Is there an edge of `polygon` that `other` is on the other side of?
+    fn share_an_edge(&self, polygon: u32, other: u32) -> bool {
+        let layer = &self.layers[polygon.layer() as usize];
+        layer.polygons[polygon.polygon() as usize]
+            .edges_index()
+            .any(|[edge0, edge1]| {
+                let (Some(start), Some(end)) = (
+                    layer.vertices.get(edge0 as usize),
+                    layer.vertices.get(edge1 as usize),
+                ) else {
+                    return false;
+                };
+                start.polygons.contains(&other) && end.polygons.contains(&other)
+            })
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    fn path_between_polygons(
+        &self,
+        from: (Vec2, &[u32]),
+        to: (Vec2, &[u32]),
+        blocked_layers: HashSet<u8>,
+    ) -> Option<Path> {
+        #[cfg(feature = "stats")]
+        let start = Instant::now();
+
+        let (from_point, starting_polygons) = from;
+        let (to_point, ending_polygons) = to;
+
         // TODO: fix islands detection with multiple layers, even if start and end are on the same layer
         if self.layers.len() == 1 {
-            if let Some(islands) = self.layers[starting_polygon_index.layer() as usize]
-                .islands
-                .as_ref()
-            {
-                let start_island = islands.get(starting_polygon_index.polygon() as usize);
-                let end_island = islands.get(ending_polygon.polygon() as usize);
-                if start_island.is_some() && end_island.is_some() && start_island != end_island {
+            if let Some(islands) = self.layers[0].islands.as_ref() {
+                let connected = starting_polygons.iter().any(|starting_polygon| {
+                    ending_polygons.iter().any(|ending_polygon| {
+                        let start_island = islands.get(starting_polygon.polygon() as usize);
+                        let end_island = islands.get(ending_polygon.polygon() as usize);
+                        start_island.is_none() || end_island.is_none() || start_island == end_island
+                    })
+                });
+                if !connected {
                     return None;
                 }
             }
         }
 
-        if starting_polygon_index == ending_polygon {
+        // A point that starts in a goal polygon is already there, and nothing beats a
+        // straight line, so there is no need to look at the other candidates.
+        if let Some(ending_polygon) = starting_polygons
+            .iter()
+            .find(|starting_polygon| ending_polygons.contains(starting_polygon))
+        {
             #[cfg(feature = "stats")]
             {
                 if self.scenarios.get() == 0 {
@@ -448,23 +568,23 @@ impl Mesh {
                     "{};{};0;0;0;0;0;{}",
                     self.scenarios.get(),
                     start.elapsed().as_secs_f32() * 1_000_000.0,
-                    from.pos.distance(to.pos),
+                    from_point.distance(to_point),
                 );
                 self.scenarios.set(self.scenarios.get() + 1);
             }
             return Some(Path {
-                length: from.pos.distance(to.pos),
-                path: vec![to.pos],
+                length: from_point.distance(to_point),
+                path: vec![to_point],
                 #[cfg(feature = "detailed-layers")]
-                path_with_layers: vec![(to.pos, ending_polygon.layer())],
-                path_through_polygons: vec![ending_polygon],
+                path_with_layers: vec![(to_point, ending_polygon.layer())],
+                path_through_polygons: vec![*ending_polygon],
             });
         }
 
         let mut search_instance = SearchInstance::setup(
             self,
-            (from.pos, starting_polygon_index),
-            (to.pos, ending_polygon),
+            (from_point, starting_polygons),
+            (to_point, ending_polygons),
             blocked_layers,
             #[cfg(feature = "stats")]
             start,
@@ -587,7 +707,7 @@ impl Mesh {
             from: (node.root, 0),
             to,
             polygon_to: self.get_point_location(to),
-            polygon_from: 0,
+            other_polygons_to: Vec::new(),
             mesh: self,
             blocked_layers: HashSet::default(),
             #[cfg(feature = "detailed-layers")]
@@ -634,7 +754,7 @@ impl Mesh {
             from: (Vec2::ZERO, 0),
             to: Vec2::ZERO,
             polygon_to: self.get_point_location(vec2(0.0, 0.0)),
-            polygon_from: self.get_point_location(vec2(0.0, 0.0)),
+            other_polygons_to: Vec::new(),
             mesh: self,
             blocked_layers: HashSet::default(),
             #[cfg(feature = "detailed-layers")]
@@ -869,27 +989,34 @@ impl Mesh {
             }
         } else {
             for step in 0..self.search_steps {
-                for (layer_index, layer) in self
+                // Every layer is searched at this step before moving on to the next one:
+                // stopping at the first layer with a hit would make the answer depend on
+                // how the mesh happens to be partitioned into layers.
+                let coords: Vec<Coords> = self
                     .layers
                     .iter()
                     .enumerate()
                     .filter(|(index, _)| !blocked_layers.contains(&(*index as u8)))
-                {
-                    let coords: Vec<Coords> = layer
-                        .get_closest_points_inner(point.pos - layer.offset, self.search_delta, step)
-                        .iter()
-                        .map(|(new_point, polygon)| Coords {
-                            pos: new_point + layer.offset,
-                            layer: Some(layer_index as u8),
-                            polygon_index: U32Layer::from_layer_and_polygon(
-                                layer_index as u8,
-                                *polygon,
-                            ),
-                        })
-                        .collect();
-                    if !coords.is_empty() {
-                        return coords;
-                    }
+                    .flat_map(|(layer_index, layer)| {
+                        layer
+                            .get_closest_points_inner(
+                                point.pos - layer.offset,
+                                self.search_delta,
+                                step,
+                            )
+                            .into_iter()
+                            .map(move |(new_point, polygon)| Coords {
+                                pos: new_point + layer.offset,
+                                layer: Some(layer_index as u8),
+                                polygon_index: U32Layer::from_layer_and_polygon(
+                                    layer_index as u8,
+                                    polygon,
+                                ),
+                            })
+                    })
+                    .collect();
+                if !coords.is_empty() {
+                    return coords;
                 }
             }
         }

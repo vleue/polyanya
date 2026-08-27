@@ -3,11 +3,16 @@ use tracing::instrument;
 
 use glam::{vec2, Vec2};
 use rstar::RTree;
+use smallvec::SmallVec;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use crate::{helpers::Vec2Helper, instance::EdgeSide, BoundedPolygon, MeshError, Polygon, Vertex};
+use crate::{
+    helpers::Vec2Helper,
+    instance::{EdgeSide, U32Layer},
+    BoundedPolygon, MeshError, Polygon, Vertex,
+};
 
 /// Layer of a NavMesh
 #[derive(Debug, Clone)]
@@ -353,6 +358,59 @@ impl Layer {
             }
         }
         None
+    }
+
+    /// Push every polygon of this layer that the point lands in, tagged with the layer
+    /// index.
+    ///
+    /// Same walk as [`Self::get_closest_points_inner`], without building the intermediate
+    /// `Vec` per layer and per step: a query over overlapping layers does this once per
+    /// layer, and only the polygon indices are ever used.
+    #[inline(always)]
+    pub(crate) fn push_point_locations(
+        &self,
+        point: Vec2,
+        delta: f32,
+        step: u32,
+        layer_index: u8,
+        found: &mut SmallVec<[u32; 1]>,
+    ) {
+        let sample = 10;
+        for i in 0..=(sample * step) {
+            let angle = i as f32 * std::f32::consts::TAU / (sample * (step + 1)) as f32;
+            let (x, y) = angle.sin_cos();
+            let new_point = point + vec2(x, y) * delta * step as f32;
+            let before = found.len();
+            if self.baked_polygons.is_none() {
+                found.extend(
+                    self.get_point_locations_unit(new_point)
+                        .map(|polygon| U32Layer::from_layer_and_polygon(layer_index, polygon)),
+                );
+            } else {
+                // Internal iteration: the lazy `locate_in_envelope_intersecting` costs
+                // noticeably more per hit, and this runs once per layer per query.
+                let query_point = [new_point.x, new_point.y];
+                let _ = self
+                    .baked_polygons
+                    .as_ref()
+                    .unwrap()
+                    .locate_in_envelope_intersecting_int(
+                        rstar::AABB::from_point(query_point),
+                        |bp| {
+                            if self.point_in_polygon(new_point, &self.polygons[bp.index]) {
+                                found.push(U32Layer::from_layer_and_polygon(
+                                    layer_index,
+                                    bp.index as u32,
+                                ));
+                            }
+                            core::ops::ControlFlow::<()>::Continue(())
+                        },
+                    );
+            }
+            if found.len() != before {
+                return;
+            }
+        }
     }
 
     #[inline(always)]

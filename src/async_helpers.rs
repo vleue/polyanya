@@ -50,29 +50,42 @@ impl Future for FuturePath<'_> {
             #[cfg(feature = "stats")]
             let start = Instant::now();
 
-            let starting_polygon_index = self.mesh.get_point_location(self.from);
-            if starting_polygon_index == u32::MAX {
+            // A point over overlapping polygons has more than one reading, and every one of
+            // them is searched: see `Mesh::path_on_layers`.
+            let starting_polygons = self
+                .mesh
+                .candidate_polygons(self.from.into(), &HashSet::default());
+            if starting_polygons.is_empty() {
                 return Poll::Ready(None);
             }
-            let ending_polygon = self.mesh.get_point_location(self.to);
-            if ending_polygon == u32::MAX {
+            let ending_polygons = self
+                .mesh
+                .candidate_polygons(self.to.into(), &HashSet::default());
+            if ending_polygons.is_empty() {
                 return Poll::Ready(None);
             }
-            if starting_polygon_index.layer() == ending_polygon.layer() {
-                if let Some(islands) = self.mesh.layers[starting_polygon_index.layer() as usize]
-                    .islands
-                    .as_ref()
-                {
-                    let start_island = islands.get(starting_polygon_index as usize);
-                    let end_island = islands.get(ending_polygon as usize);
-                    if start_island.is_some() && end_island.is_some() && start_island != end_island
-                    {
+
+            if self.mesh.layers.len() == 1 {
+                if let Some(islands) = self.mesh.layers[0].islands.as_ref() {
+                    let connected = starting_polygons.iter().any(|starting_polygon| {
+                        ending_polygons.iter().any(|ending_polygon| {
+                            let start_island = islands.get(starting_polygon.polygon() as usize);
+                            let end_island = islands.get(ending_polygon.polygon() as usize);
+                            start_island.is_none()
+                                || end_island.is_none()
+                                || start_island == end_island
+                        })
+                    });
+                    if !connected {
                         return Poll::Ready(None);
                     }
                 }
             }
 
-            if starting_polygon_index == ending_polygon {
+            if let Some(ending_polygon) = starting_polygons
+                .iter()
+                .find(|starting_polygon| ending_polygons.contains(starting_polygon))
+            {
                 #[cfg(feature = "stats")]
                 {
                     if self.mesh.scenarios.get() == 0 {
@@ -94,19 +107,19 @@ impl Future for FuturePath<'_> {
                     #[cfg(feature = "detailed-layers")]
                     #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
                     path_with_layers: vec![(self.to, ending_polygon.layer())],
-                    path_through_polygons: vec![ending_polygon],
+                    path_through_polygons: vec![*ending_polygon],
                 }));
             }
 
+            self.ending_polygon = ending_polygons[0];
             self.instance = Some(SearchInstance::setup(
                 self.mesh,
-                (self.from, starting_polygon_index),
-                (self.to, ending_polygon),
+                (self.from, &starting_polygons),
+                (self.to, &ending_polygons),
                 HashSet::default(),
                 #[cfg(feature = "stats")]
                 start,
             ));
-            self.ending_polygon = ending_polygon;
             cx.waker().wake_by_ref();
             Poll::Pending
         }

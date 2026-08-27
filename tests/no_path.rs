@@ -24,6 +24,10 @@ fn aurora_layer() -> &'static Layer {
 /// reach the square. Island detection is skipped as soon as there is more than
 /// one layer, so this is the case where the search really does have to run out
 /// of nodes to answer "no path".
+///
+/// The copies are laid side by side rather than stacked. A point over layers
+/// that overlap is on all of them, and a query has to look in each one to find
+/// out, so stacking would measure endpoint resolution instead of the search.
 fn mesh_with_an_unreachable_island(copies: usize) -> Mesh {
     let mut island = Triangulation::from_outer_edges(&[
         vec2(1000.0, 1000.0),
@@ -36,8 +40,10 @@ fn mesh_with_an_unreachable_island(copies: usize) -> Mesh {
 
     let mut mesh = Mesh::default();
     mesh.layers.push(island);
-    for _ in 0..copies {
-        mesh.layers.push(aurora_layer().clone());
+    for copy in 0..copies {
+        let mut layer = aurora_layer().clone();
+        layer.offset = vec2(copy as f32 * 2000.0, 0.0);
+        mesh.layers.push(layer);
     }
     // nothing to stitch, but a multi-layer mesh still needs this pass: it is
     // what tags polygon indices with their layer
