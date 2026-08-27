@@ -255,9 +255,9 @@ fn scaled_layers(c: &mut Criterion) {
 #[cfg(feature = "detailed-layers")]
 fn large_scaled_layers(c: &mut Criterion) {
     let lengths: [[f32; 2]; 3] = [
-        [1254.9706, 1049.7943],
-        [2667.3855, 2306.7559],
-        [807.2238, 762.1753],
+        [LARGE_CASES[1].3 * 1.5, LARGE_CASES[2].3 * 1.5],
+        [1897.689, 2019.0597],
+        [751.6139, 716.6591],
     ];
     for ((name, scale), lengths) in CONFIGS.iter().zip(lengths) {
         let mut mesh = large_layered_mesh(BANDS);

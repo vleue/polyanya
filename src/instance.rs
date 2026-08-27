@@ -88,6 +88,11 @@ pub(crate) struct SearchInstance<'m> {
     pub(crate) polygon_to: u32,
     pub(crate) mesh: &'m Mesh,
     pub(crate) blocked_layers: HashSet<u8>,
+    /// The cheapest a unit of travel can be on this mesh: the smallest component of any
+    /// layer's `scale`. The heuristic is measured at this rate so that it stays a lower
+    /// bound however the path ends up routed. See [`SearchInstance::add_node`].
+    #[cfg(feature = "detailed-layers")]
+    pub(crate) min_scale: f32,
     #[cfg(feature = "stats")]
     pub(crate) start: Instant,
     #[cfg(feature = "stats")]
@@ -260,6 +265,8 @@ impl<'m> SearchInstance<'m> {
             polygon_from: from.1,
             mesh,
             blocked_layers,
+            #[cfg(feature = "detailed-layers")]
+            min_scale: mesh.min_scale(),
             #[cfg(feature = "stats")]
             start,
             #[cfg(feature = "stats")]
@@ -999,9 +1006,12 @@ impl<'m> SearchInstance<'m> {
             }
             #[cfg(feature = "detailed-layers")]
             {
-                new_f += node
-                    .root
-                    .distance(root * self.mesh.layers[node.polygon_to.layer() as usize].scale);
+                // Both ends scaled by the layer the segment runs through, so this is a
+                // length in that layer's space. Scaling only one end, as this used to,
+                // is not a distance in any space and is not even offset-invariant.
+                new_f += ((root - node.root)
+                    * self.mesh.layers[node.polygon_to.layer() as usize].scale)
+                    .length();
             }
         }
 
@@ -1012,14 +1022,12 @@ impl<'m> SearchInstance<'m> {
         }
         #[cfg(feature = "detailed-layers")]
         {
-            heuristic_to_end = heuristic(
-                root,
-                self.to,
-                (
-                    start.0 * self.mesh.layers[start.1.layer() as usize].scale,
-                    end.0 * self.mesh.layers[end.1.layer() as usize].scale,
-                ),
-            );
+            // Every point in raw coordinates, then scaled by the cheapest a unit of travel
+            // can be anywhere on this mesh. No path can beat that rate, so this never
+            // overestimates, which is what lets the search stop at the first goal it pops.
+            // Mixing scaled interval ends with a raw root and goal, as this used to, is not
+            // a bound on anything.
+            heuristic_to_end = heuristic(root, self.to, (start.0, end.0)) * self.min_scale;
         }
         if new_f.is_nan() || heuristic_to_end.is_nan() {
             #[cfg(debug_assertions)]
@@ -1085,6 +1093,18 @@ impl<'m> SearchInstance<'m> {
                 self.node_buffer.push(new_node);
             }
         }
+    }
+
+    /// The `f` of the cheapest node still queued, or `None` if the queue is empty.
+    ///
+    /// `f` never overestimates, so nothing still in the queue can produce a path shorter
+    /// than this. Once a complete path that short has been found, the search is done.
+    #[cfg(feature = "detailed-layers")]
+    #[inline(always)]
+    pub(crate) fn queued_lower_bound(&self) -> Option<f32> {
+        self.queue
+            .peek()
+            .map(|node| node.distance_start_to_root + node.heuristic)
     }
 
     /// Does this search block any layer at all?
