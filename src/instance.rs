@@ -310,7 +310,7 @@ impl<'m> SearchInstance<'m> {
                 .find(|i| **i != u32::MAX && **i != from.1 && end.polygons.contains(*i))
                 .unwrap_or(&u32::MAX);
 
-            if search_instance.blocked_layers.contains(&other_side.layer()) {
+            if search_instance.is_blocked(other_side.layer()) {
                 continue;
             }
 
@@ -1087,6 +1087,18 @@ impl<'m> SearchInstance<'m> {
         }
     }
 
+    /// Does this search block any layer at all?
+    #[inline(always)]
+    fn has_blocked_layers(&self) -> bool {
+        !self.blocked_layers.is_empty()
+    }
+
+    /// Is this layer blocked for this search?
+    #[inline(always)]
+    fn is_blocked(&self, layer: u8) -> bool {
+        self.has_blocked_layers() && self.blocked_layers.contains(&layer)
+    }
+
     /// Has this node already been expanded? The key holds everything the expansion reads:
     /// the polygon it goes into, the edge it comes over, and the wedge it looks through.
     /// The cost is deliberately left out, so that a repeat arriving more expensively goes
@@ -1214,7 +1226,7 @@ impl<'m> SearchInstance<'m> {
                     continue;
                 }
 
-                if self.blocked_layers.contains(&other_side.layer()) {
+                if self.is_blocked(other_side.layer()) {
                     #[cfg(debug_assertions)]
                     if self.debug {
                         println!("x blocked layer");
@@ -1264,10 +1276,11 @@ impl<'m> SearchInstance<'m> {
                             .get(node.edge.0 as usize)
                             .unwrap();
                         if (vertex.is_corner
-                            || (!self.blocked_layers.is_empty()
-                                && vertex.polygons.iter().any(|p| {
-                                    *p == u32::MAX || self.blocked_layers.contains(&p.layer())
-                                })))
+                            || (self.has_blocked_layers()
+                                && vertex
+                                    .polygons
+                                    .iter()
+                                    .any(|p| *p == u32::MAX || self.is_blocked(p.layer()))))
                             && lands_on(
                                 node.interval.0,
                                 vertex.coords
@@ -1302,10 +1315,11 @@ impl<'m> SearchInstance<'m> {
                             .get(node.edge.1 as usize)
                             .unwrap();
                         if (vertex.is_corner
-                            || (!self.blocked_layers.is_empty()
-                                && vertex.polygons.iter().any(|p| {
-                                    *p == u32::MAX || self.blocked_layers.contains(&p.layer())
-                                })))
+                            || (self.has_blocked_layers()
+                                && vertex
+                                    .polygons
+                                    .iter()
+                                    .any(|p| *p == u32::MAX || self.is_blocked(p.layer()))))
                             && lands_on(
                                 node.interval.1,
                                 vertex.coords
