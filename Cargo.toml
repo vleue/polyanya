@@ -81,5 +81,13 @@ harness = false
 name = "recast"
 harness = false
 
+[[bench]]
+name = "layers"
+harness = false
+
+[[bench]]
+name = "stitching"
+harness = false
+
 [package.metadata.docs.rs]
 features = ["async", "detailed-layers"]
