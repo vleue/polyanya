@@ -55,7 +55,7 @@ fn find_path_with_height(c: &mut Criterion) {
     c.bench_function("recast - find path with height", |b| {
         b.iter(|| {
             let path = full_mesh.path(from.xz(), to.xz()).unwrap();
-            let path_with_height = path.path_with_height(from, to, &full_mesh);
+            let path_with_height = path.path_with_height(from, to, &full_mesh).unwrap();
             black_box(path_with_height);
         })
     });
@@ -76,7 +76,7 @@ fn enrich_path_with_height(c: &mut Criterion) {
 
     c.bench_function("recast - enrich path with height", |b| {
         b.iter(|| {
-            let path_with_height = path.path_with_height(from, to, &full_mesh);
+            let path_with_height = path.path_with_height(from, to, &full_mesh).unwrap();
             black_box(path_with_height);
         })
     });

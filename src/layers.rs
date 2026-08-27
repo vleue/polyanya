@@ -30,8 +30,8 @@ pub struct Layer {
     pub scale: Vec2,
     pub(crate) baked_polygons: Option<RTree<BoundedPolygon>>,
     pub(crate) islands: Option<Vec<usize>>,
-    /// Height of each vertex. Must either have zero elements to ignore heights, or the same length as vertices.
-    pub height: Vec<f32>,
+    /// Height of each vertex on the Y axis. Either empty, or the same length as `vertices`.
+    pub(crate) height: Vec<f32>,
 }
 
 impl Default for Layer {
@@ -50,6 +50,32 @@ impl Default for Layer {
 }
 
 impl Layer {
+    /// Height of each vertex on the Y axis, in the same order as [`Self::vertices`], or `None`
+    /// if this layer doesn't have height information.
+    ///
+    /// Meshes built from a [`Triangulation`](crate::Triangulation) are flat and never have any;
+    /// meshes imported from recast get theirs from the detail mesh.
+    #[inline]
+    pub fn heights(&self) -> Option<&[f32]> {
+        (!self.height.is_empty()).then_some(self.height.as_slice())
+    }
+
+    /// Set the height of each vertex on the Y axis, in the same order as [`Self::vertices`].
+    ///
+    /// There must be exactly one height per vertex, otherwise this returns
+    /// [`MeshError::MismatchedHeights`] and the layer is left untouched. Passing an empty `Vec`
+    /// drops the height information.
+    pub fn set_heights(&mut self, heights: Vec<f32>) -> Result<(), MeshError> {
+        if !heights.is_empty() && heights.len() != self.vertices.len() {
+            return Err(MeshError::MismatchedHeights {
+                heights: heights.len(),
+                vertices: self.vertices.len(),
+            });
+        }
+        self.height = heights;
+        Ok(())
+    }
+
     /// Remove pre-computed optimizations from the mesh. Call this if you modified the [`Mesh`].
     #[inline]
     pub fn unbake(&mut self) {

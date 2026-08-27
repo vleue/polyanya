@@ -81,7 +81,7 @@ impl Triangulation {
 
     /// Create a new triangulation from an existing `Layer` of a [`Mesh`].
     pub fn from_mesh_layer(layer: Layer) -> Triangulation {
-        if !layer.height.is_empty() {
+        if layer.heights().is_some() {
             warn!("Loading a navmesh with height information into a triangulation. All height information will be lost. If the navmesh have overlapping parts the result will be wrong");
         }
         Self {

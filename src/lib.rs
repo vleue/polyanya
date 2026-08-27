@@ -77,7 +77,19 @@ impl Path {
     /// Returns the path with height information on the Y axis.
     ///
     /// This can add points to the path when needed to follow the terrain height.
-    pub fn path_with_height(&self, start: Vec3, end: Vec3, mesh: &Mesh) -> Vec<Vec3> {
+    ///
+    /// Returns `None` if any of the layers the path goes through doesn't have height
+    /// information, as there is nothing to follow then. Only some navmesh sources carry
+    /// heights: a mesh built from a [`Triangulation`] is flat, one imported from recast gets
+    /// them from its detail mesh. See [`Layer::heights`] and [`Layer::set_heights`].
+    pub fn path_with_height(&self, start: Vec3, end: Vec3, mesh: &Mesh) -> Option<Vec<Vec3>> {
+        if self.path_through_polygons.iter().any(|polygon_index| {
+            mesh.layers[polygon_index.layer() as usize]
+                .heights()
+                .is_none()
+        }) {
+            return None;
+        }
         let mut heighted_path = Vec::with_capacity(self.path.len());
         let mut current = start;
         let mut next_i = 0;
@@ -94,7 +106,13 @@ impl Path {
                 break;
             }
         }
-        let mut next = next_coords.position_with_height(mesh);
+        // The first waypoint should be in one of the polygons the path goes through. If it
+        // somehow isn't, it has no polygon to take a height from and stays on the ground.
+        let mut next = next_coords.position_with_height(mesh).unwrap_or(Vec3::new(
+            next_coords.pos.x,
+            0.0,
+            next_coords.pos.y,
+        ));
         for (step, polygon_index) in self
             .path_through_polygons
             .iter()
@@ -124,14 +142,15 @@ impl Path {
                         break;
                     }
                 }
-                next = next_coords.position_with_height(mesh);
+                next = next_coords.position_with_height(mesh)?;
             }
+            let heights = layer.heights()?;
             let v0 = polygon.vertices[0] as usize;
-            let a = layer.vertices[v0].coords.extend(layer.height[v0]).xzy();
+            let a = layer.vertices[v0].coords.extend(heights[v0]).xzy();
             let v1 = polygon.vertices[1] as usize;
-            let b = layer.vertices[v1].coords.extend(layer.height[v1]).xzy();
+            let b = layer.vertices[v1].coords.extend(heights[v1]).xzy();
             let v2 = polygon.vertices[2] as usize;
-            let c = layer.vertices[v2].coords.extend(layer.height[v2]).xzy();
+            let c = layer.vertices[v2].coords.extend(heights[v2]).xzy();
             let polygon_normal = (b - a).cross(c - a);
             let path_direction = next - current;
             if path_direction.dot(polygon_normal).abs() > EPSILON {
@@ -154,7 +173,7 @@ impl Path {
                             layer: Some(polygon_index.layer()),
                             polygon_index: *polygon_index,
                         }
-                        .position_with_height(mesh);
+                        .position_with_height(mesh)?;
                         heighted_path.push(new);
                         current = new;
                     }
@@ -162,7 +181,7 @@ impl Path {
             }
         }
         heighted_path.push(end);
-        heighted_path
+        Some(heighted_path)
     }
 
     /// Returns the polygons that the path goes through.
@@ -246,12 +265,18 @@ impl Coords {
         self.polygon_index
     }
 
-    /// Height of this point
-    pub fn height(&self, mesh: &Mesh) -> f32 {
+    /// Height of this point on the Y axis, interpolated from the heights of the polygon it is in.
+    ///
+    /// Returns `None` if this point isn't in a polygon, or if the layer it is in doesn't have
+    /// height information. Only some navmesh sources carry heights: a mesh built from a
+    /// [`Triangulation`] is flat, one imported from recast gets them from its detail mesh. See
+    /// [`Layer::heights`] and [`Layer::set_heights`].
+    pub fn height(&self, mesh: &Mesh) -> Option<f32> {
         if self.polygon_index == u32::MAX {
-            return 0.0;
+            return None;
         }
         let layer = &mesh.layers[self.layer().unwrap_or(0) as usize];
+        let heights = layer.heights()?;
         let poly = &layer.polygons[self.polygon_index.polygon() as usize];
 
         if let Some([segment0, segment1]) = poly.edges_index().find(|[edge0, edge1]| {
@@ -265,20 +290,25 @@ impl Coords {
                 layer.vertices[segment1 as usize].coords,
             );
             let t = (self.pos - a).dot(b - a) / (b - a).dot(b - a);
-            return layer.height[segment0 as usize].lerp(layer.height[segment1 as usize], t);
+            return Some(heights[segment0 as usize].lerp(heights[segment1 as usize], t));
         }
 
         // TODO: should find the position of the point within the polygon and weight each polygonpoint height based on its distance to the point
-        poly.vertices
-            .iter()
-            .map(|i| *layer.height.get(*i as usize).unwrap_or(&0.0))
-            .sum::<f32>()
-            / poly.vertices.len() as f32
+        Some(
+            poly.vertices
+                .iter()
+                .map(|i| *heights.get(*i as usize).unwrap_or(&0.0))
+                .sum::<f32>()
+                / poly.vertices.len() as f32,
+        )
     }
 
     /// Position of the point within the mesh, including its height on the Y axis.
-    pub fn position_with_height(&self, mesh: &Mesh) -> Vec3 {
-        Vec3::new(self.pos.x, self.height(mesh), self.pos.y)
+    ///
+    /// Returns `None` when [`Self::height`] does.
+    pub fn position_with_height(&self, mesh: &Mesh) -> Option<Vec3> {
+        self.height(mesh)
+            .map(|height| Vec3::new(self.pos.x, height, self.pos.y))
     }
 }
 
@@ -346,6 +376,15 @@ pub enum MeshError {
     /// One of the layer has too many polygons (more than 2^24-1).
     #[error("One layer has too many polygons")]
     TooManyPolygons,
+    /// The heights given for a layer don't match its vertices, so there is no way to tell which
+    /// height belongs to which vertex.
+    #[error("the layer was given {heights} heights but has {vertices} vertices")]
+    MismatchedHeights {
+        /// Number of heights given.
+        heights: usize,
+        /// Number of vertices in the layer.
+        vertices: usize,
+    },
 }
 
 impl Mesh {
@@ -942,10 +981,11 @@ impl Mesh {
         blocked_layers: HashSet<u8>,
         height: f32,
     ) -> Option<Coords> {
-        self.get_closest_points_on_layers(point, blocked_layers)
+        let candidates = self.get_closest_points_on_layers(point, blocked_layers);
+        candidates
             .iter()
-            .fold(None, |acc: Option<(Coords, f32)>, &coord| {
-                let coord_height = coord.height(self);
+            .filter_map(|coord| coord.height(self).map(|height| (*coord, height)))
+            .fold(None, |acc: Option<(Coords, f32)>, (coord, coord_height)| {
                 if acc
                     .map(|(_, closest_height)| (closest_height - height).abs())
                     .unwrap_or(f32::MAX)
@@ -957,6 +997,9 @@ impl Mesh {
                 }
             })
             .map(|acc| acc.0)
+            // Nothing that was found has a height to discriminate on, so every candidate is as
+            // good as the next one.
+            .or_else(|| candidates.first().copied())
     }
 
     /// Find the closest point in the mesh
