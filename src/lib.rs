@@ -904,10 +904,11 @@ pub(crate) struct PathArenaNode {
     polygon: u32,
     parent: u32, // u32::MAX = no parent
     root_changed: bool,
+    /// The edge this node was reached over, used to place the point at which the path
+    /// crosses into `polygon`'s layer. Both layers are read back off `polygon` and the
+    /// previous entry's, so neither is stored.
     #[cfg(feature = "detailed-layers")]
-    root_layer_info: Option<(Vec2, Vec2, u8)>,
-    #[cfg(feature = "detailed-layers")]
-    crossing_layer_info: Option<(Vec2, Vec2, u8)>,
+    interval: (Vec2, Vec2),
 }
 
 #[derive(PartialEq, Debug)]

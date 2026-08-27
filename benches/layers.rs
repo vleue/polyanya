@@ -215,7 +215,10 @@ fn blocked_layers(c: &mut Criterion) {
 }
 
 #[cfg(feature = "detailed-layers")]
-const CONFIGS: [(&str, fn(usize) -> Vec2); 3] = [
+type ScaleConfig = (&'static str, fn(usize) -> Vec2);
+
+#[cfg(feature = "detailed-layers")]
+const CONFIGS: [ScaleConfig; 3] = [
     ("uniform", |_| Vec2::splat(1.5)),
     ("mixed", |i| Vec2::splat(1.0 + (i as f32) * 0.5)),
     ("anisotropic", |_| Vec2::new(1.0, 1.4)),

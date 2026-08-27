@@ -543,14 +543,19 @@ impl<'m> SearchInstance<'m> {
         chain.reverse();
 
         let mut result = Vec::new();
+        // The layer the path is travelling in when it reaches an entry is the layer of the
+        // polygon the previous entry stepped into -- the starting polygon's, for the first.
+        let mut previous_layer = self.polygon_from.layer();
         for &arena_idx in &chain {
             let entry = &self.path_arena[arena_idx as usize];
-            if let Some(info) = entry.root_layer_info {
-                result.push(info);
+            if entry.root_changed {
+                result.push((entry.root, entry.root, previous_layer));
             }
-            if let Some(info) = entry.crossing_layer_info {
-                result.push(info);
+            let layer = entry.polygon.layer();
+            if layer != previous_layer {
+                result.push((entry.interval.0, entry.interval.1, layer));
             }
+            previous_layer = layer;
         }
         result
     }
@@ -1034,17 +1039,7 @@ impl<'m> SearchInstance<'m> {
             parent: node.arena_parent,
             root_changed,
             #[cfg(feature = "detailed-layers")]
-            root_layer_info: if root_changed {
-                Some((root, root, node.polygon_to.layer()))
-            } else {
-                None
-            },
-            #[cfg(feature = "detailed-layers")]
-            crossing_layer_info: if other_side.layer() != node.polygon_to.layer() {
-                Some((start.0, end.0, other_side.layer()))
-            } else {
-                None
-            },
+            interval: (start.0, end.0),
         });
 
         let new_node = SearchNode {
