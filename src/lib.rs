@@ -470,28 +470,70 @@ impl Mesh {
             start,
         );
 
-        let mut paths: Vec<Path> = vec![];
         // Limit search to avoid an infinite loop.
-        for _ in 0..self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 10 {
-            match search_instance.next() {
-                #[cfg(not(feature = "detailed-layers"))]
-                InstanceStep::Found(path) => return Some(path),
-                #[cfg(feature = "detailed-layers")]
-                InstanceStep::Found(path) => paths.push(path),
-                // The queue has run dry and nothing can refill it, so every further step
-                // is a pop from an empty heap. Keep going and we just burn the whole
-                // iteration limit before returning the answer we already have.
-                InstanceStep::NotFound => break,
-                InstanceStep::Continue => (),
-            }
-        }
+        let iterations = self.layers.iter().map(|l| l.polygons.len()).sum::<usize>() * 10;
+
+        // A path reaches the goal while its `heuristic` still covers the last leg, so the
+        // `f` it was popped with is a lower bound on its cost rather than the cost itself.
+        // With every layer at the same scale the two are equal and the first path found is
+        // returned immediately, exactly as the default build does. When they differ, a
+        // cheaper path can still be queued behind it -- but only one whose `f` is below
+        // what has been found, and `f` never overestimates, so the search stops as soon as
+        // the queue cannot beat it. That is a handful of extra pops, against the full
+        // enumeration of the mesh this used to do.
         #[cfg(feature = "detailed-layers")]
-        paths.sort_unstable_by(|p1, p2| p1.length.partial_cmp(&p2.length).unwrap());
-        if paths.is_empty() {
-            None
-        } else {
-            Some(paths.remove(0))
+        {
+            let mut best: Option<Path> = None;
+            for _ in 0..iterations {
+                match search_instance.next() {
+                    InstanceStep::Found(path) => {
+                        if best.as_ref().is_none_or(|best| path.length < best.length) {
+                            best = Some(path);
+                        }
+                    }
+                    // The queue has run dry and nothing can refill it, so every further
+                    // step is a pop from an empty heap.
+                    InstanceStep::NotFound => break,
+                    InstanceStep::Continue => (),
+                }
+                if let Some(best) = &best {
+                    match search_instance.queued_lower_bound() {
+                        Some(bound) if bound < best.length => (),
+                        _ => break,
+                    }
+                }
+            }
+            best
         }
+
+        #[cfg(not(feature = "detailed-layers"))]
+        {
+            for _ in 0..iterations {
+                match search_instance.next() {
+                    // Nothing left in the queue can beat the node that just came off it,
+                    // so the first path to the goal is the shortest one.
+                    InstanceStep::Found(path) => return Some(path),
+                    InstanceStep::NotFound => break,
+                    InstanceStep::Continue => (),
+                }
+            }
+            None
+        }
+    }
+
+    /// The cheapest a unit of travel can be anywhere on this mesh: the smallest component
+    /// of any layer's [`Layer::scale`].
+    ///
+    /// Measuring the heuristic at this rate is what keeps it from overestimating, whatever
+    /// layers the path ends up crossing. Recomputed per query rather than baked, because
+    /// `scale` is a public field callers are free to change after the mesh is built.
+    #[cfg(feature = "detailed-layers")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "detailed-layers")))]
+    pub(crate) fn min_scale(&self) -> f32 {
+        self.layers
+            .iter()
+            .map(|layer| layer.scale.x.min(layer.scale.y))
+            .fold(f32::INFINITY, f32::min)
     }
 
     /// The delta set by [`Mesh::set_delta`]
@@ -548,6 +590,8 @@ impl Mesh {
             polygon_from: 0,
             mesh: self,
             blocked_layers: HashSet::default(),
+            #[cfg(feature = "detailed-layers")]
+            min_scale: self.min_scale(),
             #[cfg(feature = "stats")]
             pushed: 0,
             #[cfg(feature = "stats")]
@@ -593,6 +637,8 @@ impl Mesh {
             polygon_from: self.get_point_location(vec2(0.0, 0.0)),
             mesh: self,
             blocked_layers: HashSet::default(),
+            #[cfg(feature = "detailed-layers")]
+            min_scale: self.min_scale(),
             #[cfg(feature = "stats")]
             pushed: 0,
             #[cfg(feature = "stats")]
@@ -904,10 +950,11 @@ pub(crate) struct PathArenaNode {
     polygon: u32,
     parent: u32, // u32::MAX = no parent
     root_changed: bool,
+    /// The edge this node was reached over, used to place the point at which the path
+    /// crosses into `polygon`'s layer. Both layers are read back off `polygon` and the
+    /// previous entry's, so neither is stored.
     #[cfg(feature = "detailed-layers")]
-    root_layer_info: Option<(Vec2, Vec2, u8)>,
-    #[cfg(feature = "detailed-layers")]
-    crossing_layer_info: Option<(Vec2, Vec2, u8)>,
+    interval: (Vec2, Vec2),
 }
 
 #[derive(PartialEq, Debug)]
