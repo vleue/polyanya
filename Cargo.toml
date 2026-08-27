@@ -3,13 +3,13 @@ name = "polyanya"
 version = "0.17.1"
 edition = "2021"
 license = "MIT OR Apache-2.0"
-keywords = ["pathfinding"]
+keywords = ["navmesh", "pathfinding", "navigation", "game-ai", "polyanya"]
 readme = "README.md"
-description = "Polygon Any Angle Pathfinding"
+description = "Fast, optimal any-angle pathfinding on navigation meshes"
 repository = "https://github.com/vleue/polyanya"
 homepage = "https://github.com/vleue/polyanya"
 documentation = "https://docs.rs/polyanya"
-categories = ["game-development"]
+categories = ["game-development", "algorithms"]
 
 [features]
 default = ["async", "recast"]
