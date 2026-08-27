@@ -2,6 +2,11 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use glam::Vec2;
 use polyanya::{Mesh, PolyanyaFile};
 
+#[cfg(not(feature = "detailed-layers"))]
+const SUFFIX: &str = "";
+#[cfg(feature = "detailed-layers")]
+const SUFFIX: &str = " (detailed-layers)";
+
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
         let val = $x;
@@ -27,7 +32,7 @@ fn get_path(c: &mut Criterion) {
     ]
     .iter()
     .for_each(|(from, to, len)| {
-        c.bench_function(&format!("get path {from:?}"), |b| {
+        c.bench_function(&format!("get path {from:?}{SUFFIX}"), |b| {
             b.iter(|| {
                 assert_delta!(mesh.path(*from, *to).unwrap(), *len);
             })
