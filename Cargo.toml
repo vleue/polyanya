@@ -85,5 +85,9 @@ harness = false
 name = "layers"
 harness = false
 
+[[bench]]
+name = "stitching"
+harness = false
+
 [package.metadata.docs.rs]
 features = ["async", "detailed-layers"]
