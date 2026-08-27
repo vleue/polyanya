@@ -375,6 +375,12 @@ impl Layer {
         layer_index: u8,
         found: &mut SmallVec<[u32; 1]>,
     ) {
+        // A mesh can carry layers holding nothing -- a chunk entirely covered by an obstacle,
+        // or a recast area id that nothing was tagged with. Point location visits every layer
+        // on every query, so it is worth one load not to walk into the rest of this.
+        if self.polygons.is_empty() {
+            return;
+        }
         let sample = 10;
         for i in 0..=(sample * step) {
             let angle = i as f32 * std::f32::consts::TAU / (sample * (step + 1)) as f32;
@@ -470,6 +476,9 @@ impl Layer {
         direction: Vec2,
         step: u32,
     ) -> Option<(Vec2, u32)> {
+        if self.polygons.is_empty() {
+            return None;
+        }
         let point = point + direction * delta * step as f32;
         let poly = if self.baked_polygons.is_none() {
             self.get_point_locations_unit(point).next()

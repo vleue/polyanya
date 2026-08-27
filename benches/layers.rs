@@ -25,7 +25,9 @@ fn layered_mesh() -> Mesh {
         serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
     let detailed: RecastPolyMeshDetail =
         serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
-    RecastFullMesh::new(rasterised, detailed).into()
+    RecastFullMesh::new(rasterised, detailed)
+        .try_into()
+        .unwrap()
 }
 
 /// The `aurora-merged` navmesh run through the recast pipeline
@@ -37,7 +39,9 @@ fn large_layered_mesh(bands: usize) -> Mesh {
     let detailed: RecastPolyMeshDetail =
         serde_json::from_reader(File::open("meshes/recast/detail_mesh-aurora.json").unwrap())
             .unwrap();
-    RecastFullMesh::new(rasterised, detailed).into()
+    RecastFullMesh::new(rasterised, detailed)
+        .try_into()
+        .unwrap()
 }
 
 fn band_areas(mesh: &mut RecastPolyMesh, bands: usize) {
