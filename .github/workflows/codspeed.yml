@@ -40,7 +40,7 @@ jobs:
         run: cargo install cargo-codspeed
 
       - name: Build the benchmark target(s)
-        run: cargo codspeed build --features detailed-layers --bench path --bench no_path --bench layers
+        run: cargo codspeed build --features detailed-layers,recast --bench path --bench no_path --bench layers
 
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v5

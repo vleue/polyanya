@@ -1,3 +1,4 @@
+#![cfg(feature = "recast")]
 use std::{collections::HashMap, fs::File};
 
 use glam::{vec3, Vec3Swizzles};
