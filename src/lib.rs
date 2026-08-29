@@ -439,7 +439,7 @@ impl Mesh {
     /// mesh whose layers or polygons overlap: a spot under a balcony is on the ground floor
     /// and on the balcony both. Every polygon it resolves to is a valid reading of the
     /// query, so all of them are searched together and the shortest path is returned. Give
-    /// a [`Coords`] with a layer, or use [`Self::path_with_height`], to pick one instead.
+    /// a [`Coords`] with a layer, or use [`Self::path_3d`], to pick one instead.
     ///
     /// This method is blocking, to get the path in an async way use [`Self::get_path`].
     #[cfg_attr(feature = "tracing", instrument(skip_all))]
@@ -466,6 +466,39 @@ impl Mesh {
             (from.pos, &starting_polygons),
             (to.pos, &ending_polygons),
             blocked_layers,
+        )
+    }
+
+    /// Compute a path between two points in 3D.
+    ///
+    /// The navigation mesh lies in the XZ plane with Y as the height. Both ends are snapped
+    /// to the closest point on the mesh, using their `y` to pick between polygons that
+    /// overlap in XZ -- a spot under a balcony is on the ground floor and on the balcony
+    /// both, and the height says which one was meant. The path is then returned following
+    /// the terrain, with points added where it crosses a change of slope.
+    ///
+    /// This is the 3D counterpart of [`Self::path`], and does in one call what
+    /// [`Self::get_closest_point_at_height`], [`Self::path`] and [`Path::path_with_height`]
+    /// do in four.
+    ///
+    /// As with [`Self::path`], the returned path does not include the starting point, and
+    /// its last point is the snapped `to` rather than `to` itself, so every point of it is
+    /// on the mesh even when the ones given are not.
+    ///
+    /// Returns `None` if either end is too far from the mesh, if there is no path between
+    /// them, or if any layer the path goes through has no height information -- there is
+    /// nothing to follow then. Only some navmesh sources carry heights: a mesh built from a
+    /// [`Triangulation`] is flat, one imported from recast gets them from its detail mesh.
+    /// See [`Layer::heights`] and [`Layer::set_heights`].
+    #[cfg_attr(feature = "tracing", instrument(skip_all))]
+    pub fn path_3d(&self, from: Vec3, to: Vec3) -> Option<Vec<Vec3>> {
+        let start = self.get_closest_point_at_height(from, from.y)?;
+        let end = self.get_closest_point_at_height(to, to.y)?;
+        let path = self.path(start, end)?;
+        path.path_with_height(
+            start.position_with_height(self)?,
+            end.position_with_height(self)?,
+            self,
         )
     }
 
