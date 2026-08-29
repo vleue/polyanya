@@ -413,31 +413,27 @@ impl Layer {
             let (x, y) = angle.sin_cos();
             let new_point = point + vec2(x, y) * delta * step as f32;
             let before = found.len();
-            if self.baked_polygons.is_none() {
+            if let Some(baked_polygons) = self.baked_polygons.as_ref() {
+                // Internal iteration: the lazy `locate_in_envelope_intersecting` costs
+                // noticeably more per hit, and this runs once per layer per query.
+                let query_point = [new_point.x, new_point.y];
+                let _ = baked_polygons.locate_in_envelope_intersecting_int(
+                    rstar::AABB::from_point(query_point),
+                    |bp| {
+                        if self.point_in_polygon(new_point, &self.polygons[bp.index]) {
+                            found.push(U32Layer::from_layer_and_polygon(
+                                layer_index,
+                                bp.index as u32,
+                            ));
+                        }
+                        core::ops::ControlFlow::<()>::Continue(())
+                    },
+                );
+            } else {
                 found.extend(
                     self.get_point_locations_unit(new_point)
                         .map(|polygon| U32Layer::from_layer_and_polygon(layer_index, polygon)),
                 );
-            } else {
-                // Internal iteration: the lazy `locate_in_envelope_intersecting` costs
-                // noticeably more per hit, and this runs once per layer per query.
-                let query_point = [new_point.x, new_point.y];
-                let _ = self
-                    .baked_polygons
-                    .as_ref()
-                    .unwrap()
-                    .locate_in_envelope_intersecting_int(
-                        rstar::AABB::from_point(query_point),
-                        |bp| {
-                            if self.point_in_polygon(new_point, &self.polygons[bp.index]) {
-                                found.push(U32Layer::from_layer_and_polygon(
-                                    layer_index,
-                                    bp.index as u32,
-                                ));
-                            }
-                            core::ops::ControlFlow::<()>::Continue(())
-                        },
-                    );
             }
             if found.len() != before {
                 return;
