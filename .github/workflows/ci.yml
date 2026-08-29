@@ -31,6 +31,10 @@ jobs:
         run: |
           cargo clippy -- -D warnings
 
+      - name: Run clippy (no default features)
+        run: |
+          cargo clippy --no-default-features -- -D warnings
+
   tests:
     name: Tests
     runs-on: ubuntu-latest
@@ -45,6 +49,38 @@ jobs:
         run: |
           cargo test
  
+  tests-no-default-features:
+    name: Tests (no default features)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Check every target
+        run: |
+          cargo check --no-default-features --all-targets
+
+      - name: Run tests
+        run: |
+          cargo test --no-default-features
+
+  tests-recast:
+    name: Tests (recast only)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run tests
+        run: |
+          cargo test --no-default-features --features recast
+
   tests-detailed-layers:
     name: Tests (detailed layers)
     runs-on: ubuntu-latest

@@ -14,7 +14,7 @@ fn prepare_fullmesh(c: &mut Criterion) {
     c.bench_function("recast - prepare fullmesh", |b| {
         b.iter(|| {
             let full_mesh = full_mesh.clone();
-            let mesh: Mesh = full_mesh.into();
+            let mesh: Mesh = full_mesh.try_into().unwrap();
             black_box(mesh);
         })
     });
@@ -25,7 +25,9 @@ fn find_path(c: &mut Criterion) {
         serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
     let detailed: RecastPolyMeshDetail =
         serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
-    let full_mesh: polyanya::Mesh = RecastFullMesh::new(rasterised, detailed).into();
+    let full_mesh: polyanya::Mesh = RecastFullMesh::new(rasterised, detailed)
+        .try_into()
+        .unwrap();
 
     let from = vec3(46.998413, 9.998184, 1.717747);
     let to = vec3(20.703018, 18.651773, -80.7702);
@@ -43,7 +45,9 @@ fn find_path_with_height(c: &mut Criterion) {
         serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
     let detailed: RecastPolyMeshDetail =
         serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
-    let full_mesh: polyanya::Mesh = RecastFullMesh::new(rasterised, detailed).into();
+    let full_mesh: polyanya::Mesh = RecastFullMesh::new(rasterised, detailed)
+        .try_into()
+        .unwrap();
 
     let from = vec3(46.998413, 9.998184, 1.717747);
     let to = vec3(20.703018, 18.651773, -80.7702);
@@ -51,7 +55,7 @@ fn find_path_with_height(c: &mut Criterion) {
     c.bench_function("recast - find path with height", |b| {
         b.iter(|| {
             let path = full_mesh.path(from.xz(), to.xz()).unwrap();
-            let path_with_height = path.path_with_height(from, to, &full_mesh);
+            let path_with_height = path.path_with_height(from, to, &full_mesh).unwrap();
             black_box(path_with_height);
         })
     });
@@ -62,7 +66,9 @@ fn enrich_path_with_height(c: &mut Criterion) {
         serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
     let detailed: RecastPolyMeshDetail =
         serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
-    let full_mesh: polyanya::Mesh = RecastFullMesh::new(rasterised, detailed).into();
+    let full_mesh: polyanya::Mesh = RecastFullMesh::new(rasterised, detailed)
+        .try_into()
+        .unwrap();
 
     let from = vec3(46.998413, 9.998184, 1.717747);
     let to = vec3(20.703018, 18.651773, -80.7702);
@@ -70,7 +76,7 @@ fn enrich_path_with_height(c: &mut Criterion) {
 
     c.bench_function("recast - enrich path with height", |b| {
         b.iter(|| {
-            let path_with_height = path.path_with_height(from, to, &full_mesh);
+            let path_with_height = path.path_with_height(from, to, &full_mesh).unwrap();
             black_box(path_with_height);
         })
     });

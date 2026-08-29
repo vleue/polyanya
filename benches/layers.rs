@@ -25,7 +25,9 @@ fn layered_mesh() -> Mesh {
         serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
     let detailed: RecastPolyMeshDetail =
         serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
-    RecastFullMesh::new(rasterised, detailed).into()
+    RecastFullMesh::new(rasterised, detailed)
+        .try_into()
+        .unwrap()
 }
 
 /// The `aurora-merged` navmesh run through the recast pipeline
@@ -37,7 +39,9 @@ fn large_layered_mesh(bands: usize) -> Mesh {
     let detailed: RecastPolyMeshDetail =
         serde_json::from_reader(File::open("meshes/recast/detail_mesh-aurora.json").unwrap())
             .unwrap();
-    RecastFullMesh::new(rasterised, detailed).into()
+    RecastFullMesh::new(rasterised, detailed)
+        .try_into()
+        .unwrap()
 }
 
 fn band_areas(mesh: &mut RecastPolyMesh, bands: usize) {
@@ -166,13 +170,13 @@ fn no_path(c: &mut Criterion) {
     [
         (
             "to unreachable zone",
-            Vec2::new(46.884785, -0.3412806),
-            Vec2::new(24.074783, -81.75128),
+            Vec2::new(-5.515217, -17.64128),
+            Vec2::new(13.808118, -83.25128),
         ),
         (
             "from unreachable zone",
-            Vec2::new(24.074783, -81.75128),
-            Vec2::new(46.884785, -0.3412806),
+            Vec2::new(13.808118, -83.25128),
+            Vec2::new(-5.515217, -17.64128),
         ),
     ]
     .iter()

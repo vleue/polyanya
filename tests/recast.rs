@@ -1,7 +1,8 @@
-use std::fs::File;
+#![cfg(feature = "recast")]
+use std::{collections::HashMap, fs::File};
 
 use glam::{vec3, Vec3Swizzles};
-use polyanya::{Mesh, RecastFullMesh, RecastPolyMesh, RecastPolyMeshDetail};
+use polyanya::{Mesh, RecastError, RecastFullMesh, RecastPolyMesh, RecastPolyMeshDetail};
 
 macro_rules! assert_delta {
     ($x:expr, $y:expr) => {
@@ -16,7 +17,7 @@ macro_rules! assert_delta {
 fn detailed_mesh() {
     let detailed_mesh: RecastPolyMeshDetail =
         serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
-    let mesh: Mesh = detailed_mesh.into();
+    let mesh: Mesh = detailed_mesh.try_into().unwrap();
 
     let start = vec3(46.998413, 9.998184, 1.717747);
     let end = vec3(20.703018, 18.651773, -80.770_2);
@@ -124,8 +125,94 @@ fn full_mesh() {
         serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
     let detailed: RecastPolyMeshDetail =
         serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
-    let mesh: polyanya::Mesh = RecastFullMesh::new(rasterised, detailed).into();
+    let mesh: Mesh = RecastFullMesh::new(rasterised, detailed)
+        .try_into()
+        .unwrap();
 
+    // Areas 255, 1, 2, 3 and 4: the default area is layer 0, the rest keep their id.
+    assert_eq!(mesh.layers.len(), 5);
+    assert_full_mesh_path(&mesh, |layer| layer);
+}
+
+/// Recast reserves only `0` and `255`; the other 253 area ids are the caller's to pick, and
+/// nothing says they have to be contiguous. Numbering them `10, 20, 30, 40` used to panic on
+/// import -- the area byte indexed a `layers` vec that had been built positionally, so it was
+/// only ever in range for `{255} + {1..=N}`.
+#[test]
+fn full_mesh_with_non_contiguous_areas() {
+    let mut rasterised: RecastPolyMesh =
+        serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
+    let detailed: RecastPolyMeshDetail =
+        serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
+    for area in rasterised.areas.iter_mut() {
+        if area.0 != 255 {
+            area.0 *= 10;
+        }
+    }
+
+    let full = RecastFullMesh::new(rasterised, detailed);
+    // An area keeps its id as its layer index, so an area tagged 20 is layer 20.
+    assert_eq!(
+        full.area_to_layer(),
+        HashMap::from([(255, 0), (10, 10), (20, 20), (30, 30), (40, 40)])
+    );
+
+    let mesh: Mesh = full.try_into().unwrap();
+    // Long enough to hold layer 40; the ids nothing is tagged with are empty layers.
+    assert_eq!(mesh.layers.len(), 41);
+    assert_eq!(
+        mesh.layers
+            .iter()
+            .filter(|layer| !layer.polygons.is_empty())
+            .count(),
+        5
+    );
+    // Same geometry, so the same path -- through the renumbered layers.
+    assert_full_mesh_path(&mesh, |layer| if layer == 0 { 0 } else { layer * 10 });
+}
+
+/// Area 0 is recast's not-walkable area, and would want layer 0 just as the default area 255
+/// does. Rather than silently merge two areas into one layer, say so.
+#[test]
+fn full_mesh_with_a_not_walkable_area() {
+    let mut rasterised: RecastPolyMesh =
+        serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
+    let detailed: RecastPolyMeshDetail =
+        serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
+    rasterised.areas[0].0 = 0;
+
+    let error = Mesh::try_from(RecastFullMesh::new(rasterised, detailed))
+        .err()
+        .unwrap();
+    assert_eq!(error, RecastError::ConflictingDefaultArea);
+}
+
+/// The detail mesh must have one sub mesh per polygon of the polygon mesh, or there is no
+/// telling which area a sub mesh belongs to.
+#[test]
+fn full_mesh_with_mismatched_meshes() {
+    let rasterised: RecastPolyMesh =
+        serde_json::from_reader(File::open("meshes/recast/poly_mesh.json").unwrap()).unwrap();
+    let mut detailed: RecastPolyMeshDetail =
+        serde_json::from_reader(File::open("meshes/recast/detail_mesh.json").unwrap()).unwrap();
+    let sub_meshes = detailed.meshes.len() - 1;
+    detailed.meshes.truncate(sub_meshes);
+
+    let error = Mesh::try_from(RecastFullMesh::new(rasterised, detailed))
+        .err()
+        .unwrap();
+    assert_eq!(
+        error,
+        RecastError::MismatchedMeshes {
+            sub_meshes,
+            areas: sub_meshes + 1,
+        }
+    );
+}
+
+/// The path of the `full_mesh` fixture, with `layer` applied to every layer index: relabelling
+/// the areas moves the path between layers without changing its geometry.
+fn assert_full_mesh_path(mesh: &Mesh, layer: impl Fn(u8) -> u8) {
     let start = vec3(46.998413, 9.998184, 1.717747);
     let end = vec3(20.703018, 18.651773, -80.770_2);
 
@@ -134,94 +221,101 @@ fn full_mesh() {
     assert_eq!(path.as_ref().unwrap().path.len(), 10);
     assert_eq!(
         path.as_ref().unwrap().polygons(),
-        vec![
-            (0, 271),
-            (1, 2),
-            (1, 6),
-            (1, 5),
-            (1, 4),
-            (1, 7),
-            (0, 283),
-            (0, 282),
-            (0, 274),
-            (0, 275),
-            (2, 12),
-            (2, 19),
-            (2, 18),
-            (2, 17),
-            (2, 16),
-            (2, 14),
-            (2, 13),
-            (2, 2),
-            (2, 1),
-            (2, 10),
-            (2, 9),
-            (2, 8),
-            (2, 6),
-            (2, 5),
-            (0, 215),
-            (0, 216),
-            (0, 217),
-            (0, 218),
-            (4, 3),
-            (4, 4),
-            (4, 5),
-            (4, 6),
-            (4, 2),
-            (0, 151),
-            (0, 152),
-            (0, 153),
-            (0, 140),
-            (0, 141),
-            (0, 142),
-            (0, 150),
-            (0, 149),
-            (0, 146),
-            (0, 145),
-            (0, 126),
-            (0, 127),
-            (0, 128),
-            (0, 134),
-            (0, 135),
-            (0, 136),
-            (0, 130),
-            (0, 129),
-            (0, 115),
-            (0, 114),
-            (0, 116),
-            (0, 117),
-            (0, 118),
-            (0, 119),
-            (0, 122),
-            (0, 121),
-            (0, 93),
-            (0, 94),
-            (0, 95),
-            (0, 96),
-            (0, 97),
-            (0, 98),
-            (0, 99),
-            (0, 100),
-            (0, 101),
-            (0, 102),
-            (0, 103),
-            (0, 88),
-            (0, 89),
-            (0, 72),
-            (0, 71),
-            (0, 70),
-            (0, 69),
-            (0, 68),
-            (0, 81),
-            (0, 80),
-            (0, 86),
-            (0, 63),
-            (0, 62),
-            (0, 59),
-            (0, 74),
-            (0, 75),
-            (0, 76)
-        ]
+        expected_polygons()
+            .into_iter()
+            .map(|(l, p)| (layer(l), p))
+            .collect::<Vec<_>>()
     );
     assert_delta!(path, 126.75868);
+}
+
+fn expected_polygons() -> Vec<(u8, u32)> {
+    vec![
+        (0, 271),
+        (1, 2),
+        (1, 6),
+        (1, 5),
+        (1, 4),
+        (1, 7),
+        (0, 283),
+        (0, 282),
+        (0, 274),
+        (0, 275),
+        (2, 12),
+        (2, 19),
+        (2, 18),
+        (2, 17),
+        (2, 16),
+        (2, 14),
+        (2, 13),
+        (2, 2),
+        (2, 1),
+        (2, 10),
+        (2, 9),
+        (2, 8),
+        (2, 6),
+        (2, 5),
+        (0, 215),
+        (0, 216),
+        (0, 217),
+        (0, 218),
+        (4, 3),
+        (4, 4),
+        (4, 5),
+        (4, 6),
+        (4, 2),
+        (0, 151),
+        (0, 152),
+        (0, 153),
+        (0, 140),
+        (0, 141),
+        (0, 142),
+        (0, 150),
+        (0, 149),
+        (0, 146),
+        (0, 145),
+        (0, 126),
+        (0, 127),
+        (0, 128),
+        (0, 134),
+        (0, 135),
+        (0, 136),
+        (0, 130),
+        (0, 129),
+        (0, 115),
+        (0, 114),
+        (0, 116),
+        (0, 117),
+        (0, 118),
+        (0, 119),
+        (0, 122),
+        (0, 121),
+        (0, 93),
+        (0, 94),
+        (0, 95),
+        (0, 96),
+        (0, 97),
+        (0, 98),
+        (0, 99),
+        (0, 100),
+        (0, 101),
+        (0, 102),
+        (0, 103),
+        (0, 88),
+        (0, 89),
+        (0, 72),
+        (0, 71),
+        (0, 70),
+        (0, 69),
+        (0, 68),
+        (0, 81),
+        (0, 80),
+        (0, 86),
+        (0, 63),
+        (0, 62),
+        (0, 59),
+        (0, 74),
+        (0, 75),
+        (0, 76),
+    ]
 }
