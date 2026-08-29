@@ -232,6 +232,22 @@ impl From<Vec2> for Coords {
     }
 }
 
+/// The navigation mesh lies in the XZ plane, with Y as the height, so a [`Vec3`] keeps its
+/// `x` and `z` and drops its `y`.
+///
+/// The height is dropped, not used: on a mesh with overlapping layers this can't tell the
+/// balcony from the floor below it. Use [`Mesh::get_closest_point_at_height`] to pick by
+/// height, or [`Mesh::path_3d`], which does.
+impl From<Vec3> for Coords {
+    fn from(value: Vec3) -> Self {
+        Coords {
+            pos: value.xz(),
+            layer: None,
+            polygon_index: u32::MAX,
+        }
+    }
+}
+
 impl Coords {
     /// A point on the navigation mesh
     pub fn on_mesh(pos: Vec2) -> Self {
