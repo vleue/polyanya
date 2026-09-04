@@ -110,10 +110,10 @@ The code above will build the following mesh, with polygons marked in green, and
 
 Check the [cpp implementation](https://bitbucket.org/dharabor/pathfinding/src/master/anyangle/polyanya/).
 
-```notrust
-index;micro;successor_calls;generated;pushed;popped;pruned_post_pop;length;gridcost
-0;4960.92;6974;4368;4313;3823;21;1123.222637572437;1199.73
-```
+| index | micro   | successor_calls | generated | pushed | popped | pruned_post_pop | length            | gridcost |
+|-------|---------|-----------------|-----------|--------|--------|-----------------|-------------------|----------|
+| 0     | 4960.92 | 6974            | 4368      | 4313   | 3823   | 21              | 1123.222637572437 | 1199.73  |
+
 
 This crate seems to generate a few more nodes, but tends to be faster than the cpp implementation. There are a few known cases to still improve it:
 
@@ -124,10 +124,10 @@ This crate seems to generate a few more nodes, but tends to be faster than the c
 
 Compiling this crate with feature `stats` will output almost the same level of information as the default cpp implementation output.
 
-```notrust
-index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length
-0;2990.083;6983;7748;4314;3828;21;1123.2228
-```
+| index | micros   | successor_calls | generated | pushed | popped | pruned_post_pop | length    |
+|-------|----------|-----------------|-----------|--------|--------|-----------------|-----------|
+| 0     | 2990.083 | 6983            | 7748      | 4314   | 3828   | 21              | 1123.2228 |
+
 
 The `verbose` feature will give the same output as [setting `verbose` to `1`](https://bitbucket.org/dharabor/pathfinding/src/ce5b02e9d051d5f17addb359429104c0293decaf/anyangle/polyanya/scenariorunner.cpp#lines-20).
 
