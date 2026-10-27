@@ -51,10 +51,9 @@ fn unstitched_mesh() -> Mesh {
             layers.push(triangulation.as_layer());
         }
     }
-    Mesh {
-        layers,
-        ..Default::default()
-    }
+    let mut mesh = Mesh::default();
+    mesh.layers = layers;
+    mesh
 }
 
 fn stitch_points(mesh: &Mesh) -> StitchPoints {

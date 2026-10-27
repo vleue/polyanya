@@ -88,18 +88,12 @@ impl Future for FuturePath<'_> {
             {
                 #[cfg(feature = "stats")]
                 {
-                    if self.mesh.scenarios.get() == 0 {
-                        eprintln!(
-                        "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
-                    );
-                    }
                     eprintln!(
                         "{};{};0;0;0;0;0;{}",
-                        self.mesh.scenarios.get(),
+                        self.mesh.scenarios.next(),
                         start.elapsed().as_secs_f32() * 1_000_000.0,
                         self.from.distance(self.to),
                     );
-                    self.mesh.scenarios.set(self.mesh.scenarios.get() + 1);
                 }
                 return Poll::Ready(Some(Path {
                     length: self.from.distance(self.to),

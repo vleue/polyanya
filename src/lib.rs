@@ -14,12 +14,15 @@
 
 const PRECISION: f32 = 1000.0;
 
-#[cfg(feature = "stats")]
-use std::{cell::Cell, time::Instant};
 use std::{
     cmp::Ordering,
     collections::HashSet,
     fmt::{self, Debug, Display},
+};
+#[cfg(feature = "stats")]
+use std::{
+    sync::atomic::{AtomicU32, Ordering as AtomicOrdering},
+    time::Instant,
 };
 
 use glam::{Vec2, Vec3, Vec3Swizzles};
@@ -204,7 +207,34 @@ pub struct Mesh {
     /// Number of steps before stopping searching for a point in a mesh
     pub search_steps: u32,
     #[cfg(feature = "stats")]
-    pub(crate) scenarios: Cell<u32>,
+    #[cfg_attr(feature = "serde", serde(skip))]
+    pub(crate) scenarios: ScenarioCounter,
+}
+
+/// Counts the paths searched on a [`Mesh`] to index their stats, without making it `!Sync`.
+#[cfg(feature = "stats")]
+#[derive(Debug, Default)]
+pub(crate) struct ScenarioCounter(AtomicU32);
+
+#[cfg(feature = "stats")]
+impl ScenarioCounter {
+    /// Index of the next scenario, printing the stats header before the first one.
+    pub(crate) fn next(&self) -> u32 {
+        let index = self.0.fetch_add(1, AtomicOrdering::Relaxed);
+        if index == 0 {
+            eprintln!(
+                "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length"
+            );
+        }
+        index
+    }
+}
+
+#[cfg(feature = "stats")]
+impl Clone for ScenarioCounter {
+    fn clone(&self) -> Self {
+        Self(AtomicU32::new(self.0.load(AtomicOrdering::Relaxed)))
+    }
 }
 
 /// A point in the navigation mesh
@@ -346,7 +376,7 @@ impl Default for Mesh {
             search_delta: 0.1,
             search_steps: 2,
             #[cfg(feature = "stats")]
-            scenarios: Cell::new(0),
+            scenarios: ScenarioCounter::default(),
         }
     }
 }
@@ -648,18 +678,12 @@ impl Mesh {
         {
             #[cfg(feature = "stats")]
             {
-                if self.scenarios.get() == 0 {
-                    eprintln!(
-                    "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
-                );
-                }
                 eprintln!(
                     "{};{};0;0;0;0;0;{}",
-                    self.scenarios.get(),
+                    self.scenarios.next(),
                     start.elapsed().as_secs_f32() * 1_000_000.0,
                     from_point.distance(to_point),
                 );
-                self.scenarios.set(self.scenarios.get() + 1);
             }
             return Some(Path {
                 length: from_point.distance(to_point),

@@ -422,14 +422,9 @@ impl<'m> SearchInstance<'m> {
             if self.is_goal(next.polygon_to) {
                 #[cfg(feature = "stats")]
                 {
-                    if self.mesh.scenarios.get() == 0 {
-                        eprintln!(
-                        "index;micros;successor_calls;generated;pushed;popped;pruned_post_pop;length",
-                    );
-                    }
                     eprintln!(
                         "{};{};{};{};{};{};{};{}",
-                        self.mesh.scenarios.get(),
+                        self.mesh.scenarios.next(),
                         self.start.elapsed().as_secs_f32() * 1_000_000.0,
                         self.successors_called,
                         self.nodes_generated,
@@ -438,7 +433,6 @@ impl<'m> SearchInstance<'m> {
                         self.nodes_pruned_post_pop,
                         next.distance_start_to_root + next.heuristic,
                     );
-                    self.mesh.scenarios.set(self.mesh.scenarios.get() + 1);
                 }
                 // Reconstruct path and polygons from arena
                 let (mut path, path_through_polygons) = self.reconstruct_path(next.arena_parent);
