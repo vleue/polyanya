@@ -22,7 +22,7 @@ use std::{
     fmt::{self, Debug, Display},
 };
 
-use glam::{FloatExt, Vec2, Vec3, Vec3Swizzles};
+use glam::{Vec2, Vec3, Vec3Swizzles};
 
 use helpers::{line_intersect_segment, Vec2Helper, EPSILON};
 use instance::{InstanceStep, U32Layer};
@@ -306,7 +306,8 @@ impl Coords {
                 layer.vertices[segment1 as usize].coords,
             );
             let t = (self.pos - a).dot(b - a) / (b - a).dot(b - a);
-            return Some(heights[segment0 as usize].lerp(heights[segment1 as usize], t));
+            let (h0, h1) = (heights[segment0 as usize], heights[segment1 as usize]);
+            return Some(h0 + (h1 - h0) * t);
         }
 
         // TODO: should find the position of the point within the polygon and weight each polygonpoint height based on its distance to the point
