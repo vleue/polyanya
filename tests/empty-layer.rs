@@ -9,10 +9,8 @@ fn baking_a_layer_without_polygons_returns() {
     let mut layer = Layer::default();
     layer.bake();
 
-    let mesh = Mesh {
-        layers: vec![layer],
-        ..Default::default()
-    };
+    let mut mesh = Mesh::default();
+    mesh.layers = vec![layer];
     assert!(!mesh.point_in_mesh(vec2(0.0, 0.0)));
 }
 
@@ -39,9 +37,7 @@ fn a_layer_covered_by_an_obstacle_bakes() {
     assert!(layer.polygons.is_empty());
     layer.bake();
 
-    let mesh = Mesh {
-        layers: vec![layer],
-        ..Default::default()
-    };
+    let mut mesh = Mesh::default();
+    mesh.layers = vec![layer];
     assert!(!mesh.point_in_mesh(vec2(5.0, 5.0)));
 }
